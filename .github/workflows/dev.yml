@@ -1,0 +1,35 @@
+name: Build, Test, and Deploy for Dev Branch
+
+on:
+  push:
+    branch:
+      - dev
+
+jobs:
+  build:
+    runs-on: self hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: install dependencies
+        run: yarn install
+      - name: buld the dist
+        run: yarn build
+
+
+  # test:
+  #   -name: Run test
+  #   run: yarn jest
+      
+  deploy:
+    runs-on: self-hosted
+      needs: build
+      if: github.ref == 'refs/heads/dev'
+      
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Install dependencies
+          run: yarn install
