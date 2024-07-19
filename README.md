@@ -85,6 +85,8 @@ For example:
 git switch -c add-alonzo-church
 ```
 
+
+
 ### Make Changes
 
 Make your changes to the codebase. Ensure your code follows the project's coding standards and guidelines.
