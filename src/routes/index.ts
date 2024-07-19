@@ -1,1 +1,1 @@
-// silence is golden
+// silently ignore
