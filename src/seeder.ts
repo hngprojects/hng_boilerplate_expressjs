@@ -1,6 +1,7 @@
 // src/seeder.ts
 import { AppDataSource } from "./data-source";
 import { User, Organization, Product, Profile } from "./models";
+import log from "./utils/logger";
 
 const seed = async () => {
   const user1 = new User();
@@ -64,7 +65,7 @@ const seed = async () => {
   await AppDataSource.manager.save(organization1);
   await AppDataSource.manager.save(organization2);
 
-  console.log("Seeding completed successfully.");
+  log.info("Seeding completed successfully.");
 };
 
 export { seed };
