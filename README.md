@@ -204,3 +204,11 @@ All API endpoints can be referenced in the [API Reference](API_REFERENCE.md) doc
 ## Versioning
 
 This project is versioned to ensure backward compatibility and easy maintenance. The current version is [version 1].
+
+## route naming conventions
+
+all routes should have a prefix of
+
+```bash
+  api/v1
+```
