@@ -1,8 +1,9 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
 import { User } from "./User";
+import ExtendedBaseEntity from "./extended-base-entity";
 
 @Entity()
-export class Profile {
+export class Profile extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

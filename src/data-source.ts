@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { DataSource } from "typeorm";
+import { DataSource, Tree } from "typeorm";
 import config from "./config";
 
 export const AppDataSource = new DataSource({

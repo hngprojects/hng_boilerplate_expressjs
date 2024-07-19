@@ -4,8 +4,7 @@ import { User, Organization, Product, Profile } from "./models";
 
 const seed = async () => {
   const user1 = new User();
-  user1.firstName = "John";
-  user1.lastName = "Doe";
+  user1.name = "John Doe";
   user1.email = "johndoe@example.com";
   user1.password = "password";
   user1.profile = new Profile();
@@ -15,8 +14,7 @@ const seed = async () => {
   user1.profile.avatarUrl = "http://example.com/avatar.jpg";
 
   const user2 = new User();
-  user2.firstName = "Jane";
-  user2.lastName = "Doe";
+  user2.name = "Jane Doe";
   user2.email = "janedoe@example.com";
   user2.profile = new Profile();
   user2.password = "password";

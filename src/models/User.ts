@@ -23,12 +23,7 @@ export class User extends ExtendedBaseEntity {
   id: string;
 
   @Column()
-  @Length(1, 50, { message: getIsInvalidMessage("First Name") })
-  firstName: string;
-
-  @Column()
-  @Length(1, 50, { message: getIsInvalidMessage("Last Name") })
-  lastName: string;
+  name: string;
 
   @Column()
   @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
@@ -42,6 +37,7 @@ export class User extends ExtendedBaseEntity {
   profile: Profile;
 
   @OneToMany(() => Product, (product) => product.user, { cascade: true })
+  @JoinTable()
   products: Product[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
