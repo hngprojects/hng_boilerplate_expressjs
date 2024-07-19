@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "typeRoots": ["src/types"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "config"]
 }

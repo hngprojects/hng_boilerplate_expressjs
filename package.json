@@ -20,6 +20,8 @@
     "typescript": "^5.5.3"
   },
   "dependencies": {
+    "@types/config": "^3.3.4",
+    "config": "^3.3.12",
     "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

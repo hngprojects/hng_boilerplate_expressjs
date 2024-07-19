@@ -85,7 +85,21 @@ For example:
 git switch -c add-alonzo-church
 ```
 
+### Important notice:
 
+```bash
+  console.log
+```
+
+is not allowed
+
+a default logger has been created
+
+```bash
+  import log from "./utils/logger";
+
+  log.info("information")
+```
 
 ### Make Changes
 
@@ -163,15 +177,7 @@ cp .env.example .env
 
 Edit the `.env` file to match your environment configuration.
 
-### 4. Compile TypeScript
-
-Compile the TypeScript code to JavaScript.
-
-```sh
-npm run build
-```
-
-### 5. Run the Development Server
+### 4. Run the Development Server
 
 Start the development server with the following command. This will also watch for any changes in your code and automatically restart the server.
 
@@ -179,7 +185,7 @@ Start the development server with the following command. This will also watch fo
 yarn start:dev
 ```
 
-### 6. Run the Production Server
+### 5. Run the Production Server
 
 To run the application in a production environment, use the following command:
 
@@ -197,4 +203,4 @@ All API endpoints can be referenced in the [API Reference](API_REFERENCE.md) doc
 
 ## Versioning
 
-This project is versioned to ensure backward compatibility and easy maintenance. The current version is [version].
+This project is versioned to ensure backward compatibility and easy maintenance. The current version is [version 1].
