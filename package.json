@@ -4,7 +4,7 @@
    "description": "",
    "main": "index.js",
    "scripts": {
-      "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
+      "start:prod": "ts-node-dev --respawn --transpile-only ./src/index",
       "start": "ts-node src/index.ts",
       "test": "jest",
       "typeorm": "typeorm-ts-node-commonjs"
