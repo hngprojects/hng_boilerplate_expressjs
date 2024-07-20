@@ -21,7 +21,13 @@ jobs:
         run: yarn install
       - name: buld the dist
         run: yarn build
-
+      - name: setup service file
+        run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
+      - name: start the app
+        run: | 
+          sudo systemctl deamon-reload
+          sudo systemsctl restart aihomwworkdev
+          
   # test:
   #   -name: Run test
   #   run: yarn jest
