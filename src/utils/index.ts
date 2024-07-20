@@ -9,8 +9,12 @@ export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
 }
 
+export async function comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword);
+}
+
 export async function generateAccessToken(user_id: string) {
-  return jwt.sign(user_id, config.TOKEN_SECRET, { expiresIn: 60 });
+  return jwt.sign({ user_id }, config.TOKEN_SECRET, { expiresIn: "1d" });
 }
 
 export const generateNumericOTP = (length: number): string => {
