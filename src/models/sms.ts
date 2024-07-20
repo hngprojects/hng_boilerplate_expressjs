@@ -3,29 +3,26 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { User } from ".";
 
 @Entity()
-export class Article extends ExtendedBaseEntity {
+export class Sms extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
-  title: string;
+  phone_number: string;
 
   @Column()
-  content: string;
+  message: string;
 
-  @ManyToOne(() => User, (user) => user.articles)
-  author: User;
+  @Column()
+  @ManyToOne(() => User, (user) => user.id)
+  sender_id: User;
 
   @CreateDateColumn()
   createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
 }

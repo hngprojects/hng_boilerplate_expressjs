@@ -1,5 +1,5 @@
 import { AppDataSource } from "../data-source";
-import { User } from "../models";
+import { Profile, User } from "../models";
 import { IAuthService, IUserSignUp, IUserLogin } from "../types";
 import { Conflict, HttpError } from "../middleware";
 import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
@@ -92,7 +92,9 @@ export class AuthService implements IAuthService {
     }
   }
 
-  public async login(payload: IUserLogin): Promise<{ access_token: string; user: Partial<User> }> {
+  public async login(
+    payload: IUserLogin
+  ): Promise<{ access_token: string; user: Partial<User> }> {
     const { email, password } = payload;
 
     try {
@@ -107,7 +109,13 @@ export class AuthService implements IAuthService {
         throw new HttpError(401, "Invalid credentials");
       }
 
-      const access_token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, { expiresIn: "1d" });
+      if (!user.isverified) {
+        throw new HttpError(403, "Email not verified");
+      }
+
+      const access_token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+        expiresIn: "1d",
+      });
 
       const { password: _, ...userWithoutPassword } = user;
 
