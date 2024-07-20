@@ -8,13 +8,10 @@ import {
   Unique,
   JoinTable,
   JoinColumn,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Profile } from "./Profile";
-import { Product } from "./Product";
-import { Organization } from "./Organization";
+import { Profile, Product, Organization, Article } from ".";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
@@ -61,6 +58,9 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Product, (product) => product.user, { cascade: true })
   @JoinTable()
   products: Product[];
+
+  @OneToMany(() => Article, (article) => article.author, { cascade: true })
+  articles: Article[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
     cascade: true,
