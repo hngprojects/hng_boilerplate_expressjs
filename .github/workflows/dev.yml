@@ -26,7 +26,7 @@ jobs:
       - name: start the app
         run: |
           sudo systemctl daemon-reload
-          sudo systemsctl restart aihomwworkdev
+          sudo systemctl restart aihomeworkdev
 
   # test:
   #   -name: Run test
