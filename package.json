@@ -6,7 +6,7 @@
   "scripts": {
     "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
     "start": "ts-node --transpile-only src/index.ts",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
     "prod": "node dist/index.js"
