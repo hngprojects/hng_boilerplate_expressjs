@@ -1,6 +1,9 @@
 import "reflect-metadata";
 import { DataSource, Tree } from "typeorm";
 import config from "./config";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -12,10 +15,10 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: false,
   entities: ["src/models/**/*.ts"],
-  ssl: true,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // ssl: true,
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
