@@ -5,6 +5,7 @@ import { seed } from "./seeder";
 import express, { Express, Request, Response } from "express";
 import config from "./config";
 import userRouter from "./routes/user";
+import testimonialRouter from "./routes/testimonial";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -19,6 +20,7 @@ AppDataSource.initialize()
       res.send("Hello world");
     });
     server.use("/api/v1", userRouter);
+    server.use("/api/v1", testimonialRouter);
 
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
