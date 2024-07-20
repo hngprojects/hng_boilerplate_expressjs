@@ -8,6 +8,7 @@ import {
   Unique,
   JoinTable,
   JoinColumn,
+  ManyToOne,
 } from "typeorm";
 import { Profile } from "./Profile";
 import { Product } from "./Product";
@@ -15,6 +16,7 @@ import { Organization } from "./Organization";
 import { IsEmail, Length } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
+import { UserRole } from "../enums/userRoles";
 
 @Entity()
 @Unique(["email"])
@@ -35,6 +37,13 @@ export class User extends ExtendedBaseEntity {
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   @JoinColumn()
   profile: Profile;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+    default: UserRole.USER,
+  })
+  role: UserRole;
 
   @OneToMany(() => Product, (product) => product.user, { cascade: true })
   @JoinTable()

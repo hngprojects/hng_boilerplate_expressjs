@@ -8,10 +8,10 @@ export class Profile extends ExtendedBaseEntity {
   id: string;
 
   @Column()
-  firstName: string;
+  first_name: string;
 
   @Column()
-  lastName: string;
+  last_name: string;
 
   @Column()
   phone: string;
