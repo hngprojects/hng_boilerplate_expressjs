@@ -1,1 +1,1 @@
-// silence is golden
+export * from "./error";

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import { User } from "./User";
+import { User } from "./user";
 import ExtendedBaseEntity from "./extended-base-entity";
 
 @Entity()
@@ -8,10 +8,10 @@ export class Profile extends ExtendedBaseEntity {
   id: string;
 
   @Column()
-  firstName: string;
+  first_name: string;
 
   @Column()
-  lastName: string;
+  last_name: string;
 
   @Column()
   phone: string;

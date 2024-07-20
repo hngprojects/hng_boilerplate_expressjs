@@ -17,26 +17,20 @@ jobs:
         id: pull
         run: |
           git pull origin dev
+
       - name: install dependencies
         run: yarn install
+
+      - name: Run Test
+        run: yarn test --passWithNoTests
+
       - name: buld the dist
         run: yarn build
+
       - name: setup service file
         run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
+
       - name: start the app
         run: |
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkdev
-
-  # test:
-  #   -name: Run test
-  #   run: yarn jest
-
-  # deploy:
-  #   runs-on: self-hosted
-  #     needs: build
-  #     if: github.ref == 'refs/heads/dev'
-
-  #     steps:
-  #       - name: Install dependencies
-  #         run: yarn install
