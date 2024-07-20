@@ -25,7 +25,7 @@ jobs:
         run: yarn test
 
       - name: buld the dist
-        run: yarn build
+        run: yarn build --passWithNoTests
 
       - name: setup service file
         run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
