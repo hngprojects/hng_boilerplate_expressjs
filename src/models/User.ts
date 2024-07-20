@@ -32,6 +32,9 @@ export class User extends ExtendedBaseEntity {
   @Column()
   password: string;
 
+  @Column({ nullable: true })
+  refreshToken?: string;
+
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   @JoinColumn()
   profile: Profile;
