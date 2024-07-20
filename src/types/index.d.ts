@@ -1,11 +1,6 @@
-// we know the drill
+import { User } from "../models";
 
-// only global types or interfaces are allowed
-
-type log = {
-  info: (message: string) => void;
-};
-
-interface Log {
-  info: (message: string) => void;
+export interface IUserService {
+  getUserById(id: string): Promise<User | null>;
+  getAllUsers(): Promise<User[]>;
 }
