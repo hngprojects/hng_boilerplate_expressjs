@@ -4,19 +4,19 @@ import TestimonialsController from "../controllers/TestimonialsController";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { validateTestimonial } from "../middleware/testimonial.validation";
 
-const testimonialRouter = Router();
+const testimonialRoute = Router();
 const testimonialController = new TestimonialsController();
 
-testimonialRouter.post(
+testimonialRoute.post(
   "/testimonials",
   authMiddleware,
   validateTestimonial,
   testimonialController.createTestimonial.bind(testimonialController)
 );
-testimonialRouter.get(
+testimonialRoute.get(
   "/testimonials/:testimonial_id",
   authMiddleware,
   testimonialController.getTestimonial.bind(testimonialController)
 );
 
-export default testimonialRouter;
+export { testimonialRoute };

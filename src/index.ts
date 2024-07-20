@@ -6,7 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, testimonialRouter } from "./routes";
+import { userRouter, authRoute, testimonialRoute } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 
 dotenv.config();
@@ -18,12 +18,7 @@ server.use(
   cors({
     origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Origin",
-      "X-Requested-With",
-      "Content-Type",
-      "Authorization",
-    ],
+    allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Authorization"],
   })
 );
 server.use(express.json());
@@ -34,6 +29,7 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1", testimonialRoute);
 server.use(routeNotFound);
 server.use(errorHandler);
 
@@ -44,9 +40,6 @@ AppDataSource.initialize()
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
     });
-    server.use("/api/v1", userRouter);
-    server.use("/api/v1", testimonialRouter);
-
 
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
