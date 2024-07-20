@@ -9,11 +9,11 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const port = config.port
+const port = config.port;
 const server: Express = express();
 AppDataSource.initialize()
   .then(async () => {
-    // seed().catch(log.error);
+    seed().catch(log.error);
     server.use(express.json());
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
