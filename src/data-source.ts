@@ -9,13 +9,13 @@ export const AppDataSource = new DataSource({
   username: config.DB_USER,
   password: config.DB_PASSWORD,
   database: config.DB_NAME,
-  synchronize: true,
+  synchronize: false,
   logging: false,
   entities: ["src/models/**/*.ts"],
-  ssl: false,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // ssl: false,
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
