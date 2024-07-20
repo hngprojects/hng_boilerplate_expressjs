@@ -1,48 +1,93 @@
-import * as bcrypt from "bcryptjs"
 import { AppDataSource } from "../data-source";
-import { User, Profile } from "../models"
-import { Request, Response } from "express";
-import { generateAccessToken } from "../utils/token";
+import { User, Profile, Organization } from "../models";
+import { IAuthService, IUserSignUp } from "../types";
+import { Conflict, HttpError } from "../middleware";
+import { hashPassword, generateNumericOTP } from "../utils";
+import { Sendmail } from "../utils/mail";
+import jwt from "jsonwebtoken";
+import { compilerOtp } from "../views/welcome";
+import config from "../config";
 
-export const register = async (req: Request, res: Response) => {
-  const { firstName, lastName, email, password, phone, role } = req.body;
-  
-  const findUser = await AppDataSource.manager.find(email);
-  if (findUser) {
-    return res.status(422).json({
-      statusCode: 422,
-      message: "User already exists"
-    })
+export class AuthService implements IAuthService {
+  public async signUp(payload: IUserSignUp): Promise<{
+    mailSent: string;
+    newUser: Partial<User>;
+    access_token: string;
+  }> {
+    const { firstName, lastName, email, password, phone } = payload;
+
+    try {
+      const userExists = await User.findOne({
+        where: { email },
+      });
+
+      if (userExists) {
+        throw new Conflict("User already exists");
+      }
+      const hashedPassword = await hashPassword(password);
+      const otp = generateNumericOTP(6);
+      const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const user = new User();
+      user.name = `${firstName} ${lastName}`;
+      user.email = email;
+      user.password = hashedPassword;
+      user.profile = new Profile();
+      user.profile.phone = phone;
+      user.profile.first_name = firstName;
+      user.profile.last_name = lastName;
+      user.profile.avatarUrl = "";
+      user.otp = parseInt(otp);
+      user.otp_expires_at = otpExpires;
+
+      const createdUser = await AppDataSource.manager.save(user);
+      const access_token = jwt.sign(
+        { userId: createdUser.id },
+        config.TOKEN_SECRET,
+        {
+          expiresIn: "1d",
+        }
+      );
+
+      const mailSent = await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "OTP VERIFICATION",
+        html: compilerOtp(parseInt(otp), user.name),
+      });
+
+      const { password: _, ...rest } = createdUser;
+
+      return { mailSent, newUser: rest, access_token };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
   }
-  
-  const salt = await bcrypt.genSalt();
-  const hashedPassword = await bcrypt.hash(password, salt);
+  public async verifyEmail(
+    token: string,
+    otp: number
+  ): Promise<{ message: string }> {
+    try {
+      const decoded: any = jwt.verify(token, config.TOKEN_SECRET);
+      const userId = decoded.userId;
 
-  const access_token = await generateAccessToken(email);
+      const user = await User.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
 
-  const user = new User();
-  user.name = `${firstName} ${lastName}`;
-  user.email = email;
-  user.password = hashedPassword;
-  user.profile = new Profile();
-  user.profile.phone = phone;
-  user.profile.first_name = firstName;
-  user.profile.last_name = lastName;
-  user.role = role;
+      if (user.otp !== otp || user.otp_expires_at < new Date()) {
+        throw new HttpError(400, "Invalid OTP ");
+      }
 
-  const userProfile = await AppDataSource.manager.save({
-    user,
-  });
+      user.isverified = true;
+      await AppDataSource.manager.save(user);
 
-  const data = {
-    user_id: userProfile.user.id,
-    first_name: userProfile.user.name[0],
-    last_name: userProfile.user.name[1],
-    email: userProfile.user.email,
-    phone: userProfile.user.profile.phone,
-    role: userProfile.user.role,
-    access_token: access_token,
+      return { message: "Email successfully verified" };
+    } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        throw new HttpError(400, "Verification token has expired");
+      }
+      throw new HttpError(error.status || 500, error.message || error);
+    }
   }
-
-  return res.status(201).json({data});
 }
