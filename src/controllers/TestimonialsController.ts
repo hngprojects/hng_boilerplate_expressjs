@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Testimonial } from "../models/Testimonial";
 
 export default class TestimonialsController {
