@@ -8,13 +8,10 @@ import {
   Unique,
   JoinTable,
   JoinColumn,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Profile } from "./Profile";
-import { Product } from "./Product";
-import { Organization } from "./Organization";
+import { Profile, Product, Organization } from ".";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";

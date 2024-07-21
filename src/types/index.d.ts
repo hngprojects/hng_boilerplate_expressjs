@@ -13,7 +13,7 @@ export interface IRole {
   role: "super_admin" | "admin" | "user";
 }
 
-interface IUserSignUp {
+export interface IUserSignUp {
   firstName: string;
   lastName: string;
   email: string;
@@ -21,8 +21,13 @@ interface IUserSignUp {
   phone: string;
 }
 
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
 export interface IAuthService {
-  // login(email: string, password: string): Promise<User>;
+  login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }

@@ -1,3 +1,4 @@
+// src/index.ts
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 import log from "./utils/logger";
