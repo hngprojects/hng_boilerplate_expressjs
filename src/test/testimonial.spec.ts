@@ -29,6 +29,7 @@ describe("TestimonialsController", () => {
 			create: jest.fn(),
 			save: jest.fn(),
 			findOne: jest.fn(),
+			findAndCount: jest.fn(),
 		};
 
 		(AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepository);
@@ -141,11 +142,9 @@ describe("TestimonialsController", () => {
 		});
 	});
 
-  
 	describe("GET /api/v1/testimonials", () => {
-		let mockFindAndCount;
-		beforeAll(() => {
-			mockFindAndCount = jest.fn().mockReturnValue([
+		it("should fetch all testimonials", async () => {
+			mockRepository.findAndCount.mockReturnValue([
 				[
 					{
 						id: 1,
@@ -167,57 +166,103 @@ describe("TestimonialsController", () => {
 				2,
 			]);
 
-			AppDataSource.getRepository.mockReturnValue({
-				findAndCount: mockFindAndCount,
+			mockRequest.query = { page: "1" };
+			mockRequest.user = { id: 1 };
+
+			await testimonialsController.getAllTestimonials(
+				mockRequest as Request,
+				mockResponse as Response
+			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(200);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				message: "Testimonials retrieved successfully",
+				status_code: 200,
+				data: [
+					{
+						id: 1,
+						client_name: "John Doe",
+						client_designation: "CEO",
+						testimonial: "Great service!",
+						rating: 5,
+						date: new Date(),
+					},
+					{
+						id: 2,
+						client_name: "Jane Smith",
+						client_designation: "CTO",
+						testimonial: "Excellent product!",
+						rating: 4,
+						date: new Date(),
+					},
+				],
+				pagination: {
+					current_page: 1,
+					per_page: 3,
+					total_pages: 1,
+					total_testimonials: 2,
+				},
 			});
-		});
-
-		it("should fetch all testimonials", async () => {
-			const response = await request(app)
-				.get("/api/v1/testimonials?page=1")
-				.set("Authorization", "Bearer valid_token"); // Mock a valid token
-
-			expect(response.status).toBe(200);
-			expect(response.body).toHaveProperty("data");
-			expect(response.body.data).toHaveLength(2);
-			expect(response.body.pagination).toHaveProperty("current_page", 1);
 		});
 
 		it("should handle pagination correctly", async () => {
-			const response = await request(app)
-				.get("/api/v1/testimonials?page=2")
-				.set("Authorization", "Bearer valid_token"); // Mock a valid token
+			mockRepository.findAndCount.mockReturnValue([[], 0]);
 
-			expect(response.status).toBe(200);
-			expect(response.body).toHaveProperty("data");
-			expect(response.body.data).toHaveLength(0);
-			expect(response.body.pagination).toHaveProperty("current_page", 2);
+			mockRequest.query = { page: "2" };
+			mockRequest.user = { id: 1 };
+
+			await testimonialsController.getAllTestimonials(
+				mockRequest as Request,
+				mockResponse as Response
+			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(200);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				message: "Testimonials retrieved successfully",
+				status_code: 200,
+				data: [],
+				pagination: {
+					current_page: 2,
+					per_page: 3,
+					total_pages: 0,
+					total_testimonials: 0,
+				},
+			});
 		});
 
 		it("should return 401 if no token is provided", async () => {
-			const response = await request(app).get("/api/v1/testimonials?page=1");
+			mockRequest.query = { page: "1" };
 
-			expect(response.status).toBe(401);
-			expect(response.body).toHaveProperty(
-				"message",
-				"Authentication required"
+			await testimonialsController.getAllTestimonials(
+				mockRequest as Request,
+				mockResponse as Response
 			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(401);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				message: "Authentication required",
+				status_code: 401,
+			});
 		});
 
 		it("should return 500 if there is a server error", async () => {
-			mockFindAndCount.mockImplementationOnce(() => {
+			mockRepository.findAndCount.mockImplementationOnce(() => {
 				throw new Error("Database error");
 			});
 
-			const response = await request(app)
-				.get("/api/v1/testimonials?page=1")
-				.set("Authorization", "Bearer valid_token"); // Mock a valid token
+			mockRequest.query = { page: "1" };
+			mockRequest.user = { id: 1 };
 
-			expect(response.status).toBe(500);
-			expect(response.body).toHaveProperty(
-				"message",
-				"Error retrieving testimonials"
+			await testimonialsController.getAllTestimonials(
+				mockRequest as Request,
+				mockResponse as Response
 			);
+
+			expect(mockResponse.status).toHaveBeenCalledWith(500);
+			expect(mockResponse.json).toHaveBeenCalledWith({
+				message: "Error retrieving testimonials",
+				status_code: 500,
+			});
 		});
 	});
 });
