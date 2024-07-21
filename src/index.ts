@@ -6,10 +6,11 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, testimonialRoute } from "./routes";
-import { notificationRouter } from "./routes/notificationsettings";
+import { userRouter, authRoute, testimonialRoute, notificationRouter } from "./routes";
 
 import { routeNotFound, errorHandler } from "./middleware";
+import { seed } from "./seeder";
+import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 
@@ -28,7 +29,7 @@ server.use(
       "Content-Type",
       "Authorization",
     ],
-  })
+  }),
 );
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -36,7 +37,7 @@ server.use(express.json());
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
-server.use("/api/v1", userRouter);
+server.use("/api/v1", userRouter, orgRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
