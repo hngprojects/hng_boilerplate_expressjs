@@ -1,25 +1,20 @@
-import { User, BlogPost } from "../models";
+import { User, Blog } from "../models";
 
 
 export interface PaginatedBlogResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: BlogPost[];
+  results: Blog[];
 }
 
 export interface IBlogService {
-  
   getPaginatedBlogPosts(page: number, pageSize: number): Promise<PaginatedBlogResponse>;
 }
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
   getAllUsers(): Promise<User[]>;
-}
-
-export interface IOrgService {
-  removeUser(org_id: string, user_id: string): Promise<User | null>;
 }
 
 export interface IRole {
@@ -43,10 +38,4 @@ export interface IAuthService {
   login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
-}
-
-declare module "express-serve-static-core" {
-  interface Request {
-    user?: User;
-  }
 }

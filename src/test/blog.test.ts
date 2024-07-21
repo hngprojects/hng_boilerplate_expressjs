@@ -3,7 +3,7 @@ import request from 'supertest';
 import { AppDataSource } from '../data-source';
 import { beforeAll, afterAll, describe, it, expect, jest } from '@jest/globals';
 import server from '../index';
-import { BlogPost } from '../models';
+import { Blog } from '../models';
 
 beforeAll(async () => {
   await AppDataSource.initialize();
@@ -36,7 +36,7 @@ describe('GET /api/v1/blogs', () => {
   });
 
   it('should return an empty list if no blog posts are present', async () => {
-    await AppDataSource.getRepository(BlogPost).clear();
+    await AppDataSource.getRepository(Blog).clear();
 
     const response = await request(server).get('/api/v1/blogs?page=1&page_size=10');
     expect(response.status).toBe(200);

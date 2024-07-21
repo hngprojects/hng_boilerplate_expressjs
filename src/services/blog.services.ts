@@ -1,12 +1,12 @@
-import { User, BlogPost } from "../models";
+import { Blog } from "../models";
 import { IBlogService } from "../types";
 import { AppDataSource } from '../data-source';
 
 export class BlogService implements IBlogService {
-    private blogPostRepository = AppDataSource.getRepository(BlogPost);
+    private blogRepository = AppDataSource.getRepository(Blog);
     
     async getPaginatedBlogPosts(page: number = 1, pageSize: number = 10): Promise<{ count: number, next: string | null, previous: string | null, results: BlogPost[] }> {
-        const [results, count] = await this.blogPostRepository.findAndCount({
+        const [results, count] = await this.blogRepository.findAndCount({
             relations: ['author'],
             skip: (page - 1) * pageSize,
             take: pageSize,
