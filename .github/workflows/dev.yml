@@ -3,7 +3,7 @@ name: Build, Test, and Deploy for Dev Branch
 on:
   push:
     branch:
-      - dev
+      - main
 
 jobs:
   build:
