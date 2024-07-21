@@ -1,4 +1,3 @@
-import { getRepository } from "typeorm";
 import { OrganisationInvitation, Organization } from "../models";
 import { User } from "../models";
 import { UserRole } from "../enums/userRoles";
@@ -18,31 +17,38 @@ const createInvitationService = async (org_id: string, user_id: string) => {
 
   const user = await AppDataSource.getRepository(User).findOne({
     where: {
-      id: user_id
-    }
+      id: user_id,
+    },
   });
   if (!user) {
     throw new Error("User not found");
   }
-  
+
   const invitation_link = `invite-${organization.id}-${Date.now()}`;
-  const invitation = AppDataSource.getRepository(OrganisationInvitation).create({
-    invitation_link,
-    org_id,
-    user_id,
-    organization,
-    user,
-  });
+  const invitation = AppDataSource.getRepository(OrganisationInvitation).create(
+    {
+      invitation_link,
+      org_id,
+      user_id,
+      organization,
+      user,
+    }
+  );
   await AppDataSource.getRepository(OrganisationInvitation).save(invitation);
   return invitation_link;
 };
 
-const deactivateInvitationService = async (invitation_link: string, user_id: string) => {
+const deactivateInvitationService = async (
+  invitation_link: string,
+  user_id: string
+) => {
   if (!invitationLinkPattern.test(invitation_link)) {
     throw new Error("Invalid invitation link format");
   }
 
-  const invitation = await AppDataSource.getRepository(OrganisationInvitation).findOne({
+  const invitation = await AppDataSource.getRepository(
+    OrganisationInvitation
+  ).findOne({
     where: { invitation_link },
   });
   if (!invitation) {
@@ -56,8 +62,8 @@ const deactivateInvitationService = async (invitation_link: string, user_id: str
 
   const organization = await AppDataSource.getRepository(Organization).findOne({
     where: {
-      id: invitation.org_id
-    }
+      id: invitation.org_id,
+    },
   });
   if (!organization) {
     throw new Error("Organization not found");
@@ -65,17 +71,22 @@ const deactivateInvitationService = async (invitation_link: string, user_id: str
 
   const user = await AppDataSource.getRepository(User).findOne({
     where: {
-      id: user_id
-    }
+      id: user_id,
+    },
   });
   if (!user) {
     throw new Error("User not found");
   }
 
   const authorized_roles = [UserRole.ADMIN, UserRole.SUPER_ADMIN];
-  if (invitation.user_id !== user_id && !authorized_roles.find(role => role === user.role)) {
-    throw new Error("User is not authorized to deactivate this invitation link");
-  }  
+  if (
+    invitation.user_id !== user_id &&
+    !authorized_roles.find((role) => role === user.role)
+  ) {
+    throw new Error(
+      "User is not authorized to deactivate this invitation link"
+    );
+  }
 
   invitation.is_active = false;
   invitation.deactivated_at = new Date();

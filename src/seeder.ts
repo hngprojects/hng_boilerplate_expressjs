@@ -1,12 +1,17 @@
 // import { AppDataSource } from "./data-source";
 // import { UserRole } from "./enums/userRoles";
-// import { User, Organization, Product, Profile, OrganisationInvitation } from "./models";
+// import {
+//   User,
+//   Organization,
+//   Product,
+//   Profile,
+//   OrganisationInvitation,
+// } from "./models";
 // import log from "./utils/logger";
 
 // const seed = async () => {
 //   try {
 //     log.info("Starting the seeding process...");
-
 //     // Create users with dummy OTP and other default values
 //     const user1 = new User();
 //     user1.name = "John Doe";

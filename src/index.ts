@@ -34,13 +34,13 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRoute);
-server.use("/api/v1/invite", inviteRoute)
+server.use("/api/v1/invite", inviteRoute);
 server.use(routeNotFound);
 server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
-    server.listen(port, () => {
+    server.listen(port, async () => {
       log.info(`Server is listening on port ${port}`);
     });
   })
