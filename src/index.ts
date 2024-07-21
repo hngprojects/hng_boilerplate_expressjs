@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { userRouter, authRoute } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
+import { passportRoute } from "./facebookOauth/passport";
 
 dotenv.config();
 
@@ -34,6 +35,7 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("api/v1/", passportRoute);
 server.use(routeNotFound);
 server.use(errorHandler);
 

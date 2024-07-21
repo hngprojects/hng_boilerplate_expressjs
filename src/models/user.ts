@@ -70,4 +70,7 @@ export class User extends ExtendedBaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column()
+  facebookId: number;
 }

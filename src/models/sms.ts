@@ -21,7 +21,7 @@ export class Sms extends ExtendedBaseEntity {
 
   @Column()
   @ManyToOne(() => User, (user) => user.id)
-  sender_id: User;
+  sender_id: number;
 
   @CreateDateColumn()
   createdAt: Date;
