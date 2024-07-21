@@ -29,15 +29,20 @@ export interface IAuthService {
 }
 
 
-//Orgnaization interfaces begins
-
-export interface IOrganizationCreation {
-  name: string
-  description: string
+export interface ICreateOrganisation {
+  name: string;
+  description: String,
+  email: string,
+  industry: string,
+  type: string,
+  country: string,
+  address: string,
+  state: string,
 }
 
-export interface IOrganizationService {
-  // deleteOrganization(id: string): Promise<Object>;
-  createOrganization(is: string, payload: IOrganizationCreation): Promise<Object>;
-  getOrganization(is: string): Promise<Object>;
+export interface IOrganisationService {
+  createOrganisation(payload: ICreateOrganisation, userId: string):
+  Promise<unknown>;
+  deleteOrganisation(id: string): Promise<Organization | null>;
+  getOrganisation(is: string): Promise<Organization | null>
 }

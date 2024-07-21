@@ -6,7 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, organizationRouter } from "./routes";
+import { userRouter, authRoute, organisationRoute } from "./routes";
 import { notificationRouter } from "./routes/notificationsettings"
 import { routeNotFound, errorHandler } from "./middleware";
 
@@ -34,12 +34,18 @@ server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
 
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
+server.get("/", (req: Request, res: Response) => {
+  res.send("Hello world");
+});
 server.use("/api/v1", userRouter);
+server.use("/api/v1", organisationRoute)
 server.use("/api/v1/auth", authRoute);
-server.use("/api/v1/organizations", organizationRouter)
 server.use(routeNotFound);
 server.use(errorHandler);
-server.use("/api/v1/settings", notificationRouter);
+
 
 AppDataSource.initialize()
   .then(async () => {

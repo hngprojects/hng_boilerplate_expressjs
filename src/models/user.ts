@@ -43,12 +43,12 @@ export class User extends ExtendedBaseEntity {
   @JoinColumn()
   profile: Profile;
 
-  @Column({
-    type: "enum",
-    enum: UserRole,
-    default: UserRole.USER,
-  })
-  role: UserRole;
+  // @Column({
+  //   type: "enum",
+  //   enum: UserRole,
+  //   default: UserRole.USER,
+  // })
+  // role: UserRole;
 
   @Column()
   otp: number;
@@ -60,9 +60,7 @@ export class User extends ExtendedBaseEntity {
   @JoinTable()
   products: Product[];
 
-  @OneToMany(() => UserOrganization, (userOrganization) => userOrganization.user, {
-    cascade: true,
-  })
+  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
   userOrganizations: UserOrganization[];
 
   @CreateDateColumn()

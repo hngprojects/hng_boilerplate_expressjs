@@ -1,19 +1,16 @@
-import {
-    Entity,
-    Column,
-    JoinColumn,
-    PrimaryColumn,
-    ManyToOne
-  } from "typeorm";
-  import { User, Organization } from ".";
+import { Entity, ManyToOne, Column, PrimaryColumn, JoinColumn } from 'typeorm';
+import { User } from "./user";
+import { Organization } from "./organization";
+import { UserRole } from '../enums/userRoles';
+import ExtendedBaseEntity from './extended-base-entity';
 
 @Entity()
-export class UserOrganization {
+export class UserOrganization extends ExtendedBaseEntity {
     @PrimaryColumn()
-    userId: number;
+    userId: string;
 
     @PrimaryColumn()
-    organizationId: number;
+    organizationId: string;
 
     @ManyToOne(() => User, user => user.userOrganizations)
     @JoinColumn({ name: 'userId' })
@@ -23,6 +20,9 @@ export class UserOrganization {
     @JoinColumn({ name: 'organizationId' })
     organization: Organization;
 
-    @Column()
-    role: string;
+    @Column({
+      type: "enum",
+      enum: UserRole,
+    })
+    role: UserRole;
 }
