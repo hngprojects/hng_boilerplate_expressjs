@@ -6,7 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute } from "./routes";
+import { userRouter, authRoute, inviteRoute } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 
 dotenv.config();
@@ -34,6 +34,7 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/invite", inviteRoute)
 server.use(routeNotFound);
 server.use(errorHandler);
 

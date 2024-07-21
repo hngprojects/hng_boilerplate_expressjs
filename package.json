@@ -9,7 +9,8 @@
     "test": "jest --passWithNoTests",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js"
+    "prod": "node dist/index.js",
+    "seed":"npx ts-node ./src/seeder.ts"
   },
   "keywords": [],
   "author": "",

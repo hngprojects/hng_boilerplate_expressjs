@@ -1,4 +1,5 @@
 import { User } from "../models";
+import { Request } from "express";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -26,4 +27,8 @@ export interface IAuthService {
   login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
+}
+
+export interface UserRequest extends Request{
+  user? : any
 }
