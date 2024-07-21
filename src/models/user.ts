@@ -11,7 +11,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { Profile, Product, Organization } from ".";
+import { Sms } from "./sms";
+import { Profile, Product, Organization } from "./";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
@@ -64,6 +65,9 @@ export class User extends ExtendedBaseEntity {
   })
   @JoinTable()
   organizations: Organization[];
+
+  @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
+  sms: Sms[];
 
   @CreateDateColumn()
   createdAt: Date;

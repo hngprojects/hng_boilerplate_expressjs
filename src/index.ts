@@ -8,6 +8,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { userRouter, authRoute } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
+import { seed } from "./seeder";
+import { orgRouter } from "./routes/organisation";
 
 dotenv.config();
 
@@ -32,13 +34,16 @@ server.use(express.json());
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
-server.use("/api/v1", userRouter);
+server.use("/api/v1", userRouter, orgRouter);
 server.use("/api/v1/auth", authRoute);
 server.use(routeNotFound);
 server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
+    // seed().then(() => {
+    //   log.info("Database seeded successfully");
+    // });
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
     });
