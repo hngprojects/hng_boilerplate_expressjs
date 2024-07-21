@@ -1,5 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { Request, Response, NextFunction } from "express";
+import { InvalidInput } from "./error";
 
 export const validateTestimonial = [
   body("client_name").notEmpty().withMessage("Client name is required"),
@@ -9,7 +10,7 @@ export const validateTestimonial = [
     const errors = validationResult(req);
     console.log(errors);
     if (!errors.isEmpty()) {
-      return res.status(422).json({ message: "Validation failed", status_code: 422, errors: errors.array() });
+      throw new InvalidInput("Validation failed");
     }
     next();
   },

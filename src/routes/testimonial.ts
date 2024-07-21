@@ -1,7 +1,7 @@
 // src/routes/user.ts
 import { Router } from "express";
 import TestimonialsController from "../controllers/TestimonialsController";
-import { authMiddleware } from "../middleware/authMiddleware";
+import { authMiddleware } from "../middleware";
 import { validateTestimonial } from "../middleware/testimonial.validation";
 
 const testimonialRoute = Router();
