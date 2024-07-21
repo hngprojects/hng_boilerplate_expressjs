@@ -52,7 +52,7 @@ passportRoute.get(
 );
 
 passportRoute.get(
-  "/auth/facebook/continue",
+  `${process.env.FB_CALLBACK_URL}`,
   passport.authenticate("facebook", { failureRedirect: "/login" }),
   (req: Request, res: Response) => {
     // Successful authentication, redirect home.
