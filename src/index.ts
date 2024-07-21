@@ -6,8 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, testimonialRoute } from "./routes";
-import { notificationRouter } from "./routes/notificationsettings";
+import { userRouter, authRoute, testimonialRoute, notificationRouter } from "./routes";
 
 import { routeNotFound, errorHandler } from "./middleware";
 import swaggerUi from "swagger-ui-express";
