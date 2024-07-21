@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
 class HttpError extends Error {
-  status: number;
+  status_code: number;
   success: boolean = false;
 
   constructor(statusCode: number, message: string) {
     super(message);
     this.name = this.constructor.name;
-    this.status = statusCode;
+    this.status_code = statusCode;
   }
 }
 
@@ -64,11 +64,11 @@ const errorHandler = (
   res: Response,
   _next: NextFunction
 ) => {
-  const { success, status, message } = err;
+  const { success, status_code, message } = err;
   const cleanedMessage = message.replace(/"/g, "");
-  res.status(status).json({
+  res.status(status_code).json({
     success,
-    status,
+    status_code,
     message: cleanedMessage,
   });
 };

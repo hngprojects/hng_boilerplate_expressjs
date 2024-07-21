@@ -5,4 +5,5 @@ export * from "./product";
 export * from "./helpcentertopic";
 export * from "./notification";
 export * from "./blog-post";
-
+export * from "./sms";
+export * from "./blog";

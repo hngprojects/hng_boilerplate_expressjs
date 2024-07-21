@@ -19,4 +19,10 @@ export const AppDataSource = new DataSource({
   //     rejectUnauthorized: false,
   //   },
   // },
+  ssl: false,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
