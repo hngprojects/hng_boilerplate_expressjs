@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { OrganizationService } from "../services/orgnaization.services";
-import log from "../utils/logger";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import { UserService } from "../services";
 import { User } from "../models";
+import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
+import log from "../utils/logger";
+import validator from 'validator';
 
 
 const organizationsService = new OrganizationService();
@@ -33,27 +35,15 @@ const createOrganization = async (req: Request, res: Response, next: NextFunctio
     try {
         const jwToken : string = req.headers?.authorization?.split(" ")[1];
         if (!jwToken) {
-            return res.status(401).json({
-                message: "Authentication Failed!",
-                error: "No authorization token",
-                status_code: 401
-            })
+            throw new Unauthorized("No auth token")
         }
         const userId = verifytoken(jwToken);
         if (!userId) {
-            return res.status(401).json({
-                message: "Authentication Failed!",
-                error: "Invalid token",
-                status_code: 401
-            })
+            throw new Unauthorized("Invalid Token")
         }
         const user = verifyUser(userId)
         if (!user) {
-            return res.status(400).json({
-                message: "Bad Request",
-                error: "Invalid User",
-                status_code: 400
-            })
+            throw new Unauthorized("Invalid User")
         }
         const newOrganization = await organizationsService.createOrganization(userId, req.body)
         res.status(201).json({
@@ -61,57 +51,41 @@ const createOrganization = async (req: Request, res: Response, next: NextFunctio
             status_code: "201",
             data: newOrganization
         })
-    } catch(err) {
-        log.error(err)
+    } catch(error) {
+        next(error)
     }
 }
 
 const deleteOrganization = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { orgId } = req.params;
+        if (!validator.isUUID(orgId)) {
+            throw new BadRequest("Invalid organization ID");
+        }
         const jwToken : string = req.headers.authorization?.split(" ")[1];
         if (!jwToken) {
-            return res.status(401).json({
-                message: "Authentication Failed!",
-                error: "No authorization token",
-                status_code: 401
-            })
+            throw new Unauthorized("No auth token")
         }
         const userId = await verifytoken(jwToken);
         if (!userId) {
-            return res.status(401).json({
-                message: "Authentication Failed!",
-                error: "Invalid token",
-                status_code: 401
-            })
+            throw new Unauthorized("Invalid Token")
         }
         const organizationExist = await organizationsService.getOrganization(orgId)
         if (!organizationExist) {
-            return res.status(404).json({
-                message: "Bad request",
-                error: "Organization not found",
-                status_code: 404
-            })
+            throw new ResourceNotFound("Invalid organization ID");
         }
         const user = await verifyUser(userId)
         if (!user) {
-            return res.status(400).json({
-                message: "Bad Request",
-                error: "Invalid User",
-                status_code: 400
-            })
+            throw new Unauthorized("Invalid User")
         }
         const isUserOrganization = user.organizations.find(org => org.id === orgId);
-        if (!isUserOrganization && user.role !== 'admin') {
-            return res.status(401).json({
-                message: "Bad Request",
-                error: "You cannot delete this organization",
-                status_code: 401
-            })
+        if (!isUserOrganization && (user.role !== 'admin')) {
+            throw new Unauthorized("User not authorized to delete this organization")
         }
         await organizationsService.deleteOrganization(orgId)
         res.status(200).json({
-            message: "Organization deleted successfully"
+            message: "Organization deleted successfully",
+            status_code: 204
         })
     } catch (error) {
         next(error);

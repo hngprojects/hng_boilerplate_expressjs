@@ -1,6 +1,6 @@
 // src/routes/user.ts
 import { Router } from "express";
-import { createOrganization, deleteOrganization } from "../controllers";
+import { deleteOrganization, createOrganization  } from "../controllers";
 
 const organizationRouter = Router();
 
