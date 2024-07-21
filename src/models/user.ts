@@ -16,6 +16,7 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
+import { UserOrganization } from "./userOrganization";
 
 @Entity()
 @Unique(["email"])
@@ -59,11 +60,10 @@ export class User extends ExtendedBaseEntity {
   @JoinTable()
   products: Product[];
 
-  @ManyToMany(() => Organization, (organization) => organization.users, {
+  @OneToMany(() => UserOrganization, (userOrganization) => userOrganization.user, {
     cascade: true,
   })
-  @JoinTable()
-  organizations: Organization[];
+  userOrganizations: UserOrganization[];
 
   @CreateDateColumn()
   createdAt: Date;

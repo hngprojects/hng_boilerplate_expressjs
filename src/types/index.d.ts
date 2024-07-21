@@ -37,7 +37,7 @@ export interface IOrganizationCreation {
 }
 
 export interface IOrganizationService {
-  deleteOrganization(id: string): Promise<Object>;
+  // deleteOrganization(id: string): Promise<Object>;
   createOrganization(is: string, payload: IOrganizationCreation): Promise<Object>;
-  getOrganization(is: string, payload: IOrganizationCreation): Promise<Object>;
+  getOrganization(is: string): Promise<Object>;
 }

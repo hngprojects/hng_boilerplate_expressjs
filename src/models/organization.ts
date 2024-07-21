@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinTable } from "typeorm";
 import { User } from "./user";
 import ExtendedBaseEntity from "./extended-base-entity";
+import { UserOrganization } from "./userOrganization";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -13,6 +14,8 @@ export class Organization extends ExtendedBaseEntity {
   @Column()
   description: string;
 
-  @ManyToMany(() => User, (user) => user.organizations)
-  users: User[];
+  @OneToMany(() => UserOrganization, (userOrganization) => userOrganization.user, {
+    cascade: true,
+  })
+  userOrganizations: UserOrganization[];
 }

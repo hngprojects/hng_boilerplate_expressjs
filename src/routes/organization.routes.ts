@@ -1,6 +1,7 @@
 // src/routes/user.ts
 import { Router } from "express";
 import { deleteOrganization, createOrganization  } from "../controllers";
+import { authenticateJWT } from "../middleware/auth";
 
 const organizationRouter = Router();
 
@@ -10,7 +11,7 @@ organizationRouter.get("/", (req, res) => {
     })
 })
 
-organizationRouter.delete("/:orgId", deleteOrganization);
-organizationRouter.post("/", createOrganization);
+organizationRouter.delete("/:orgId", authenticateJWT, deleteOrganization);
+organizationRouter.post("/", authenticateJWT, createOrganization);
 
 export { organizationRouter };

@@ -7,6 +7,7 @@ import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
 import { userRouter, authRoute, organizationRouter } from "./routes";
+import { notificationRouter } from "./routes/notificationsettings"
 import { routeNotFound, errorHandler } from "./middleware";
 
 dotenv.config();
@@ -38,6 +39,7 @@ server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/organizations", organizationRouter)
 server.use(routeNotFound);
 server.use(errorHandler);
+server.use("/api/v1/settings", notificationRouter);
 
 AppDataSource.initialize()
   .then(async () => {
@@ -48,3 +50,4 @@ AppDataSource.initialize()
   .catch((error) => console.error(error));
 
 export default server;
+
