@@ -1,5 +1,5 @@
 import * as bcrypt from "bcryptjs";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import config from "../config";
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
@@ -9,8 +9,15 @@ export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
 }
 
+export async function comparePassword(
+  password: string,
+  hashedPassword: string
+): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword);
+}
+
 export async function generateAccessToken(user_id: string) {
-  return jwt.sign(user_id, config.TOKEN_SECRET, { expiresIn: 60 });
+  return jwt.sign({ user_id }, config.TOKEN_SECRET, { expiresIn: "1d" });
 }
 
 export const generateNumericOTP = (length: number): string => {
@@ -19,4 +26,17 @@ export const generateNumericOTP = (length: number): string => {
     otp += Math.floor(Math.random() * 9 + 1).toString();
   }
   return otp;
+};
+
+export const generateToken = (payload: Record<string, unknown>) => {
+  return jwt.sign(payload, config.TOKEN_SECRET, { expiresIn: "1h" });
+};
+
+export const verifyToken = (token: string): Record<string, unknown> | null => {
+  try {
+    const payload = jwt.verify(token, config.TOKEN_SECRET);
+    return payload as Record<string, unknown>;
+  } catch (error) {
+    throw new Error("Invalid token");
+  }
 };

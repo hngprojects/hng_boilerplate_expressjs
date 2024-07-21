@@ -4,13 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  ManyToOne,
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
-import { User } from ".";
 
 @Entity()
-export class Article extends ExtendedBaseEntity {
+export class HelpCenterTopic extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -20,8 +18,8 @@ export class Article extends ExtendedBaseEntity {
   @Column()
   content: string;
 
-  @ManyToOne(() => User, (user) => user.articles)
-  author: User;
+  @Column()
+  author: string;
 
   @CreateDateColumn()
   createdAt: Date;

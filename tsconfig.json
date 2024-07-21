@@ -2,14 +2,16 @@
   "compilerOptions": {
     "lib": ["es5", "es6"],
     "target": "ES2020",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "outDir": "./build",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
+    "skipLibCheck": true,
     "typeRoots": ["src/types"]
-  }
+  },
+  "include": ["src/**/*", "config"]
 }
