@@ -9,6 +9,8 @@ import cors from "cors";
 import { userRouter, authRoute } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 import { passportRoute } from "./facebookOauth/passport";
+import passport from "passport";
+import session from "express-session";
 
 dotenv.config();
 
@@ -38,6 +40,16 @@ server.use("/api/v1/auth", authRoute);
 server.use("api/v1/", passportRoute);
 server.use(routeNotFound);
 server.use(errorHandler);
+
+server.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+server.use(passport.initialize());
+server.use(passport.session());
 
 AppDataSource.initialize()
   .then(async () => {
