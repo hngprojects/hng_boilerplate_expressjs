@@ -1,11 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthService } from "../services";
 
-import { AuthService } from "../services"; 
-
-/*
- *TODO: add validation
- */
 const authService = new AuthService();
+
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { mailSent, newUser, access_token } = await authService.signUp(
@@ -27,4 +24,13 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp, verifyOtp };
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { access_token, user } = await authService.login(req.body);
+    res.status(200).json({ access_token, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signUp, verifyOtp, login };

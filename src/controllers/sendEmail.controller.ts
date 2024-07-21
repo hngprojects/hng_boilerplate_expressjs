@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
 import { EmailService } from '../services';
 import { EmailQueuePayload } from '../types';
-import { ServerError ,BadRequest } from '../middleware';
-import { STATUS_CODES } from 'http';
-import { stat } from 'fs';
+import { ServerError ,BadRequest } from '../middleware'; 
 
 
 const emailService = new EmailService();
@@ -13,11 +11,11 @@ export const SendEmail = async (req: Request, res: Response) => {
   const { template_id, recipient, variables } = req.body;
   const payload: EmailQueuePayload = { templateId: template_id, recipient, variables };
   if (!template_id || !recipient || !variables) {
-    const response = {
-      StatusCode: 400,  
-      error: 'Invalid input. Please provide template_id, recipient, and variables.',
-    };
-    res.status(400).json(response);
+    // const response = {
+    //   StatusCode: 400,  
+    //   error: 'Invalid input. Please provide template_id, recipient, and variables.',
+    // };
+    res.status(400).json(new BadRequest('Invalid input. Please provide template_id, recipient, and variables.'));
     return;
   }
 
