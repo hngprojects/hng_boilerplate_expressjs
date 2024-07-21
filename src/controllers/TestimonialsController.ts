@@ -137,10 +137,10 @@ export default class TestimonialsController {
 
 	/**
 	 * @swagger
-	 * api/v1/testimonials?page=
+	 * api/v1/testimonials?page=:
 	 *   get:
 	 *     summary: Get all testimonials
-	 *     tags:[Testimonials]
+	 *     tags: [Testimonials]
 	 *     parameters:
 	 *       - in: query
 	 *         name: page
@@ -153,7 +153,7 @@ export default class TestimonialsController {
 	 *       200:
 	 *         description: Testimonials retrieved successfully
 	 *         content:
-	 *           application/json
+	 *           application/json:
 	 *           schema:
 	 *             type: object
 	 *             properties:
