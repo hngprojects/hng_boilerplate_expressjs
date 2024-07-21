@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Testimonial } from "../models/Testimonial";
 import TestimonialsController from "../controllers/TestimonialsController";
 
