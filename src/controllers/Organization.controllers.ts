@@ -5,7 +5,6 @@ import config from "../config";
 import { UserService } from "../services";
 import { User } from "../models";
 import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
-import log from "../utils/logger";
 import validator from 'validator';
 
 
@@ -60,7 +59,7 @@ const deleteOrganization = async (req: Request, res: Response, next: NextFunctio
     try {
         const { orgId } = req.params;
         if (!validator.isUUID(orgId)) {
-            throw new BadRequest("Invalid organization ID");
+            throw new BadRequest("Invalid organization ID format");
         }
         const jwToken : string = req.headers.authorization?.split(" ")[1];
         if (!jwToken) {
