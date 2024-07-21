@@ -7,6 +7,8 @@ import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
 import { userRouter, authRoute, testimonialRoute } from "./routes";
+import { notificationRouter } from "./routes/notificationsettings";
+
 import { routeNotFound, errorHandler } from "./middleware";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
@@ -40,6 +42,7 @@ server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
+server.use("/api/v1/settings", notificationRouter);
 
 AppDataSource.initialize()
   .then(async () => {
