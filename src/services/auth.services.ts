@@ -59,6 +59,9 @@ export class AuthService implements IAuthService {
 
       return { mailSent, newUser: rest, access_token };
     } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
