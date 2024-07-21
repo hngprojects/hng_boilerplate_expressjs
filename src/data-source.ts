@@ -11,14 +11,10 @@ export const AppDataSource = new DataSource({
   synchronize: false,
   logging: false,
   entities: ['src/models/**/*.ts'],
-
-  ssl: {
-    rejectUnauthorized: false, // Set to true if your database has a valid SSL certificate
+  ssl: false,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
   },
-  // ssl: false,
-  // extra: {
-  //   ssl: {
-  //     rejectUnauthorized: false,
-  //   },
-  // },
 });
