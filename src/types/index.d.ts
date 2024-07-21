@@ -22,3 +22,7 @@ export interface IAuthService {
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }
+
+export interface IOrganizationService {
+  deleteOrganization(id: string): Promise<Object>;
+}
