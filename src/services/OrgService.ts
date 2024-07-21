@@ -1,6 +1,6 @@
-import { Organization } from "../models/Organization";
+import { Organization } from "../models/organization";
 import { AppDataSource } from "../data-source";
-import { User } from "../models/User";
+import { User } from "../models/user";
 import { IOrgService, IUserService } from "../types";
 
 export class OrgService implements IOrgService {
