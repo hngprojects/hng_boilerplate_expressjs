@@ -15,9 +15,9 @@ export class EmailService {
     const emailContent = {
       from:  config.SMTP_USER,
       to: payload.recipient,
-      subject: 'Your Subject Here',
-      text: 'Your email body here',
-      html: '<b>Your email body here</b>'
+      subject: 'Email subject',
+      text: 'Message to be replace with the templete',
+      html: '<b>Message to be replace with the templete</b>'
     };
     
     await emailQueue.add(emailContent);
@@ -32,7 +32,7 @@ export class EmailService {
 
     
     try {
-      // await Sendmail(emailContent);
+  
     } catch (error) {
       console.error('Error in sending email:', error);
       throw new Error('Failed to send email');
