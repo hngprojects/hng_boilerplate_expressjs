@@ -13,6 +13,10 @@ jobs:
         working-directory: /var/www/aihomework/dev
 
     steps:
+    - name: Stash any local changes
+        id: stash
+        run: git stash
+        
       - name: Pull from github
         id: pull
         run: |
