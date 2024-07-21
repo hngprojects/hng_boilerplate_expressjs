@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { User } from "./user";

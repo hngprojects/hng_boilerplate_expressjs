@@ -7,6 +7,10 @@ export interface IUserService {
   getAllUsers(): Promise<User[]>;
 }
 
+export interface IOrgService {
+  removeUser(org_id: string, user_id: string): Promise<User | null>;
+}
+
 export interface IRole {
   role: "super_admin" | "admin" | "user";
 }
@@ -30,6 +34,8 @@ export interface IAuthService {
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }
 
-interface Request {
-  user?: User;
-}
+// declare module "express-serve-static-core" {
+//   interface Request {
+//     user?: User;
+//   }
+// }
