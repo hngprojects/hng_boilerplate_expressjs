@@ -1,12 +1,16 @@
 // src/routes/user.ts
 import { Router } from "express";
-import UserController from "../controllers/UserController";
-import Orga
+import { createOrganization, deleteOrganization } from "../controllers";
 
-const userRouter = Router();
-const userController = new UserController();
+const organizationRouter = Router();
 
-userRouter.get("/users", userController.getAllUsers.bind(userController));
-userRouter.get("/users/:id", userController.getUser.bind(userController));
+organizationRouter.get("/", (req, res) => {
+    res.json({
+        message: "Hello world"
+    })
+})
 
-export { userRouter };
+organizationRouter.delete("/:orgId", deleteOrganization);
+organizationRouter.post("/", createOrganization);
+
+export { organizationRouter };
