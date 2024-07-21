@@ -10,7 +10,7 @@ export const authenticateJWT = (req: Request, res: Response, next: NextFunction)
     if (authHeader) {
         const token = authHeader.split(' ')[1];
 
-        jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        jwt.verify(token, process.env.AUTH_SECRET, (err, user) => {
             if (err) {
                 return res.status(400).json({ message: "JWT token is invalid.", status: 400 });
             }
