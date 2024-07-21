@@ -10,6 +10,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
+    "skipLibCheck": true,
+    "include": ["src/**/*"],
     "typeRoots": ["src/types"]
   }
 }
