@@ -4,12 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
+    "start:dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest --passWithNoTests",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js"
+    "prod": "node dist/index.js",
+    "seed": "ts-node src/seeder.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +20,10 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^16.18.103",
     "@types/supertest": "^6.0.2",
-    "ts-node": "^10.9.1",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
   "dependencies": {
@@ -35,16 +39,15 @@
     "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "glob": "^11.0.0",
     "handlebars": "^4.7.8",
-    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
     "node-mailer": "^0.1.1",
     "pg": "^8.12.0",
     "pino": "^9.3.1",
     "pino-pretty": "^11.2.1",
     "reflect-metadata": "^0.1.14",
-    "supertest": "^7.0.0",
-    "ts-jest": "^29.2.3",
+    "rimraf": "^3.0.2",
     "ts-node-dev": "^2.0.0",
     "typeorm": "^0.3.20"
   }

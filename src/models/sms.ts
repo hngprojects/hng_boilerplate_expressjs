@@ -4,13 +4,13 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
-} from "typeorm";
-import ExtendedBaseEntity from "./extended-base-entity";
-import { User } from ".";
+} from 'typeorm';
+import ExtendedBaseEntity from './extended-base-entity';
+import { User } from '.';
 
 @Entity()
 export class Sms extends ExtendedBaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -19,9 +19,9 @@ export class Sms extends ExtendedBaseEntity {
   @Column()
   message: string;
 
-  @Column()
-  @ManyToOne(() => User, (user) => user.id)
-  sender_id: User;
+  // @Column()
+  // @ManyToOne(() => User, (user) => user.id)
+  // sender_id: User;
 
   @CreateDateColumn()
   createdAt: Date;
