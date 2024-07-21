@@ -22,7 +22,7 @@ jobs:
         run: yarn install
 
       - name: buld the dist
-        run: yarn build
+        run: yarn start
 
       - name: setup service file
         run: sudo cp server-script/aihomeworkprod.service /etc/systemd/system
@@ -35,4 +35,3 @@ jobs:
   # test:
   #   -name: Run test
   #   run: yarn jest
-

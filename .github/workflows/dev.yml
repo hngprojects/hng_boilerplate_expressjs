@@ -22,7 +22,7 @@ jobs:
         run: yarn install
 
       - name: Run Test
-        run: yarn test --passWithNoTests
+        run: yarn test
 
       - name: buld the dist
         run: yarn build
