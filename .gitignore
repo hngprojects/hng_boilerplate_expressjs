@@ -7,4 +7,4 @@ temp/
 .env
 env
 src/entity
-ormconfig.ts
+src/ormconfig.ts
