@@ -6,3 +6,5 @@ tmp/
 temp/
 .env
 env
+src/entity
+ormconfig.ts

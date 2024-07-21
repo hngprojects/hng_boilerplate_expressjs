@@ -1,20 +1,22 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm"
+//NOT PART OF THE MAIN FILE
 
-@Entity()
-@Unique(["user_id"])
-export class NotificationSetting {
-    @PrimaryGeneratedColumn()
-    id: number;
+// import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm"
 
-    @Column()
-    user_id: string;
+// @Entity()
+// @Unique(["user_id"])
+// export class NotificationSetting {
+//     @PrimaryGeneratedColumn()
+//     id: number;
 
-    @Column()
-    email_notifications: boolean;
+//     @Column()
+//     user_id: string;
 
-    @Column()
-    push_notifications: boolean;
+//     @Column()
+//     email_notifications: boolean;
 
-    @Column()
-    sms_notifications: boolean;
-}
+//     @Column()
+//     push_notifications: boolean;
+
+//     @Column()
+//     sms_notifications: boolean;
+// }
