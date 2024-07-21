@@ -1,16 +1,49 @@
+// src/index.ts
 import "reflect-metadata";
 import { AppDataSource } from "./data-source";
 import log from "./utils/logger";
-import { seed } from "./seeder";
 import express, { Express, Request, Response } from "express";
 import config from "./config";
-import userRouter from "./routes/user";
 import dotenv from "dotenv";
+import cors from "cors";
+import { userRouter, authRoute, testimonialRoute } from "./routes";
+import { notificationRouter } from "./routes/notificationsettings";
+
+import { routeNotFound, errorHandler } from "./middleware";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swaggerConfig";
 
 dotenv.config();
 
-const port = config.port
+const port = config.port;
 const server: Express = express();
+server.options("*", cors());
+server.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Origin",
+      "X-Requested-With",
+      "Content-Type",
+      "Authorization",
+    ],
+  })
+);
+server.use(express.json());
+server.use(express.urlencoded({ extended: true }));
+server.use(express.json());
+server.get("/", (req: Request, res: Response) => {
+  res.send("Hello world");
+});
+server.use("/api/v1", userRouter);
+server.use("/api/v1/auth", authRoute);
+server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use(routeNotFound);
+server.use(errorHandler);
+server.use("/api/v1/settings", notificationRouter);
+
 AppDataSource.initialize()
   .then(async () => {
     // seed().catch(log.error);
@@ -18,7 +51,6 @@ AppDataSource.initialize()
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
     });
-    server.use("/api/v1", userRouter);
 
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);

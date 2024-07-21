@@ -1,9 +1,22 @@
+// src/routes/user.ts
 import { Router } from "express";
-import TestimonialController from "../controllers/TestimonialController";
- 
-const testimonialRouter = Router();
-const testimonialController = new TestimonialController();
+import TestimonialsController from "../controllers/TestimonialsController";
+import { authMiddleware } from "../middleware";
+import { validateTestimonial } from "../middleware/testimonial.validation";
 
-testimonialRouter.get("/testimonials", testimonialController.getAllTestimonials.bind(testimonialController));
+const testimonialRoute = Router();
+const testimonialController = new TestimonialsController();
 
-export default testimonialRouter;
+testimonialRoute.post(
+  "/testimonials",
+  authMiddleware,
+  validateTestimonial,
+  testimonialController.createTestimonial.bind(testimonialController)
+);
+testimonialRoute.get(
+  "/testimonials/:testimonial_id",
+  authMiddleware,
+  testimonialController.getTestimonial.bind(testimonialController)
+);
+
+export { testimonialRoute };

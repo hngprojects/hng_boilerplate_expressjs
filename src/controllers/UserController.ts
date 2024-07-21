@@ -1,6 +1,6 @@
 // src/controllers/UserController.ts
 import { Request, Response } from "express";
-import { UserService } from "../services/UserServivce";
+import { UserService } from "../services/user.services";
 
 class UserController {
   private userService: UserService;
