@@ -1,4 +1,4 @@
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Profile, User } from "../models";
 import { IAuthService, IUserSignUp, IUserLogin } from "../types";
 import { Conflict, HttpError } from "../middleware";
@@ -59,6 +59,9 @@ export class AuthService implements IAuthService {
 
       return { mailSent, newUser: rest, access_token };
     } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
       throw new HttpError(error.status || 500, error.message || error);
     }
   }

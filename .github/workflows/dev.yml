@@ -16,6 +16,7 @@ jobs:
       - name: Pull from github
         id: pull
         run: |
+          git stash
           git pull origin dev
 
       - name: install dependencies
