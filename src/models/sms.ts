@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  JoinColumn
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { User } from ".";
@@ -19,9 +20,9 @@ export class Sms extends ExtendedBaseEntity {
   @Column()
   message: string;
 
-  @Column()
-  @ManyToOne(() => User, (user) => user.id)
-  sender_id: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "sender_id" })
+  sender: User;
 
   @CreateDateColumn()
   createdAt: Date;

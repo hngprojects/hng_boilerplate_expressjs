@@ -17,6 +17,8 @@ import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
 
+import { BlogPost } from './blog-post';
+
 @Entity()
 @Unique(["email"])
 export class User extends ExtendedBaseEntity {
@@ -62,6 +64,9 @@ export class User extends ExtendedBaseEntity {
   @ManyToMany(() => Organization, (organization) => organization.users, {
     cascade: true,
   })
+  @OneToMany(() => BlogPost, blogPost => blogPost.author)
+    blogPosts: BlogPost[];
+
   @JoinTable()
   organizations: Organization[];
 

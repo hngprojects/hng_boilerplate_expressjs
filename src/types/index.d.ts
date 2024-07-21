@@ -1,4 +1,17 @@
-import { User } from "../models";
+import { User, BlogPost } from "../models";
+
+
+export interface PaginatedBlogResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: BlogPost[];
+}
+
+export interface IBlogService {
+  
+  getPaginatedBlogPosts(page: number, pageSize: number): Promise<PaginatedBlogResponse>;
+}
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
