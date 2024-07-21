@@ -1,0 +1,34 @@
+name: Build, Test, and Deploy for Prod Branch
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: /var/www/aihomework/prod
+
+    steps:
+      - name: Pull from GitHub
+        run: |
+          git fetch origin
+          git reset --hard origin/main
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build the dist
+        run: yarn build
+
+      - name: Setup service file
+        run: sudo cp server-script/aihomeworkprod.service /etc/systemd/system
+
+      - name: Start the app
+        run: |
+          sudo systemctl daemon-reload
+          sudo systemctl restart aihomeworkprod
+
