@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest ",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js"
+    "prod": "node dist/index.js",
+    "migrate": "typeorm migration:run -d src/data-source.ts"
   },
   "keywords": [],
   "author": "",
