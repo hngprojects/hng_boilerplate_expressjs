@@ -41,6 +41,7 @@ passport.serializeUser((user, cb) => {
 
 passport.deserializeUser(async (id, cb) => {
   const user = await User.findOne({ where: { facebookId: id } });
+  cb(null, id);
 }); // add faceboOkId to user;
 
 const passportRoute = Router();
