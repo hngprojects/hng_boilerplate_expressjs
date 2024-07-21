@@ -16,7 +16,7 @@ jobs:
       - name: Pull from github
         id: pull
         run: |
-          git pull origin prod
+          git pull origin dev
 
       - name: install dependencies
         run: yarn install
