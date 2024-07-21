@@ -5,6 +5,15 @@ export interface IUserService {
   getAllUsers(): Promise<User[]>;
 }
 
+export interface IUserUpdatePayload {
+  name: string;
+  email: string;
+  preferences: {
+    newsletter: boolean;
+    darkMode: boolean;
+  }
+}
+
 export interface IOrgService {
   removeUser(org_id: string, user_id: string): Promise<User | null>;
 }

@@ -14,6 +14,7 @@ import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 
+
 dotenv.config();
 
 const port = config.port;
@@ -44,6 +45,7 @@ server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
+
 
 AppDataSource.initialize()
   .then(async () => {

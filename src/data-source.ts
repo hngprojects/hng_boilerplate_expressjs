@@ -13,9 +13,9 @@ export const AppDataSource = new DataSource({
   logging: false,
   entities: ["src/models/**/*.ts"],
   ssl: false,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
