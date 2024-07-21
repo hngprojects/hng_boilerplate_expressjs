@@ -1,6 +1,6 @@
 // src/index.ts
 import "reflect-metadata";
-import { AppDataSource } from "./data-source";
+import AppDataSource from "./data-source";
 import log from "./utils/logger";
 import express, { Express, Request, Response } from "express";
 import config from "./config";

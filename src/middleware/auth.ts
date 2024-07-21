@@ -7,6 +7,9 @@ import {
   ServerError,
   Unauthorized,
 } from "./error";
+import log from "../utils/logger";
+import jwt from "jsonwebtoken";
+import config from "../config";
 
 interface UserRequest extends Request {
   user?: any;
@@ -21,30 +24,41 @@ export const authMiddleware = async (
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      throw new HttpError(400, "Bad Request");
+      return res.status(401).json({
+        status_code: "401",
+        message: "Invalid token",
+      });
     }
 
     const token = authHeader.split(" ")[1];
     if (!token) {
-      throw new Unauthorized("Invalid token");
+      return res.status(401).json({
+        status_code: "401",
+        message: "Invalid token",
+      });
     }
 
-    const payload = verifyToken(token);
-
-    if (!payload) {
-      throw new Unauthorized("Unauthroized");
-    }
-
-    const user = await User.findOne({
-      where: { email: payload["email"] as string },
+    jwt.verify(token, config.TOKEN_SECRET, async (err, decoded: any) => {
+      if (err) {
+        return res.status(401).json({
+          status_code: "401",
+          message: "Invalid token",
+        });
+      }
+      const user = await User.findOne({
+        where: { email: decoded["email"] as string },
+      });
+      if (!user) {
+        return res.status(401).json({
+          status_code: "401",
+          message: "Invalid token",
+        });
+      }
+      req.user = user;
+      next();
     });
-
-    if (!user) {
-      throw new ResourceNotFound("User not found");
-    }
-    req.user = user;
-    next();
   } catch (error) {
+    log.error(error);
     throw new ServerError("INTERNAL_SERVER_ERROR");
   }
 };
