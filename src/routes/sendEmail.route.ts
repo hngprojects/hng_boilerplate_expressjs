@@ -3,6 +3,6 @@ import { SendEmail } from '../controllers/sendEmail.controller';
 
 const sendEmailRoute = Router();
 
-sendEmailRoute.post('/send-email', SendEmail);
+sendEmailRoute.post('/send_email', SendEmail);
 
 export { sendEmailRoute };

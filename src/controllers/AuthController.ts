@@ -3,6 +3,56 @@ import { AuthService } from "../services";
 
 const authService = new AuthService();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication related routes
+ */
+
+/**
+ * @swagger
+ * api/v1/auth/signup:
+ *   post:
+ *     summary: Sign up a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: The user was successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 mailSent:
+ *                   type: string
+ *                 newUser:
+ *                   type: object
+ *                 access_token:
+ *                   type: string
+ *       409:
+ *         description: User already exists
+ *       500:
+ *         description: Some server error
+ */
+
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { mailSent, newUser, access_token } = await authService.signUp(
@@ -14,6 +64,44 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/auth/verify-otp:
+ *   post:
+ *     summary: Verify the user's email using OTP
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               otp:
+ *                 type: integer
+ *                 description: The OTP sent to the user's email
+ *               token:
+ *                 type: string
+ *                 description: The token received during sign up
+ *     responses:
+ *       200:
+ *         description: OTP verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Success message
+ *       400:
+ *         description: Invalid OTP or verification token has expired
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Some server error
+ */
+
 const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { otp, token } = req.body;
@@ -23,6 +111,41 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
+
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 access_token:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       401:
+ *         description: Invalid credentials
+ *       500:
+ *         description: Some server error
+ */
 
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {

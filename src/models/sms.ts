@@ -38,7 +38,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
-import { User } from ".";
+import { User } from "./user";
 
 @Entity()
 export class Sms extends ExtendedBaseEntity {
@@ -51,12 +51,8 @@ export class Sms extends ExtendedBaseEntity {
   @Column()
   message: string;
 
-  @ManyToOne(() => User, (user) => user.id)
-  @JoinColumn({ name: "sender_id" })
+  @ManyToOne(() => User, (user) => user.sms)
   sender: User;
-
-  @Column()
-  sender_id: string;
 
   @CreateDateColumn()
   createdAt: Date;
