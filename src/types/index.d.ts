@@ -1,5 +1,6 @@
 import { User } from "../models";
 import { Request } from "express";
+import { UserRole } from "../enums/userRoles";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -29,6 +30,6 @@ export interface IAuthService {
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }
 
-export interface UserRequest extends Request{
-  user? : any
+interface Request {
+  user?: User;
 }

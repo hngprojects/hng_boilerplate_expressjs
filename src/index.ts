@@ -6,8 +6,11 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, inviteRoute } from "./routes";
+import { userRouter, authRoute, testimonialRoute, inviteRoute } from "./routes";
+import { notificationRouter } from "./routes/notificationsettings";
 import { routeNotFound, errorHandler } from "./middleware";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swaggerConfig";
 
 dotenv.config();
 
@@ -35,12 +38,21 @@ server.get("/", (req: Request, res: Response) => {
 server.use("/api/v1", userRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/invite", inviteRoute);
+server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
+server.use("/api/v1/settings", notificationRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    server.listen(port, async () => {
+    // seed().catch(log.error);
+    server.use(express.json());
+    server.get("/", (req: Request, res: Response) => {
+      res.send("Hello world");
+    });
+
+    server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
     });
   })

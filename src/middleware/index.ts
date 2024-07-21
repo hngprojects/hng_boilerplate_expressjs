@@ -1,2 +1,4 @@
 export * from "./error";
-export * from "./verifyjwt"
+export * from "./auth";
+export * from "./auth";
+export * from "./verifyjwt";

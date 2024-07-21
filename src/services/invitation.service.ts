@@ -2,34 +2,29 @@ import { OrganisationInvitation, Organization } from "../models";
 import { User } from "../models";
 import { UserRole } from "../enums/userRoles";
 import { AppDataSource } from "../data-source";
+import createHttpError from "http-errors";
 
-const invitationLinkPattern = /^invite-[a-zA-Z0-9\-]{36}-\d+$/;
-
-const createInvitationService = async (org_id: string, user_id: string) => {
+const createInvitationService = async (orgId: string, userId: string) => {
   const organization = await AppDataSource.getRepository(Organization).findOne({
-    where: {
-      id: org_id,
-    },
+    where: { id: orgId },
   });
   if (!organization) {
-    throw new Error("Organization not found");
+    throw createHttpError(404, "Organization not found");
   }
 
   const user = await AppDataSource.getRepository(User).findOne({
-    where: {
-      id: user_id,
-    },
+    where: { id: userId },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw createHttpError(404, "User not found");
   }
 
-  const invitation_link = `invite-${organization.id}-${Date.now()}`;
+  const invitation_link = `invite-${orgId}-${Date.now()}`;
   const invitation = AppDataSource.getRepository(OrganisationInvitation).create(
     {
       invitation_link,
-      org_id,
-      user_id,
+      org_id: orgId,
+      user_id: userId,
       organization,
       user,
     }
@@ -40,54 +35,43 @@ const createInvitationService = async (org_id: string, user_id: string) => {
 
 const deactivateInvitationService = async (
   invitation_link: string,
-  user_id: string
+  userId: string
 ) => {
-  if (!invitationLinkPattern.test(invitation_link)) {
-    throw new Error("Invalid invitation link format");
-  }
-
   const invitation = await AppDataSource.getRepository(
     OrganisationInvitation
   ).findOne({
     where: { invitation_link },
   });
   if (!invitation) {
-    throw new Error("Invitation not found");
+    throw createHttpError(404, "Invitation not found");
   }
 
   const current_date = new Date();
   if (invitation.expire_at && invitation.expire_at < current_date) {
-    throw new Error("Invitation link has expired");
+    throw createHttpError(400, "Invitation link has expired");
   }
 
   const organization = await AppDataSource.getRepository(Organization).findOne({
-    where: {
-      id: invitation.org_id,
-    },
+    where: { id: invitation.org_id },
   });
   if (!organization) {
-    throw new Error("Organization not found");
+    throw createHttpError(404, "Organization not found");
   }
 
   const user = await AppDataSource.getRepository(User).findOne({
-    where: {
-      id: user_id,
-    },
+    where: { id: userId },
   });
   if (!user) {
-    throw new Error("User not found");
+    throw createHttpError(404, "User not found");
   }
 
   const authorized_roles = [UserRole.ADMIN, UserRole.SUPER_ADMIN];
-  if (
-    invitation.user_id !== user_id &&
-    !authorized_roles.find((role) => role === user.role)
-  ) {
-    throw new Error(
+  if (!authorized_roles.includes(user.role)) {
+    throw createHttpError(
+      403,
       "User is not authorized to deactivate this invitation link"
     );
   }
-
   invitation.is_active = false;
   invitation.deactivated_at = new Date();
   await AppDataSource.getRepository(OrganisationInvitation).save(invitation);

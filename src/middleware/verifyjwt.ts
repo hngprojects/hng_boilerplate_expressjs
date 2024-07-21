@@ -1,30 +1,37 @@
 import { Request, Response, NextFunction } from "express";
-import * as jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import config from "../config";
-import { UserRequest } from "../types";
+import createHttpError from "http-errors";
+import { UserRole } from "../enums/userRoles";
 
 interface DecodedToken {
-  user_id: string;
+  userId: string;
+  role?: UserRole;
 }
 
-const verifyJWT = (req: UserRequest, res: Response, next: NextFunction) => {
+interface VerifyRequest extends Request {
+  user?: {
+    userId: string;
+  };
+}
+
+const verifyJWT = (req: VerifyRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) {
-    return res.status(401).json({ error: "Authorization header missing" });
+    return next(createHttpError(401, "Authorization header missing"));
   }
 
   const token = authHeader.split(" ")[1];
   if (!token) {
-    return res.status(401).json({ error: "Auth Token missing" });
+    return next(createHttpError(401, "Auth Token missing"));
   }
 
   jwt.verify(token, config.TOKEN_SECRET, (err, decoded: DecodedToken) => {
     if (err) {
-      return res.status(403).json({ error: "Invalid  or expired auth token" });
+      return next(createHttpError(403, "Invalid or expired auth token"));
     }
-    req.user = {
-      user_id: decoded.user_id,
-    };
+
+    req.user = { userId: decoded.userId };
     next();
   });
 };
