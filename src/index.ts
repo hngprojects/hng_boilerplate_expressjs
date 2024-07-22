@@ -6,7 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, testimonialRoute, notificationRouter } from "./routes";
+import { userRouter, authRoute, testimonialRoute, notificationRouter, blogRoute } from "./routes";
 
 import { routeNotFound, errorHandler } from "./middleware";
 import { seed } from "./seeder";
@@ -40,6 +40,7 @@ server.get("/", (req: Request, res: Response) => {
 server.use("/api/v1", userRouter, orgRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/blogs", blogRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
