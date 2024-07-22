@@ -1,15 +1,21 @@
 // @ts-nocheck
 
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { User } from "../models";
 import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
 import { Sendmail } from "../utils/mail";
 import jwt from "jsonwebtoken";
-import config from "../config";
 import { Conflict, HttpError } from "../middleware";
 import { AuthService } from "../services";
 
-jest.mock("../data-source");
+jest.mock("../data-source", () => {
+  return {
+    AppDataSource: {
+      manager: {},
+      initialize: jest.fn().mockResolvedValue(true),
+    },
+  };
+});
 jest.mock("../models");
 jest.mock("../utils");
 jest.mock("../utils/mail");
@@ -17,9 +23,17 @@ jest.mock("jsonwebtoken");
 
 describe("AuthService", () => {
   let authService: AuthService;
+  let mockManager;
 
   beforeEach(() => {
     authService = new AuthService();
+
+    mockManager = {
+      save: jest.fn(),
+    };
+
+    // Assign the mock manager to the AppDataSource.manager
+    AppDataSource.manager = mockManager;
   });
 
   describe("signUp", () => {
@@ -54,7 +68,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(null);
       (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
-      (AppDataSource.manager.save as jest.Mock).mockResolvedValue(createdUser);
+      mockManager.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
       (Sendmail as jest.Mock).mockResolvedValue(mailSent);
 
@@ -108,7 +122,7 @@ describe("AuthService", () => {
 
       (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
       (User.findOne as jest.Mock).mockResolvedValue(user);
-      (AppDataSource.manager.save as jest.Mock).mockResolvedValue(user);
+      mockManager.save.mockResolvedValue(user);
 
       const result = await authService.verifyEmail(token, otp);
 
