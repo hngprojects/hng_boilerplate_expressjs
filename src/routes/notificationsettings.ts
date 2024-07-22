@@ -1,4 +1,4 @@
-import { CreateNotification, GetNotification } from "../controllers"
+import { CreateNotification, GetNotification, UpdateNotificationSettings } from "../controllers"
 import { Router } from "express";
 import { authMiddleware } from "../middleware";
 
@@ -9,10 +9,9 @@ notificationRouter.post(
   authMiddleware,
   CreateNotification
 );
-notificationRouter.get(
-  "/notification-settings/:user_id",
-  authMiddleware,
-  GetNotification
-);
+notificationRouter
+  .route("/notification-settings/:user_id")
+  .get(authMiddleware, GetNotification)
+  .put(authMiddleware, UpdateNotificationSettings, CreateNotification)
 
 export { notificationRouter }

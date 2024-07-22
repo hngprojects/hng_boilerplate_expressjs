@@ -1,5 +1,5 @@
 import { NotificationSetting } from "../models/notification";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 // TO validate all required fields in post /api/notification-settings
 interface NotificationSettings {
@@ -92,5 +92,41 @@ const GetNotification = async (req: Request, res: Response) => {
     }
 };
 
+// update notification setting
+export const UpdateNotificationSettings = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { user_id } = req.params;
+        const updateSettings = req.body;
+
+        if (!user_id || Object.keys(updateSettings).length === 0) {
+            return res.status(400).json({
+                success: false,
+                status_code: 400,
+                message: 'Bad request: invalid parameters',
+            });
+        }
+
+        const settings = await NotificationSetting.findOne({ where: { user_id } });
+        if (!settings) {
+            return next();
+        }
+
+        Object.assign(settings, updateSettings);
+        await settings.save();
+
+        return res.status(200).json({
+            success: true,
+            status_code: 200,
+            message: 'Notification settings updated successfully',
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            status_code: 500,
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : 'Unknown error',
+        });
+    }
+};
 
 export { CreateNotification, GetNotification };
