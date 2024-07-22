@@ -1,4 +1,4 @@
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
 import { HttpError } from "../middleware";
 import { User } from "../models";

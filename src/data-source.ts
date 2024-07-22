@@ -12,12 +12,12 @@ const AppDataSource = new DataSource({
   synchronize: true,
   logging: false,
   entities: ["src/models/**/*.ts"],
-  ssl: false,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // ssl: false,
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
 
 export default AppDataSource;

@@ -60,22 +60,14 @@ export class User extends ExtendedBaseEntity {
   @JoinTable()
   products: Product[];
 
-<<<<<<< HEAD
-  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
-  userOrganizations: UserOrganization[];
-=======
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
 
-  @OneToMany(() => Sms, (sms) => sms.sender)
-  sms: Sms[];
+  // @OneToMany(() => Sms, (sms) => sms.sender)
+  // sms: Sms[];
 
-  @ManyToMany(() => Organization, (organization) => organization.users, {
-    cascade: true,
-  })
-  @JoinTable()
-  organizations: Organization[];
->>>>>>> 5cd6791279c3207b5195dbf6656b663f319ce03a
+  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
+  userOrganizations: UserOrganization[];
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
   sms: Sms[];
