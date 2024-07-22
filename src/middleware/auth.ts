@@ -16,7 +16,7 @@ interface UserRequest extends Request {
 }
 
 export const authMiddleware = async (
-  req: UserRequest,
+  req: Request & { user?: User },
   res: Response,
   next: NextFunction
 ) => {
