@@ -11,6 +11,7 @@ import {
   authRoute,
   testimonialRoute,
   notificationRouter,
+  smsRouter,
 } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
@@ -42,6 +43,7 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter, orgRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);

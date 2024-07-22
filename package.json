@@ -61,6 +61,7 @@
     "swagger-ui-express": "^5.0.1",
     "ts-jest": "^29.2.3",
     "ts-node-dev": "^2.0.0",
+    "twilio": "^5.2.2",
     "typeorm": "^0.3.20"
   }
 }
