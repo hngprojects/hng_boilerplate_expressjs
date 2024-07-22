@@ -7,7 +7,9 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "types/**/*"]
 }
