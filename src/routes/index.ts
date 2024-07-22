@@ -4,4 +4,5 @@ export * from "./user";
 export * from "./testimonial";
 export * from "./notificationsettings"
 export * from "./blog";
+export * from "./sms";
 
