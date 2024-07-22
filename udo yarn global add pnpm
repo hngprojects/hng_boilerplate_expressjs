@@ -1,0 +1,701 @@
+[33mcommit d9eac8c0cf295607101992d2271b3011dd557f2a[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Mon Jul 22 09:32:49 2024 +0100
+
+    changes added to deployment workflow for prod
+
+[33mcommit 0a814578b36631079033e7efe0685c9c0f8a10ee[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Mon Jul 22 09:25:39 2024 +0100
+
+    changes added to deployment workflow for prod
+
+[33mcommit c8b8cf7677c0ca263dcacb11a25c16f30eb57707[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Mon Jul 22 08:43:33 2024 +0100
+
+    changes added to deployment workflow for prod
+
+[33mcommit 416e53f8814afface988ec68b290177144b58165[m
+Merge: 38ccd6a 9323fa2
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 14:51:50 2024 -0400
+
+    Merge branch 'dev' into dev
+
+[33mcommit 38ccd6a88e0e097df3e297fe55ec68831f464e54[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Sun Jul 21 19:37:51 2024 +0100
+
+    changes added to deployment workflow for prod
+
+[33mcommit 9323fa2ab256fb9ce6fbd8484173e28c313fc4b5[m
+Merge: 2ab1bfd ff7d3ac
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 14:25:22 2024 -0400
+
+    Merge pull request #67 from DOOMSDAY101/feat/19-implement-backend-for-notification-settings
+    
+    Feat/19 Implement Backend for Notification Settings
+
+[33mcommit 2ab1bfd033e4a3df6a90606bf6e1f9d2a2461855[m
+Merge: e927ad7 a5b1579
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 14:16:46 2024 -0400
+
+    Merge pull request #61 from Konan69/feat/14-Remove_Member_From_Organization
+    
+    Feat/14 remove member from organization
+
+[33mcommit ff7d3ace775c8a4b29b860416ef7dbf8eda180ac[m
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 19:08:42 2024 +0100
+
+    feat/19-implement-backend-for-notification-settings
+
+[33mcommit a5b1579cb08699b14d16266ffbb689b0d1d5e708[m
+Merge: 89c5719 e927ad7
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sun Jul 21 19:06:13 2024 +0100
+
+    Merge remote-tracking branch 'upstream/dev' into feat/14-Remove_Member_From_Organization
+
+[33mcommit 89c5719ad15d465b987cea9cf84d80f4c98dc52d[m
+Merge: ee7e3ca ad4362a
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sun Jul 21 19:00:25 2024 +0100
+
+    Merge remote-tracking branch 'upstream/dev' into feat/14-Remove_Member_From_Organization
+
+[33mcommit e927ad7c65e46734ce79fd57b04e74d6a7e60c99[m
+Merge: ad4362a 887f982
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 13:56:28 2024 -0400
+
+    Merge pull request #66 from incredible-phoenix246/chore/unit-testing
+    
+    Chore/unit testing
+
+[33mcommit 887f98257c47399d016666318c1571091b8c3e41[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:54:42 2024 +0100
+
+    chore: fixed conlict
+
+[33mcommit 26fb9959be2c19bcd7b1c3c859364471e93a1faf[m
+Merge: 3d4712b ad4362a
+Author: James Ayomikun Araoye <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:48:22 2024 +0100
+
+    Merge branch 'hngprojects:dev' into chore/unit-testing
+
+[33mcommit ad4362ab77ae5266db278f5ab1e2ac7f52bcb388[m
+Merge: 0630cbc 153a5b1
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 13:45:36 2024 -0400
+
+    Merge pull request #65 from hngprojects/Idimmusix-patch-1
+    
+    Update dev.yml; stash before pull
+
+[33mcommit 3d4712b24185013e64bd587676ff904da20d078c[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:42:46 2024 +0100
+
+    chore: fixed conlict
+
+[33mcommit b315387ed60a745b944464d5d276ae8474f35189[m
+Merge: b524b94 0630cbc
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:39:54 2024 +0100
+
+    Merge branch 'dev' of github.com:hngprojects/hng_boilerplate_expressjs into chore/unit-testing
+    ope`#
+
+[33mcommit 153a5b1bf17872f0f95c9a39bef9eb9856e92935[m
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 13:37:57 2024 -0400
+
+    Update dev.yml; stash before pull
+
+[33mcommit b524b9452afe75aa8badc09d5ea894ed25802ead[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:25:45 2024 +0100
+
+    chore: fixed conlict
+
+[33mcommit 0630cbcc151e908232426e7a35a50ec1d38aeffe[m
+Merge: 01bd8d7 96a992e
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 13:25:24 2024 -0400
+
+    Merge pull request #56 from incredible-phoenix246/chore/unit-testing
+    
+    Chore/unit testing
+
+[33mcommit 96a992e976aba73da36aa6c268f5a9fc275dfd71[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:24:29 2024 +0100
+
+    chore: fixed conlict
+
+[33mcommit 2b6369e740777ec0f03a05365c450d42326d2f2d[m
+Merge: 66d3bb7 01bd8d7
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 18:22:21 2024 +0100
+
+    chore: fixed conlict
+
+[33mcommit 01bd8d74fbb326cf2d73b2a11f2cc95ab76bf337[m
+Merge: 190b8a4 7ce1843
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 12:35:47 2024 -0400
+
+    Merge pull request #62 from DOOMSDAY101/feat/19-implement-backend-for-notification-settings
+    
+    Feat/19 Implement Backend for Notification Settings
+
+[33mcommit 7ce1843ddbe782c8d0d65d3700482bdbb0af757b[m
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 17:17:40 2024 +0100
+
+    feat/19-implement-backend-for-notification-settings
+
+[33mcommit 0e5b1440c5fa2aaf75920ed896f720fe17678b4e[m
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 17:10:53 2024 +0100
+
+    feat/19-implement-backend-for-notification-settings
+
+[33mcommit bf96513f9ade825f4276d8294f68b0d57603ccfd[m
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 17:08:11 2024 +0100
+
+    feat/19-implement-backend-for-notification-settings
+
+[33mcommit dbd68590aae8db4ef963874c4adb2b3bd1c320ce[m
+Merge: eb3dc9a 43465de
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 16:57:46 2024 +0100
+
+    feat/19-implement-backend-for-notification-settings
+
+[33mcommit 02606c46eb9cd3fca0443cd91543c905cd5c807b[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Sun Jul 21 13:05:42 2024 +0100
+
+    Added deployment workflow for production
+
+[33mcommit 66d3bb7f040bc536dec5ec4d678be4e6524d74a7[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 12:41:52 2024 +0100
+
+    chore: added blog entity
+
+[33mcommit 9337503126a600ad528a360b018190f1c512b3b4[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 12:11:21 2024 +0100
+
+    feat:docs
+
+[33mcommit ee7e3ca22f16d53fef8a9ed243933f711b3b03c7[m
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sun Jul 21 11:29:53 2024 +0100
+
+    working
+
+[33mcommit b21546075318f67b1bcaf421fe23a79f7f668de0[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 10:40:14 2024 +0100
+
+    feat: auth middleware
+
+[33mcommit 3a3f9c935ef83bffed190a2be71bff1c874ae431[m
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sun Jul 21 10:06:55 2024 +0100
+
+    Merge remote-tracking branch 'upstream/dev' into feat/14-Remove_Member_From_Organization
+
+[33mcommit c8a10a51b7c7d9ff3223b7a13b9d020de7581339[m
+Merge: 65987b9 190b8a4
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sun Jul 21 10:02:47 2024 +0100
+
+    Merge remote-tracking branch 'upstream/dev' into feat/14-Remove_Member_From_Organization
+
+[33mcommit 190b8a4f3eb38361e46a06b6229b8022435f354c[m
+Merge: 43465de 8fcbc3b
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sun Jul 21 02:33:27 2024 -0400
+
+    Merge pull request #49 from holadmex/dev
+    
+     Added deployment workflow for production
+
+[33mcommit eb3dc9a14bf88dd282298a5dfa89634cf45a0859[m
+Author: DOOMSDAY101 <ifeoluwasulaiman30@gmail.com>
+Date:   Sun Jul 21 06:21:40 2024 +0100
+
+    feat: Implement backend notification settings
+
+[33mcommit 5dd9bbb8429b0db3696baf509022441654d0ac9e[m
+Author: aniebietafia <aniebietafia87@gmail.com>
+Date:   Sun Jul 21 00:56:34 2024 +0100
+
+    feat: 34-create_and_read_single_testimonial(subtle changes)
+
+[33mcommit fdb201ec31a64783a687241ebe945b4c967687a4[m
+Merge: d7960fe 43465de
+Author: Aniebiet Afia <54312052+aniebietafia@users.noreply.github.com>
+Date:   Sun Jul 21 00:45:37 2024 +0100
+
+    Merge branch 'dev' into feat/34-Create_and_Read_Single_Testimonial
+
+[33mcommit d7960fe0cb65f2fff75cb3868aa308a0d2573bcc[m
+Author: aniebietafia <aniebietafia87@gmail.com>
+Date:   Sun Jul 21 00:35:06 2024 +0100
+
+    feat: issue 34 - create and read single testimonial
+
+[33mcommit 43465de93fb5cb1195f94e66e36ffc85e2a88d55[m
+Merge: bcabe30 424c06e
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 19:19:13 2024 -0400
+
+    Merge pull request #38 from hngprojects/feat/32-Authentication_User_Log_In
+    
+    Authentication - User Log In
+
+[33mcommit 424c06e6bf475eb117d2002b324f457dce8262fe[m
+Merge: 3263405 bcabe30
+Author: James Ayomikun Araoye <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 00:16:56 2024 +0100
+
+    Merge branch 'dev' into feat/32-Authentication_User_Log_In
+
+[33mcommit 3263405fbb5abe43ba5a3fc03248db23e7c40001[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 00:11:48 2024 +0100
+
+    chore: updated login controller
+
+[33mcommit 8fcbc3b80a04ade5a275ce4e1a3e67ea0d5dd4ec[m
+Merge: b09cdf0 bcabe30
+Author: holadmex <135301761+holadmex@users.noreply.github.com>
+Date:   Sun Jul 21 00:09:30 2024 +0100
+
+    Merge branch 'hngprojects:dev' into dev
+
+[33mcommit b09cdf0d12a8a293e1d4922e4c898ccef9b767f4[m
+Author: holadmex <ojewumidimeji@gmail.com>
+Date:   Sun Jul 21 00:07:40 2024 +0100
+
+    Added deployment workflow for production
+
+[33mcommit 0fe9931a85f54c634cf182345b92cffce7f6f704[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sun Jul 21 00:01:23 2024 +0100
+
+    chore: updated login controller
+
+[33mcommit 55db56922e1d2a82838c990084db43d3486cf7fa[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 23:57:48 2024 +0100
+
+    chore: updated login controller
+
+[33mcommit bcabe30ea51f4a4233811ef0eb44d010c21a3b67[m
+Merge: c312067 c393490
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 18:42:25 2024 -0400
+
+    Merge pull request #47 from kalio007/dev
+    
+    updated typescript version
+
+[33mcommit c39349017cd5fb2ad39f785a4ef177911c6668a3[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 23:41:14 2024 +0100
+
+    updated typescript version
+
+[33mcommit 1d3752647b36ebceac5fbf4d63204d313c7860f4[m
+Merge: d5c4a4f 193c20b
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sun Jul 21 01:13:04 2024 +0300
+
+    Resolved merge conflicts
+
+[33mcommit d5c4a4f9c6d29c080eccee8bd6644b22ba673841[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sun Jul 21 00:35:40 2024 +0300
+
+    feat: user login
+
+[33mcommit c32081276bdb4d7e599d2b240d4bc354080a0549[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 18:41:39 2024 +0300
+
+    handle build errors
+
+[33mcommit a47ba942adb1ebacab68c0c118aae5f2deeabba3[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 17:22:45 2024 +0300
+
+    Authentication - User Log In
+
+[33mcommit c31206759469517966e7ceddfce11e574d2dac7c[m
+Merge: 4d59dbd b9e0be4
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 18:03:36 2024 -0400
+
+    Merge pull request #46 from kalio007/dev
+    
+    Made corrections to the dev.yml run test step
+
+[33mcommit b9e0be47c3de737a44177cdef7a2a1e54f1ecd41[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 23:01:34 2024 +0100
+
+    made corrections to the dev.yml run test step
+
+[33mcommit 4d59dbdb7fe4ca390319635dfe0f15fe7a01ee67[m
+Merge: 2b77cfd de9dbaa
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 17:59:42 2024 -0400
+
+    Merge pull request #45 from kalio007/dev
+    
+    added tag for test to pass
+
+[33mcommit de9dbaa847141593649fd4ff28f4071e4a2643d7[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 22:58:06 2024 +0100
+
+    added tag for test to pass
+
+[33mcommit 2b77cfdada69a51761f91d9acd594f2537f91aa1[m
+Merge: 64333f1 5437eca
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 17:54:12 2024 -0400
+
+    Merge pull request #43 from incredible-phoenix246/chore/entity-creaction
+    
+    article entity
+
+[33mcommit 64333f19fe5e4e925dc14732d21e52bbe6526cac[m
+Merge: 20a99ae d61df28
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 17:52:46 2024 -0400
+
+    Merge pull request #44 from kalio007/dev
+    
+    Added test to dev.yml file
+
+[33mcommit d61df289a5aa909c21cdad99b576ea33121933b2[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 22:48:15 2024 +0100
+
+    added test to dev.yml
+
+[33mcommit 65987b9a240e2cac6b99a04cf12f9589fa2f938c[m
+Merge: 7be12b8 20a99ae
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sat Jul 20 22:47:50 2024 +0100
+
+    Merge remote-tracking branch 'upstream/dev' into feat/14-Remove_Member_From_Organization
+
+[33mcommit 5437eca7070a4c1deb10a15daa7754ae3be74533[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 22:29:43 2024 +0100
+
+    chore: build command
+
+[33mcommit 122b1400f9015cba769b35846439269e30da096a[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 22:25:21 2024 +0100
+
+    chore: build command
+
+[33mcommit 7be12b8e2213494e6dbc975c4872b7a6c32dbb09[m
+Author: Konan <kixeyems0@gmail.com>
+Date:   Sat Jul 20 22:23:44 2024 +0100
+
+    added db actions
+
+[33mcommit 20a99ae5e022b37b49d98a622b985d123b854bca[m
+Merge: 63adced a66f276
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 16:30:30 2024 -0400
+
+    Merge pull request #40 from PreciousIfeaka/feat/36-user_authentication
+    
+    [FEAT]: add user registration auth
+
+[33mcommit a66f2762155a139a31e684bc617cf4bc45255950[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 21:10:07 2024 +0100
+
+    chore: build command
+
+[33mcommit b59345b571ceb0b163c024a6f981f023262beb0d[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 21:07:29 2024 +0100
+
+    feat: user signup
+
+[33mcommit 091804cf2d7d0c5cf7a9a31ba254ff46ba2a30e3[m
+Author: PreciousIfeaka <preciousifeaka@gmail.com>
+Date:   Sat Jul 20 17:15:07 2024 +0100
+
+    [FEAT]: add user registration auth
+
+[33mcommit 193c20b4647af56368f5d9530c218174dd8f3190[m[33m ([m[1;31morigin/feat/32-Authentication_User_Log_In[m[33m)[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 19:11:26 2024 +0300
+
+    debug build errors
+
+[33mcommit 918c3b194cec528ef5f2375c92342465cbeb4f11[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 18:41:39 2024 +0300
+
+    handle build errors
+
+[33mcommit d273c29cb06e77a04abc26806442d9363547c0d8[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 17:22:45 2024 +0300
+
+    Authentication - User Log In
+
+[33mcommit 63adcedcf3385dc562f1e6bf0458de424212f34c[m
+Merge: 4f4e14a 11eb71b
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 07:29:45 2024 -0400
+
+    Merge pull request #23 from incredible-phoenix246/chore/database-setup
+    
+    Database Setup and Seed Migration
+
+[33mcommit 4f4e14a0a66b84a16e13217db85ea0672f0bded6[m
+Merge: 6d259c4 4a901de
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Sat Jul 20 06:20:13 2024 -0400
+
+    Merge pull request #35 from hngprojects/Nainah23-patch-1
+    
+    Update startappdev.sh
+
+[33mcommit 11eb71b1e6e963db1a290a5a856b77f5835a0698[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 10:48:46 2024 +0100
+
+    chore: changed requested
+
+[33mcommit 3358e80afd3773c34f840d2855828501ce998878[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 10:47:36 2024 +0100
+
+    chore: changed requested
+
+[33mcommit b729cdbef2236a44ea3079198f78055172c36ad2[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 10:46:59 2024 +0100
+
+    chore: changed requested
+
+[33mcommit 010ef1548264af4ede1c6a7fe3445b76d8545832[m
+Merge: 3885c62 6d259c4
+Author: James Ayomikun Araoye <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 10:39:44 2024 +0100
+
+    Merge branch 'hngprojects:dev' into chore/database-setup
+
+[33mcommit 4a901de2f540fd4e64ce0e5e5f5c66ba9a93e3d5[m[33m ([m[1;31morigin/Nainah23-patch-1[m[33m)[m
+Author: Nainah23 <133117208+Nainah23@users.noreply.github.com>
+Date:   Sat Jul 20 12:27:47 2024 +0300
+
+    Update startappdev.sh
+    
+    Corrected the shebang line in startappdev.sh  to #!/bin/bash.
+
+[33mcommit 6d259c40d00cab3e30b878f016b6c2803b624519[m
+Merge: c239f44 c9c7a29
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 20:38:42 2024 -0400
+
+    Merge pull request #30 from kalio007/dev
+    
+    corrected system typos
+
+[33mcommit c9c7a2960ad7a9bddb8fe2112979d4522cfa7986[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 01:37:16 2024 +0100
+
+    correct typos again
+
+[33mcommit c239f443709c50134095c7d68ff8ea0fc349b4fc[m
+Merge: d31fb2d 44f96d3
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 20:34:47 2024 -0400
+
+    Merge pull request #29 from kalio007/dev
+    
+    Corrected the daemon typo
+
+[33mcommit 44f96d36515a7b452d407f91659af702e1a2c6ce[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 01:33:24 2024 +0100
+
+    corrected the daemon typo
+
+[33mcommit d31fb2d795d90e960a1b4721fcc6e320166be478[m
+Merge: bfe6384 20d5e88
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 20:31:25 2024 -0400
+
+    Merge pull request #28 from kalio007/dev
+    
+    Added the systemd config
+
+[33mcommit 20d5e886fbfc9f5a432d851a2b222b65aa24bcef[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 01:23:25 2024 +0100
+
+    added the systemd config
+
+[33mcommit bfe638427c542df7e2dd4b493300829094f5dcff[m
+Merge: d259969 4081365
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 19:39:23 2024 -0400
+
+    Merge pull request #27 from kalio007/dev
+    
+    Corrected runner label
+
+[33mcommit 4081365e8954a554ae925cc703cee04a3c010323[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 00:36:21 2024 +0100
+
+    corrected runner label
+
+[33mcommit d2599693dd6e5a7cf8142ef9c2ed3ab5ec2d70a4[m
+Merge: c243880 b50518d
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 19:23:38 2024 -0400
+
+    Merge pull request #26 from kalio007/dev
+    
+    fixed workflow synthax error
+
+[33mcommit 3885c62ee4daad29825e5dd464f89786b46b9654[m
+Merge: 872072e c243880
+Author: James Ayomikun Araoye <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 00:21:12 2024 +0100
+
+    Merge branch 'hngprojects:dev' into chore/database-setup
+
+[33mcommit 872072eda2d02100dc5aba5ad7453c3f383b762d[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 00:20:23 2024 +0100
+
+    chore: changed requested
+
+[33mcommit b50518de21562eb31d056cbb4f6c86fa32727c41[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 00:20:01 2024 +0100
+
+    fixed workflow synthax error
+
+[33mcommit 0cacaafcdb84c612f8d3adba3a8397e634381edd[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 00:17:52 2024 +0100
+
+    chore: changed requested
+
+[33mcommit 578d597385fd978ec84f1411bd29399c1487304f[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Sat Jul 20 00:16:58 2024 +0100
+
+    update branch
+
+[33mcommit c2438809c61d73c64e0481a3f4ec7dcbf61a2ca5[m
+Merge: 46c97d5 782304f
+Author: Idimma <88910783+Idimmusix@users.noreply.github.com>
+Date:   Fri Jul 19 19:15:35 2024 -0400
+
+    Merge pull request #24 from kalio007/dev
+    
+    Initial workflow setup
+
+[33mcommit 782304fa32fb037834e37b9b431cd8ca37cd8f66[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Sat Jul 20 00:13:58 2024 +0100
+
+    updated the workflow
+
+[33mcommit 5f2be126038934091d59a0a6eb8b5ec1fc058dce[m
+Author: kalio007 <kalioprince1@gmail.com>
+Date:   Fri Jul 19 23:53:31 2024 +0100
+
+    intial workflow setup
+
+[33mcommit f22a1ef2658c99f02a9c6769733c58b62a4ce963[m
+Author: James Ayomikun Araoye <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 22:21:29 2024 +0100
+
+    Update .env
+
+[33mcommit 253b71b345f2cd5b7af21eb1555b474336756aff[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 22:12:42 2024 +0100
+
+    update branch
+
+[33mcommit b7eb574cea95df904a958268c6423c124a05a3bf[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 22:02:09 2024 +0100
+
+    update branch
+
+[33mcommit b9b5da88e9622cf0e551ba08a565441484a63ef5[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 21:59:26 2024 +0100
+
+    update branch
+
+[33mcommit 698cdaebdf0c207de32744a56c668a0e172f71fd[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 12:47:57 2024 +0100
+
+    feat: setup for development
+
+[33mcommit e8d60829252bc3908fa172298a6d8f6541b6e1c6[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 12:42:03 2024 +0100
+
+    feat: setup for development
+
+[33mcommit 172504e927144d1362b11398c03f6f29076baaa4[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 11:58:03 2024 +0100
+
+    update
+
+[33mcommit 68b2e58e2f70da37a71266f88f257824422a9c43[m
+Author: phoenix <ayomikuntemitope.araoye@gmail.com>
+Date:   Fri Jul 19 11:58:02 2024 +0100
+
+    initial setup
+
+[33mcommit 46c97d5ffe60367a6df5d1a0fab636f4514c83c0[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: ndubuisijr <ndubuisijrchukuigwe@gmail.com>
+Date:   Thu Jul 18 12:47:56 2024 +0100
+
+    feat: initial commit
+
+[33mcommit be8332fe8ed2617b0a88a384b415c98c76af88f9[m
+Author: Ndubuisi Jr Chukuigwe <44238346+NdubuisiJr@users.noreply.github.com>
+Date:   Thu Jul 18 11:21:40 2024 +0100
+
+    Initial commit
