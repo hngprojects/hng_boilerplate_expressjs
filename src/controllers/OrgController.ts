@@ -1,5 +1,7 @@
- import { Request, Response } from "express";
+ import { NextFunction, Request, Response } from "express";
 import { OrgService } from "../services/OrgService";
+import validator from "validator";
+import { BadRequest, ResourceNotFound, ServerError, Unauthorized } from "../middleware";
 
 export class OrgController {
   private orgService: OrgService;
@@ -30,5 +32,36 @@ export class OrgController {
         .status(400)
         .json({ message: "Failed to remove user from organization" });
     }
+  }
+}
+
+// Delete an organisation
+export const deleteOrganisation = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const organisationService = new OrgService();
+      const {orgId} = req.params;
+      const user_id = req.user.id;
+      
+      if (!validator.isUUID(orgId)) {
+          throw new BadRequest("Invalid organization ID format");
+      }
+      const organisationExist = await organisationService.getOrganisation(orgId)
+      if (!organisationExist) {
+          throw new ResourceNotFound("Invalid organisation ID - Not found");
+      }
+      const isUserOrganization = organisationExist.userOrganizations.find(user => user.userId === user_id);
+      if(!isUserOrganization || isUserOrganization.role !== "admin") {
+          throw new Unauthorized("User not authorized to delete this organization")
+      }
+      const deletedOrg = await organisationService.deleteOrganisation(orgId)
+      if (!deletedOrg) {
+          throw new ServerError("Server error")
+      }
+      res.status(200).json({
+          message: "Organization deleted successfully",
+          status_code: 204
+      })
+  } catch(error) {
+      next(error);
   }
 }

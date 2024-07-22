@@ -1,4 +1,4 @@
-import { User } from "../models";
+import { Organization, User } from "../models";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -7,6 +7,8 @@ export interface IUserService {
 
 export interface IOrgService {
   removeUser(org_id: string, user_id: string): Promise<User | null>;
+  deleteOrganisation(id: string): Promise<Organization | null>;
+  getOrganisation(is: string): Promise<Organization | null>
 }
 
 export interface IRole {
@@ -44,7 +46,9 @@ export interface ICreateOrganisation {
 }
 
 export interface IOrganisationService {
-  createOrganisation(payload: ICreateOrganisation, userId: string): Promise<unknown>;
+  createOrganisation(payload: ICreateOrganisation, userId: string): Promise<{
+    newOrganisation: Partial<Organization>;
+  }>;
 }
 
 declare module "express-serve-static-core" {
