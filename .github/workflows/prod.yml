@@ -21,8 +21,8 @@ jobs:
       - name: Install dependencies
         run: yarn install
 
-      #- name: Build the dist
-        #run: yarn build
+      - name: Build the dist
+        run: yarn build
 
       - name: Setup service file
         run: sudo cp server-script/aihomeworkprod.service /etc/systemd/system
