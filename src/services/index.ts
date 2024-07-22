@@ -1,3 +1,4 @@
 export * from "./auth.services";
 export * from "./user.services";
-export * from "./invitation.service"
+export * from "./help.services";
+export * from "./invitation.service";

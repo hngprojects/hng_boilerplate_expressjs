@@ -1,7 +1,7 @@
 import { OrganisationInvitation, Organization } from "../models";
 import { User } from "../models";
 import { UserRole } from "../enums/userRoles";
-import AppDataSource  from "../data-source";
+import AppDataSource from "../data-source";
 import createHttpError from "http-errors";
 
 const createInvitationService = async (orgId: string, userId: string) => {
