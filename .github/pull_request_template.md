@@ -1,13 +1,15 @@
 # Fixes Issue/Linear Ticket
 
-> This could be an existing issue or a linear ticket
->
-> - Github Issue Example: My PR Closes #{ISSUE}
-> - Linear Ticket Example: Fixes ID-#{ISSUE}
+
+
+- Github Issue Example: My PR Closes #22> 
+- Linear Ticket Example: Fixes ID-22
 
 ## Changes proposed
 
-> Talk about the things you did eg. files changes, dependencies installed e.t.c
+Added a new endpoint to retrieve all organizations a user belongs to with pagination.
+Updated UserController to include getUserOrganizations method.
+Modified UserService to support fetching organizations with pagination.
 
 ## Check List (Check all the applicable boxes)
 
