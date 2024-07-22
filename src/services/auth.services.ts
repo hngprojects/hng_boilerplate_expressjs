@@ -1,4 +1,4 @@
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Profile, User } from "../models";
 import { IAuthService, IUserSignUp, IUserLogin } from "../types";
 import { Conflict, HttpError } from "../middleware";

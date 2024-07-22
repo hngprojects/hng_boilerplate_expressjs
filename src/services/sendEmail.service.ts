@@ -1,9 +1,9 @@
-import e from 'express';
-import { AppDataSource } from '../data-source';
+import AppDataSource from '../data-source';
 import { EmailQueue } from '../models/emailQueue';
 import { EmailQueuePayload } from '../types';
 import emailQueue from '../utils/emailQueue';
 import config from '../config';
+import { ServerError } from '../middleware';
 
 export class EmailService {
   async queueEmail(payload: EmailQueuePayload): Promise<EmailQueue> {
@@ -35,7 +35,8 @@ export class EmailService {
   
     } catch (error) {
       console.error('Error in sending email:', error);
-      throw new Error('Failed to send email');
+      throw new ServerError('Internal server error');
+
     }
   }
 }

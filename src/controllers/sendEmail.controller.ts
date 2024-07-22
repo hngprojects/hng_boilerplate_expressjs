@@ -24,7 +24,7 @@ export const SendEmail = async (req: Request, res: Response) => {
     await emailService.sendEmail(payload);
 
     const response = {
-      message: 'Email sending request accepted and is being processed in the background.',
+      message: 'Email sending request accepted and is being processed.',
     };
     res.status(202).json(response);
   } catch (error) {
