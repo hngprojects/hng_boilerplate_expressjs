@@ -1,7 +1,7 @@
  import { NextFunction, Request, Response } from "express";
 import { OrgService } from "../services/OrgService";
 import validator from "validator";
-import { BadRequest, ResourceNotFound, ServerError, Unauthorized } from "../middleware";
+import { BadRequest, Forbidden, ResourceNotFound, ServerError, Unauthorized } from "../middleware";
 
 export class OrgController {
   private orgService: OrgService;
@@ -40,7 +40,7 @@ export const deleteOrganisation = async (req: Request, res: Response, next: Next
   try {
       const organisationService = new OrgService();
       const {orgId} = req.params;
-      const user_id = req.user.id;
+      const user_id = req.user.id; 
       
       if (!validator.isUUID(orgId)) {
           throw new BadRequest("Invalid organization ID format");
@@ -48,10 +48,11 @@ export const deleteOrganisation = async (req: Request, res: Response, next: Next
       const organisationExist = await organisationService.getOrganisation(orgId)
       if (!organisationExist) {
           throw new ResourceNotFound("Invalid organisation ID - Not found");
-      }
+      }      
       const isUserOrganization = organisationExist.userOrganizations.find(user => user.userId === user_id);
-      if(!isUserOrganization || isUserOrganization.role !== "admin") {
-          throw new Unauthorized("User not authorized to delete this organization")
+      
+      if(!isUserOrganization || (isUserOrganization && isUserOrganization.role !== "admin")) {
+          throw new Forbidden("User not authorized to delete this organization")
       }
       const deletedOrg = await organisationService.deleteOrganisation(orgId)
       if (!deletedOrg) {

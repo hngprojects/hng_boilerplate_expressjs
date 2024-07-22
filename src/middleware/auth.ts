@@ -42,7 +42,7 @@ export const authMiddleware = async (
         });
       }
       const user = await User.findOne({
-        where: { email: decoded["email"] as string },
+        where: { id: decoded["userId"] as string },
       });
       if (!user) {
         return res.status(401).json({
@@ -50,6 +50,8 @@ export const authMiddleware = async (
           message: "Invalid token",
         });
       }
+      console.log(user);
+      
       req.user = user;
       next();
     });
