@@ -32,4 +32,3 @@ export async function initializeDataSource() {
 }
 
 export default AppDataSource;
-  
