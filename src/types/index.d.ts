@@ -32,6 +32,14 @@ export interface IAuthService {
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }
 
+export interface IJobListingService{
+  title: string;
+  description: string;
+  location: string;
+  salary: string;
+  job_type: string;
+}
+
 declare module "express-serve-static-core" {
   interface Request {
     user?: User;
