@@ -33,4 +33,14 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp, verifyOtp, login };
+const emailResetToken = async (req: Request, res: Response, next: NextFunction) => {
+  res.send('ResetToken')
+
+}
+
+const resetPassword = async (req: Request, res: Response, next: NextFunction) => {
+  res.send('ResetPassword')
+
+}
+
+export { signUp, verifyOtp, login, emailResetToken, resetPassword };

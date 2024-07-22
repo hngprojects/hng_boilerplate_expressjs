@@ -70,4 +70,13 @@ export class User extends ExtendedBaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  //New Fields for password rest functionality
+  @Column
+  ({ nullable: true })
+  resetPasswordToken: string;
+
+  @Column
+  ({ type: 'timestamp', nullable: true })
+  resetPasswordExpires: Date;
 }

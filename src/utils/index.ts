@@ -1,6 +1,7 @@
 import * as bcrypt from "bcryptjs";
 import * as jwt from "jsonwebtoken";
 import config from "../config";
+import crypto from 'crypto';
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
   `${fieldLabel} is invalid`;
@@ -24,3 +25,7 @@ export const generateNumericOTP = (length: number): string => {
   }
   return otp;
 };
+
+export function generateResetPasswordToken(): string {
+  return crypto.randomBytes(20).toString('hex');
+}

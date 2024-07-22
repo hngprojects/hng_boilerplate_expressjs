@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
-import { User } from ".";
+import { User } from "./user";
 
 @Entity()
 export class Sms extends ExtendedBaseEntity {
@@ -19,7 +19,7 @@ export class Sms extends ExtendedBaseEntity {
   @Column()
   message: string;
 
-  @Column()
+  //@Column()
   @ManyToOne(() => User, (user) => user.id)
   sender_id: User;
 

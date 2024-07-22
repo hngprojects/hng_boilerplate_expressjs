@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { DataSource, Tree } from "typeorm";
+import { DataSource} from "typeorm";
 import config from "./config";
 
 export const AppDataSource = new DataSource({
@@ -11,7 +11,9 @@ export const AppDataSource = new DataSource({
   database: config.DB_NAME,
   synchronize: false,
   logging: false,
-  entities: ["src/models/**/*.ts"],
+  entities: ["src/models/**/*.ts"], // Automatically include all entity files
+  migrations: ["src/migration/**/*.ts"], // Automatically include all migration files
+  subscribers: ["src/subscriber/**/*.ts"]
   // ssl: false,
   // extra: {
   //   ssl: {
