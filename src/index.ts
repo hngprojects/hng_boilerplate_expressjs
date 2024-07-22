@@ -7,9 +7,7 @@ import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
 import { userRouter, authRoute, testimonialRoute, notificationRouter, smsRouter, blogRoute } from "./routes";
-
 import { routeNotFound, errorHandler } from "./middleware";
-// import { seed } from "./seeder";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
