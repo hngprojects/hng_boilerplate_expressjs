@@ -4,6 +4,9 @@ export * from "./user";
 export * from "./sendEmail.route";
 export * from "./help-center";
 export * from "./testimonial";
+export * from "./product";
+export * from "./notificationsettings"
+export * from "./sms";
 export * from "./sms";
 export * from "./notificationsettings";
 export * from "./job";
