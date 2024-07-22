@@ -1,4 +1,4 @@
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Organization, User } from "../models";
 import { UserRole } from "../enums/userRoles";
 import { ICreateOrganisation, IOrganisationService } from "../types";
