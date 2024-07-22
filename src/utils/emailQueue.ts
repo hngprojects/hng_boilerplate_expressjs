@@ -16,7 +16,7 @@ const emailQueue = new Bull('email', {
 emailQueue.process(async (job) => {
   try {
     await Sendmail(job.data);
-    log.info('Email sent successfully' );
+    log.info(`Email sent successfully to ${job.data.to}` );
   } catch (error) {
     log.error('Error sending email:', error);
     throw error;
