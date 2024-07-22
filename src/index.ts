@@ -13,6 +13,7 @@ import {
   testimonialRoute,
   notificationRouter,
   smsRouter,
+  jobRouter,
 } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
@@ -51,6 +52,7 @@ server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
+server.use("/api/v1/jobs", jobRouter);
 
 AppDataSource.initialize()
   .then(async () => {
