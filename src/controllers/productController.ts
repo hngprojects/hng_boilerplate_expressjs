@@ -27,7 +27,6 @@ export class ProductController {
         products: products.map((product) => ({
           name: product.name,
           description: product.description,
-          price: product.price,
           category: product.category,
         })),
         pagination: {

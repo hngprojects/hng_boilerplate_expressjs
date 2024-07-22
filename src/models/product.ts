@@ -14,9 +14,6 @@ export class Product extends ExtendedBaseEntity {
   description: string;
 
   @Column()
-  price: number;
-
-  @Column()
   category: string;
 
   @ManyToOne(() => User, (user) => user.products)
