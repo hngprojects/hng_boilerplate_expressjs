@@ -1,34 +1,3 @@
-// import { Request, Response, NextFunction } from "express";
-// import { AppDataSource } from "../config/ormconfig";
-// import { Organization } from "../entities/Organization.entites";
-
-// export interface AuthenticatedRequest extends Request {
-//   organization?: Organization;
-// }
-
-// export const authenticate = async (
-//   req: AuthenticatedRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   const organizationId = req.headers["organization-id"] as string;
-
-//   if (!organizationId) {
-//     return res.status(403).json({ error: "No organization ID provided" });
-//   }
-
-//   const organizationRepository = AppDataSource.getRepository(Organization);
-//   const organization = await organizationRepository.findOne({
-//     where: { id: organizationId },
-//   });
-
-//   if (!organization) {
-//     return res.status(403).json({ error: "Invalid organization ID" });
-//   }
-
-//   req.organization = organization;
-//   next();
-// };
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import { User } from "../../types/User";
