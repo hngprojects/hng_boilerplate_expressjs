@@ -12,7 +12,7 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 
 export const authMiddleware = async (
-  req: Request,
+  req: Request & { user?: User },
   res: Response,
   next: NextFunction
 ) => {

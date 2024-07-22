@@ -14,12 +14,21 @@ import {
   notificationRouter,
   smsRouter,
   jobRouter,
+<<<<<<< HEAD
   productRoute,
 } from './routes';
 import { routeNotFound, errorHandler } from './middleware';
 import { orgRouter } from './routes/organisation';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swaggerConfig';
+=======
+} from "./routes";
+import { routeNotFound, errorHandler } from "./middleware";
+import { orgRouter } from "./routes/organisation";
+import swaggerUi from "swagger-ui-express";
+import swaggerSpec from "./swaggerConfig";
+import { organisationRoute } from "./routes/createOrg";
+>>>>>>> dcdb249928adf7917e66dd83705c785d3709d7c8
 
 dotenv.config();
 
@@ -44,6 +53,7 @@ server.use(express.json());
 server.get('/', (req: Request, res: Response) => {
   res.send('Hello world');
 });
+<<<<<<< HEAD
 server.use('/api/v1', userRouter, orgRouter);
 server.use('/api/v1/auth', authRoute);
 server.use('/api/v1/help-center', helpRouter);
@@ -51,6 +61,14 @@ server.use('/api/v1/sms', smsRouter);
 server.use('/api/v1', testimonialRoute);
 server.use('/api/v1', productRoute);
 server.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+=======
+server.use("/api/v1", userRouter, orgRouter, organisationRoute);
+server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/help-center", helpRouter);
+server.use("/api/v1/sms", smsRouter);
+server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+>>>>>>> dcdb249928adf7917e66dd83705c785d3709d7c8
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use('/api/v1/settings', notificationRouter);
