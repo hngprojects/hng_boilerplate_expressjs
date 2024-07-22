@@ -5,3 +5,4 @@ export * from "./testimonial";
 export * from "./product";
 export * from "./notificationsettings"
 export * from "./sms";
+export * from "./sms";
