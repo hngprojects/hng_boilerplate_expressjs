@@ -25,6 +25,11 @@ export class contentController {
 // }
 
 export class AboutContentController extends contentController{
+
+    constructor(){
+        super()
+    }
+    
     //retrieves current content of about page
     async getContent(req: Request, res: Response) {
         try {
