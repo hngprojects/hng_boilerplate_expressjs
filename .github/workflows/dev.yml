@@ -23,10 +23,10 @@ jobs:
         run: yarn install
 
       - name: Run Test
-        run: yarn test --passWithNoTests
+        run: yarn test
 
-      - name: buld the dist
-        run: yarn build
+      # - name: buld the dist
+      #   run: yarn build
 
       - name: setup service file
         run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
