@@ -12,9 +12,11 @@ import {
   helpRouter,
   testimonialRoute,
   notificationRouter,
-  inviteRoute,
   smsRouter,
+  inviteRoute,
+  blogRoute,
 } from "./routes";
+
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
@@ -48,6 +50,7 @@ server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/blogs", blogRoute);
 server.use("/api/v1/invite", inviteRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
