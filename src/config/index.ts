@@ -14,6 +14,11 @@ const config = {
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_HOST: process.env.SMTP_HOST,
   SMTP_SERVICE: process.env.SMTP_SERVICE,
+  NODE_ENV: process.env.NODE_ENV,
+  TWILIO_SID: process.env.TWILIO_SID,
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
+
 };
 
 export default config;
