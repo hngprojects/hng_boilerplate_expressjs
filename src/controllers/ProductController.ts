@@ -1,67 +1,48 @@
-import { Request, Response, NextFunction } from 'express';
-import { Product } from '../models';
-import { User } from '../models';
-import { ResourceNotFound } from '../middleware/error';
-
-interface AuthenticatedRequest extends Request {
-  user?: User;
-}
+import { Request, Response } from 'express';
+import { ProductService } from '../services'; // Adjust the import path as necessary
 
 export class ProductController {
-  public async deleteProduct(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-    try {
-      const { id } = req.params;
-      //   const userId = (req.user as User).id;
-      const product = await Product.findOne({ where: { id } });
+  private productService = new ProductService();
 
-      if (!product) {
-        throw new ResourceNotFound('Product not found or you do not have permission to delete it');
+  async listProducts(req: Request, res: Response): Promise<void> {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      if (page <= 0 || limit <= 0) {
+        res.status(400).json({
+          status: 'bad request',
+          message: 'Invalid query params passed',
+          status_code: 400,
+        });
+        return;
       }
 
-      await product.remove();
+      const { products, totalItems } =
+        await this.productService.getPaginatedProducts(page, limit);
 
-      res.status(200).json({
-        message: 'Product deleted successfully',
-        status_code: 200
+      res.json({
+        success: true,
+        message: 'Products retrieved successfully',
+        products: products.map((product) => ({
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          category: product.category,
+        })),
+        pagination: {
+          totalItems,
+          totalPages: Math.ceil(totalItems / limit),
+          currentPage: page,
+        },
+        status_code: 200,
       });
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        status: 'error',
+        message: 'Internal server error',
+        status_code: 500,
+      });
     }
   }
 }
-
-/**
- * @swagger
- * /api/v1/delete/{id}:
- *   delete:
- *     summary: Deletes a product
- *     description: Deletes a single product based on the ID provided. Only accessible by authenticated users.
- *     tags: [Products]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         description: Unique identifier of the product to delete.
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Product deleted successfully.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   example: Product deleted successfully
- *                 status_code:
- *                   type: integer
- *                   example: 200
- *       404:
- *         description: Product not found or you do not have permission to delete it.
- *       401:
- *         description: Unauthorized. You need to be authenticated to perform this action.
- *     security:
- *       - bearerAuth: []
- */
