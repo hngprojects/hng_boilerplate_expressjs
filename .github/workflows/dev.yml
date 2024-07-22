@@ -2,7 +2,7 @@ name: Build, Test, and Deploy for Dev Branch
 
 on:
   push:
-    branch:
+    branchs:
       - dev
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
         run: yarn install
 
       - name: Run Test
-        run: yarn test --passWithNoTests
+        run: yarn test
 
       - name: buld the dist
         run: yarn build

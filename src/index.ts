@@ -37,6 +37,7 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter, orgRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/blogs", blogRoute);
