@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { DataSource, Tree } from "typeorm";
 import config from "./config";
 
-export const AppDataSource = new DataSource({
+const AppDataSource = new DataSource({
   type: "postgres",
   host: config.DB_HOST,
   port: 5432,
@@ -12,10 +12,12 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   logging: false,
   entities: ["src/models/**/*.ts"],
-  // ssl: false,
-  // extra: {
-  //   ssl: {
-  //     rejectUnauthorized: false,
-  //   },
-  // },
+  ssl: false,
+  extra: {
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  },
 });
+
+export default AppDataSource;

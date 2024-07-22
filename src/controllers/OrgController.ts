@@ -3,8 +3,41 @@ import { BadRequest, HttpError, ResourceNotFound, ServerError, Unauthorized } fr
 import * as jwt from "jsonwebtoken"
 import config from "../config";
 import { OrganisationService } from "../services";
-import { CustomRequest } from "../middleware/auth";
+import { OrgService } from "../services/OrgService";
 import validator from "validator";
+
+
+export class OrgController {
+    private orgService: OrgService;
+    constructor() {
+      this.orgService = new OrgService();
+    }
+  
+    async removeUser(req: Request, res: Response) {
+      try {
+        const user = await this.orgService.removeUser(
+          req.params.org_id,
+          req.params.user_id,
+        );
+        if (!user) {
+          return res.status(404).json({
+            status: "forbidden",
+            message: "User not found in the organization",
+            status_code: 404,
+          });
+        }
+        res.status(200).json({
+          status: "success",
+          message: "User deleted succesfully",
+          status_code: 200,
+        });
+      } catch (error) {
+        res
+          .status(400)
+          .json({ message: "Failed to remove user from organization" });
+      }
+    }
+  }
 
 export const createOrganisation = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -33,11 +66,12 @@ export const createOrganisation = async (req: Request, res: Response, next: Next
     }
 }
 
-export const deleteOrganisation = async (req: CustomRequest, res: Response, next: NextFunction) => {
+export const deleteOrganisation = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const organisationService = new OrganisationService();
         const {orgId} = req.params;
-        const{ userId} = req.user;
+        // const{ userId} = req.user;
+        const userId = null
         
         if (!validator.isUUID(orgId)) {
             throw new BadRequest("Invalid organization ID format");

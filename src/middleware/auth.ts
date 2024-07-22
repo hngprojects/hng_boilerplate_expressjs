@@ -1,23 +1,60 @@
 import { Request, Response, NextFunction } from "express";
+import { verifyToken } from "../utils";
+import { User } from "../models";
+import {
+  HttpError,
+  ResourceNotFound,
+  ServerError,
+  Unauthorized,
+} from "./error";
+import log from "../utils/logger";
 import jwt from "jsonwebtoken";
+import config from "../config";
 
-export interface CustomRequest extends Request {
-    user?: any;
-}
-export const authenticateJWT = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers['authorization'];
+export const authMiddleware = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const authHeader = req.headers.authorization;
 
-    if (authHeader) {
-        const token = authHeader.split(' ')[1];
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        status_code: "401",
+        message: "Invalid token",
+      });
+    }
 
-        jwt.verify(token, process.env.AUTH_SECRET, (err, user) => {
-            if (err) {
-                return res.status(400).json({ message: "JWT token is invalid.", status: 400 });
-            }
-            (req as CustomRequest).user = user; next();
+    const token = authHeader.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({
+        status_code: "401",
+        message: "Invalid token",
+      });
+    }
+
+    jwt.verify(token, config.TOKEN_SECRET, async (err, decoded: any) => {
+      if (err) {
+        return res.status(401).json({
+          status_code: "401",
+          message: "Invalid token",
         });
-    }
-    else {
-        return res.status(401).json({ message: "JWT token is missing or invalid.", status: 401 });
-    }
-}
+      }
+      const user = await User.findOne({
+        where: { email: decoded["email"] as string },
+      });
+      if (!user) {
+        return res.status(401).json({
+          status_code: "401",
+          message: "Invalid token",
+        });
+      }
+      req.user = user;
+      next();
+    });
+  } catch (error) {
+    log.error(error);
+    throw new ServerError("INTERNAL_SERVER_ERROR");
+  }
+};
