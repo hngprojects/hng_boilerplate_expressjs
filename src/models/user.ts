@@ -34,6 +34,18 @@ export class User extends ExtendedBaseEntity {
   password: string;
 
   @Column({
+    type: 'int',
+    default: 0,
+  })
+  attempts_left: number;
+
+  @Column({
+    type: 'timestamp',
+    nullable: true,
+  })
+  time_left: Date | null;
+
+  @Column({
     default: false,
   })
   isverified: boolean;

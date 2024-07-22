@@ -95,33 +95,51 @@ export class AuthService implements IAuthService {
     }
   }
 
+  
   public async login(
     payload: IUserLogin
   ): Promise<{ access_token: string; user: Partial<User> }> {
     const { email, password } = payload;
-
+  
     try {
       const user = await User.findOne({ where: { email } });
-
+  
       if (!user) {
         throw new HttpError(404, "User not found");
       }
-
+  
+      // Check if the user is currently throttled
+      if (user.time_left && new Date() < user.time_left) {
+        throw new HttpError(429, "Too many login attempts. Please try again later.");
+      }
+  
       const isPasswordValid = await comparePassword(password, user.password);
       if (!isPasswordValid) {
+        // Decrement attempts_left and set time_left if necessary
+        user.attempts_left -= 1;
+        if (user.attempts_left <= 0) {
+          user.time_left = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes cooldown
+          user.attempts_left = 3; // Reset attempts after cooldown
+        }
+        await user.save();
         throw new HttpError(401, "Invalid credentials");
       }
-
+  
       if (!user.isverified) {
         throw new HttpError(403, "Email not verified");
       }
-
+  
+      // Reset attempts_left and time_left on successful login
+      user.attempts_left = 3;
+      user.time_left = null;
+      await user.save();
+  
       const access_token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
         expiresIn: "1d",
       });
-
+  
       const { password: _, ...userWithoutPassword } = user;
-
+  
       return { access_token, user: userWithoutPassword };
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
