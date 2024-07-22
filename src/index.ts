@@ -1,15 +1,20 @@
 // src/index.ts
 import "reflect-metadata";
-import { AppDataSource } from "./data-source";
+import AppDataSource from "./data-source";
 import log from "./utils/logger";
 import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
-import { userRouter, authRoute, testimonialRoute, notificationRouter } from "./routes";
-
+import {
+  userRouter,
+  authRoute,
+  helpRouter,
+  testimonialRoute,
+  notificationRouter,
+  smsRouter,
+} from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
-import { seed } from "./seeder";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
@@ -30,7 +35,7 @@ server.use(
       "Content-Type",
       "Authorization",
     ],
-  }),
+  })
 );
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -40,6 +45,8 @@ server.get("/", (req: Request, res: Response) => {
 });
 server.use("/api/v1", userRouter, orgRouter, organisationRoute);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/help-center", helpRouter);
+server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
