@@ -15,7 +15,6 @@ import {
 } from './routes';
 
 import { routeNotFound, errorHandler } from './middleware';
-import { seed } from './seeder';
 import { orgRouter } from './routes/organisation';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swaggerConfig';
