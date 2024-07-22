@@ -1,4 +1,3 @@
-// src/services/passwordResetService.ts
 import { AppDataSource } from "../data-source";
 import { User } from "../models";
 import { HttpError } from "../middleware";
@@ -19,7 +18,7 @@ export class PasswordResetService {
 
       user.resetPasswordToken = resetToken;
       user.resetPasswordExpires = resetTokenExpires;
-      await AppDataSource.manager.save(user);
+      await AppDataSource.manager.save(User, user);
 
       const resetUrl = `${config.RESET_PASSWORD_URL}?token=${resetToken}`;
 
@@ -51,7 +50,7 @@ export class PasswordResetService {
       user.password = hashedPassword;
       user.resetPasswordToken = null;
       user.resetPasswordExpires = null;
-      await AppDataSource.manager.save(user);
+      await AppDataSource.manager.save(User, user);
 
       return { message: "Password has been reset successfully" };
     } catch (error) {

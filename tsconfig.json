@@ -10,6 +10,8 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
-    "typeRoots": ["src/types"]
-  }
+    "typeRoots": ["./node_modules/@types", "./src/types"]
+  },
+  
 }
+ 
