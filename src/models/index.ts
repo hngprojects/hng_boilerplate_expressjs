@@ -9,3 +9,4 @@ export * from "./blog";
 export * from "./organisationInvitation";
 export * from "./sms";
 export * from "./blog";
+export * from "./job";
