@@ -71,9 +71,6 @@ export class User extends ExtendedBaseEntity {
   @JoinTable()
   organizations: Organization[];
 
-  @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
-  sms: Sms[];
-
   @CreateDateColumn()
   createdAt: Date;
 
