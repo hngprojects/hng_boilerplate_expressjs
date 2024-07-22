@@ -9,11 +9,21 @@
     "test": "jest ",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js"
+    "prod": "node dist/index.js",
+    "migrate": "typeorm-ts-node-commonjs migration:run -d src/data-source",
+    "migration:create": "typeorm-ts-node-commonjs migration:create db/migrations/migration",
+    "migration:generate": "typeorm-ts-node-commonjs migration:generate db/migrations/migration -d src/data-source",
+    "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/data-source"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hngprojects/hng_boilerplate_expressjs"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hngprojects/hng_boilerplate_expressjs/issues"
+  },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.12",
@@ -21,7 +31,7 @@
     "@types/supertest": "^6.0.2",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
-    "ts-node": "^10.9.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   },
   "dependencies": {
@@ -52,6 +62,7 @@
     "swagger-ui-express": "^5.0.1",
     "ts-jest": "^29.2.3",
     "ts-node-dev": "^2.0.0",
+    "twilio": "^5.2.2",
     "typeorm": "^0.3.20"
   }
 }

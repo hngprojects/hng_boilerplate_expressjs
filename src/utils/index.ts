@@ -1,6 +1,7 @@
 import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import { Unauthorized } from "../middleware";
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
   `${fieldLabel} is invalid`;
@@ -37,6 +38,8 @@ export const verifyToken = (token: string): Record<string, unknown> | null => {
     const payload = jwt.verify(token, config.TOKEN_SECRET);
     return payload as Record<string, unknown>;
   } catch (error) {
-    throw new Error("Invalid token");
+    return {
+      error: error.message,
+    };
   }
 };

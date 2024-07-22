@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AppDataSource } from "../data-source";
+import AppDataSource from "../data-source";
 import { Testimonial } from "../models/Testimonial";
 import { Int32 } from "typeorm";
 
@@ -230,4 +230,44 @@ export default class TestimonialsController {
 			});
 		}
 	}
+  
+
+  // CODE BY TOMILLA OLUWAFEMI
+  public async getAllTestimonials(req: Request, res: Response) {
+    try {
+      const testimonials = await AppDataSource.getRepository(Testimonial).find();
+      res.status(200).json({
+        message: "Testimonials retrieved successfully",
+        status_code: 200,
+        data: testimonials,
+      });
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  }
+
+  public async deleteTestimonial(req: Request, res: Response) {
+    try {
+      const { testimonial_id } = req.params;
+
+      const testimonialToDelete = await AppDataSource.getRepository(Testimonial).findOne({
+        where: { id: testimonial_id },
+      });
+
+      if (!testimonialToDelete) {
+        return res
+          .status(404)
+          .send({ message: "Testimonial not found", status_code: 404 });
+      }
+
+      await AppDataSource.getRepository(Testimonial).remove(testimonialToDelete);
+
+      res.status(200).json({
+        message: "Testimonial deleted successfully",
+        status_code: 200,
+      });
+    } catch (error) {
+      res.status(500).send({ message: error.message });
+    }
+  }
 }
