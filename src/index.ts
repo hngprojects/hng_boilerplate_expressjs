@@ -12,9 +12,8 @@ import {
   testimonialRoute,
   notificationRouter,
   inviteRoute,
-    smsRouter,
+  smsRouter,
 } from "./routes";
-
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
