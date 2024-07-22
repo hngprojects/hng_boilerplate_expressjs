@@ -3,23 +3,22 @@ import {
   createInvitationService,
   deactivateInvitationService,
 } from "../services/invitation.service";
+import { User } from "../models";
 
-interface InvitationRequest extends Request {
-  user?: {
-    user_id: string;
-  };
+interface UserRequest extends Request {
+  user: User;
 }
 
 const createInvitation = async (
-  req: InvitationRequest,
+  req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
   const { orgId } = req.params;
-  const { user_id } = req.user;
+  const { id: userId } = req.user;
 
   try {
-    const invitation_link = await createInvitationService(orgId, user_id);
+    const invitation_link = await createInvitationService(orgId, userId);
     res.status(201).json({ message: "Invitation created", invitation_link });
   } catch (error) {
     next(error);
@@ -27,14 +26,14 @@ const createInvitation = async (
 };
 
 const deactivateInvitation = async (
-  req: InvitationRequest,
+  req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
   const { invitation_link } = req.body;
-  const { user_id } = req.user;
+  const { id: userId } = req.user;
   try {
-    const success = await deactivateInvitationService(invitation_link, user_id);
+    const success = await deactivateInvitationService(invitation_link, userId);
     if (success) {
       res.status(200).json({ message: "Invitation deactivated" });
     }

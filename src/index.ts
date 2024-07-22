@@ -17,7 +17,7 @@ import {
   jobRouter,
   inviteRoute,
 } from "./routes";
-
+// import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
@@ -62,7 +62,7 @@ server.use("/api/v1/jobs", jobRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    // seed().catch(log.error);
+    // await seed();
     server.use(express.json());
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");

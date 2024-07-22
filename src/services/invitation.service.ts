@@ -65,8 +65,11 @@ const deactivateInvitationService = async (
     throw createHttpError(404, "User not found");
   }
 
+  console.log(`Invitation user ID: ${invitation.user_id}`);
+  console.log(`Current user ID: ${userId}`);
+  console.log(`User role: ${user.role}`);
   const authorized_roles = [UserRole.ADMIN, UserRole.SUPER_ADMIN];
-  if (!authorized_roles.includes(user.role)) {
+  if (invitation.user_id !== userId && !authorized_roles.includes(user.role)) {
     throw createHttpError(
       403,
       "User is not authorized to deactivate this invitation link"

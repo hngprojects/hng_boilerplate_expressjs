@@ -63,6 +63,13 @@ export class Organization extends ExtendedBaseEntity {
   @ManyToMany(() => User, (user) => user.organizations)
   users: User[];
 
+  @OneToMany(
+    () => OrganisationInvitation,
+    (invitation) => invitation.organization,
+    { cascade: true }
+  )
+  invitations: OrganisationInvitation[];
+
   @BeforeInsert()
   generateSlug() {
     this.slug = uuidv4();
