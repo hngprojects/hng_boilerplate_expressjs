@@ -12,6 +12,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Profile, Product, Organization, Sms, Blog } from ".";
+import { UserOrganization } from "./user-organisation";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
@@ -61,6 +62,15 @@ export class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
+
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.user
+  )
+  userOrganizations: UserOrganization[];
+
+  @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
+  sms: Sms[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
     cascade: true,

@@ -34,8 +34,26 @@ export interface IAuthService {
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
 }
 
-// declare module "express-serve-static-core" {
-//   interface Request {
-//     user?: User;
-//   }
-// }
+export interface ICreateOrganisation {
+  name: string;
+  description: string;
+  email: string;
+  industry: string;
+  type: string;
+  country: string;
+  address: string;
+  state: string;
+}
+
+export interface IOrganisationService {
+  createOrganisation(
+    payload: ICreateOrganisation,
+    userId: string
+  ): Promise<unknown>;
+}
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: User;
+  }
+}
