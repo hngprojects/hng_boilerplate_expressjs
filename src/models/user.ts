@@ -16,6 +16,7 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
+import { UserOrganization } from "./userOrganization";
 
 @Entity()
 @Unique(["email"])
@@ -42,12 +43,12 @@ export class User extends ExtendedBaseEntity {
   @JoinColumn()
   profile: Profile;
 
-  @Column({
-    type: "enum",
-    enum: UserRole,
-    default: UserRole.USER,
-  })
-  role: UserRole;
+  // @Column({
+  //   type: "enum",
+  //   enum: UserRole,
+  //   default: UserRole.USER,
+  // })
+  // role: UserRole;
 
   @Column()
   otp: number;
@@ -62,17 +63,14 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
 
-  @OneToMany(() => Sms, (sms) => sms.sender)
-  sms: Sms[];
-
-  @ManyToMany(() => Organization, (organization) => organization.users, {
-    cascade: true,
-  })
-  @JoinTable()
-  organizations: Organization[];
-
-  // @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
+  // @OneToMany(() => Sms, (sms) => sms.sender)
   // sms: Sms[];
+
+  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
+  userOrganizations: UserOrganization[];
+
+  @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
+  sms: Sms[];
 
   @CreateDateColumn()
   createdAt: Date;

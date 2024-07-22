@@ -1,4 +1,4 @@
-import { User } from "../models";
+import { Organization, User } from "../models";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -36,4 +36,23 @@ declare module "express-serve-static-core" {
   interface Request {
     user?: User;
   }
+}
+
+
+export interface ICreateOrganisation {
+  name: string;
+  description: String,
+  email: string,
+  industry: string,
+  type: string,
+  country: string,
+  address: string,
+  state: string,
+}
+
+export interface IOrganisationService {
+  createOrganisation(payload: ICreateOrganisation, userId: string):
+  Promise<unknown>;
+  deleteOrganisation(id: string): Promise<Organization | null>;
+  getOrganisation(is: string): Promise<Organization | null>
 }
