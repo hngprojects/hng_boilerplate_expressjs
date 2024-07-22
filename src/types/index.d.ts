@@ -2,17 +2,6 @@ import { User } from "../models";
 import { Request } from "express";
 import { UserRole } from "../enums/userRoles";
 
-export interface PaginatedBlogResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Blog[];
-}
-
-export interface IBlogService {
-  getPaginatedBlogPosts(page: number, pageSize: number): Promise<PaginatedBlogResponse>;
-}
-
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
   getAllUsers(): Promise<User[]>;

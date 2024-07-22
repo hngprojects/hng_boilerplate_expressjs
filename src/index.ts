@@ -14,7 +14,6 @@ import {
   notificationRouter,
   smsRouter,
   inviteRoute,
-  blogRoute,
 } from "./routes";
 
 import { routeNotFound, errorHandler } from "./middleware";
@@ -50,7 +49,6 @@ server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
-server.use("/api/v1/blogs", blogRoute);
 server.use("/api/v1/invite", inviteRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
