@@ -4,10 +4,13 @@ const config: Config = {
   verbose: true,
   preset: "ts-jest",
   testEnvironment: "node",
-  globals: {
-    "ts-jest": {
-      tsconfig: "tsconfig.jest.json",
-    },
+  transform: {
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      {
+        tsconfig: "tsconfig.jest.json",
+      },
+    ],
   },
 };
 
