@@ -8,3 +8,5 @@ temp/
 env
 src/entity
 src/ormconfig.ts
+data/
+docker-compose.yml
