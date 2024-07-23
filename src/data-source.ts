@@ -16,21 +16,12 @@ const AppDataSource = new DataSource({
   entities: ["src/models/**/*.ts"],
   migrations: ["src/migrations/**/*.ts"],
   migrationsTableName: "migrations",
-// <<<<<<< allow-user-create-blog_post
-//   ssl: false,
-//   extra: {
-//     ssl: {
-//       rejectUnauthorized: false,
-//     },
-//   },
-// =======
   // ssl: false,
   // extra: {
   //   ssl: {
   //     rejectUnauthorized: false,
   //   },
   // },
-// >>>>>>> dev
 });
 
 export async function initializeDataSource() {

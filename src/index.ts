@@ -15,8 +15,8 @@ import {
   smsRouter,
   productRouter,
   jobRouter,
-  blogRouter
-  adminRouter,
+  blogRouter,
+  adminRouter
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
