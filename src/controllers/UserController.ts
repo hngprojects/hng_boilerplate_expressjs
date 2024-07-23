@@ -9,14 +9,14 @@ class UserController {
       if (!id) {
         return res.status(401).json({
           status_code: 401,
-          error: "Unauthorized",
+          error: "Unauthorized! User Id not",
         });
       }
 
       if (!validate(id)) {
-        return res.status(401).json({
-          status_code: 401,
-          error: "Unauthorized! Invalid User Id Format",
+        return res.status(400).json({
+          status_code: 400,
+          error: "400 Bad Request! Invalid User Id Format",
         });
       }
 
