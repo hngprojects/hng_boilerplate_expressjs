@@ -1,7 +1,7 @@
 // src/routes/help-center.ts
 import { Router } from "express";
 import HelpController from "../controllers/HelpController";
-import { authMiddleware, verifyAdmin } from "../services";
+import { authMiddleware} from "../middleware/auth";
 
 const helpRouter = Router();
 const helpController = new HelpController();

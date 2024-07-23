@@ -20,10 +20,16 @@ export interface IUserSignUp {
   password: string;
   phone: string;
 }
-
 export interface IUserLogin {
   email: string;
   password: string;
+}
+
+export interface IProduct {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
 }
 
 export interface IAuthService {
