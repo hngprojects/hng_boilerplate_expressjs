@@ -7,7 +7,7 @@ const isDevelopment = config.NODE_ENV === "development";
 const AppDataSource = new DataSource({
   type: "postgres",
   host: config.DB_HOST,
-  port: 5432,
+  port: Number(config.DB_PORT) || 5432,
   username: config.DB_USER,
   password: config.DB_PASSWORD,
   database: config.DB_NAME,
@@ -16,12 +16,12 @@ const AppDataSource = new DataSource({
   entities: ["src/models/**/*.ts"],
   migrations: ["src/migrations/**/*.ts"],
   migrationsTableName: "migrations",
-  ssl: false,
-  extra: {
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  },
+  // ssl: false,
+  // extra: {
+  //   ssl: {
+  //     rejectUnauthorized: false,
+  //   },
+  // },
 });
 
 export async function initializeDataSource() {
@@ -32,4 +32,3 @@ export async function initializeDataSource() {
 }
 
 export default AppDataSource;
-  

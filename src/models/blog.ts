@@ -28,4 +28,7 @@ export class Blog extends ExtendedBaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column()
+  published_at: Date;
 }
