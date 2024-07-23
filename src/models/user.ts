@@ -55,6 +55,12 @@ export class User extends ExtendedBaseEntity {
 
   @Column()
   otp_expires_at: Date;
+  
+  @Column()
+  is_deleted: boolean;
+  
+  @Column()
+  google_id: string;
 
   @OneToMany(() => Product, (product) => product.user, { cascade: true })
   @JoinTable()
@@ -63,17 +69,14 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
 
-  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.user
+  )
   userOrganizations: UserOrganization[];
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
   sms: Sms[];
-
-  @ManyToMany(() => Organization, (organization) => organization.users, {
-    cascade: true,
-  })
-  @JoinTable()
-  organizations: Organization[];
 
   @CreateDateColumn()
   createdAt: Date;

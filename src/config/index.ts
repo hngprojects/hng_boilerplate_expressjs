@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const config = {
-  port: process.env.PORT ?? 8000,
-  "api-prefix": "api/v1",
+  PORT: process.env.PORT ?? 8000,
+  API_PREFIX: "api/v1",
   DB_USER: process.env.DB_USER,
   DB_HOST: process.env.DB_HOST,
   DB_PASSWORD: process.env.DB_PASSWORD,
@@ -15,10 +15,6 @@ const config = {
   SMTP_HOST: process.env.SMTP_HOST,
   SMTP_SERVICE: process.env.SMTP_SERVICE,
   NODE_ENV: process.env.NODE_ENV,
-  TWILIO_SID: process.env.TWILIO_SID,
-  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
-  TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
-
 };
 
 export default config;
