@@ -11,7 +11,6 @@ import { User } from ".";
 import { v4 as uuidv4 } from "uuid";
 import { UserOrganization } from "./user-organisation";
 import ExtendedBaseEntity from "./extended-base-entity";
-import { OrganisationInvitation } from "./organisationInvitation";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -62,13 +61,6 @@ export class Organization extends ExtendedBaseEntity {
 
   @ManyToMany(() => User, (user) => user.organizations)
   users: User[];
-
-  @OneToMany(
-    () => OrganisationInvitation,
-    (invitation) => invitation.organization,
-    { cascade: true }
-  )
-  invitations: OrganisationInvitation[];
 
   @BeforeInsert()
   generateSlug() {

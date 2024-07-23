@@ -10,15 +10,9 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
-import {
-  Profile,
-  Product,
-  Organization,
-  Sms,
-  Blog,
-  OrganisationInvitation,
-} from ".";
+import { Profile, Product, Organization, Sms, Blog } from ".";
 import { UserOrganization } from "./user-organisation";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
@@ -85,14 +79,15 @@ export class User extends ExtendedBaseEntity {
   @JoinTable()
   organizations: Organization[];
 
-  @OneToMany(() => OrganisationInvitation, (invitation) => invitation.user, {
-    cascade: true,
-  })
-  invitations: OrganisationInvitation[];
-
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+
+  @Column({ nullable: true })
+  isDeleted: boolean;
 }

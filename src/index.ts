@@ -11,11 +11,11 @@ import {
   authRoute,
   helpRouter,
   testimonialRoute,
-  notificationRouter,
+  // notificationRouter,
   smsRouter,
   productRouter,
+  adminRouter,
   jobRouter,
-  inviteRoute,
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -47,17 +47,17 @@ server.use(express.json());
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
-server.use("/api/v1", userRouter, orgRouter, organisationRoute);
+server.use("/api/v1/admin", adminRouter);
+server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/product", productRouter);
-server.use("/api/v1/invite", inviteRoute);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
-server.use("/api/v1/settings", notificationRouter);
+// server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 
 AppDataSource.initialize()
