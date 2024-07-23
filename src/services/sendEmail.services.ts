@@ -36,7 +36,7 @@ export class EmailService {
     const data = {
       title: payload.variables?.title,
       logoUrl: 'https://example.com/logo.png',
-      imageUrl: 'https://example.com/reset-password.png',
+      imageUrl: 'https://exampleImg.com/reset-password.png',
       userName: payload.variables?.user_name || user.name,
       activationLinkUrl: payload.variables?.activationLink,
       resetUrl: payload.variables?.resetUrl,
