@@ -17,4 +17,14 @@ export class UserService implements IUserService {
     });
     return users;
   }
+
+  public async deleteUserById(id: string): Promise<void> {
+    const user = await User.findOne({ where: { id } });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await User.remove(user);
+  }
 }

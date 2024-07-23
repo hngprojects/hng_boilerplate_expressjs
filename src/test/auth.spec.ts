@@ -7,6 +7,10 @@ import { Sendmail } from "../utils/mail";
 import jwt from "jsonwebtoken";
 import { Conflict, HttpError } from "../middleware";
 import { AuthService } from "../services";
+import UserController from "../controllers/UserController";
+import { UserService } from "../services/user.services";
+import { NextFunction } from "express";
+import { UserRole } from "../enums/userRoles";
 
 jest.mock("../data-source", () => {
   return {
@@ -20,6 +24,32 @@ jest.mock("../models");
 jest.mock("../utils");
 jest.mock("../utils/mail");
 jest.mock("jsonwebtoken");
+
+// Mock UserService for deleteUser functionality
+jest.mock("../services/user.services", () => ({
+  UserService: jest.fn().mockImplementation(() => ({
+    deleteUserById: jest.fn().mockResolvedValue(undefined), // Mock successful deletion
+  })),
+}));
+
+// Mock authMiddleware and checkPermissions if not already mocked
+jest.mock("../middleware/auth", () => ({
+  authMiddleware: jest.fn((req: Request, res: Response, next: NextFunction) => {
+    // Simulate unauthorized access by ending the request-response cycle without calling next()
+    return (req: Request, res: Response, next: NextFunction) => {
+      res.status(401).json({ status: 401, message: "Unauthorized" }).end();
+    };
+  }),
+}));
+
+jest.mock("../middleware/checkUserRole", () => ({
+  checkPermissions: jest.fn((roles: UserRole[]) => (req: Request, res: Response, next: NextFunction) => {
+    // Simulate permission check failure by ending the request-response cycle without calling next()
+    return (req: Request, res: Response, next: NextFunction) => {
+      res.status(403).json({ status: 403, message: "Forbidden" }).end();
+    };
+  }),
+}));
 
 describe("AuthService", () => {
   let authService: AuthService;
@@ -199,5 +229,94 @@ describe("AuthService", () => {
 
       await expect(authService.login(payload)).rejects.toThrow(HttpError);
     });
+  });
+
+  describe("UserController - deleteUser", () => {
+    let req: Partial<Request>;
+    let res: Partial<Response>;
+
+    beforeEach(() => {
+      req = {
+        params: {
+          id: "testUserId",
+        },
+      };
+      res = {
+        json: jest.fn(),
+        status: jest.fn().mockReturnThis(), // Chainable mock
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks(); // Clear mocks after each test
+    });
+
+    it("should delete a user successfully", async () => {
+      const userController = new UserController();
+      await userController.deleteUser(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        status: 200,
+        message: "User deleted successfully",
+      });
+    });
+
+    it("should return 404 if user not found", async () => {
+      (UserService as jest.Mock).mockImplementationOnce(() => {
+        return {
+          deleteUserById: jest.fn().mockRejectedValue(new Error("User not found")),
+        };
+      });
+        
+      const userController = new UserController();
+      await userController.deleteUser(req as Request, res as Response);
+
+      expect(res.status).toHaveBeenCalledWith(404);
+      expect(res.json).toHaveBeenCalledWith({
+        status: 404,
+        message: "User not found",
+      });
+    });
+
+    it("should handle internal server errors", async () => {
+      (UserService as jest.Mock).mockImplementationOnce(() => {
+        return {
+          deleteUserById: jest.fn().mockRejectedValue(new Error("Database error")),
+        };
+      });
+        
+      const userController = new UserController();
+      await userController.deleteUser(req as Request, res as Response);
+        
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.json).toHaveBeenCalledWith({
+        status: 500,
+        message: "Internal server error",
+      });
+    });
+
+    // it("should reject requests from unauthenticated users", async () => {
+    //   const userController = new UserController();
+    //   req.user = { role: UserRole.USERS }; // Assuming a user object is attached by authMiddleware
+    //   await expect(userController.deleteUser(req as Request, res as Response));
+
+    //   expect(res.status).toHaveBeenCalledWith(401);
+    //   expect(res.json).toHaveBeenCalledWith({
+    //     status: 401,
+    //     message: "Unauthorized",
+    //   });
+    // });
+
+    // // Simulate lack of SUPER_ADMIN role
+    // it("should reject requests from users lacking SUPER_ADMIN role", async () => {
+    //   const userController = new UserController();
+    //   req.user = { role: UserRole.USER }; // Assume middleware sets this; simulate lack of SUPER_ADMIN role
+    //   await expect(res.status).toHaveBeenCalledWith(403);
+    //   expect(res.json).toHaveBeenCalledWith({
+    //     status: 403,
+    //     message: "Forbidden",
+    //   });
+    // });
   });
 });
