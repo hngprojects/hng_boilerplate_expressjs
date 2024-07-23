@@ -76,11 +76,11 @@ export class AuthService implements IAuthService {
 
       const user = await User.findOne({ where: { id: userId } });
       if (!user) {
-        return new HttpError(404, "User not found");
+        throw new HttpError(404, "User not found");
       }
 
       if (user.otp !== otp || user.otp_expires_at < new Date()) {
-        return new HttpError(400, "Invalid OTP ");
+        throw new HttpError(400, "Invalid OTP ");
       }
 
       user.isverified = true;
@@ -89,9 +89,9 @@ export class AuthService implements IAuthService {
       return { message: "Email successfully verified" };
     } catch (error) {
       if (error.name === "TokenExpiredError") {
-        return new HttpError(400, "Verification token has expired");
+        throw new HttpError(400, "Verification token has expired");
       }
-      return new HttpError(error.status || 500, error.message || error);
+      throw new HttpError(error.status || 500, error.message || error);
     }
   }
 
