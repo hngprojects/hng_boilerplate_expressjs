@@ -52,6 +52,7 @@ server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/blog", blogRouter);
+server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);

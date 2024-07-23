@@ -7,7 +7,7 @@ const likeRepository = AppDataSource.getRepository(Like);
 const blogRepository = AppDataSource.getRepository(Blog);
 const userRepository = AppDataSource.getRepository(User);
 
-export const addLike = async (blogId: number, userId: string) => {
+export const addLike = async (blogId: string, userId: string) => {
   const blog = await blogRepository.findOneBy({ id: blogId });
   const user = await userRepository.findOneBy({ id: userId });
 

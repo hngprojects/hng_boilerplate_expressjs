@@ -5,7 +5,7 @@ import { Blog } from "../models/blog";
 const commentRepository = AppDataSource.getRepository(Comment);
 const blogRepository = AppDataSource.getRepository(Blog);
 
-export const createComment = async (blogId: number, content: string) => {
+export const createComment = async (blogId: string, content: string) => {
   const blog = await blogRepository.findOneBy({ id: blogId });
 
   if (!blog) throw new Error("Blog not found");
