@@ -5,19 +5,36 @@ import logs from './logger';
 import smsServices from '../services/sms.services';
 
 
-const retries: Number = 3;
-const delay = 1000 * 60 * 5; // 5 minutes
+interface EmailData {
+ from: string;
+  to: string;
+  subject: string;
+  text?: string;
+  html: string;
+}
+
+interface SmsData {
+  sender: string;
+  message: string;
+  phoneNumber: string;
+}
+
+const retries: number = 3;
+const delay = 1000 * 60 * 5;
+
+const redisConfig = {
+  host: config.REDIS_HOST,
+  port: Number(config.REDIS_PORT),
+  // password: config.REDIS_PASSWORD,
+};
 
 // Email Queue
 const emailQueue = new Bull('Email', {
-  redis: {
-    host: config.REDIS_HOST,
-    port: Number(config.REDIS_PORT),
-    // password: config.REDIS_PASSWORD,
-  },
-});
+  redis: redisConfig,
+}
+);
 
-const addEmailToQueue = async (data: any) => {
+const addEmailToQueue = async (data: EmailData) => {
   await emailQueue.add(data, {
     attempts: retries,
     backoff: {
@@ -42,12 +59,9 @@ emailQueue.process(async (job: Job, done) => {
 
 // Notification Queue
 const notificationQueue = new Bull('Notification', {
-  redis: {
-    host: config.REDIS_HOST,
-    port: Number(config.REDIS_PORT),
-    // password: config.REDIS_PASSWORD,
-  },
-});
+  redis: redisConfig,
+}
+);
 
 const addNotificationToQueue = async (data: any) => {
   await notificationQueue.add(data, {
@@ -74,14 +88,10 @@ notificationQueue.process(async (job: Job, done) => {
 
 // SMS Queue
 const smsQueue = new Bull('SMS', {
-  redis: {
-    host: config.REDIS_HOST,
-    port: Number(config.REDIS_PORT),
-    // password: config.REDIS_PASSWORD,
-  },
+  redis: redisConfig,
 });
 
-const addSmsToQueue = async (data: any) => {
+const addSmsToQueue = async (data: SmsData) => {
   await smsQueue.add(data, {
     attempts: retries,
     backoff: {
