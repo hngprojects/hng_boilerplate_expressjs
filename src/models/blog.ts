@@ -84,6 +84,6 @@ export class Blog {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column()
-  published_at: Date;
+  // @Column({ type: "timestamptz", nullable: true })
+  // published_at: Date;
 }
