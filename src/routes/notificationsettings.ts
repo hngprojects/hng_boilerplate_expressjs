@@ -1,4 +1,4 @@
-import { CreateNotification, GetNotification } from "../controllers"
+import { CreateNotification, GetNotification } from "../controllers";
 import { Router } from "express";
 import { authMiddleware } from "../middleware";
 
@@ -15,4 +15,4 @@ notificationRouter.get(
   GetNotification
 );
 
-export { notificationRouter }
+export { notificationRouter };
