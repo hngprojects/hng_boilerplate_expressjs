@@ -1,5 +1,7 @@
 import Router from "express";
 import { OrgController } from "../controllers/OrgController";
+import { authMiddleware } from "../middleware";
+import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
 const orgController = new OrgController();
@@ -14,4 +16,8 @@ orgRouter.get(
   orgController.getOrganizations.bind(orgController),
 );
 
+
+orgRouter.get("/organisations/:org_id", authMiddleware, validateOrgId,
+  orgController.getSingleOrg.bind(orgController),
+);
 export { orgRouter };
