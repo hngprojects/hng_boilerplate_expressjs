@@ -9,7 +9,7 @@ const createUsers = async () => {
     const user1 = new User();
     user1.name = "John Doe";
     user1.email = "johndoe@example.com";
-    user1.password = "password"; // Use a hashing function in real applications
+    user1.password = "password";
     user1.otp = Math.floor(Math.random() * 10000);
     user1.otp_expires_at = new Date(Date.now() + 3600 * 1000);
     user1.profile = new Profile();
@@ -24,7 +24,7 @@ const createUsers = async () => {
     const user2 = new User();
     user2.name = "Jane Doe";
     user2.email = "janedoe@example.com";
-    user2.password = "password"; // Use a hashing function in real applications
+    user2.password = "password";
     user2.otp = Math.floor(Math.random() * 10000);
     user2.otp_expires_at = new Date(Date.now() + 3600 * 1000);
     user2.profile = new Profile();
