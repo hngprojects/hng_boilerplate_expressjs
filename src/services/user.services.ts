@@ -11,19 +11,14 @@ export class UserService implements IUserService {
   constructor() {
     this.userRepository = AppDataSource.getRepository(User);
   }
-  public async getUserById(id: string): Promise<User | null> {
-    const user = await User.findOne({
+  
+  static async getUserById(id: string): Promise<User | null> {
+    const userRepository = AppDataSource.getRepository(User);
+    return userRepository.findOne({
       where: { id },
-      relations: ["profile", "products", "organizations"],
+      relations: ["profile"],
+      withDeleted: true,
     });
-    return user;
-  }
-
-  public async getAllUsers(): Promise<User[]> {
-    const users = await User.find({
-      relations: ["profile", "products", "organizations"],
-    });
-    return users;
   }
 
   public async softDeleteUser(id:string):Promise<UpdateResult> {
@@ -39,3 +34,5 @@ export class UserService implements IUserService {
     return deletedUser;
   }
 }
+
+export { UserService };
