@@ -86,5 +86,4 @@ export class Blog {
 
   @Column()
   published_at: Date;
-
 }
