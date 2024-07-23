@@ -1,5 +1,4 @@
 // @ts-nocheck
-// tests/unit/userController.test.js
 import { Request, Response, NextFunction } from "express";
 import { UserController } from "../controllers";
 import { UserService } from "../services";
@@ -10,6 +9,8 @@ jest.mock("uuid", () => ({
   ...jest.requireActual("uuid"),
   validate: jest.fn(),
 }));
+jest.mock("../models");
+jest.mock("jsonwebtoken");
 
 describe("Unit test for /api/v1/users/me", () => {
   let req: Partial<Request>;
@@ -35,7 +36,7 @@ describe("Unit test for /api/v1/users/me", () => {
   });
 
   it("should return 400 if user ID format is invalid", async () => {
-    validateUUID.mockReturnValue(false);
+    (validateUUID as jest.Mock).mockReturnValue(false);
 
     await UserController.getProfile(req as Request, res as Response, next);
 
@@ -47,8 +48,8 @@ describe("Unit test for /api/v1/users/me", () => {
   });
 
   it("should return 404 if user is not found", async () => {
-    validateUUID.mockReturnValue(true);
-    UserService.getUserById.mockResolvedValue(null);
+    (validateUUID as jest.Mock).mockReturnValue(true);
+    (UserService.getUserById as jest.Mock).mockResolvedValue(null);
 
     await UserController.getProfile(req as Request, res as Response, next);
 
@@ -62,24 +63,23 @@ describe("Unit test for /api/v1/users/me", () => {
   it("should return 404 if user is soft deleted", async () => {
     const user = {
       id: req.user.id,
-      name: "John Doe",
-      email: "john.doe@example.com",
+      name: "Samixx Yasuke",
+      email: "samixx@gmail.com",
       role: "user",
       profile: {
-        id: "profile_id",
-        first_name: "John",
-        last_name: "Doe",
+        id: "2d184000-50a6-4479-a25e-f007e91ce1f8",
+        first_name: "Samixx",
+        last_name: "Yasuke",
         phone: "1234567890",
         avatarUrl: "http://example.com/avatar.jpg",
       },
       deletedAt: new Date(),
       isDeleted: true,
     };
-    validateUUID.mockReturnValue(true);
-    UserService.getUserById.mockResolvedValue(user);
+    (validateUUID as jest.Mock).mockReturnValue(true);
+    (UserService.getUserById as jest.Mock).mockResolvedValue(user);
 
     await UserController.getProfile(req as Request, res as Response, next);
-
     expect(res.status).toHaveBeenCalledWith(404);
     expect(res.json).toHaveBeenCalledWith({
       status_code: 404,
@@ -90,21 +90,21 @@ describe("Unit test for /api/v1/users/me", () => {
   it("should return 200 and user profile details if user is found", async () => {
     const user = {
       id: req.user.id,
-      name: "John Doe",
-      email: "john.doe@example.com",
+      name: "Samixx Yasuke",
+      email: "samixx@example.com",
       role: "user",
       profile: {
-        id: "profile_id",
-        first_name: "John",
-        last_name: "Doe",
+        id: "2d184000-50a6-4479-a25e-f007e91ce1f8",
+        first_name: "Samixx",
+        last_name: "Yasuke",
         phone: "1234567890",
         avatarUrl: "http://example.com/avatar.jpg",
       },
       deletedAt: null,
       isDeleted: false,
     };
-    validateUUID.mockReturnValue(true);
-    UserService.getUserById.mockResolvedValue(user);
+    (validateUUID as jest.Mock).mockReturnValue(true);
+    (UserService.getUserById as jest.Mock).mockResolvedValue(user);
 
     await UserController.getProfile(req as Request, res as Response, next);
 
@@ -127,13 +127,12 @@ describe("Unit test for /api/v1/users/me", () => {
   });
 
   it("should return 500 if there is a server error", async () => {
-    validateUUID.mockReturnValue(true);
-    UserService.getUserById.mockImplementation(() => {
+    (validateUUID as jest.Mock).mockReturnValue(true);
+    (UserService.getUserById as jest.Mock).mockImplementation(() => {
       throw new Error("Server error");
     });
 
     await UserController.getProfile(req as Request, res as Response, next);
-
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       status_code: 500,
