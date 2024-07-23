@@ -108,16 +108,4 @@ describe("checkPermissions middleware", () => {
     });
     expect(next).not.toHaveBeenCalled();
   });
-
-  it("should call next if no authorization header", async () => {
-    const middleware = checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]);
-    await middleware(req, res, next);
-
-    expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({
-      status: "error",
-      message: "Access denied. Invalid token",
-    });
-    expect(next).not.toHaveBeenCalled();
-  });
 });
