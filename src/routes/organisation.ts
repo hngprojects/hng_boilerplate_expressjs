@@ -7,11 +7,11 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.delete(
-  "/organizations/:org_id/users/:user_id",
+  "/:org_id/users/:user_id",
   orgController.removeUser.bind(orgController)
 );
 orgRouter.post(
-  "/organisations",
+  "/",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController)

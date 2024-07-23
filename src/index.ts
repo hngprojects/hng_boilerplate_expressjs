@@ -16,7 +16,6 @@ import {
   productRouter,
   adminRouter,
   jobRouter,
-  adminRouter,
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -50,6 +49,7 @@ server.get("/", (req: Request, res: Response) => {
 server.use("/api/v1/admin", adminRouter);
 server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1/organisation", orgRouter);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
