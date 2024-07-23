@@ -1,7 +1,7 @@
 import AppDataSource from '../data-source';
 import { EmailQueue } from '../models/emailQueue';
 import { EmailQueuePayload } from '../types';
-import emailQueue from '../utils/emailQueue';
+import {addEmailToQueue} from '../utils/queue';
 import config from '../config';
 import { ServerError } from '../middleware';
 
@@ -20,7 +20,7 @@ export class EmailService {
       html: '<b>Message to be replace with the templete</b>'
     };
     
-    await emailQueue.add(emailContent);
+    await addEmailToQueue(emailContent);
     
     return newEmail;
   }

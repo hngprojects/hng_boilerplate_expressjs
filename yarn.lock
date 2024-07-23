@@ -333,6 +333,30 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@bull-board/api@5.21.1", "@bull-board/api@^5.21.1":
+  version "5.21.1"
+  resolved "https://registry.yarnpkg.com/@bull-board/api/-/api-5.21.1.tgz#6ae4ad000e278618910a0f902a6ee1e6375694c7"
+  integrity sha512-anzTfhOJ93eraT/GYeyxWpxRMarHwuevn6pPBfdOj0LC2eg98OPnkfdMSjcrpL3qrqsxON0RslS7kuPfCEnX6A==
+  dependencies:
+    redis-info "^3.0.8"
+
+"@bull-board/express@^5.21.1":
+  version "5.21.1"
+  resolved "https://registry.yarnpkg.com/@bull-board/express/-/express-5.21.1.tgz#aacb15ef3d34b4559f417f526e8c6752ff120c22"
+  integrity sha512-wr232JAv21NDSAhnb60MgY7dZ4FfMwKy01h6Jdkhb5y+B/P1fBY+rPOfK4DEtD0KroDg0mXdhqxD/ZodqN2NPg==
+  dependencies:
+    "@bull-board/api" "5.21.1"
+    "@bull-board/ui" "5.21.1"
+    ejs "^3.1.10"
+    express "^4.19.2"
+
+"@bull-board/ui@5.21.1":
+  version "5.21.1"
+  resolved "https://registry.yarnpkg.com/@bull-board/ui/-/ui-5.21.1.tgz#bbfbb24108c4a7d01e254c0a92a1520765785a55"
+  integrity sha512-JBDeCqG7j/c3WE0uGMN9snPkRJz9/D6MpTZzyVj7KOxIJwNKPOICNFZbCrCNi7bcJYHDJ2xGTN9OO1mw7i43BQ==
+  dependencies:
+    "@bull-board/api" "5.21.1"
+
 "@cspotcode/source-map-support@^0.8.0":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-support/-/source-map-support-0.8.1.tgz#00629c35a688e05a88b1cda684fb9d5e73f000a1"
@@ -2872,7 +2896,7 @@ lodash.once@^4.0.0:
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
   integrity sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==
 
-lodash@^4.17.21:
+lodash@^4.17.11, lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -3511,6 +3535,13 @@ redis-errors@^1.0.0, redis-errors@^1.2.0:
   version "1.2.0"
   resolved "https://registry.npmjs.org/redis-errors/-/redis-errors-1.2.0.tgz"
   integrity sha512-1qny3OExCf0UvUV/5wpYKf2YwPcOqXzkwKKSmKHiE6ZMQs5heeE/c8eXK+PNllPvmjgAbfnsbpkGZWy8cBpn9w==
+
+redis-info@^3.0.8:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/redis-info/-/redis-info-3.1.0.tgz#5e349c8720e82d27ac84c73136dce0931e10469a"
+  integrity sha512-ER4L9Sh/vm63DkIE0bkSjxluQlioBiBgf5w1UuldaW/3vPcecdljVDisZhmnCMvsxHNiARTTDDHGg9cGwTfrKg==
+  dependencies:
+    lodash "^4.17.11"
 
 redis-parser@^3.0.0:
   version "3.0.0"

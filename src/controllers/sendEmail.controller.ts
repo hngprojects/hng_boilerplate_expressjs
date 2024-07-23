@@ -10,7 +10,7 @@ export const SendEmail = async (req: Request, res: Response) => {
 
   const { template_id, recipient, variables } = req.body;
   const payload: EmailQueuePayload = { templateId: template_id, recipient, variables };
-  if (!template_id || !recipient || !variables) {
+  if (!template_id || !recipient ) {
     // const response = {
     //   StatusCode: 400,  
     //   error: 'Invalid input. Please provide template_id, recipient, and variables.',

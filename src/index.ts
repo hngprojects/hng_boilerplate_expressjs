@@ -22,6 +22,7 @@ import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
+import ServerAdapter from "./views/bull-board";
 
 dotenv.config();
 
@@ -55,10 +56,12 @@ server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use("/admin/queues", ServerAdapter.getRouter());
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
+
 
 AppDataSource.initialize()
   .then(async () => {

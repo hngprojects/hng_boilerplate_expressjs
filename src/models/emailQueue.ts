@@ -8,7 +8,7 @@ export class EmailQueue {
   @Column()
   templateId: number;
 
-  @Column()
+  @Column() 
   recipient: string;
 
   @Column('json')
