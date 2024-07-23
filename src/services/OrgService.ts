@@ -43,4 +43,16 @@ export class OrgService implements IOrgService {
 
     return user;
   }
+
+
+  // Get all the Organisations created by a user with his ID
+  public async getOrganizationsByUserId(user_id: string): Promise<Organization[]> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+
+    const organizations = await organizationRepository.find({
+      where: { id: user_id },  
+    });
+
+    return organizations;
+  }
 }

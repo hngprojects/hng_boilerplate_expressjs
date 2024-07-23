@@ -31,4 +31,34 @@ export class OrgController {
         .json({ message: "Failed to remove user from organization" });
     }
   }
+
+
+  async getOrganizations(req: Request, res: Response) {
+    try {
+      const userId = req.params.id;
+      const organizations = await this.orgService.getOrganizationsByUserId(userId);
+
+      if (organizations.length === 0) {
+        return res.status(200).json({
+          status: "success",
+          status_code: 200,
+          message: "No organizations found for this user.",
+          data: [],
+        });
+      }
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Organizations retrieved successfully.",
+        data: organizations,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to retrieve organizations. Please try again later.",
+      });
+    }
+  }
 }
