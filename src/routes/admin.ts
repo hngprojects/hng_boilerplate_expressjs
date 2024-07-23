@@ -9,6 +9,10 @@ const adminOrganisationController = new admin.AdminOrganisationController();
 adminRouter.patch("/organisation/:id", authMiddleware, 
 checkPermissions([UserRole.SUPER_ADMIN]), 
 adminOrganisationController.updateOrg.bind(adminOrganisationController));
-
+adminRouter.post(
+    "/users/:user_id/roles", authMiddleware,
+    checkPermissions([UserRole.SUPER_ADMIN]),
+    adminOrganisationController.setUserRole.bind(adminOrganisationController),
+  );
 
 export { adminRouter }; 
