@@ -5,6 +5,10 @@ import { authMiddleware } from '../middleware';
 const productRouter = express.Router();
 const productController = new ProductController();
 
-productRouter.delete('/delete/:id',authMiddleware /*add authorization middleware*/ , productController.deleteProduct);
+productRouter.get(
+  '/products',
+  authMiddleware,
+  productController.listProducts.bind(productController)
+);
 
 export { productRouter };
