@@ -34,6 +34,9 @@ export class User extends ExtendedBaseEntity {
   @Column()
   password: string;
 
+  @Column()
+  google_id: string;
+
   @Column({
     default: false,
   })
