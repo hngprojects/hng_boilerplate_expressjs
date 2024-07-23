@@ -10,6 +10,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { Profile, Product, Organization, Sms, Blog } from ".";
 import { UserOrganization } from "./user-organisation";
@@ -80,4 +81,10 @@ export class User extends ExtendedBaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({type: 'boolean', default: false})
+  is_deleted: boolean;
+
+  @DeleteDateColumn({nullable: true})
+  deletedAt: Date;
 }

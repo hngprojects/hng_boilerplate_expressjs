@@ -1,6 +1,8 @@
 // src/controllers/UserController.ts
 import { Request, Response } from "express";
-import { UserService } from "../services/user.services";
+import { UserService } from "../services";
+import { HttpError } from "../middleware";
+import { isUUID } from "class-validator";
 
 class UserController {
   private userService: UserService;
@@ -27,6 +29,42 @@ class UserController {
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  async deleteUser(req: Request, res: Response) {
+    const id = req.params.id;
+
+    if (!id || !isUUID(id)) {
+      return res.status(400).json({
+                                status: "unsuccesful",
+                                status_code: 400,
+                                message: "Valid id must be provided",
+                              });
+    }
+
+    try {
+
+      await this.userService.softDeleteUser(id);
+
+      return res.status(202).json({
+                              status: "sucess",
+                              message: "User deleted successfully",
+                              status_code: 202,
+                            });
+      
+    } catch (error) {
+      
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error"
+        });
+      }
+
     }
   }
 }
