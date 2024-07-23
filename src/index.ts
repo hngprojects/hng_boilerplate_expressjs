@@ -12,10 +12,10 @@ import {
   helpRouter,
   testimonialRoute,
   notificationRouter,
-  smsRouter,
   productRouter,
   jobRouter,
 } from "./routes";
+import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
