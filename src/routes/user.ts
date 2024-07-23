@@ -4,6 +4,6 @@ import { authMiddleware } from "../middleware";
 
 const userRouter = Router();
 
-userRouter.get("/me", UserController.getProfile);
+userRouter.get("/me", authMiddleware, UserController.getProfile);
 
 export { userRouter };

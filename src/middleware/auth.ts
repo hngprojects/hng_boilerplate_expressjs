@@ -11,10 +11,6 @@ import log from "../utils/logger";
 import jwt from "jsonwebtoken";
 import config from "../config";
 
-interface UserRequest extends Request {
-  user?: any;
-}
-
 export const authMiddleware = async (
   req: Request & { user?: User },
   res: Response,

@@ -11,7 +11,7 @@ import {
   authRoute,
   helpRouter,
   testimonialRoute,
-  // notificationRouter,
+  notificationRouter,
   smsRouter,
   productRouter,
   adminRouter,
@@ -57,7 +57,7 @@ server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use(routeNotFound);
 server.use(errorHandler);
-// server.use("/api/v1/settings", notificationRouter);
+server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 
 AppDataSource.initialize()

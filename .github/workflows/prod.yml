@@ -32,6 +32,6 @@ jobs:
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkprod
 
-  # test:
-  #   -name: Run test
-  #   run: yarn jest
+  test:
+    -name: Run test
+    run: yarn jest
