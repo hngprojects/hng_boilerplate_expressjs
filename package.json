@@ -9,6 +9,7 @@
     "test": "jest ",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
+    "seed": "ts-node src/seeder.ts",
     "prod": "node dist/index.js",
     "migrate": "typeorm-ts-node-commonjs migration:run -d src/data-source",
     "migration:create": "typeorm-ts-node-commonjs migration:create db/migrations/migration",
