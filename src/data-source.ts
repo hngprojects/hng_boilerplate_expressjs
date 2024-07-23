@@ -16,7 +16,7 @@ const AppDataSource = new DataSource({
   entities: ["src/models/**/*.ts"],
   migrations: ["src/migrations/**/*.ts"],
   migrationsTableName: "migrations",
-  // ssl: false,
+  ssl: true,
   // extra: {
   //   ssl: {
   //     rejectUnauthorized: false,

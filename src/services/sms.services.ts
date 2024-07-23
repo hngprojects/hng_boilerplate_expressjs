@@ -7,7 +7,7 @@ import { User } from "../models";
 class SmsService {
   private twilioClient: Twilio;
   constructor() {
-    this.twilioClient = new Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
+    //  this.twilioClient = new Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
   }
   public async sendSms(
     sender: User,

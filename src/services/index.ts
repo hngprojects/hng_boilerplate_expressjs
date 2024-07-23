@@ -3,3 +3,4 @@ export * from "./user.services";
 export * from "./help.services";
 export * from "./product.services";
 export * from "./admin.services";
+export * from "./organization.services";
