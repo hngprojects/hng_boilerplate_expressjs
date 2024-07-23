@@ -805,17 +805,12 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-1.3.5.tgz#1ef302e01cf7d2b5a0fa526790c9123bf1d06690"
   integrity sha512-/pyBZWSLD2n0dcHE3hq8s8ZvcETHtEuF+3E7XVt0Ig2nvsVQXdghHVcEkIWjy9A0wKfTn97a/PSDYohKIlnP/w==
 
-"@types/node@*":
+"@types/node@*", "@types/node@^20.14.11":
   version "20.14.11"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-20.14.11.tgz#09b300423343460455043ddd4d0ded6ac579b74b"
   integrity sha512-kprQpL8MMeszbz6ojB5/tU8PLN4kesnN8Gjzw349rDlNgsSzg90lAVj3llK99Dh7JON+t9AuscPPFW6mPbTnSA==
   dependencies:
     undici-types "~5.26.4"
-
-"@types/node@^16.18.103":
-  version "16.18.103"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.103.tgz#5557c7c32a766fddbec4b933b1d5c365f89b20a4"
-  integrity sha512-gOAcUSik1nR/CRC3BsK8kr6tbmNIOTpvb1sT+v5Nmmys+Ho8YtnIHP90wEsVK4hTcHndOqPVIlehEGEA5y31bA==
 
 "@types/nodemailer@^6.4.15":
   version "6.4.15"
@@ -3938,10 +3933,10 @@ typeorm@^0.3.20:
     uuid "^9.0.0"
     yargs "^17.6.2"
 
-typescript@^5.5.3:
-  version "5.5.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.5.3.tgz#e1b0a3c394190838a0b168e771b0ad56a0af0faa"
-  integrity sha512-/hreyEujaB0w76zKo6717l3L0o/qEUtRgdvUBvlkhoWeOVMjMuHNHk0BRBzikzuGDqNmPQbg5ifMEqsHLiIUcQ==
+typescript@^5.5.4:
+  version "5.5.4"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-5.5.4.tgz#d9852d6c82bad2d2eda4fd74a5762a8f5909e9ba"
+  integrity sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==
 
 uglify-js@^3.1.4:
   version "3.19.0"

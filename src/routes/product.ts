@@ -1,14 +1,19 @@
-import express from 'express';
-import { ProductController } from '../controllers';
-import { authMiddleware } from '../middleware';
+import express from "express";
+import { ProductController } from "../controllers/ProductController";
+import { authMiddleware } from "../middleware";
 
 const productRouter = express.Router();
 const productController = new ProductController();
 
 productRouter.get(
-  '/products',
+  "/products",
   authMiddleware,
   productController.listProducts.bind(productController)
 );
 
+productRouter.get(
+  "/product/:id",
+  authMiddleware,
+  productController.getSpecificProduct
+);
 export { productRouter };

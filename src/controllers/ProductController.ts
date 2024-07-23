@@ -1,9 +1,12 @@
-import { Request, Response } from 'express';
-import { ProductService } from '../services'; // Adjust the import path as necessary
+import { ProductService } from "../services/product.services";
+import { Request, Response } from "express";
 
 export class ProductController {
-  private productService = new ProductService();
+  private productService: ProductService;
 
+  constructor() {
+    this.productService = new ProductService();
+  }
   async listProducts(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -11,8 +14,8 @@ export class ProductController {
 
       if (page <= 0 || limit <= 0) {
         res.status(400).json({
-          status: 'bad request',
-          message: 'Invalid query params passed',
+          status: "bad request",
+          message: "Invalid query params passed",
           status_code: 400,
         });
         return;
@@ -23,7 +26,7 @@ export class ProductController {
 
       res.json({
         success: true,
-        message: 'Products retrieved successfully',
+        message: "Products retrieved successfully",
         products: products.map((product) => ({
           name: product.name,
           description: product.description,
@@ -39,8 +42,28 @@ export class ProductController {
       });
     } catch (error) {
       res.status(500).json({
-        status: 'error',
-        message: 'Internal server error',
+        status: "error",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+  }
+
+  async getSpecificProduct(req: Request, res: Response) {
+    try {
+      const product_service = new ProductService();
+      const product = await product_service.getProduct(req.params.id);
+      if (!product)
+        return res.status(404).json({
+          status: "Unsuccessful",
+          message: "Product does not exist",
+          status_code: 404,
+        });
+      res.json(product);
+    } catch (error) {
+      res.status(500).json({
+        status: "Unsuccessful",
+        message: "Internal server error",
         status_code: 500,
       });
     }

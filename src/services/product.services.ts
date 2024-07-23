@@ -1,13 +1,8 @@
-import { getRepository, Repository } from 'typeorm';
-import AppDataSource from '../data-source';
-import { Product } from '../models/product';
+import AppDataSource from "../data-source";
+import { Product } from "../models";
 
 export class ProductService {
-  private productRepository: Repository<Product>;
-
-  constructor() {
-    this.productRepository = AppDataSource.getRepository(Product);
-  }
+  private productRepository = AppDataSource.getRepository(Product);
 
   async getPaginatedProducts(
     page: number,
@@ -19,5 +14,16 @@ export class ProductService {
     });
 
     return { products, totalItems };
+  }
+
+  public async getProduct(id: string): Promise<Product | null> {
+    try {
+      const product = await this.productRepository.findOne({
+        where: { id },
+      });
+      return product;
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 }
