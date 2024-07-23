@@ -14,6 +14,7 @@
     "skipLibCheck": true,
     "typeRoots": ["src/types"]
   },
+  "types": ["node", "jest"],
   "include": ["src/**/*", "config"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }
