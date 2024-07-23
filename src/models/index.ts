@@ -4,7 +4,7 @@ export * from "./profile";
 export * from "./product";
 export * from "./helpcentertopic";
 export * from "./notification";
-export * from "./sms";
 export * from "./blog";
+export * from "./sms";
 export * from "./job";
 export * from "./user-organisation";

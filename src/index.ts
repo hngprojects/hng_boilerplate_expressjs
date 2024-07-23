@@ -14,9 +14,11 @@ import {
   notificationRouter,
   smsRouter,
   productRouter,
+  adminRouter,
   jobRouter,
   adminRouter,
 } from "./routes";
+// import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
@@ -30,7 +32,7 @@ server.options("*", cors());
 server.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: [
       "Origin",
       "X-Requested-With",
@@ -46,7 +48,7 @@ server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
 server.use("/api/v1/admin", adminRouter);
-server.use("/api/v1", userRouter, orgRouter);
+server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
@@ -60,7 +62,7 @@ server.use("/api/v1/jobs", jobRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    // seed().catch(log.error);
+    // await seed();
     server.use(express.json());
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
