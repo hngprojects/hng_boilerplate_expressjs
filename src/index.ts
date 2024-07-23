@@ -13,6 +13,7 @@ import {
   testimonialRoute,
   notificationRouter,
   productRouter,
+  adminRouter,
   jobRouter,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
@@ -31,7 +32,7 @@ server.options("*", cors());
 server.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: [
       "Origin",
       "X-Requested-With",
@@ -46,7 +47,8 @@ server.use(express.json());
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
-server.use("/api/v1", userRouter, orgRouter, organisationRoute);
+server.use("/api/v1/admin", adminRouter);
+server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
@@ -57,11 +59,11 @@ server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
-server.use("/api/v1", updateRouter);
+server.use("/api/v1", orgRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    // seed().catch(log.error);
+    // await seed();
     server.use(express.json());
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
