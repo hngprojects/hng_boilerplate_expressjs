@@ -1,6 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+const app = require("express")();
+app.use(require("express").json());
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const config = {
   port: process.env.PORT ?? 8000,
   "api-prefix": "api/v1",
@@ -18,7 +22,7 @@ const config = {
   TWILIO_SID: process.env.TWILIO_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
   TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
-
+  STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
 };
 
 export default config;
