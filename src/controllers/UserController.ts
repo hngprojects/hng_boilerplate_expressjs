@@ -57,6 +57,21 @@ class UserController {
       });
     }
   }
+
+  static async updateUserProfile(req: Request, res: Response) {
+    try {
+      const user = await UserService.updateUserProfile(req.params.id, req.body, req.file);
+      if (!user) {
+        return res.status(404).json({
+          status_code: 404,
+          error: "User not found",
+        });
+      }
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
 }
 
 export { UserController };
