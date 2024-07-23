@@ -85,9 +85,9 @@ export class User extends ExtendedBaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date;
+  @Column({type: 'boolean', default: false})
+  is_deleted: boolean;
 
-  @Column({ nullable: true })
-  isDeleted: boolean;
+  @DeleteDateColumn({nullable: true})
+  deletedAt: Date;
 }
