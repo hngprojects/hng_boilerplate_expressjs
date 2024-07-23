@@ -17,6 +17,7 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
+import { Like } from "./like";
 
 @Entity()
 @Unique(["email"])
@@ -62,6 +63,9 @@ export class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
+
+  @OneToMany(() => Like, like => like.user)
+  likes: Like[];
 
   @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
   userOrganizations: UserOrganization[];
