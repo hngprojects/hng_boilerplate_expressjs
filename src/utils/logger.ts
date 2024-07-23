@@ -1,7 +1,7 @@
-import logger from "pino";
+import pino from "pino";
 import dayjs from "dayjs";
 
-const log = logger({
+const log = pino({
   transport: {
     target: "pino-pretty",
   },

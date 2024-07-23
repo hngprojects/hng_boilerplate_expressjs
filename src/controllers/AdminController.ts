@@ -43,4 +43,4 @@ class AdminOrganisationController {
   }
 }
 
-export default AdminOrganisationController;
+export default { AdminOrganisationController };
