@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Request, Response } from "express";
 import { OrgController } from "../controllers/OrgController";
-import { OrgService } from "../services/OrgService";
+import { OrgService } from "../services/organisation.service";
 import { User } from "../models/user";
 import { Organization } from "../models/organization";
 import AppDataSource from "../data-source";
