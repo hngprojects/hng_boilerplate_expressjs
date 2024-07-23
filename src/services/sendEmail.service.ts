@@ -1,23 +1,66 @@
 import AppDataSource from '../data-source';
-import { EmailQueue } from '../models/emailQueue';
+import  {EmailQueue ,User } from '../models';
 import { EmailQueuePayload } from '../types';
 import {addEmailToQueue} from '../utils/queue';
 import config from '../config';
 import { ServerError } from '../middleware';
+import Handlebars from 'handlebars';
+import path from 'path';
+import fs from 'fs';
 
 export class EmailService {
-  async queueEmail(payload: EmailQueuePayload): Promise<EmailQueue> {
+  async getEmailTemplates(): Promise<{}[]> {
+    const templateDir = path.resolve('src/views/email/templates');
+    const templates = fs.readdirSync(templateDir);
+    const availableTemplate = templates.map((template) =>{
+       return{templateId: template.split('.')[0]};
+    }
+      );
+
+      return availableTemplate;
+
+  }
+  
+
+
+  async queueEmail(payload: EmailQueuePayload , user): Promise<EmailQueue> {
     const emailQueueRepository = AppDataSource.getRepository(EmailQueue);
     const newEmail = emailQueueRepository.create(payload);
     await emailQueueRepository.save(newEmail);
+    
+    const templatePath = path.resolve(`src/views/email/templates/${payload.templateId}.hbs` );
+   if (!fs.existsSync(templatePath)) {
+      throw new ServerError('Invalid template id' +templatePath);
+    }
 
-   
+    const data = {
+      title: payload.variables?.title,
+      logoUrl: 'https://example.com/logo.png',
+      imageUrl: 'https://example.com/reset-password.png',
+      userName: user.name,
+      activationLinkUrl: payload.variables?.activationLink,
+      resetUrl: payload.variables?.resetUrl,
+      companyName: 'Boilerplate',
+      supportUrl: 'https://example.com/support',
+      socialIcons: [
+          { url: 'https://facebook.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/tiktok@2x.png', alt: 'Facebook' },
+          { url: 'https://twitter.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/twitter@2x.png', alt: 'Twitter' },
+          { url: 'https://instagram.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/instagram@2x.png', alt: 'Instagram' }
+      ],
+      companyWebsite: 'https://example.com',
+      preferencesUrl: 'https://example.com/preferences',
+      unsubscribeUrl: 'https://example.com/unsubscribe'
+  };
+
+    const templateSource = fs.readFileSync(templatePath, 'utf8');
+    const template = Handlebars.compile(templateSource);
+    const htmlTemplate = template(data);
+
     const emailContent = {
       from:  config.SMTP_USER,
       to: payload.recipient,
-      subject: 'Email subject',
-      text: 'Message to be replace with the templete',
-      html: '<b>Message to be replace with the templete</b>'
+      subject: data.title,
+      html: htmlTemplate,
     };
     
     await addEmailToQueue(emailContent);

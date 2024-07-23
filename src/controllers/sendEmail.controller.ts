@@ -1,38 +1,62 @@
 import { Request, Response } from 'express';
 import { EmailService } from '../services';
-import { EmailQueuePayload } from '../types';
-import { ServerError ,BadRequest } from '../middleware'; 
-
+import { EmailQueuePayload } from '../types'; 
+import  {User } from '../models';
+import AppDataSource from '../data-source';
 
 const emailService = new EmailService();
 
 export const SendEmail = async (req: Request, res: Response) => {
-
   const { template_id, recipient, variables } = req.body;
-  const payload: EmailQueuePayload = { templateId: template_id, recipient, variables };
-  if (!template_id || !recipient ) {
-    // const response = {
-    //   StatusCode: 400,  
-    //   error: 'Invalid input. Please provide template_id, recipient, and variables.',
-    // };
-    res.status(400).json(new BadRequest('Invalid input. Please provide template_id, recipient, and variables.'));
-    return;
+  if (!template_id || !recipient) {
+    return res.status(400).json({
+      success: false,
+      status_code: 400,
+      message: 'Invalid input. Template ID and recipient are required.'
+      })
   }
+  
+  const payload: EmailQueuePayload = { templateId: template_id, recipient, variables };
 
   try {
-    await emailService.queueEmail(payload);
+    const availableTemplates:{}[] = await emailService.getEmailTemplates();
+    const templateIds = availableTemplates.map((template: { templateId: string; }) => template.templateId);
+
+    if (!templateIds.includes(template_id)) {
+      return res.status(400).json({
+        success: false,
+        status_code: 400,
+        message: 'Template not found',
+        available_templates: templateIds,
+      });
+      }
+
+      const user = await AppDataSource.getRepository(User).findOne({ where: { email: payload.recipient } });
+        if (!user) {
+          return res.status(404).json({
+            success: false,
+            status_code: 404,
+            message: 'User not found',
+          });
+        }
+   
+
+    await emailService.queueEmail(payload , user);
     await emailService.sendEmail(payload);
 
-    const response = {
-      message: 'Email sending request accepted and is being processed.',
-    };
-    res.status(202).json(response);
+    return res.status(202).json({ message: 'Email sending request accepted and is being processed.' });
   } catch (error) {
     console.error('Error sending email:', error);
-    const response = {
-      statusCode: 500,  
-      error: 'Internal server error.',
-    };
-    res.status(500).json(new ServerError(response.error));
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const getEmailTemplates = async (req: Request, res: Response) => {
+  try {
+    const templates = await emailService.getEmailTemplates();
+    return res.status(200).json({ message: 'Available templates', templates });
+  } catch (error) {
+    console.error('Error getting email templates:', error);
+    return res.status(500).json({ message: 'Internal server error.' });
   }
 };

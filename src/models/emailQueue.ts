@@ -6,7 +6,7 @@ export class EmailQueue {
   id: number;
 
   @Column()
-  templateId: number;
+  templateId: string;
 
   @Column() 
   recipient: string;

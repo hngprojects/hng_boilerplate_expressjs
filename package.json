@@ -7,6 +7,7 @@
     "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest ",
+    "test:email": "jest views/email/tests",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
     "prod": "node dist/index.js",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
+    "@types/fs-extra": "^11.0.4",
     "@types/jest": "^29.5.12",
     "@types/node": "^16.18.103",
     "@types/supertest": "^6.0.2",
@@ -52,6 +54,7 @@
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.1.0",
+    "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
     "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
