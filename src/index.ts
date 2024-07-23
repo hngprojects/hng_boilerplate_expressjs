@@ -14,13 +14,14 @@ import {
   notificationRouter,
   smsRouter,
   productRouter,
-  jobRouter
+  jobRouter,
 } from "./routes";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
+import updateRouter from "./routes/updateOrg";
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
+server.use("/api/v1", updateRouter);
 
 AppDataSource.initialize()
   .then(async () => {
