@@ -31,4 +31,32 @@ export class OrgController {
         .json({ message: "Failed to remove user from organization" });
     }
   }
+
+
+  async deleteOrganization(req: Request, res: Response) {
+    const { org_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: "Valid organization ID must be provided.",
+      });
+    }
+
+    try {
+      await this.orgService.deleteOrganization(org_id);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Organization deleted successfully.",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to delete organization. Please try again later.",
+      });
+    }
+  }
 }
