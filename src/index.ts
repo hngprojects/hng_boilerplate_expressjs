@@ -16,6 +16,7 @@ import {
   productRouter,
   adminRouter,
   jobRouter,
+  sendEmailRoute,
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
