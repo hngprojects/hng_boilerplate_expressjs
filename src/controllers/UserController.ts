@@ -6,6 +6,12 @@ import { isUUID } from "class-validator";
 import { validate } from "uuid";
 
 class UserController {
+  private userService: UserService;
+
+  constructor() {
+    this.userService = new UserService();
+  }
+
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
@@ -31,7 +37,7 @@ class UserController {
         });
       }
 
-      if (user?.deletedAt || user?.isDeleted) {
+      if (user?.deletedAt || user?.is_deleted) {
         return res.status(404).json({
           status_code: 404,
           error: "User not found! (soft deleted user)",
@@ -58,6 +64,15 @@ class UserController {
         status_code: 500,
         error: "Internal Server Error",
       });
+    }
+  }
+
+  async getAllUsers(req: Request, res: Response) {
+    try {
+      const users = await this.userService.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   }
 
@@ -98,4 +113,4 @@ class UserController {
   }
 }
 
-export { UserController };
+export default UserController;

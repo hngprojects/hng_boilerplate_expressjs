@@ -5,7 +5,7 @@ import { HttpError } from "../middleware";
 import { Repository, UpdateResult } from 'typeorm';
 import AppDataSource from '../data-source';
 
-export class UserService implements IUserService {
+export class UserService  {
   private userRepository: Repository<User>;
 
   constructor() {
@@ -21,6 +21,13 @@ export class UserService implements IUserService {
     });
   }
 
+  public async getAllUsers(): Promise<User[]> {
+    const users = await User.find({
+      relations: ["profile", "products", "organizations"],
+    });
+    return users;
+  }
+
   public async softDeleteUser(id:string):Promise<UpdateResult> {
     const user = await this.userRepository.findOne({where: {id}});
 
@@ -34,5 +41,3 @@ export class UserService implements IUserService {
     return deletedUser;
   }
 }
-
-export { UserService };
