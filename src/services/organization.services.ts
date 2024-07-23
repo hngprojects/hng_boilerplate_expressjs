@@ -1,7 +1,7 @@
 import { Organization, User, UserOrganization } from "../models";
 import { UserRole } from "../enums/userRoles";
 import AppDataSource from "../data-source";
-import { HttpError } from "../middleware";
+import { BadRequest, HttpError } from "../middleware";
 import {
   IOrgService,
   IUserService,
@@ -30,17 +30,10 @@ export class OrgService implements IOrgService {
 
       await AppDataSource.manager.save(userOrganization);
 
-      const user = await AppDataSource.getRepository(User).findOne({
-        where: { id: userId },
-        relations: ["userOrganizations", "userOrganizations.organization"],
-      });
-
-      user.userOrganizations.push(userOrganization);
-      await AppDataSource.getRepository(User).save(user);
-
       return { newOrganisation };
     } catch (error) {
-      throw new HttpError(error.status || 500, error.message || error);
+      console.log(error);
+      throw new BadRequest("Client error");
     }
   }
 

@@ -28,7 +28,7 @@ export class OrgController {
 
       return res.status(201).json(respObj);
     } catch (error) {
-      return next(error);
+      next(error);
     }
   }
 
