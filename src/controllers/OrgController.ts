@@ -1,4 +1,4 @@
- import { Request, Response } from "express";
+import { Request, Response } from "express";
 import { OrgService } from "../services/OrgService";
 
 export class OrgController {
@@ -11,7 +11,7 @@ export class OrgController {
     try {
       const user = await this.orgService.removeUser(
         req.params.org_id,
-        req.params.user_id,
+        req.params.user_id
       );
       if (!user) {
         return res.status(404).json({
@@ -26,9 +26,11 @@ export class OrgController {
         status_code: 200,
       });
     } catch (error) {
-      res
-        .status(400)
-        .json({ message: "Failed to remove user from organization" });
+      res.status(400).json({
+        status: "Bad Request",
+        message: "Failed to remove user from organization",
+        status_code: "400",
+      });
     }
   }
 }
