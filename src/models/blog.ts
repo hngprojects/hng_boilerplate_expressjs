@@ -83,4 +83,8 @@ export class Blog {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @Column()
+  published_at: Date;
+
 }

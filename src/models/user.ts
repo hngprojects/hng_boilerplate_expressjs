@@ -10,6 +10,7 @@ import {
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { Profile, Product, Organization, Sms, Blog } from ".";
 import { UserOrganization } from "./user-organisation";
@@ -68,6 +69,7 @@ export class User extends ExtendedBaseEntity {
   likes: Like[];
 
   @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
+
   userOrganizations: UserOrganization[];
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
@@ -84,4 +86,10 @@ export class User extends ExtendedBaseEntity {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
+
+  @Column({ nullable: true })
+  isDeleted: boolean;
 }
