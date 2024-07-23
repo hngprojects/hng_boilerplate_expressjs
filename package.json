@@ -2,8 +2,12 @@
   "name": "hng_boilerplate_expressjs",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
+  "directories": {
+    "doc": "docs"
+  },
   "scripts": {
+    "dev": "ts-node doc.ts",
     "start:dev": "ts-node-dev --respawn --transpile-only ./src/index",
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest ",
