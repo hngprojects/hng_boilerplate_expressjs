@@ -2,8 +2,7 @@ name: Build, Test, and Deploy for Prod Branch
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -31,7 +30,3 @@ jobs:
         run: |
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkprod
-
-  test:
-    -name: Run test
-    run: yarn jest
