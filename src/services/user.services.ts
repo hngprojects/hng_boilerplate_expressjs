@@ -1,21 +1,14 @@
-// src/services/UserService.ts
-import { User } from "../models/user";
-import { IUserService } from "../types";
+import AppDataSource from "../data-source";
+import { User } from "../models";
 
-export class UserService implements IUserService {
-  public async getUserById(id: string): Promise<User | null> {
-    const user = await User.findOne({
+class UserService {
+  static async getUserById(id: string): Promise<User | null> {
+    const userRepository = AppDataSource.getRepository(User);
+    return userRepository.findOne({
       where: { id },
-      relations: ["profile", "products", "organizations"],
+      relations: ["profile"],
+      withDeleted: true,
     });
-    return user;
-  }
-
-  public async getAllUsers(): Promise<User[]> {
-    const users = await User.find({
-      relations: ["profile", "products", "organizations"],
-    });
-    return users;
   }
 
   public async deleteUserById(id: string): Promise<void> {
@@ -28,3 +21,5 @@ export class UserService implements IUserService {
     await User.remove(user);
   }
 }
+
+export { UserService };
