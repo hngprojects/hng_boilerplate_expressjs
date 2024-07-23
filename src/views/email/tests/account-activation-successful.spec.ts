@@ -4,16 +4,15 @@ import Handlebars from 'handlebars';
 import path from 'path';
 
 // Load the template
-const templateSource = fs.readFileSync(path.resolve('src/views/email/templates/password-reset.hbs'), 'utf8');
+const templateSource = fs.readFileSync(path.resolve('src/views/email/templates/account-activation-successful.hbs'), 'utf8');
 const template = Handlebars.compile(templateSource);
 
 // Sample data to pass to the template
 const data = {
-    title: 'Reset Your Password',
+    title: 'Your Account is Now Active!',
     logoUrl: 'https://example.com/logo.png',
-    imageUrl: 'https://example.com/activation-image.png',
+    imageUrl: 'https://example.com/example.png',
     userName: 'John Doe',
-    resetUrl: 'https://example.com/reset-password',
     companyName: 'Boilerplate',
     supportUrl: 'https://example.com/support',
     socialIcons: [
@@ -35,7 +34,6 @@ describe('Email Template', () => {
         expect(result).toContain(data.logoUrl);
         expect(result).toContain(data.imageUrl);
         expect(result).toContain(`Hi ${data.userName}`);
-        expect(result).toContain(data.resetUrl);
         expect(result).toContain(data.companyName);
         expect(result).toContain(data.supportUrl);
         data.socialIcons.forEach(icon => {

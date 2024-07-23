@@ -4,17 +4,17 @@ import Handlebars from 'handlebars';
 import path from 'path';
 
 // Load the template
-const templateSource = fs.readFileSync(path.resolve('src/views/email/templates/password-reset.hbs'), 'utf8');
+const templateSource = fs.readFileSync(path.resolve('src/views/email/templates/password-reset-complete.hbs'), 'utf8');
 const template = Handlebars.compile(templateSource);
 
 // Sample data to pass to the template
 const data = {
-    title: 'Reset Your Password',
+    title: 'Password Reset Complete',
     logoUrl: 'https://example.com/logo.png',
-    imageUrl: 'https://example.com/activation-image.png',
+    imageUrl: 'https://example.com/reset-password-complete.png',
     userName: 'John Doe',
     resetUrl: 'https://example.com/reset-password',
-    companyName: 'Boilerplate',
+    accountRecoverUrl: 'https://example.com/forgot',
     supportUrl: 'https://example.com/support',
     socialIcons: [
         { url: 'https://facebook.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/tiktok@2x.png', alt: 'Facebook' },
@@ -36,7 +36,7 @@ describe('Email Template', () => {
         expect(result).toContain(data.imageUrl);
         expect(result).toContain(`Hi ${data.userName}`);
         expect(result).toContain(data.resetUrl);
-        expect(result).toContain(data.companyName);
+        expect(result).toContain(data.accountRecoverUrl);
         expect(result).toContain(data.supportUrl);
         data.socialIcons.forEach(icon => {
             expect(result).toContain(icon.url);
