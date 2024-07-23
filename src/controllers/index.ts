@@ -6,3 +6,5 @@ export * from "./NotificationController"
 export * from "./HelpController";
 export * from "./NotificationController";
 export * from "./roleController"
+export * from "./AdminController"
+
