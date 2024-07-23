@@ -14,8 +14,8 @@ jobs:
     steps:
       - name: Pull from GitHub
         run: |
-          git fetch origin
-          git reset --hard origin/main
+          git stash
+          git pull origin main
 
       - name: Install dependencies
         run: yarn install

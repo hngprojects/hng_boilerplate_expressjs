@@ -10,7 +10,7 @@
     "test:email": "jest views/email/tests",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js",
+    "prod": "node build/index.js",
     "migrate": "typeorm-ts-node-commonjs migration:run -d src/data-source",
     "migration:create": "typeorm-ts-node-commonjs migration:create db/migrations/migration",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate db/migrations/migration -d src/data-source",
