@@ -20,6 +20,8 @@ import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
+import blogSwaggerSpec from "./blogSwaggerConfig";
+import blogSwaggerUi from "./blogSwaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
 
 dotenv.config();
@@ -52,6 +54,7 @@ server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use('/api/v1/docs/blog', blogSwaggerUi.serve, blogSwaggerUi.setup(blogSwaggerSpec))
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
