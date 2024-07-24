@@ -2,7 +2,6 @@ import { Router, Request, Response } from "express";
 import { OrgController } from "../controllers/OrgController";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
-import { OrgService } from "../services/OrgService";
 
 
 const orgRouter = Router();
