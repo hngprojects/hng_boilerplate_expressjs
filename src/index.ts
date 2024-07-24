@@ -6,6 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
+import passport from "./config/google.passport.config";
 import {
   userRouter,
   authRoute,
@@ -47,12 +48,12 @@ server.use(
     ],
   }),
 );
-
-server.use(Limiter);
+server.use(passport.initialize());
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
+
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
@@ -65,17 +66,23 @@ server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/products", productRouter);
 server.use("/api/v1/blog", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
+server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
 
 server.use(routeNotFound);
+server.use(errorHandler);
+
+server.use(routeNotFound);
+server.use(Limiter);
 server.use(errorHandler);
 
 AppDataSource.initialize()

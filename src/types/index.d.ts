@@ -22,10 +22,16 @@ export interface IUserSignUp {
   password: string;
   phone: string;
 }
-
 export interface IUserLogin {
   email: string;
   password: string;
+}
+
+export interface IProduct {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
 }
 
 export interface IAuthService {
@@ -48,7 +54,7 @@ export interface ICreateOrganisation {
 export interface IOrganisationService {
   createOrganisation(
     payload: ICreateOrganisation,
-    userId: string
+    userId: string,
   ): Promise<unknown>;
 }
 

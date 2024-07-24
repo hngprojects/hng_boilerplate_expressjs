@@ -18,7 +18,7 @@ export class BlogService {
       where: { author: { id: userId } },
       skip: (page - 1) * limit,
       take: limit,
-      relations: ['author'],
+      relations: ["author"],
     });
 
     return { blogs, totalItems };
@@ -29,8 +29,8 @@ export class BlogService {
       const result = await this.blogRepository.delete(id);
       return result.affected !== 0;
     } catch (error) {
-      console.error('Error deleting blog post:', error);
-      throw new Error('Error deleting blog post');
+      //console.error('Error deleting blog post:', error);
+      throw new Error("Error deleting blog post");
     }
   }
 }
