@@ -15,7 +15,7 @@ export class BlogCommentController {
         data: comment,
       });
     } catch (error: any) {
-      if (error.message === "Blog not found") {
+      if (error.message === "Blog not") {
         res.status(404).json({
           status: "unsuccessful",
           status_code: 404,
