@@ -13,11 +13,6 @@ orgRouter.delete(
   orgController.removeUser.bind(orgController),
 );
 
-orgRouter.delete(
-  "/organizations/:org_id/delete",
-  authMiddleware,
-  checkPermissions([UserRole.SUPER_ADMIN]),
-  orgController.deleteOrganization.bind(orgController)
-);
+
 
 export { orgRouter };

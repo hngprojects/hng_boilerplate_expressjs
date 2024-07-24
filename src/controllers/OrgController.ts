@@ -1,5 +1,5 @@
- import { Request, Response } from "express";
-import { OrgService } from "../services/OrgService";
+import { Request, Response } from "express";
+import { OrgService } from "../services/organisation.service";
 
 export class OrgController {
   private orgService: OrgService;
@@ -11,7 +11,7 @@ export class OrgController {
     try {
       const user = await this.orgService.removeUser(
         req.params.org_id,
-        req.params.user_id,
+        req.params.user_id
       );
       if (!user) {
         return res.status(404).json({
@@ -33,30 +33,5 @@ export class OrgController {
   }
 
 
-  async deleteOrganization(req: Request, res: Response) {
-    const { org_id } = req.params;
-
-    if (!org_id) {
-      return res.status(400).json({
-        status: "unsuccessful",
-        status_code: 400,
-        message: "Valid organization ID must be provided.",
-      });
-    }
-
-    try {
-      await this.orgService.deleteOrganization(org_id);
-      res.status(200).json({
-        status: "success",
-        status_code: 200,
-        message: "Organization deleted successfully.",
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "unsuccessful",
-        status_code: 500,
-        message: "Failed to delete organization. Please try again later.",
-      });
-    }
-  }
+ 
 }

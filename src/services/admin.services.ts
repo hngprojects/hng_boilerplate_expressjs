@@ -32,5 +32,19 @@ export class AdminOrganisationService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
+
+  public async deleteOrganization(org_id: string): Promise<void> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+
+    const organization = await organizationRepository.findOne({
+      where: { id: org_id },
+    });
+
+    if (!organization) {
+      throw new Error("Organization not found");
+    }
+
+    await organizationRepository.remove(organization);
+  }
 }
 
