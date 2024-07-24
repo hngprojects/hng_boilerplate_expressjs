@@ -3,7 +3,7 @@ import AppDataSource from "../data-source";
 import { User } from "../models/user";
 import { IOrgService, IUserService } from "../types";
 
-export class OrgServices implements IOrgService {
+export class OrgService implements IOrgService {
   public async removeUser(
     org_id: string,
     user_id: string
