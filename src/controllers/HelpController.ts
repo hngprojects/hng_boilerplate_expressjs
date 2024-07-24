@@ -1,6 +1,6 @@
 // src/controllers/UserController.ts
 import { Request, Response } from "express";
-import { HelpService } from "../services";
+import { HelpService } from "../services/help.services";
 import { HttpError } from "../middleware";
 
 class HelpController {
