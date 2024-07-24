@@ -1,5 +1,5 @@
 import AppDataSource from "../data-source";
-import { Product } from "../models";
+import { Product } from "../models/product";
 
 export class ProductService {
   async getPaginatedProducts(
