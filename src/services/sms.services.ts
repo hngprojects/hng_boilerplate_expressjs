@@ -19,12 +19,12 @@ class SmsService {
     await this.twilioClient.messages.create({
       body: message,
       from: config.TWILIO_PHONE_NUMBER,
-      to: phoneNumber,
+      to: phone_number,
     });
 
     const sms = new Sms();
     sms.sender = sender;
-    sms.phone_number = phoneNumber;
+    sms.phone_number = phone_number;
     sms.message = message;
 
     const smsRepository = AppDataSource.getRepository(Sms);
