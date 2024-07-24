@@ -8,7 +8,8 @@ import { User } from "../../models";
 import { Organization } from "../../models";
 
 // Initialize Flutterwave
-const flw = new Flutterwave(config.FLW_PUBLIC_KEY, config.FLW_SECRET_KEY);
+// const flw = new Flutterwave(config.FLW_PUBLIC_KEY, config.FLW_SECRET_KEY);
+const flw = new Flutterwave("mockKey", "mockkey");
 
 interface CustomerDetails {
   card_number: string;
