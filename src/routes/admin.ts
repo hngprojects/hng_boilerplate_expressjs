@@ -30,7 +30,7 @@ adminRouter.get(
 
 // User
 adminRouter.patch(
-  "/user/:id",
+  "/users/:id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.updateUser.bind(adminUserController), // Use updateUser method
