@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { OrgService } from "../services/OrgService";
+import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
 export class OrgController {
