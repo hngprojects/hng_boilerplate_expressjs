@@ -12,7 +12,8 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "typeRoots": ["src/types"]
+    "typeRoots": ["src/types"],
+    "resolveJsonModule": true
   },
   "types": ["node", "jest"],
   "include": ["src/**/*", "config"],
