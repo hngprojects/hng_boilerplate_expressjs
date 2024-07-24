@@ -76,6 +76,7 @@ server.use("/api/v1/products", productRouter);
 server.use("/api/v1/blog", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
+server.use("/api/v1/payments", paymentRouter);
 server.use("/api/v1/payments/stripe", paymentStripeRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);

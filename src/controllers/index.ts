@@ -10,3 +10,6 @@ export * from "./BlogController";
 export * from "./exportController";
 export * from "./BlogController";
 export * from "./PaymentLemonSqueezyController";
+export * from "./PaymentController";
+export * from "./BlogController";
+export * from "./PaymentLemonSqueezyController";
