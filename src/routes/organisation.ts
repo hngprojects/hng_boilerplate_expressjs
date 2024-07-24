@@ -7,6 +7,9 @@ import { validateOrgId } from "../middleware/organization.validation";
 const orgRouter = Router();
 const orgController = new OrgController();
 
+orgRouter.get("/organisations/:org_id", authMiddleware, validateOrgId,
+  orgController.getSingleOrg.bind(orgController),
+);
 orgRouter.delete(
   "/organizations/:org_id/users/:user_id",
   authMiddleware,
@@ -15,10 +18,17 @@ orgRouter.delete(
   orgController.removeUser.bind(orgController)
 );
 
+
 orgRouter.get(
   "/organisations/:org_id",
   authMiddleware,
   validateOrgId,
   orgController.getSingleOrg.bind(orgController)
+)
+
+orgRouter.get(
+  "/users/:id/organizations",
+   authMiddleware,
+  orgController.getOrganizations.bind(orgController),
 );
 export { orgRouter };
