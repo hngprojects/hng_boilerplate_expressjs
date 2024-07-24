@@ -1,7 +1,7 @@
 import { Twilio } from "twilio";
 import config from "../config";
 import AppDataSource from "../data-source";
-import { Sms } from "../models/sms";
+// import { Sms } from "../models/sms";
 import { User } from "../models";
 
 class SmsService {
@@ -22,13 +22,13 @@ class SmsService {
       to: phoneNumber,
     });
 
-    const sms = new Sms();
-    sms.sender = sender;
-    sms.phone_number = phoneNumber;
-    sms.message = message;
+    // const sms = new Sms();
+    // sms.sender = sender;
+    // sms.phone_number = phoneNumber;
+    // sms.message = message;
 
-    const smsRepository = AppDataSource.getRepository(Sms);
-    await smsRepository.save(sms);
+    // const smsRepository = AppDataSource.getRepository(Sms);
+    // await smsRepository.save(sms);
   }
 }
 

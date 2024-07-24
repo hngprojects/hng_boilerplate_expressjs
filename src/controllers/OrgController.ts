@@ -1,4 +1,4 @@
- import { Request, Response } from "express";
+import { Request, Response } from "express";
 import { OrgService } from "../services/OrgService";
 
 export class OrgController {
@@ -11,7 +11,7 @@ export class OrgController {
     try {
       const user = await this.orgService.removeUser(
         req.params.org_id,
-        req.params.user_id,
+        req.params.user_id
       );
       if (!user) {
         return res.status(404).json({
@@ -29,6 +29,26 @@ export class OrgController {
       res
         .status(400)
         .json({ message: "Failed to remove user from organization" });
+    }
+  }
+
+  async acceptInvite(req: Request, res: Response) {
+    try {
+      const current_user = req.user;
+      const organisation = await this.orgService.acceptLinkInvite(
+        req.params.org_id,
+        current_user
+      );
+
+      if (!organisation) {
+        return res.status(404).json({
+          status: "forbidden",
+          message: "There is no organization with this ID",
+          status_code: 404,
+        });
+      }
+    } catch (error) {
+      res.status(400).json({ message: "Error joining organization" });
     }
   }
 }

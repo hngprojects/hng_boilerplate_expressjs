@@ -1,8 +1,18 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, BeforeInsert, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  BeforeInsert,
+  UpdateDateColumn,
+  OneToOne,
+} from "typeorm";
 import { User } from ".";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid";
 import { UserOrganization } from "./user-organisation";
 import ExtendedBaseEntity from "./extended-base-entity";
+import { InviteLink } from "./invite";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -33,8 +43,11 @@ export class Organization extends ExtendedBaseEntity {
   @Column({ nullable: true })
   state: string;
 
-  @Column('text', { nullable: true })
+  @Column("text", { nullable: true })
   description: string;
+
+  // @Column("text", { nullable: false })
+  // link: string;
 
   @UpdateDateColumn()
   created_at: Date;
@@ -42,18 +55,30 @@ export class Organization extends ExtendedBaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column('uuid')
+  @Column("uuid")
   owner_id: string;
 
-  @OneToMany(() => UserOrganization, userOrganization => userOrganization.organization)
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.organization
+  )
   userOrganizations: UserOrganization[];
 
   @ManyToMany(() => User, (user) => user.organizations)
   users: User[];
 
+  @OneToOne(() => InviteLink, (invitelink) => invitelink.id)
+  invitelink: InviteLink;
+
   @BeforeInsert()
   generateSlug() {
     this.slug = uuidv4();
   }
-}
 
+  // @BeforeInsert()
+  // setDefaultValues() {
+  //   if (!this.link) {
+  //     this.link = `/invite/accept/${this.id}`;
+  //   }
+  // }
+}
