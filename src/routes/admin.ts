@@ -9,6 +9,7 @@ const adminRouter = Router();
 
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
+const adminLogController = new admin.AdminLogController();
 
 // Organisation
 adminRouter.patch(
