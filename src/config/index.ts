@@ -17,7 +17,7 @@ const config = {
   SMTP_PORT: process.env.SMTP_PORT,
   REDIS_PASSWORD: process.env.REDIS_PASSWORD,
   REDIS_HOST: process.env.REDIS_HOST,
-  REDIS_PORT: process.env.REDIS_PORT,
+  REDIS_PORT: process.env.REDIS_PORT || 6379,
   NODE_ENV: process.env.NODE_ENV,
   TWILIO_SID: process.env.TWILIO_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,

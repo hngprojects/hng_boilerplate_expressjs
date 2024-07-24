@@ -1,4 +1,5 @@
 //@ts-nocheck
+
 import request from 'supertest';
 import { Express } from 'express';
 import AppDataSource from '../data-source';
@@ -7,8 +8,7 @@ import { EmailService } from '../services';
 import { sendEmailRoute } from '../routes/sendEmail.route';
 import express from 'express';
 
-// Mock the email service methods
-jest.mock('../services', () => {
+jest.mock('../services/sendEmail.services', () => {
   return {
     EmailService: jest.fn().mockImplementation(() => {
       return {
@@ -20,7 +20,19 @@ jest.mock('../services', () => {
   };
 });
 
-// Mock the authMiddleware
+jest.mock("../data-source", () => {
+  return {
+    AppDataSource: {
+      manager: {},
+      initialize: jest.fn().mockResolvedValue(true),
+    },
+    getRepository: jest.fn().mockReturnValue({
+      findOne: jest.fn(),
+      save: jest.fn(),
+    }),
+  };
+});
+
 jest.mock('../middleware', () => {
   return {
     authMiddleware: (req, res, next) => next()
@@ -31,15 +43,15 @@ const app: Express = express();
 app.use(express.json());
 app.use(sendEmailRoute);
 
-beforeAll(async () => {
-  await AppDataSource.initialize();
-});
-
-afterAll(async () => {
-  await AppDataSource.destroy();
-});
-
 describe('SendEmail Controller', () => {
+  let mockManager;
+  
+  beforeEach(() => {
+    mockManager = { save: jest.fn() };
+    AppDataSource.manager = mockManager;
+    jest.clearAllMocks(); // Clear all mocks before each test
+  });
+
   it('should return 400 if template_id or recipient is missing', async () => {
     const res = await request(app)
       .post('/send_email')
