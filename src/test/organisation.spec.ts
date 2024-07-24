@@ -6,6 +6,9 @@ import { UserRole } from "../enums/userRoles";
 import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/index.ts";
+
+import { authMiddleware } from "../middleware/auth.ts";
+import { OrgService } from "../services/organisation.service.ts";
 import { OrgController } from "../controllers/OrgController.ts";
 import { validateOrgId } from "../middleware/organization.validation.ts";
 import { InvalidInput } from "../middleware/error.ts";
@@ -77,7 +80,9 @@ describe("OrgService", () => {
 
       expect(mockManager.save).toHaveBeenCalledTimes(2);
       expect(mockManager.save).toHaveBeenCalledWith(expect.any(Organization));
-      expect(mockManager.save).toHaveBeenCalledWith(expect.any(UserOrganization));
+      expect(mockManager.save).toHaveBeenCalledWith(
+        expect.any(UserOrganization),
+      );
       expect(result).toEqual({ newOrganisation });
     });
 
@@ -97,7 +102,7 @@ describe("OrgService", () => {
       mockManager.save.mockRejectedValue(new Error("Client error"));
 
       await expect(
-        orgService.createOrganisation(payload, userId)
+        orgService.createOrganisation(payload, userId),
       ).rejects.toThrow(BadRequest);
     });
   });
@@ -275,7 +280,7 @@ describe("Organization Controller and Middleware", () => {
 
     expect(() => validateOrgId[1](req, res, next)).toThrow(InvalidInput);
     expect(() => validateOrgId[1](req, res, next)).toThrow(
-      "Organisation id is required"
+      "Organisation id is required",
     );
   });
 
@@ -290,7 +295,7 @@ describe("Organization Controller and Middleware", () => {
 
     expect(() => validateOrgId[1](req, res, next)).toThrow(InvalidInput);
     expect(() => validateOrgId[1](req, res, next)).toThrow(
-      "Valid org_id must be provided"
+      "Valid org_id must be provided",
     );
   });
 });

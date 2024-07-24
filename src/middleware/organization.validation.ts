@@ -8,7 +8,7 @@ import { InvalidInput } from "./error";
 export const organizationValidation = async (
   req: Request & { user?: User },
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const organisationSchema = z.object({
@@ -60,22 +60,26 @@ export const organizationValidation = async (
 try {
 } catch (error) {}
 
-
-
-
 export const validateOrgId = [
   param("org_id")
-    .notEmpty().withMessage("Organisation id is required")
-    .isString().withMessage("Organisation id must be a string")
-    .isUUID().withMessage("Valid org_id must be provided")
+    .notEmpty()
+    .withMessage("Organisation id is required")
+    .isString()
+    .withMessage("Organisation id must be a string")
+    .isUUID()
+    .withMessage("Valid org_id must be provided")
     .trim()
     .escape(),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      throw new InvalidInput(`${errors.array().map(error => error.msg).join(", ")}`);
+      throw new InvalidInput(
+        `${errors
+          .array()
+          .map((error) => error.msg)
+          .join(", ")}`,
+      );
     }
     next();
   },
 ];
-
