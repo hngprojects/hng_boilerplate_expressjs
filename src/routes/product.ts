@@ -8,12 +8,12 @@ const productController = new ProductController();
 productRouter.get(
   "/products",
   authMiddleware,
-  productController.listProducts.bind(productController)
+  productController.listProducts.bind(productController),
 );
 
 productRouter.get(
-  "/product/:id",
+  "/products/:product_id",
   authMiddleware,
-  productController.getSpecificProduct
+  productController.fetchProductById,
 );
 export { productRouter };

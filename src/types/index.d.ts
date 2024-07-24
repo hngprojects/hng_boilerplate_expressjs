@@ -1,4 +1,6 @@
 import { User } from "../models";
+import { Request } from "express";
+import { UserRole } from "../enums/userRoles";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -44,7 +46,10 @@ export interface ICreateOrganisation {
 }
 
 export interface IOrganisationService {
-  createOrganisation(payload: ICreateOrganisation, userId: string): Promise<unknown>;
+  createOrganisation(
+    payload: ICreateOrganisation,
+    userId: string,
+  ): Promise<unknown>;
 }
 
 declare module "express-serve-static-core" {
