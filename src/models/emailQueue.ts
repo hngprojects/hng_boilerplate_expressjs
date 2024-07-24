@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from "typeorm";
 
 @Entity()
 export class EmailQueue {
@@ -8,15 +13,15 @@ export class EmailQueue {
   @Column()
   templateId: string;
 
-  @Column() 
+  @Column()
   recipient: string;
 
-  @Column('json')
+  @Column("json")
   variables: Record<string, any>;
 
   @CreateDateColumn()
   createdAt: Date;
 
-    // @Column({ default: false })
-    // isActive: boolean;
+  // @Column({ default: false })
+  // isActive: boolean;
 }

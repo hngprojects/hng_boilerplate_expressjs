@@ -5,7 +5,6 @@ import { User } from "../models/index.ts";
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/index.ts";
 
-
 import { authMiddleware } from "../middleware/auth.ts";
 import { OrgService } from "../services/organisation.service.ts";
 import { OrgController } from "../controllers/OrgController.ts";
@@ -143,7 +142,7 @@ describe("single organization", () => {
 
     expect(() => validateOrgId[1](req, res, next)).toThrow(InvalidInput);
     expect(() => validateOrgId[1](req, res, next)).toThrow(
-      "Organisation id is required"
+      "Organisation id is required",
     );
   });
 
@@ -158,7 +157,7 @@ describe("single organization", () => {
 
     expect(() => validateOrgId[1](req, res, next)).toThrow(InvalidInput);
     expect(() => validateOrgId[1](req, res, next)).toThrow(
-      "Valid org_id must be provided"
+      "Valid org_id must be provided",
     );
   });
 });
