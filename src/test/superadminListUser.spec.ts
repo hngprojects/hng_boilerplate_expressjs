@@ -1,24 +1,24 @@
 // @ts-nocheck
-import { AdminUserService } from "../services"; // Adjust the import path as necessary
-import { User } from "../models"; // Adjust the import path as necessary
-import AppDataSource from "../data-source"; // Adjust the import path as necessary
+import { AdminUserService } from "../services";
+import { User } from "../models";
+import AppDataSource from "../data-source";
 import { Repository } from "typeorm";
 
 describe("AdminUserService", () => {
   let adminUserService: AdminUserService;
   let userRepository: Repository<User>;
-  let consoleErrorMock: jest.SpyInstance;
 
   beforeAll(() => {
-    consoleErrorMock = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
     adminUserService = new AdminUserService();
     userRepository = AppDataSource.getRepository(User);
   });
 
-  afterAll(async () => {
-    consoleErrorMock.mockRestore();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterAll(() => {
+    jest.setTimeout(3000);
   });
 
   it("should return paginated users", async () => {
