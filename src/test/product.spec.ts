@@ -36,9 +36,9 @@ describe("ProductService", () => {
   describe("fetchProductById", () => {
     it("should return the product if it exists", async () => {
       const productId = "123";
-      const user: User = { 
-        id: 'user-123',
-        name: 'John Doe',
+      const user: User = {
+        id: "user-123",
+        name: "John Doe",
         // Add any other necessary properties
       } as User;
       const product = {
@@ -47,8 +47,7 @@ describe("ProductService", () => {
         description: "Product is robust",
         price: 19,
         category: "Gadgets",
-        user:user
-
+        user: user,
       } as Product;
 
       mockRepository.findOneBy.mockResolvedValue(product);

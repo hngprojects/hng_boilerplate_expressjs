@@ -88,6 +88,12 @@ productRouter.get(
   "/",
   authMiddleware,
   productController.getProductPagination.bind(productController),
+
+  productRouter.get(
+    "/:product_id",
+    authMiddleware,
+    productController.fetchProductById,
+  ),
 );
 
 export { productRouter };
