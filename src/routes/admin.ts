@@ -21,5 +21,13 @@ adminRouter.get("/users", Limiter, authMiddleware,
 checkPermissions([UserRole.SUPER_ADMIN]),  
 adminUserController.listUsers.bind(adminUserController));
 
+// User
+adminRouter.patch(
+  "/user/:id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminUserController.updateUser.bind(adminUserController) // Use updateUser method
+);
+
 
 export { adminRouter }; 
