@@ -48,8 +48,8 @@ server.use(
     ],
   }),
 );
+server.use(Limiter);
 server.use(passport.initialize());
-
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -73,7 +73,7 @@ server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
-server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
@@ -82,9 +82,7 @@ server.use(routeNotFound);
 server.use(errorHandler);
 
 server.use(routeNotFound);
-server.use(Limiter);
 server.use(errorHandler);
-
 
 AppDataSource.initialize()
   .then(async () => {
@@ -99,7 +97,5 @@ AppDataSource.initialize()
     });
   })
   .catch((error) => console.error(error));
-
-  
 
 export default server;
