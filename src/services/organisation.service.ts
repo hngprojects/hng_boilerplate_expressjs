@@ -1,7 +1,6 @@
 import { Organization, User, UserOrganization } from "../models";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
-import { User } from "../models/user";
 import { IOrgService, IUserService, ICreateOrganisation, IOrganisationService, } from "../types";
 
 export class OrgService implements IOrgService {
