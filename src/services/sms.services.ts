@@ -5,7 +5,7 @@ import { Sms } from "../models/sms";
 import { User } from "../models";
 
 class SmsService {
-  private twilioClient: Twilio.Twilio;;
+  private twilioClient: Twilio.Twilio;
 
   constructor() {
     this.twilioClient = Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
@@ -14,7 +14,7 @@ class SmsService {
   public async sendSms(
     sender: User,
     phoneNumber: string,
-    message: string
+    message: string,
   ): Promise<void> {
     await this.twilioClient.messages.create({
       body: message,

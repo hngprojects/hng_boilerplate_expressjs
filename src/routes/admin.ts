@@ -9,6 +9,7 @@ const adminRouter = Router();
 
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
+const adminLogController = new admin.AdminLogController();
 
 // Organisation
 adminRouter.patch(
@@ -30,7 +31,7 @@ adminRouter.get(
 
 // User
 adminRouter.patch(
-  "/user/:id",
+  "/users/:id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.updateUser.bind(adminUserController), // Use updateUser method
@@ -48,6 +49,15 @@ adminRouter.get(
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.getUserBySuperadmin.bind(adminUserController),
+);
+
+// Logs
+adminRouter.get(
+  "/logs",
+  Limiter,
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminLogController.getLogs.bind(adminLogController),
 );
 
 export { adminRouter };

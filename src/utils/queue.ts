@@ -1,12 +1,11 @@
-import Bull, { Job } from 'bull';
-import config from '../config';
-import { Sendmail } from './mail';
-import logs from './logger';
-import smsServices from '../services/sms.services';
-
+import Bull, { Job } from "bull";
+import config from "../config";
+import { Sendmail } from "./mail";
+import logs from "./logger";
+import smsServices from "../services/sms.services";
 
 interface EmailData {
- from: string;
+  from: string;
   to: string;
   subject: string;
   text?: string;
@@ -29,16 +28,15 @@ const redisConfig = {
 };
 
 // Email Queue
-const emailQueue = new Bull('Email', {
+const emailQueue = new Bull("Email", {
   redis: redisConfig,
-}
-);
+});
 
 const addEmailToQueue = async (data: EmailData) => {
   await emailQueue.add(data, {
     attempts: retries,
     backoff: {
-      type: 'fixed',
+      type: "fixed",
       delay,
     },
   });
@@ -46,11 +44,11 @@ const addEmailToQueue = async (data: EmailData) => {
 
 emailQueue.process(async (job: Job, done) => {
   try {
-    await Sendmail(job.data);
-    job.log('Email sent successfully to ' + job.data.to);
-    logs.info('Email sent successfully');
+    // await Sendmail(job.data);
+    job.log("Email sent successfully to " + job.data.to);
+    logs.info("Email sent successfully");
   } catch (error) {
-    logs.error('Error sending email:', error);
+    logs.error("Error sending email:", error);
     throw error;
   } finally {
     done();
@@ -58,16 +56,15 @@ emailQueue.process(async (job: Job, done) => {
 });
 
 // Notification Queue
-const notificationQueue = new Bull('Notification', {
+const notificationQueue = new Bull("Notification", {
   redis: redisConfig,
-}
-);
+});
 
 const addNotificationToQueue = async (data: any) => {
   await notificationQueue.add(data, {
     attempts: retries,
     backoff: {
-      type: 'fixed',
+      type: "fixed",
       delay,
     },
   });
@@ -75,11 +72,11 @@ const addNotificationToQueue = async (data: any) => {
 
 notificationQueue.process(async (job: Job, done) => {
   try {
-     // sending Notification Function
-    job.log('Notification sent successfully to ' + job.data.to);
-    logs.info('Notification sent successfully');
+    // sending Notification Function
+    job.log("Notification sent successfully to " + job.data.to);
+    logs.info("Notification sent successfully");
   } catch (error) {
-    logs.error('Error sending notification:', error);
+    logs.error("Error sending notification:", error);
     throw error;
   } finally {
     done();
@@ -87,7 +84,7 @@ notificationQueue.process(async (job: Job, done) => {
 });
 
 // SMS Queue
-const smsQueue = new Bull('SMS', {
+const smsQueue = new Bull("SMS", {
   redis: redisConfig,
 });
 
@@ -95,7 +92,7 @@ const addSmsToQueue = async (data: SmsData) => {
   await smsQueue.add(data, {
     attempts: retries,
     backoff: {
-      type: 'fixed',
+      type: "fixed",
       delay,
     },
   });
@@ -105,14 +102,21 @@ smsQueue.process(async (job: Job, done) => {
   try {
     // const {sender , message , phoneNumber} = job.data;
     // await smsServices.sendSms(sender , message , phoneNumber);
-    job.log('SMS sent successfully to ' + job.data);
-    logs.info('SMS sent successfully');
+    job.log("SMS sent successfully to " + job.data);
+    logs.info("SMS sent successfully");
   } catch (error) {
-    logs.error('Error sending SMS:', error);
+    logs.error("Error sending SMS:", error);
     throw error;
   } finally {
     done();
   }
 });
 
-export { emailQueue , smsQueue , notificationQueue , addEmailToQueue, addNotificationToQueue, addSmsToQueue };
+export {
+  emailQueue,
+  smsQueue,
+  notificationQueue,
+  addEmailToQueue,
+  addNotificationToQueue,
+  addSmsToQueue,
+};
