@@ -21,6 +21,7 @@ import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
+// import { seed } from "./seeder";
 
 dotenv.config();
 
@@ -48,7 +49,7 @@ server.get("/", (req: Request, res: Response) => {
 server.use("/api/v1", userRouter, orgRouter, organisationRoute);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
-server.use("/api/v1/sms", smsRouter);
+// server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -69,6 +70,6 @@ AppDataSource.initialize()
       log.info(`Server is listening on port ${port}`);
     });
   })
-  .catch((error) => console.error(error));
+  .catch((error) => console.error(error.message));
 
 export default server;

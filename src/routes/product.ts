@@ -6,9 +6,16 @@ const productRouter = express.Router();
 const productController = new ProductController();
 
 productRouter.get(
-  '/products',
-  authMiddleware,
+  '/',
+  // authMiddleware,
   productController.listProducts.bind(productController)
+);
+
+// update product
+productRouter.put(
+  '/:product_id',
+  // authMiddleware,
+  productController.updateProduct.bind(productController)
 );
 
 export { productRouter };
