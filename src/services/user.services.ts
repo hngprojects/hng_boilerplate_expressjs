@@ -1,7 +1,15 @@
-import AppDataSource from "../data-source";
-import { User } from "../models";
+import { User } from "../models/user";
+import { HttpError } from "../middleware";
+import { Repository, UpdateResult } from 'typeorm';
+import AppDataSource from '../data-source';
 
-class UserService {
+export class UserService {
+  private userRepository: Repository<User>;
+
+  constructor() {
+    this.userRepository = AppDataSource.getRepository(User);
+  }
+
   static async getUserById(id: string): Promise<User | null> {
     const userRepository = AppDataSource.getRepository(User);
     return userRepository.findOne({
@@ -11,15 +19,33 @@ class UserService {
     });
   }
 
+  public async getAllUsers(): Promise<User[]> {
+    const users = await this.userRepository.find({
+      relations: ["profile", "products", "organizations"],
+    });
+    return users;
+  }
+
   public async deleteUserById(id: string): Promise<void> {
-    const user = await User.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({ where: { id } });
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    await User.remove(user);
+    await this.userRepository.remove(user);
+  }
+
+  public async softDeleteUser(id: string): Promise<UpdateResult> {
+    const user = await this.userRepository.findOne({ where: { id } });
+
+    if (!user) {
+      throw new HttpError(404, "User Not Found");
+    }
+
+    user.is_deleted = true;
+    await this.userRepository.save(user);
+    const deletedUser = await this.userRepository.softDelete({ id });
+    return deletedUser;
   }
 }
-
-export { UserService };
