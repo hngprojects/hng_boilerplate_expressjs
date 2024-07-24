@@ -24,7 +24,7 @@ blogRouter.post(
 );
 
 //endpoint to edit a comment on a blog post
-blogRouter.post(
+blogRouter.patch(
   "/:commentId/edit-comment",
   authMiddleware,
   blogCommentController.editComment.bind(blogCommentController),
