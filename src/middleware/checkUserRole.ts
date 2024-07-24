@@ -24,10 +24,11 @@ export const checkPermissions = (roles: UserRole[]) => {
       const user = await userRepository.findOne({
         where: { id: decodedToken.userId },
       });
+      // console.log(user);
       // if (user.role !== 'super_admin' )
       if (!user || !roles.includes(user.role)) {
         return res
-          .status(401)
+          .status(403)
           .json({ status: "error", message: "Access denied. Not an admin" });
       }
       next();

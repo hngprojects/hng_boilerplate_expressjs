@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { BlogService } from '../services'; 
+import { BlogService } from '../services';
 
 export class BlogController {
   private blogService = new BlogService();
@@ -119,8 +119,11 @@ export class BlogController {
         return;
       }
 
-      const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(user.id, page, limit);
+      const { blogs, totalItems } = await this.blogService.getPaginatedblogs(
+        user.id,
+        page,
+        limit
+      );
 
       res.json({
         status: "success",
@@ -213,6 +216,7 @@ export class BlogController {
           status_code: 401,
           error: "Unauthorized",
         });
+        return;
       }
 
       const deletedPost = await this.blogService.deleteBlogPost(id);
@@ -221,6 +225,7 @@ export class BlogController {
           status_code: 404,
           error: "Blog post not found",
         });
+        return;
       }
 
       res.status(200).json({
