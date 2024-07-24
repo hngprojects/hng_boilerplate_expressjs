@@ -54,8 +54,6 @@ describe("ProductService", () => {
       mockRepository.findOneBy.mockResolvedValue(product);
 
       const result = await productService.getOneProduct(productId);
-console.log(result,"result")
-console.log(product,"product")
       expect(result).toEqual(product);
       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: productId });
     });
