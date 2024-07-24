@@ -7,6 +7,9 @@ import { Sendmail } from "../utils/mail";
 import jwt from "jsonwebtoken";
 import { compilerOtp } from "../views/welcome";
 import config from "../config";
+import generateResetToken from "../utils/generate-reset-token";
+import { PasswordResetToken } from "../models/password-reset-token";
+import nodemailer from "nodemailer";
 
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
@@ -45,7 +48,7 @@ export class AuthService implements IAuthService {
         config.TOKEN_SECRET,
         {
           expiresIn: "1d",
-        }
+        },
       );
 
       const mailSent = await Sendmail({
@@ -68,7 +71,7 @@ export class AuthService implements IAuthService {
 
   public async verifyEmail(
     token: string,
-    otp: number
+    otp: number,
   ): Promise<{ message: string }> {
     try {
       const decoded: any = jwt.verify(token, config.TOKEN_SECRET);
@@ -96,7 +99,7 @@ export class AuthService implements IAuthService {
   }
 
   public async login(
-    payload: IUserLogin
+    payload: IUserLogin,
   ): Promise<{ access_token: string; user: Partial<User> }> {
     const { email, password } = payload;
 
@@ -123,6 +126,47 @@ export class AuthService implements IAuthService {
       const { password: _, ...userWithoutPassword } = user;
 
       return { access_token, user: userWithoutPassword };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async forgotPassword(email: string): Promise<{ message: string }> {
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
+
+      const { resetToken, hashedToken, expiresAt } = generateResetToken();
+
+      const passwordResetToken = new PasswordResetToken();
+      passwordResetToken.token = hashedToken;
+      passwordResetToken.expiresAt = expiresAt;
+      passwordResetToken.user = user;
+
+      await AppDataSource.manager.save(passwordResetToken);
+
+      // Send email
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: config.SMTP_USER,
+          pass: config.SMTP_PASSWORD,
+        },
+      });
+
+      const mailOptions = {
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "Password Reset",
+        text: `You requested for a password reset. Use this token to reset your password: ${resetToken}`,
+      };
+
+      await transporter.sendMail(mailOptions);
+
+      return { message: "Password reset link sent successfully." };
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
