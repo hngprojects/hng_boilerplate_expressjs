@@ -1,10 +1,18 @@
-import { signUp, verifyOtp, login, changeUserRole } from "../controllers";
+import {
+  signUp,
+  verifyOtp,
+  login,
+  changeUserRole,
+  forgotPassword,
+  resetPassword,
+} from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
-import { googleAuthCallback, initiateGoogleAuthRequest } from "../controllers/GoogleAuthController";
-
-
+import {
+  googleAuthCallback,
+  initiateGoogleAuthRequest,
+} from "../controllers/GoogleAuthController";
 
 const authRoute = Router();
 
@@ -13,19 +21,20 @@ authRoute.post("/verify-otp", verifyOtp);
 authRoute.post("/login", login);
 authRoute.post("/login", login);
 authRoute.put(
-    "/api/v1/organizations/:organization_id/users/:user_id/role",
-    authMiddleware,
-    checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
-    changeUserRole
-  );
+  "/api/v1/organizations/:organization_id/users/:user_id/role",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
+  changeUserRole,
+);
 
 // ---------------------------Google Auth Route Begins-------------------------  //
 
 // For manually testing google auth functionality locally
-authRoute.get('/test-google-auth', (req, res) => {
-  res.send('<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>');
+authRoute.get("/test-google-auth", (req, res) => {
+  res.send(
+    '<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>',
+  );
 });
-
 
 /**
  * @openapi
@@ -46,8 +55,7 @@ authRoute.get('/test-google-auth', (req, res) => {
  *       '500':
  *         description: Internal Server Error
  */
-authRoute.get('/google', initiateGoogleAuthRequest);
-
+authRoute.get("/google", initiateGoogleAuthRequest);
 
 /**
  * @openapi
@@ -77,9 +85,11 @@ authRoute.get('/google', initiateGoogleAuthRequest);
  *       '500':
  *         description: Internal Server Error - if something goes wrong during the callback handling
  */
-authRoute.get('/google/callback', googleAuthCallback);
+authRoute.get("/google/callback", googleAuthCallback);
 
 // ---------------------------Google Auth Route Ends-------------------------  //
 
+authRoute.post("/forgotPassword", forgotPassword);
+authRoute.post("/resetPassword", resetPassword);
 
 export { authRoute };
