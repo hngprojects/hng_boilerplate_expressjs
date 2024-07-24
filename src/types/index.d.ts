@@ -54,7 +54,7 @@ export interface ICreateOrganisation {
 export interface IOrganisationService {
   createOrganisation(
     payload: ICreateOrganisation,
-    userId: string
+    userId: string,
   ): Promise<unknown>;
 }
 

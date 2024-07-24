@@ -128,8 +128,14 @@ class AdminOrganisationController {
 
   async setUserRole(req: Request, res: Response): Promise<void> {
     try {
-      await param("user_id").isUUID().withMessage("Valid user ID must be provided.").run(req);
-      await check("role").isIn(Object.values(UserRole)).withMessage("Valid role must be provided.").run(req);
+      await param("user_id")
+        .isUUID()
+        .withMessage("Valid user ID must be provided.")
+        .run(req);
+      await check("role")
+        .isIn(Object.values(UserRole))
+        .withMessage("Valid role must be provided.")
+        .run(req);
 
       const errors = validationResult(req);
 
@@ -152,7 +158,9 @@ class AdminOrganisationController {
         },
       });
     } catch (error) {
-      res.status(error.status_code || 500).json({ message: error.message || "Internal Server Error" });
+      res
+        .status(error.status_code || 500)
+        .json({ message: error.message || "Internal Server Error" });
     }
   }
 }

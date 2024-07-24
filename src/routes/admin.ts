@@ -37,9 +37,10 @@ adminRouter.patch(
 );
 
 adminRouter.post(
-    "/users/:user_id/roles", authMiddleware,
-    checkPermissions([UserRole.SUPER_ADMIN]),
-    adminOrganisationController.setUserRole.bind(adminOrganisationController),
-  );
+  "/users/:user_id/roles",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminOrganisationController.setUserRole.bind(adminOrganisationController),
+);
 
 export { adminRouter };
