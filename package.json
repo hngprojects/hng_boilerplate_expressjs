@@ -39,6 +39,7 @@
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.6",
     "@types/nodemailer": "^6.4.15",
+    "all": "^0.0.0",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.14.1",
     "config": "^3.3.12",
