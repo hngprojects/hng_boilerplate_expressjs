@@ -9,6 +9,9 @@ const orgController = new OrgController();
 
 orgRouter.delete(
   "/organizations/:org_id/users/:user_id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
+  validateOrgId,
   orgController.removeUser.bind(orgController)
 );
 
