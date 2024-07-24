@@ -3,3 +3,5 @@ export * from './user.services';
 export * from './help.services';
 export * from './product.services';
 export * from "./blog.services";
+export * from "./admin.services";
+

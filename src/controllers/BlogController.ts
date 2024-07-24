@@ -1,10 +1,11 @@
 import { Request, Response } from 'express';
 import { BlogService } from '../services'; 
 
+
 export class BlogController {
   private blogService = new BlogService();
 
-  async listblogs(req: Request, res: Response): Promise<void> {
+  async listBlogs(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -22,17 +23,17 @@ export class BlogController {
         await this.blogService.getPaginatedblogs(page, limit);
 
       res.json({
-        status: 'success',
+        status: "success",
         status_code: 200,
         data: blogs.map((blog) => ({
           title: blog.title,
           content: blog.content,
           author: blog.author,
-          // published_date: blog.published_date,
+          published_at: blog.published_at,
         })),
         pagination: {
           current_page: page,
-          per_page: '',
+          per_page: limit,
           total_pages: Math.ceil(totalItems / limit),
           total_items: totalItems,
         },
@@ -45,4 +46,5 @@ export class BlogController {
       });
     }
   }
+
 }
