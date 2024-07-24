@@ -6,6 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
+import passport from "./config/google.passport.config";
 import {
   userRouter,
   authRoute,
@@ -47,12 +48,12 @@ server.use(
     ],
   }),
 );
-
-server.use(Limiter);
+server.use(passport.initialize());
 
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
+
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
@@ -80,6 +81,11 @@ server.use("/admin/queues", ServerAdapter.getRouter());
 server.use(routeNotFound);
 server.use(errorHandler);
 
+server.use(routeNotFound);
+server.use(Limiter);
+server.use(errorHandler);
+
+
 AppDataSource.initialize()
   .then(async () => {
     // await seed();
@@ -93,5 +99,7 @@ AppDataSource.initialize()
     });
   })
   .catch((error) => console.error(error));
+
+  
 
 export default server;
