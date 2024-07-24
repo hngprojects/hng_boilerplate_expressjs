@@ -13,4 +13,8 @@ orgRouter.delete(
   "/organizations/:org_id/users/:user_id",
   orgController.removeUser.bind(orgController),
 );
+orgRouter.get(
+  "/users/:id/organizations",
+  orgController.getOrganizations.bind(orgController),
+);
 export { orgRouter };
