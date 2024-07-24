@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { AdminOrganisationService } from "../services";
 import { HttpError } from "../middleware";
 
+
 class AdminOrganisationController {
   private adminService: AdminOrganisationService;
 
@@ -41,6 +42,36 @@ class AdminOrganisationController {
       }
     }
   }
+
+  public async getSingleOrgById(req: Request, res: Response) : Promise<void> {
+    try {
+      const org = await this.adminService.getSingleOrgById(req);
+      res.status(200).json({
+        success: true,
+        message: "Organisation Successfully retrived",
+        data: {
+          id: org.id,
+          name: org.name,
+          email: org.email,
+          industry: org.industry,
+          type: org.type,
+          country: org.country,
+          address: org.address,
+          state: org.state,
+        },
+        status_code: 200,
+      });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        res.status(404).json({ message: "organization not found"});
+      } else {
+        res
+          .status(500)
+          .json({ message: error.message || "Internal Server Error" });
+      }
+    }
+  }
+
 }
 
 export default AdminOrganisationController;

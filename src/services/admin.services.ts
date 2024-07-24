@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { User, Organization } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
+import { validate as uuidValidate } from "uuid";
 
 export class AdminOrganisationService {
 
@@ -30,6 +31,31 @@ export class AdminOrganisationService {
     } catch (error) {
       console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async getSingleOrgById(req: Request): Promise<Organization> {
+    try {
+      const org_id = req.params.id;
+      if (!uuidValidate(org_id)) {
+        throw new HttpError(400, "Invalid organization ID.");
+      }
+
+      const orgRepository = AppDataSource.getRepository(Organization);
+      const org = await orgRepository.findOne({
+        where: { id: org_id },
+      });
+      if (!org) {
+        throw new HttpError(404, "Organization Not Found");
+      }
+      return org;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof HttpError) {
+        throw error;
+      } else {
+        throw new HttpError(500, "Failed to retrieve organization. Please try again later.");
+      }
     }
   }
 }

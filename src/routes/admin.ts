@@ -10,4 +10,8 @@ adminRouter.patch("/organisation/:id", authMiddleware,
 checkPermissions([UserRole.SUPER_ADMIN]), 
 adminOrganisationController.updateOrg.bind(adminOrganisationController));
 
+adminRouter.get("/organisations/:id", authMiddleware, 
+checkPermissions([UserRole.SUPER_ADMIN]), 
+adminOrganisationController.getSingleOrgById.bind(adminOrganisationController));
+
 export { adminRouter }; 
