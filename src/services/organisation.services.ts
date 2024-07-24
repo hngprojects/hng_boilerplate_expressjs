@@ -48,6 +48,19 @@ export class OrgService implements IOrgService {
     return user;
   }
 
+  public async getSingleOrg(org_id: string): Promise<Organization | null> {
+    const organization = await AppDataSource.getRepository(
+      Organization
+    ).findOne({
+      where: { id: org_id },
+      relations: ["users"],
+    });
+    if (!organization) {
+      return null;
+    }
+    return organization;
+  }
+
   public async createInvitation(
     org_id: string,
     email: string,
@@ -90,7 +103,7 @@ export class OrgService implements IOrgService {
       to: email,
       subject: "You are invited to join our organization",
       text: `Hello, you have been invited to join the organization. Use the following token to accept the invitation: ${token}`,
-      html: `<p>Hello,</p><p>You have been invited to join the organization. Use the following token to accept the invitation:</p><p><strong>${token}</strong></p>`,
+      html: `<p>Hello,</p><p>You have been invited to join the organization. Use the following token to accept the invitation:</p><p><strong>${invitationLink}</strong></p>`,
     };
 
     try {
