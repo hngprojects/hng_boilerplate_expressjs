@@ -1,4 +1,3 @@
-```markdown
 # Blog API Documentation
 
 This project provides an API for managing blog posts, including creating, editing, deleting, and retrieving blog posts. The API is documented using Swagger.
@@ -12,9 +11,15 @@ Make sure you have the following installed on your machine:
 - Node.js (>=14.x)
 - Yarn (>=1.x)
 
-  ```
+### Installation
 
-1. Install dependencies:
+1. Clone the repository:
+   ```bash
+   git clone repo 
+   cd repo
+   ```
+
+2. Install dependencies:
    ```bash
    yarn install
    ```
@@ -28,10 +33,44 @@ yarn start
 
 ## API Endpoints
 
+### Authentication
+
+Ensure that users are authenticated before accessing the endpoints that modify or delete resources.
+
+#### Login
+- **URL**: `/api/v1/auth/login`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "username": "user@example.com",
+    "password": "password123"
+  }
+  ```
+- **Responses**:
+  - `200 OK`: Successfully authenticated
+  - `401 Unauthorized`: Invalid credentials
+
+#### Register
+- **URL**: `/api/v1/auth/register`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "username": "user@example.com",
+    "password": "password123",
+    "name": "John Doe"
+  }
+  ```
+- **Responses**:
+  - `201 Created`: Successfully registered
+  - `400 Bad Request`: Invalid input
+
 ### Create a Blog Post
 
 - **URL**: `/api/v1/blog/create`
 - **Method**: `POST`
+- **Authentication**: Required
 - **Request Body**:
   ```json
   {
@@ -48,6 +87,7 @@ yarn start
 - **Responses**:
   - `201 Created`: Blog post created successfully
   - `400 Bad Request`: Invalid request body
+  - `401 Unauthorized`: Authentication required
   - `500 Internal Server Error`: Server error
 
 ### Get All Blog Posts with Pagination
@@ -77,6 +117,7 @@ yarn start
 
 - **URL**: `/api/v1/blog/:id`
 - **Method**: `PUT`
+- **Authentication**: Required
 - **Parameters**:
   - `id`: Blog post ID
 - **Request Body**:
@@ -93,6 +134,7 @@ yarn start
 - **Responses**:
   - `200 OK`: Blog post updated successfully
   - `400 Bad Request`: Invalid request body
+  - `401 Unauthorized`: Authentication required
   - `404 Not Found`: Blog post not found
   - `500 Internal Server Error`: Server error
 
@@ -100,10 +142,12 @@ yarn start
 
 - **URL**: `/api/v1/blog/:id`
 - **Method**: `DELETE`
+- **Authentication**: Required
 - **Parameters**:
   - `id`: Blog post ID
 - **Responses**:
   - `204 No Content`: Blog post deleted successfully
+  - `401 Unauthorized`: Authentication required
   - `404 Not Found`: Blog post not found
   - `500 Internal Server Error`: Server error
 
@@ -127,5 +171,3 @@ yarn start
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 ```
-
-This `blog.md` provides an overview of the project, installation instructions, descriptions of the API endpoints, and guidance on accessing the Swagger documentation. Adjust the `git clone` URL and other details as necessary to fit your specific project setup.
