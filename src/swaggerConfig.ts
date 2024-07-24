@@ -1,17 +1,18 @@
-import swaggerJsdoc from "swagger-jsdoc";
-import { SwaggerDefinition } from "swagger-jsdoc";
+import swaggerJsdoc, { SwaggerDefinition } from "swagger-jsdoc";
+import { version } from "../package.json";
+import config from "./config";
 
 const swaggerDefinition: SwaggerDefinition = {
   openapi: "3.1.0",
   info: {
     title: "BoilerPlate Express API with Swagger",
-    version: "1.0.0",
+    version: version,
     // description:
     //   "This is a simple CRUD API application made with Express and documented with Swagger",
   },
   servers: [
     {
-      url: "http://localhost:8000/",
+      url: config.port,
       description: "Local server",
     },
     {
@@ -19,11 +20,30 @@ const swaggerDefinition: SwaggerDefinition = {
       description: "Live server",
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
+  },
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
 const options = {
   swaggerDefinition,
-  apis: ["./src/routes/*.ts", "./src/controllers/*.ts", "./src/services/*.ts"], // Adjust these paths
+  apis: [
+    "./src/routes/*.ts",
+    "./src/controllers/*.ts",
+    "./src/services/*.ts",
+    "./src/schema/*.ts",
+  ], // Adjust these paths
 };
 
 const specs = swaggerJsdoc(options);

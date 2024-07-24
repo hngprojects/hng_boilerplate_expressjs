@@ -1,14 +1,31 @@
 import { Router } from "express";
 import admin from "../controllers/AdminController";
-import { authMiddleware, checkPermissions, } from "../middleware";
+import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
+import { Organization } from "../models";
+import { Limiter } from "../utils";
 
 const adminRouter = Router();
+
 const adminOrganisationController = new admin.AdminOrganisationController();
+const adminUserController = new admin.AdminUserController();
 
-adminRouter.patch("/organisation/:id", authMiddleware, 
-checkPermissions([UserRole.SUPER_ADMIN]), 
-adminOrganisationController.updateOrg.bind(adminOrganisationController));
+// Organisation
+adminRouter.patch(
+  "/organisation/:id",
+  Limiter,
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminOrganisationController.updateOrg.bind(adminOrganisationController),
+);
 
+// User
+adminRouter.get(
+  "/users",
+  Limiter,
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminUserController.listUsers.bind(adminUserController),
+);
 
-export { adminRouter }; 
+export { adminRouter };
