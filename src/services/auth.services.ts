@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
         config.TOKEN_SECRET,
         {
           expiresIn: "1d",
-        }
+        },
       );
 
       const mailSent = await Sendmail({
@@ -68,7 +68,7 @@ export class AuthService implements IAuthService {
 
   public async verifyEmail(
     token: string,
-    otp: number
+    otp: number,
   ): Promise<{ message: string }> {
     try {
       const decoded: any = jwt.verify(token, config.TOKEN_SECRET);
@@ -96,7 +96,7 @@ export class AuthService implements IAuthService {
   }
 
   public async login(
-    payload: IUserLogin
+    payload: IUserLogin,
   ): Promise<{ access_token: string; user: Partial<User> }> {
     const { email, password } = payload;
 
