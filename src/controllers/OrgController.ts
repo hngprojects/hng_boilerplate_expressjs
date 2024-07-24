@@ -1,6 +1,6 @@
 
 import { Request, Response, NextFunction } from "express";
-import { OrgService } from "../services/organisation.services";
+import { OrgService } from "../services/organisation.service";
 
 export class OrgController {
   private orgService: OrgService;
