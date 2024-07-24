@@ -41,20 +41,6 @@ export class AdminOrganisationService {
     }
   }
 
-  // public async deleteOrganization(org_id: string): Promise<void> {
-  //   const organizationRepository = AppDataSource.getRepository(Organization);
-
-  //   const organization = await organizationRepository.findOne({
-  //     where: { id: org_id },
-  //   });
-
-  //   if (!organization) {
-  //     throw new Error("Organization not found");
-  //   }
-
-  //   await organizationRepository.remove(organization);
-
-  // }
 
   public async deleteOrganization(orgId: string): Promise<Organization> {
     const organizationRepository = AppDataSource.getRepository(Organization);

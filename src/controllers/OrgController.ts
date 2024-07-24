@@ -105,10 +105,6 @@ export class OrgController {
     }
   }
 
-<<<<<<< HEAD
-
- 
-=======
   /**
    * @swagger
    * /api/org/{org_id}:
@@ -174,7 +170,6 @@ export class OrgController {
    *                   example: Failed to get user organisation. Please try again later.
    */
 
->>>>>>> dc4e16bbeecfe066724c3dd80bd0be484d846a03
   async getOrganizations(req: Request, res: Response) {
     try {
       const userId = req.params.id;
