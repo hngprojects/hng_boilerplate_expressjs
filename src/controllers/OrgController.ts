@@ -1,5 +1,5 @@
- import { Request, Response } from "express";
-import { OrgService } from "../services/OrgService";
+import { Request, Response } from "express";
+import { OrgService } from "../services/organisation.services";
 
 export class OrgController {
   private orgService: OrgService;
@@ -29,6 +29,47 @@ export class OrgController {
       res
         .status(400)
         .json({ message: "Failed to remove user from organization" });
+    }
+  }
+  async createInvitation(req: Request, res: Response) {
+    try {
+      const { org_id } = req.params;
+      const { email, expiresIn } = req.body;
+
+      if (!email || expiresIn) {
+        return res.status(400).json({
+          status: "unsuccessful",
+          message: "Valid email or expire time must be provided",
+          status_code: 400,
+        });
+      }
+
+      if (!org_id) {
+        return res.status(404).json({
+          status: "unsuccessful",
+          message: "Organization not found",
+          status_code: 404,
+        });
+      }
+
+      const invitation = await this.orgService.createInvitation(
+        org_id,
+        email,
+        expiresIn
+      );
+
+      return res.status(201).json({
+        status: "success",
+        message: "Invitation sent successfully",
+        data: { invitation },
+        status_code: 201,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: "success",
+        message: "Failed to send invitation.",
+        status_code: 500,
+      });
     }
   }
 }
