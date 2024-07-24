@@ -1,19 +1,39 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
-const options: swaggerJsdoc.Options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Blog API',
-      version: '1.0.0',
-      description: 'API documentation for blog endpoints',
+const blogSwaggerDefinition = {
+  openapi: '3.0.0',
+  info: {
+    title: 'Blog API',
+    version: '1.0.0',
+    description: 'API for managing blog posts',
+  },
+  servers: [
+    {
+      url: '{url}', // Replace {url} with your server URL
+    },
+  ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
     },
   },
-  apis: ['./src/routes/*.ts', './src/models/*.ts'], 
+  security: [
+    {
+      bearerAuth: [],
+    },
+  ],
 };
 
-const blogSwaggerSpec = swaggerJsdoc(options);
-const blogSwaggerUi = swaggerUi()
+const blogOptions = {
+  swaggerDefinition: blogSwaggerDefinition,
+  apis: ['./src/routes/blog/*.ts'], // Adjust the path according to your file structure
+};
 
-export { blogSwaggerUi, blogSwaggerSpec };
+const blogSwaggerSpec = swaggerJsdoc(blogOptions);
+
+export { swaggerUi, blogSwaggerSpec };
