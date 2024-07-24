@@ -12,7 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "typeRoots": ["src/types"],
+    "typeRoots": ["src/types", "./node_modules/@types"],
     "resolveJsonModule": true
   },
   "types": ["node", "jest"],
