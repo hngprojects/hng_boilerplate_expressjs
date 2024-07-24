@@ -7,3 +7,4 @@ export * from "./notification";
 export * from "./sms";
 export * from "./blog";
 export * from "./job";
+export * from "./invitation";
