@@ -56,14 +56,14 @@ export class Organization extends ExtendedBaseEntity {
 
   @OneToMany(
     () => UserOrganization,
-    (userOrganization) => userOrganization.organization
+    (userOrganization) => userOrganization.organization,
   )
   userOrganizations: UserOrganization[];
 
   @ManyToMany(() => User, (user) => user.organizations)
   users: User[];
 
-  @OneToMany(() => Payment, payment => payment.organization)
+  @OneToMany(() => Payment, (payment) => payment.organization)
   payments: Payment[];
 
   @BeforeInsert()

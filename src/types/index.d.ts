@@ -48,7 +48,7 @@ export interface ICreateOrganisation {
 export interface IOrganisationService {
   createOrganisation(
     payload: ICreateOrganisation,
-    userId: string
+    userId: string,
   ): Promise<unknown>;
 }
 
@@ -56,4 +56,10 @@ declare module "express-serve-static-core" {
   interface Request {
     user?: User;
   }
+}
+
+export interface EmailQueuePayload {
+  templateId: string;
+  recipient: string;
+  variables?: Record<string, any>;
 }
