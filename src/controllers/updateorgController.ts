@@ -8,7 +8,7 @@ export const updateOrganization = async (req: Request, res: Response) => {
   try {
     const organization = await UpdateOrganizationDetails(
       organization_id,
-      updateData
+      updateData,
     );
     return res.status(200).json({
       message: "Organization details updated successfully",

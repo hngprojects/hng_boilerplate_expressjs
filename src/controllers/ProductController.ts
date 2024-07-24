@@ -1,8 +1,8 @@
-import { Request, Response } from "express"
-import { ProductService } from "../services" // Adjust the import path as necessary
+import { Request, Response } from "express";
+import { ProductService } from "../services"; // Adjust the import path as necessary
 
 export class ProductController {
-  private productService = new ProductService()
+  private productService = new ProductService();
   /**
    * @swagger
    * tags:
@@ -128,20 +128,20 @@ export class ProductController {
    */
   async listProducts(req: Request, res: Response): Promise<void> {
     try {
-      const page = parseInt(req.query.page as string) || 1
-      const limit = parseInt(req.query.limit as string) || 10
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
 
       if (page <= 0 || limit <= 0) {
         res.status(400).json({
           status: "bad request",
           message: "Invalid query params passed",
           status_code: 400,
-        })
-        return
+        });
+        return;
       }
 
       const { products, totalItems } =
-        await this.productService.getPaginatedProducts(page, limit)
+        await this.productService.getPaginatedProducts(page, limit);
 
       res.json({
         success: true,
@@ -158,13 +158,13 @@ export class ProductController {
           currentPage: page,
         },
         status_code: 200,
-      })
+      });
     } catch (error) {
       res.status(500).json({
         status: "error",
         message: "Internal server error",
         status_code: 500,
-      })
+      });
     }
   }
 

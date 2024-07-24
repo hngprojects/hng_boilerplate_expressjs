@@ -4,9 +4,9 @@ import { NextFunction, Request, Response } from "express";
 import { User, Organization } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
+import { hashPassword } from "../utils/index";
 
 export class AdminOrganisationService {
-
   public async update(req: Request): Promise<Organization> {
     try {
       const { name, email, industry, type, country, address, state } = req.body;
@@ -19,9 +19,17 @@ export class AdminOrganisationService {
       if (!oldOrg) {
         throw new HttpError(404, "Not Found");
       }
-      
+
       //Update Organisation on DB
-      await orgRepository.update(org_id, {  name, email, industry, type, country, address, state });
+      await orgRepository.update(org_id, {
+        name,
+        email,
+        industry,
+        type,
+        country,
+        address,
+        state,
+      });
       //Fetch Updated organisation
       const newOrg = await orgRepository.findOne({
         where: { id: org_id },
@@ -33,26 +41,45 @@ export class AdminOrganisationService {
     }
   }
 
-  public async deleteOrganization(org_id: string): Promise<void> {
-    const organizationRepository = AppDataSource.getRepository(Organization);
+  // public async deleteOrganization(org_id: string): Promise<void> {
+  //   const organizationRepository = AppDataSource.getRepository(Organization);
 
-    const organization = await organizationRepository.findOne({
-      where: { id: org_id },
-    });
+  //   const organization = await organizationRepository.findOne({
+  //     where: { id: org_id },
+  //   });
+
+  //   if (!organization) {
+  //     throw new Error("Organization not found");
+  //   }
+
+  //   await organizationRepository.remove(organization);
+
+  // }
+
+  public async deleteOrganization(orgId: string): Promise<Organization> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const organization = await organizationRepository.findOne({ where: { id: orgId } });
 
     if (!organization) {
-      throw new Error("Organization not found");
+      throw new HttpError(404, "Organization not found");
     }
 
-    await organizationRepository.remove(organization);
+    try {
+      await organizationRepository.remove(organization);
+    } catch (error) {
+      throw new HttpError(500, "Deletion failed");
+    }
+
+    return organization; // Return the deleted organization
   }
+
 }
 
 export class AdminUserService {
-
-  async getPaginatedUsers(page: number, limit: number): 
-    Promise<{ users: User[]; totalUsers: number }> {
-
+  async getPaginatedUsers(
+    page: number,
+    limit: number,
+  ): Promise<{ users: User[]; totalUsers: number }> {
     const userRepository = AppDataSource.getRepository(User);
 
     const [users, totalUsers] = await userRepository.findAndCount({
@@ -61,5 +88,44 @@ export class AdminUserService {
     });
 
     return { users, totalUsers };
+  }
+  public async updateUser(req: Request): Promise<User> {
+    try {
+      const { firstName, lastName, email, role, password, isverified } =
+        req.body;
+
+      const userRepository = AppDataSource.getRepository(User);
+
+      const existingUser = await userRepository.findOne({
+        where: { email },
+      });
+      if (!existingUser) {
+        throw new HttpError(404, "User not found");
+      }
+
+      let hashedPassword: string | undefined;
+      if (password) {
+        hashedPassword = await hashPassword(password);
+      }
+
+      const updatedFields = {
+        name: `${firstName} ${lastName}`,
+        email,
+        role,
+        password: hashedPassword || existingUser.password,
+        isverified:
+          isverified !== undefined ? isverified : existingUser.isverified,
+      };
+
+      await userRepository.update(existingUser.id, updatedFields);
+
+      const updatedUser = await userRepository.findOne({
+        where: { id: existingUser.id },
+      });
+      return updatedUser!;
+    } catch (error) {
+      console.error(error);
+      throw new HttpError(error.status || 500, error.message || error);
+    }
   }
 }
