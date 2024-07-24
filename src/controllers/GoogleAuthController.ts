@@ -1,7 +1,6 @@
 import passport from "../config/google.passport.config";
-import { HttpError, ServerError, Unauthorized } from "../middleware";
+import {ServerError, Unauthorized } from "../middleware";
 import { Request, Response, NextFunction } from "express";
-import { UserService } from "../services";
 import { GoogleAuthService } from "../services/google.passport.service";
 
 
@@ -21,8 +20,6 @@ export const googleAuthCallback = (req: Request, res: Response, next: NextFuncti
         const dbUser = await googleAuthService.handleGoogleAuthUser(user, isDbUser)        
         res.status(200).json(dbUser);
       } catch(error) {
-        console.log(error);
-        
         next(error)
       }
     });

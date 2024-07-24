@@ -1,11 +1,21 @@
 import AppDataSource from "../data-source";
 import { User } from "../models";
-import { IGoogleAuthService } from "../types";
 import {  Profile } from "passport-google-oauth2";
 import config from "../config";
 import jwt from "jsonwebtoken";
 import { HttpError } from "../middleware";
 import { Profile as UserProfile } from "../models";
+
+
+interface IGoogleAuthService {
+  handleGoogleAuthUser(payload: Profile, authUser: User | null): Promise<{
+    status: string,
+    message: string,
+    user: Partial<User>;
+    access_token: string;
+  }>
+  getUserByGoogleId(google_id: string): Promise<User | null>
+}
 
 
 export class GoogleAuthService implements IGoogleAuthService {
