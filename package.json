@@ -15,7 +15,8 @@
     "migration:create": "typeorm-ts-node-commonjs migration:create db/migrations/migration",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate db/migrations/migration -d src/data-source",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/data-source",
-    "prepare": "husky"
+    "prepare": "husky",
+    "commitlint": "commitlint --edit"
   },
   "repository": "https://github.com/hngprojects/hng_boilerplate_expressjs",
   "author": "StarmannRassy <boronicle@gmail.com>",
