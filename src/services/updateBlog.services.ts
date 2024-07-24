@@ -34,9 +34,7 @@ export const updateBlogPost = async (
 
   try {
     await blogRepository.save(blog);
-  } catch (error) {
-    console.error("Service - Error saving blog post:", error);
-  }
+  } catch (error) {}
 
   return blog;
 };

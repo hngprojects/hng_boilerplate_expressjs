@@ -88,11 +88,6 @@ export class EmailService {
   }
 
   async sendEmail(payload: EmailQueuePayload): Promise<void> {
-    console.log(
-      `Sending email to ${payload.recipient} using template ${payload.templateId} with variables:`,
-      payload.variables,
-    );
-
     try {
     } catch (error) {
       throw new ServerError("Internal server error");

@@ -37,7 +37,6 @@ export class AdminOrganisationService {
       });
       return newOrg;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -117,7 +116,6 @@ export class AdminUserService {
       });
       return updatedUser!;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -153,7 +151,6 @@ export class AdminLogService {
         currentPage: Number(page),
       };
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
