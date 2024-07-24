@@ -104,24 +104,15 @@ class AdminOrganisationController {
       res.status(200).json({
         success: true,
         message: "Organisation Updated Successfully",
-        data: {
-          id: org.id,
-          name: org.name,
-          email: org.email,
-          slug: org.slug,
-          type: org.type,
-          industry: org.industry,
-          state: org.state,
-          country: org.country,
-          address: org.address,
-          created_at: org.created_at,
-          updated_at: org.updated_at,
-        },
         status_code: 200,
       });
     } catch (error) {
       if (error instanceof HttpError) {
-        res.status(error.status_code).json({ message: error.message });
+        res.status(error.status_code).json({
+          success: false,
+          message: error.message,
+          status_code: error.status_code,
+        });
       } else {
         res
           .status(500)
@@ -346,9 +337,10 @@ class AdminUserController {
 
       if (page <= 0 || limit <= 0) {
         res.status(400).json({
-          status: "bad request",
-          message: "Invalid query params passed",
+          status: "unsuccessful",
           status_code: 400,
+          message:
+            "Invalid pagination parameters. Page and limit must be positive integers.",
         });
         return;
       }
@@ -372,8 +364,8 @@ class AdminUserController {
         users: users.map((user) => ({
           name: user.name,
           email: user.email,
+          role: user.role,
           createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
         })),
         pagination: {
           totalUsers,
