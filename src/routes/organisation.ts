@@ -14,7 +14,7 @@ orgRouter.delete(
 );
 
 orgRouter.delete(
-  "/api/v1/organizations/:organizationId/delete",
+  "/organizations/:org_id/delete",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   orgController.deleteOrganization.bind(orgController)
