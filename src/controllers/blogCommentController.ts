@@ -49,7 +49,7 @@ export class BlogCommentController {
       if (content?.toString()?.trim() === "")
         return res.status(403).json({
           status: "unsuccessful",
-          message: "Content cannot be empty",
+          message: "Comment content must be provided and cannot be empty",
           status_code: 403,
         });
 
