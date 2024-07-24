@@ -10,7 +10,12 @@ const blogSwaggerDefinition = {
   },
   servers: [
     {
-      url: '{url}', // Replace {url} with your server URL
+      url: "http://localhost:8000/",
+      description: "Local server",
+    },
+    {
+      url: "https://staging.api-expressjs.boilerplate.hng.tech/",
+      description: "Live server",
     },
   ],
   components: {
