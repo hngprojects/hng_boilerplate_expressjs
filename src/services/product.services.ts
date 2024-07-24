@@ -20,4 +20,13 @@ export class ProductService {
 
     return { products, totalItems };
   }
+  async getOneProduct(id: string): Promise<Product> {
+
+    const product = await this.productRepository.findOneBy({id});
+
+    return product;
+
+
+  }
+
 }
