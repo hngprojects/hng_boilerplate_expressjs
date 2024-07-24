@@ -33,6 +33,7 @@ const config = {
   FLW_PUBLIC_KEY: process.env.FLW_PUBLIC_KEY,
   FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
   FLW_ENCRYPTION_KEY: process.env.FLW_ENCRYPTION_KEY,
+  LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY
 };
 
 export default config;
