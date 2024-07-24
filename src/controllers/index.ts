@@ -8,4 +8,4 @@ export * from "./AdminController";
 export * from "./NotificationController";
 export * from "./BlogController";
 export * from "./exportController";
-
+export * from "./PaymentController";
