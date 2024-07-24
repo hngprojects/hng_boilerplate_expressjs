@@ -10,7 +10,7 @@ import { OrgController } from "../controllers/OrgController.ts";
 import { validateOrgId } from "../middleware/organization.validation.ts";
 import { InvalidInput } from "../middleware/error.ts";
 import { authMiddleware } from "../middleware";
-import { orgService } from "../services/organisation.service";
+import { OrgService } from "../services/organisation.service";
 
 jest.mock("../data-source", () => {
   return {
@@ -26,9 +26,9 @@ jest.mock("../data-source", () => {
 });
 jest.mock("../models");
 jest.mock("jsonwebtoken");
-
+let orgService: OrgService;
 describe("OrgService", () => {
-  let orgService: OrgService;
+  //let orgService: OrgService;
   let mockManager;
 
   beforeEach(() => {
