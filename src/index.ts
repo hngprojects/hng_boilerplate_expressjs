@@ -21,7 +21,6 @@ import {
   exportRouter,
   sendEmailRoute,
   paymentRouter,
-  paymentRouter
 } from "./routes";
 import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -57,7 +56,6 @@ server.use(passport.initialize());
 
 server.use(Limiter);
 
-
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -88,7 +86,7 @@ server.use(routeNotFound);
 server.use("/api/v1/", updateRouter);
 server.use("/api/v1/organisation", organisationRoute);
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-server.use("/api/v1/payments", paymentRouter)
+server.use("/api/v1/payments", paymentRouter);
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/jobs", jobRouter);
