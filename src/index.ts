@@ -16,6 +16,7 @@ import {
   jobRouter,
   blogRouter,
   adminRouter,
+  exportRouter,
   sendEmailRoute,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
@@ -46,9 +47,9 @@ server.use(
     ],
   }),
 );
-server.use(routeNotFound);
+
 server.use(Limiter);
-server.use(errorHandler);
+
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -61,6 +62,7 @@ server.use("/api/v1/auth", authRoute);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1/help-center", helpRouter);
+server.use("/api/v1", exportRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/blog", blogRouter);
@@ -72,6 +74,9 @@ server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
+
+server.use(routeNotFound);
+server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
