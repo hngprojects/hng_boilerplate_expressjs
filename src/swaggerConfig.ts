@@ -1,6 +1,6 @@
-import swaggerJsdoc, { SwaggerDefinition } from "swagger-jsdoc"
-import { version } from "../package.json"
-import config from "./config"
+import swaggerJsdoc, { SwaggerDefinition } from "swagger-jsdoc";
+import { version } from "../package.json";
+import config from "./config";
 
 const swaggerDefinition: SwaggerDefinition = {
   openapi: "3.1.0",
@@ -34,7 +34,7 @@ const swaggerDefinition: SwaggerDefinition = {
       bearerAuth: [],
     },
   ],
-}
+};
 
 const options = {
   swaggerDefinition,
@@ -44,8 +44,8 @@ const options = {
     "./src/services/*.ts",
     "./src/schema/*.ts",
   ], // Adjust these paths
-}
+};
 
-const specs = swaggerJsdoc(options)
+const specs = swaggerJsdoc(options);
 
-export default specs
+export default specs;

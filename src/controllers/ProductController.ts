@@ -1,8 +1,12 @@
-import { Request, Response } from "express"
-import { ProductService } from "../services" // Adjust the import path as necessary
+import { Request, Response } from "express";
+import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
 
 export class ProductController {
-  private productService = new ProductService()
+  private productService: ProductService;
+
+  constructor() {
+    this.productService = new ProductService();
+  }
   /**
    * @swagger
    * tags:
@@ -126,45 +130,37 @@ export class ProductController {
    *                   type: string
    *                   example: An unexpected error occurred while processing your request. Please try again later
    */
-  async listProducts(req: Request, res: Response): Promise<void> {
+  async getProductPagination(req: Request, res: Response) {
     try {
-      const page = parseInt(req.query.page as string) || 1
-      const limit = parseInt(req.query.limit as string) || 10
-
-      if (page <= 0 || limit <= 0) {
-        res.status(400).json({
-          status: "bad request",
-          message: "Invalid query params passed",
-          status_code: 400,
-        })
-        return
-      }
-
-      const { products, totalItems } =
-        await this.productService.getPaginatedProducts(page, limit)
-
-      res.json({
-        success: true,
-        message: "Products retrieved successfully",
-        products: products.map((product) => ({
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          category: product.category,
-        })),
-        pagination: {
-          totalItems,
-          totalPages: Math.ceil(totalItems / limit),
-          currentPage: page,
-        },
+      const paginationData = await this.productService.getProductPagination(
+        req.query,
+      );
+      res.status(200).json({
+        status: "success",
         status_code: 200,
-      })
-    } catch (error) {
-      res.status(500).json({
-        status: "error",
-        message: "Internal server error",
-        status_code: 500,
-      })
+        data: paginationData,
+      });
+    } catch (err) {
+      if (err.message.includes("out of range")) {
+        res.status(400).json({
+          error: "Page out of range",
+          message: err.message,
+          status_code: 400,
+        });
+      } else if (err.message.includes("positive integers")) {
+        res.status(400).json({
+          error: "Invalid query parameters",
+          message: err.message,
+          status_code: 400,
+        });
+      } else {
+        res.status(500).json({
+          error: "Internal server error",
+          message: err.message,
+          status_code: 500,
+        });
+        console.error(err);
+      }
     }
   }
 
@@ -172,7 +168,7 @@ export class ProductController {
    * @swagger
    * /api/v1/products/{product_id}:
    *   get:
-   *     summary: Fetch a product by {id}
+   *     summary: Fetch a product by its ID
    *     tags: [Product]
    *     parameters:
    *       - in: path
@@ -180,17 +176,17 @@ export class ProductController {
    *         required: true
    *         schema:
    *           type: integer
-   *         description: String ID of the product
+   *         description: The ID of the product to fetch
    *     responses:
    *       200:
-   *         description: Successful response
+   *         description: Product retrieved successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
    *                 id:
-   *                   type: string
+   *                   type: integer
    *                   example: 123
    *                 name:
    *                   type: string
@@ -200,30 +196,42 @@ export class ProductController {
    *                   example: Product is robust
    *                 price:
    *                   type: number
-   *                   exanple: 19
+   *                   example: 19
    *                 category:
    *                   type: string
    *                   example: Gadgets
    *       400:
-   *         description: Bad request
+   *         description: Bad request due to invalid product ID
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
    *                   type: string
-   *                   example: Invalid product ID
+   *                   example: Bad Request
+   *                 message:
+   *                   type: string
+   *                   example: Invalid Product Id
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
    *       404:
-   *         description: Not found
+   *         description: Product not found
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
+   *                   type: string
+   *                   example: Not Found
+   *                 message:
    *                   type: string
    *                   example: Product not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
    *       500:
    *         description: Internal server error
    *         content:
@@ -231,11 +239,49 @@ export class ProductController {
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
    *                   type: string
    *                   example: An unexpected error occurred
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
    */
-  async fetchProductById(req: Request, res: Response) {}
+
+  async fetchProductById(req: Request, res: Response) {
+
+    const productId = req.params.product_id;
+
+    if(isNaN(Number(productId))){
+      return res.status(400).json({
+        status: "Bad Request",
+        message: "Invalid Product Id",
+        status_code: 400,
+      })
+    }
+
+    try {
+      const product = await this.productService.getOneProduct(productId)
+      if (!product) {
+        return res.status(404).json({
+          status: "Not found",
+          message: "Product not found",
+          status_code: 404,
+        });
+        
+      }
+      return res.status(200).json(product);
+    } catch (error) {
+      return res.status(500).json({
+        status: "An unexpected error occurred",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+
+  }
 
   /**
    * @swagger
@@ -519,5 +565,10 @@ export class ProductController {
    *                   type: string
    *                   example: Product not found
    */
-  async deleteProduct(req: Request, res: Response) {}
+  async deleteProduct(req: Request, res: Response) {
+
+
+  }
 }
+
+export default ProductController;
