@@ -58,3 +58,8 @@ declare module "express-serve-static-core" {
   }
 }
 
+export interface EmailQueuePayload {
+  templateId: string;
+  recipient: string;
+  variables?: Record<string, any>;
+}

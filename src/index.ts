@@ -49,6 +49,9 @@ server.use(
   }),
 );
 server.use(passport.initialize());
+
+server.use(Limiter);
+
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -73,7 +76,10 @@ server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
+server.use("/admin/queues", ServerAdapter.getRouter());
 
+server.use(routeNotFound);
+server.use(errorHandler);
 
 server.use(routeNotFound);
 server.use(Limiter);
