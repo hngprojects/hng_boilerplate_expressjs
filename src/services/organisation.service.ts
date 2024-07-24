@@ -1,4 +1,4 @@
-import { Organization, User, UserOrganization } from "../models/organization";
+import { Organization, User, UserOrganization } from "../models";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
 import { User } from "../models/user";
