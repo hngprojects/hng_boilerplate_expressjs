@@ -90,8 +90,8 @@ authRoute.get("/google/callback", googleAuthCallback);
 
 // ---------------------------Google Auth Route Ends-------------------------  //
 
-authRoute.post("/forgotPassword", forgotPassword);
-authRoute.post("/resetPassword", resetPassword);
+authRoute.post("/forgot-password", forgotPassword);
+authRoute.post("/reset-password", resetPassword);
 authRoute.patch("/change-password", authMiddleware, changePassword);
 
 export { authRoute };
