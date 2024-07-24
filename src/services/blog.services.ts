@@ -1,6 +1,6 @@
-import { getRepository, Repository } from 'typeorm';
-import AppDataSource from '../data-source';
-import { Blog } from '../models/blog';
+import { getRepository, Repository } from "typeorm";
+import AppDataSource from "../data-source";
+import { Blog } from "../models/blog";
 
 export class BlogService {
   private blogRepository: Repository<Blog>;
@@ -12,7 +12,7 @@ export class BlogService {
   async getPaginatedblogs(
     userId: string,
     page: number,
-    limit: number
+    limit: number,
   ): Promise<{ blogs: Blog[]; totalItems: number }> {
     const [blogs, totalItems] = await this.blogRepository.findAndCount({
       where: { author: { id: userId } },
