@@ -41,6 +41,31 @@ export class AdminOrganisationService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
+
+  public async setUserRole(req: Request): Promise<User> {
+    try {
+      const { role } = req.body;
+      const { user_id } = req.params;
+
+      const userRepository = AppDataSource.getRepository(User);
+
+      const user = await userRepository.findOne({
+        where: { id: user_id },
+      });
+      
+      if (!user) {
+        throw new HttpError(404, "User not Found");
+      }
+   
+      // Update User Role on the Database
+      user.role = role;
+      await userRepository.save(user);
+
+      return user;
+    } catch (error) {
+      throw new HttpError(error.status_code || 500, error.message);
+    }
+  }
 }
 
 export class AdminUserService {
