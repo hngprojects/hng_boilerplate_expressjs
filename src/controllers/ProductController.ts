@@ -1,17 +1,12 @@
-import { ProductService } from "../services/product.services";
-import { Request, Response } from "express"
-import { ProductService } from "../services" // Adjust the import path as necessary
+import { Request, Response } from "express";
+import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
 
-class ProductController {
+export class ProductController {
   private productService: ProductService;
 
   constructor() {
     this.productService = new ProductService();
   }
-
-
-export class ProductController {
-  private productService = new ProductService();
   /**
    * @swagger
    * tags:
@@ -137,70 +132,35 @@ export class ProductController {
    */
   async getProductPagination(req: Request, res: Response) {
     try {
-      const paginationData = await this.productService.getProductPagination(req.query);
+      const paginationData = await this.productService.getProductPagination(
+        req.query,
+      );
       res.status(200).json({
         status: "success",
         status_code: 200,
-        data: paginationData
+        data: paginationData,
       });
     } catch (err) {
       if (err.message.includes("out of range")) {
         res.status(400).json({
           error: "Page out of range",
           message: err.message,
-          status_code: 400
+          status_code: 400,
         });
       } else if (err.message.includes("positive integers")) {
         res.status(400).json({
           error: "Invalid query parameters",
           message: err.message,
-          status_code: 400
+          status_code: 400,
         });
       } else {
         res.status(500).json({
           error: "Internal server error",
           message: err.message,
-          status_code: 500
+          status_code: 500,
         });
         console.error(err);
       }
-      const page = parseInt(req.query.page as string) || 1;
-      const limit = parseInt(req.query.limit as string) || 10;
-
-      if (page <= 0 || limit <= 0) {
-        res.status(400).json({
-          status: "bad request",
-          message: "Invalid query params passed",
-          status_code: 400,
-        });
-        return;
-      }
-
-      const { products, totalItems } =
-        await this.productService.getPaginatedProducts(page, limit);
-
-      res.json({
-        success: true,
-        message: "Products retrieved successfully",
-        products: products.map((product) => ({
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          category: product.category,
-        })),
-        pagination: {
-          totalItems,
-          totalPages: Math.ceil(totalItems / limit),
-          currentPage: page,
-        },
-        status_code: 200,
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "error",
-        message: "Internal server error",
-        status_code: 500,
-      });
     }
   }
 
