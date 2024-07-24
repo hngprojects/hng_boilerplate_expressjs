@@ -1,6 +1,6 @@
-import { getRepository, Repository } from 'typeorm';
-import AppDataSource from '../data-source';
-import { Product } from '../models/product';
+import { getRepository, Repository } from "typeorm";
+import AppDataSource from "../data-source";
+import { Product } from "../models/product";
 
 export class ProductService {
   private productRepository: Repository<Product>;
@@ -11,7 +11,7 @@ export class ProductService {
 
   async getPaginatedProducts(
     page: number,
-    limit: number
+    limit: number,
   ): Promise<{ products: Product[]; totalItems: number }> {
     const [products, totalItems] = await this.productRepository.findAndCount({
       skip: (page - 1) * limit,
