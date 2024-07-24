@@ -1,4 +1,5 @@
 #!/bin/bash
 
 cd /var/www/aihomework/dev/
-/usr/bin/yarn start
+mkdir -p logs
+/usr/bin/yarn start >> logs/devoutput.log 2>&1

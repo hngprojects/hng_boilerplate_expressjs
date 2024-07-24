@@ -56,7 +56,7 @@ const authService = new AuthService();
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { mailSent, newUser, access_token } = await authService.signUp(
-      req.body
+      req.body,
     );
     res.status(201).json({ mailSent, newUser, access_token });
   } catch (error) {
