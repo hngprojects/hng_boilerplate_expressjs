@@ -9,7 +9,7 @@ export class BlogService {
     this.blogRepository = AppDataSource.getRepository(Blog);
   }
 
-  async getPaginatedBlogsByUser(
+  async getPaginatedblogs(
     userId: string,
     page: number,
     limit: number
@@ -22,5 +22,15 @@ export class BlogService {
     });
 
     return { blogs, totalItems };
+  }
+
+  async deleteBlogPost(id: string): Promise<boolean> {
+    try {
+      const result = await this.blogRepository.delete(id);
+      return result.affected !== 0;
+    } catch (error) {
+      console.error('Error deleting blog post:', error);
+      throw new Error('Error deleting blog post');
+    }
   }
 }
