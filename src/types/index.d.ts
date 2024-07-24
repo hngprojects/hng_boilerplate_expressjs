@@ -22,10 +22,16 @@ export interface IUserSignUp {
   password: string;
   phone: string;
 }
-
 export interface IUserLogin {
   email: string;
   password: string;
+}
+
+export interface IProduct {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
 }
 
 export interface IAuthService {
@@ -56,4 +62,10 @@ declare module "express-serve-static-core" {
   interface Request {
     user?: User;
   }
+}
+
+export interface EmailQueuePayload {
+  templateId: string;
+  recipient: string;
+  variables?: Record<string, any>;
 }
