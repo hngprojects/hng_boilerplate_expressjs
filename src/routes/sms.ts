@@ -1,6 +1,4 @@
 import { Router } from "express";
-import { authMiddleware } from "../middleware";
-import { sendSms } from "../controllers/SmsController";
 import { sendSms } from "../controllers/SmsController";
 import { authMiddleware } from "../middleware";
 
