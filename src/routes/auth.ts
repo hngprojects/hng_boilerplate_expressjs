@@ -4,6 +4,7 @@ import {
   login,
   changeUserRole,
   forgotPassword,
+  resetPassword,
 } from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
@@ -22,4 +23,5 @@ authRoute.put(
   changeUserRole,
 );
 authRoute.post("/forgot-password", forgotPassword);
+authRoute.post("/reset-password", resetPassword);
 export { authRoute };

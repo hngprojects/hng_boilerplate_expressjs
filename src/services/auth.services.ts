@@ -10,6 +10,7 @@ import config from "../config";
 import generateResetToken from "../utils/generate-reset-token";
 import { PasswordResetToken } from "../models/password-reset-token";
 import nodemailer from "nodemailer";
+import bcrypt from "bcryptjs";
 
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
@@ -167,6 +168,39 @@ export class AuthService implements IAuthService {
       await transporter.sendMail(mailOptions);
 
       return { message: "Password reset link sent successfully." };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async resetPassword(
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> {
+    try {
+      const passwordResetTokenRepository =
+        AppDataSource.getRepository(PasswordResetToken);
+      const passwordResetToken = await passwordResetTokenRepository.findOne({
+        where: { token },
+        relations: ["user"],
+      });
+
+      if (!passwordResetToken) {
+        throw new HttpError(404, "Invalid or expired token");
+      }
+
+      if (passwordResetToken.expiresAt < new Date()) {
+        throw new HttpError(400, "Token expired");
+      }
+
+      const user = passwordResetToken.user;
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedPassword;
+
+      await AppDataSource.manager.save(user);
+      await passwordResetTokenRepository.remove(passwordResetToken);
+
+      return { message: "Password reset successfully." };
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }

@@ -170,4 +170,18 @@ const forgotPassword = async (
   }
 };
 
-export { signUp, verifyOtp, login, forgotPassword };
+const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token, newPassword } = req.body;
+    const { message } = await authService.resetPassword(token, newPassword);
+    res.status(200).json({ message });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signUp, verifyOtp, login, forgotPassword, resetPassword };
