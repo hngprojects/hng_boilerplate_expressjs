@@ -6,7 +6,10 @@ import { HttpError } from "../middleware";
 import { UserOrganization } from "../models/user-organisation";
 
 export class OrganisationService implements IOrganisationService {
-  public async createOrganisation(payload: ICreateOrganisation, userId: string): Promise<{
+  public async createOrganisation(
+    payload: ICreateOrganisation,
+    userId: string
+  ): Promise<{
     newOrganisation: Partial<Organization>;
   }> {
     try {
@@ -20,12 +23,13 @@ export class OrganisationService implements IOrganisationService {
       userOrganization.userId = userId;
       userOrganization.organizationId = newOrganisation.id;
       userOrganization.role = UserRole.ADMIN;
-      
+
       await AppDataSource.manager.save(userOrganization);
 
-      const user = await AppDataSource
-      .getRepository(User)
-      .findOne({ where: { id: userId }, relations: ["userOrganizations", "userOrganizations.organization"] });
+      const user = await AppDataSource.getRepository(User).findOne({
+        where: { id: userId },
+        relations: ["userOrganizations", "userOrganizations.organization"],
+      });
 
       user.userOrganizations.push(userOrganization);
       await AppDataSource.getRepository(User).save(user);
