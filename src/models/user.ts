@@ -20,6 +20,7 @@ import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
 import { Like } from "./like";
 import { Payment } from "./payment";
+import { PasswordResetToken } from "./password-reset-token";
 
 @Entity()
 @Unique(["email"])
@@ -101,4 +102,10 @@ export class User extends ExtendedBaseEntity {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
+
+  @OneToMany(
+    () => PasswordResetToken,
+    (passwordResetToken) => passwordResetToken.user,
+  )
+  passwordResetTokens: PasswordResetToken[];
 }
