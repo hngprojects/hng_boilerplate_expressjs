@@ -1,8 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, BeforeInsert, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  ManyToMany,
+  BeforeInsert,
+  UpdateDateColumn,
+} from "typeorm";
 import { User } from ".";
-import {v4 as uuidv4} from "uuid"
+import { v4 as uuidv4 } from "uuid";
 import { UserOrganization } from "./user-organisation";
 import ExtendedBaseEntity from "./extended-base-entity";
+import { Payment } from "./payment";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -33,7 +42,7 @@ export class Organization extends ExtendedBaseEntity {
   @Column({ nullable: true })
   state: string;
 
-  @Column('text', { nullable: true })
+  @Column("text", { nullable: true })
   description: string;
 
   @UpdateDateColumn()
@@ -42,18 +51,23 @@ export class Organization extends ExtendedBaseEntity {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column('uuid')
+  @Column("uuid")
   owner_id: string;
 
-  @OneToMany(() => UserOrganization, userOrganization => userOrganization.organization)
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.organization
+  )
   userOrganizations: UserOrganization[];
 
   @ManyToMany(() => User, (user) => user.organizations)
   users: User[];
+
+  @OneToMany(() => Payment, payment => payment.organization)
+  payments: Payment[];
 
   @BeforeInsert()
   generateSlug() {
     this.slug = uuidv4();
   }
 }
-
