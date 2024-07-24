@@ -18,9 +18,9 @@ const AppDataSource = new DataSource({
   migrationsTableName: "migrations",
   // ssl: false,
   // extra: {
-  //   ssl: {
-  //     rejectUnauthorized: false,
-  //   },
+  // ssl: {
+  //   rejectUnauthorized: false,
+  // },
   // },
 });
 

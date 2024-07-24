@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+} from "typeorm";
 import { IsEmail } from "class-validator";
 import { User } from "./user";
 import { Organization } from "./organization";
@@ -29,13 +36,15 @@ export class Payment {
   @Column("uuid", { nullable: true })
   userId: string | null;
 
-  @ManyToOne(() => User, user => user.payments, { nullable: true })
+  @ManyToOne(() => User, (user) => user.payments, { nullable: true })
   user: User | null;
 
   @Column("uuid", { nullable: true })
   organizationId: string | null;
 
-  @ManyToOne(() => Organization, organization => organization.payments, { nullable: true })
+  @ManyToOne(() => Organization, (organization) => organization.payments, {
+    nullable: true,
+  })
   organization: Organization | null;
 
   @Column({ nullable: true })

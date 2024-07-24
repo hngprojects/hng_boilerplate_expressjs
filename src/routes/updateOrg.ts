@@ -10,7 +10,7 @@ router.put(
   "/organization/:organization_id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
-  updateOrganization
+  updateOrganization,
 );
 
 export default router;

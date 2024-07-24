@@ -1,6 +1,5 @@
-import { Request, Response } from 'express';
-import { BlogService } from '../services'; 
-
+import { Request, Response } from "express";
+import { BlogService } from "../services";
 
 export class BlogController {
   private blogService = new BlogService();
@@ -19,8 +18,10 @@ export class BlogController {
         return;
       }
 
-      const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(page, limit);
+      const { blogs, totalItems } = await this.blogService.getPaginatedblogs(
+        page,
+        limit,
+      );
 
       res.json({
         status: "success",
@@ -49,37 +50,36 @@ export class BlogController {
 
   async deleteBlogPost(req: Request, res: Response): Promise<void> {
     try {
-        const { id } = req.params;
-        if (!id) {
-            res.status(401).json({
-            status_code: 401,
-            error: "Unauthorized",
-          });
-        }
-  
-        const deletedPost = await this.blogService.deleteBlogPost(id);
-        if (!deletedPost) {
-            res.status(404).json({
-            status_code: 404,
-            error: "Blog post not found",
-          });
-        }
-  
-          res.status(200).json({
-          status_code: 200,
-          message: "Blog post deleted successfully",
-        });
-      } catch (error) {
-          res.status(500).json({
-          status_code: 500,
-          error: "Internal server error",
-          details: error.message,
+      const { id } = req.params;
+      if (!id) {
+        res.status(401).json({
+          status_code: 401,
+          error: "Unauthorized",
         });
       }
+
+      const deletedPost = await this.blogService.deleteBlogPost(id);
+      if (!deletedPost) {
+        res.status(404).json({
+          status_code: 404,
+          error: "Blog post not found",
+        });
+      }
+
+      res.status(200).json({
+        status_code: 200,
+        message: "Blog post deleted successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status_code: 500,
+        error: "Internal server error",
+        details: error.message,
+      });
     }
+  }
 
-
-/**
+  /**
    * @swagger
    * /api/v1/blog/{id}:
    *   delete:
@@ -137,6 +137,4 @@ export class BlogController {
    *                   type: string
    *                   example: Error message
    */
-
-
 }
