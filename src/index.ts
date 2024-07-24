@@ -20,8 +20,7 @@ import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
-import blogSwaggerSpec from "./blogSwaggerConfig";
-import blogSwaggerUi from "./blogSwaggerConfig";
+import { swaggerUi as blogSwaggerUi, blogSwaggerSpec } from './blogSwaggerConfig';
 import { organisationRoute } from "./routes/createOrg";
 
 dotenv.config();
