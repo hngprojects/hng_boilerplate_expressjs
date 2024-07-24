@@ -48,7 +48,8 @@ class AdminUserController {
   constructor() {
     this.adminUserService = new AdminUserService();
   }
-
+  
+//Update Single User
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const user = await this.adminUserService.updateUser(req);
