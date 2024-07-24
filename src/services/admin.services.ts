@@ -1,7 +1,7 @@
 // / src/services/AdminOrganisationService.ts
 import { NextFunction, Request, Response } from "express";
 // import { getRepository, Repository } from 'typeorm';
-import { User, Organization } from "../models";
+import { User, Organization, Log } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
 import { hashPassword } from "../utils/index";
@@ -37,7 +37,6 @@ export class AdminOrganisationService {
       });
       return newOrg;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -117,7 +116,41 @@ export class AdminUserService {
       });
       return updatedUser!;
     } catch (error) {
-      console.error(error);
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+}
+
+export class AdminLogService {
+  public async getPaginatedLogs(req: Request): Promise<{
+    logs: Log[];
+    totalLogs: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    try {
+      const { page = 1, limit = 10, sort = "desc", offset = 0 } = req.query;
+      const logRepository = AppDataSource.getRepository(Log);
+
+      const [logs, totalLogs] = await logRepository.findAndCount({
+        order: { id: sort === "asc" ? "ASC" : "DESC" },
+        skip: Number(offset),
+        take: Number(limit),
+      });
+
+      const totalPages = Math.ceil(totalLogs / Number(limit));
+
+      if (!logs.length) {
+        throw new HttpError(404, "Logs not found");
+      }
+
+      return {
+        logs,
+        totalLogs,
+        totalPages,
+        currentPage: Number(page),
+      };
+    } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
