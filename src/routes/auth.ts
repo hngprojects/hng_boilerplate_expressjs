@@ -1,4 +1,11 @@
-import { signUp, verifyOtp, login, changeUserRole } from "../controllers";
+import {
+  signUp,
+  verifyOtp,
+  login,
+  changeUserRole,
+  forgotPassword,
+  resetPassword,
+} from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
@@ -81,5 +88,8 @@ authRoute.get("/google", initiateGoogleAuthRequest);
 authRoute.get("/google/callback", googleAuthCallback);
 
 // ---------------------------Google Auth Route Ends-------------------------  //
+
+authRoute.post("/forgotPassword", forgotPassword);
+authRoute.post("/resetPassword", resetPassword);
 
 export { authRoute };

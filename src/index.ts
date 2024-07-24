@@ -48,8 +48,8 @@ server.use(
     ],
   }),
 );
+server.use(Limiter);
 server.use(passport.initialize());
-
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -82,7 +82,6 @@ server.use(routeNotFound);
 server.use(errorHandler);
 
 server.use(routeNotFound);
-server.use(Limiter);
 server.use(errorHandler);
 
 AppDataSource.initialize()

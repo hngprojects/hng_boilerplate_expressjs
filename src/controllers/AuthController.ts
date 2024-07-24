@@ -156,4 +156,32 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp, verifyOtp, login };
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const { message } = await authService.forgotPassword(email);
+    res.status(200).json({ status: "sucess", status_code: 200, message });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token, newPassword } = req.body;
+    const { message } = await authService.resetPassword(token, newPassword);
+    res.status(200).json({ message });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signUp, verifyOtp, login, forgotPassword, resetPassword };
