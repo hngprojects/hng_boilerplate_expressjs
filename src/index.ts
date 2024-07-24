@@ -48,6 +48,7 @@ server.use(express.json());
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
+server.use("/api/v1/", updateRouter);
 server.use("/api/v1/admin", adminRouter);
 server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
