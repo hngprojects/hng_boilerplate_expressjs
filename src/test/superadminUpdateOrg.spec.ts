@@ -108,7 +108,7 @@ describe("Organisation", () => {
         HttpError,
       );
       await expect(adminOrganisationService.update(req)).rejects.toThrow(
-        "Not Found",
+        "Organisation not found, please check and try again",
       );
       expect(orgRepository.findOne).toHaveBeenCalledWith({
         where: { id: "2" },
