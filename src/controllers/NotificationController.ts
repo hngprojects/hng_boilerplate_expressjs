@@ -17,7 +17,7 @@ const requiredFields: (keyof NotificationSettings)[] = [
 ];
 const validateFields = (body: Partial<NotificationSettings>) => {
   const missingFields = requiredFields.filter(
-    (field) => body[field] === undefined
+    (field) => body[field] === undefined,
   );
 
   if (missingFields.length > 0) {
@@ -71,29 +71,29 @@ const validateFields = (body: Partial<NotificationSettings>) => {
  *                                  example: []
  *          400:
  *              description: Bad request
- *              content:    
+ *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              status: 
+ *                              status:
  *                                  type: string
  *                                  example: Unsuccessful
- *                              message: 
+ *                              message:
  *                                  type: string
  *                                  example: Notification settings was not created successfully
- * 
+ *
  *          409:
  *              description: conflict - notification setting already exist
- *              content:    
+ *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              status: 
+ *                              status:
  *                                  type: string
  *                                  example: Unsuccessful
- *                              message: 
+ *                              message:
  *                                  type: string
  *                                  example: Notification setting for this user already exist
  *          500:
@@ -102,17 +102,17 @@ const validateFields = (body: Partial<NotificationSettings>) => {
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          properties: 
- *                              status: 
+ *                          properties:
+ *                              status:
  *                                  type: string
  *                                  example: error
  *                              message:
  *                                  type: string
  *                                  example: Server error
- *                          
- *                           
- *                      
- *                       
+ *
+ *
+ *
+ *
  */
 
 // Create notification setting for a user
@@ -153,7 +153,6 @@ const CreateNotification = async (req: Request, res: Response) => {
   }
 };
 
-
 /**
  * @swagger
  * /api/v1/settings/nofication-settings/{user_id}:
@@ -169,7 +168,7 @@ const CreateNotification = async (req: Request, res: Response) => {
  *                  properties:
  *                      status:
  *                          type: string
- *                          example: success 
+ *                          example: success
  *      responses:
  *          200:
  *             description: Notification setting retrieved successfully
@@ -186,15 +185,15 @@ const CreateNotification = async (req: Request, res: Response) => {
  *                                  example: []
  *          404:
  *              description: User not found
- *              content:    
+ *              content:
  *                  application/json:
  *                      schema:
  *                          type: object
  *                          properties:
- *                              status: 
+ *                              status:
  *                                  type: string
  *                                  example: Unsuccessful
- *                              message: 
+ *                              message:
  *                                  type: string
  *                                  example: The user with the requested id cannot found
  *          500:
@@ -203,17 +202,17 @@ const CreateNotification = async (req: Request, res: Response) => {
  *                  application/json:
  *                      schema:
  *                          type: object
- *                          properties: 
- *                              status: 
+ *                          properties:
+ *                              status:
  *                                  type: string
  *                                  example: error
  *                              message:
  *                                  type: string
  *                                  example: Server error
- *                          
- *                           
- *                      
- *                       
+ *
+ *
+ *
+ *
  */
 
 // Get notification setting

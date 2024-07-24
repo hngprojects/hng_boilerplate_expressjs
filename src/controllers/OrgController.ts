@@ -1,4 +1,4 @@
- import { Request, Response } from "express";
+import { Request, Response } from "express";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -7,7 +7,6 @@ export class OrgController {
   constructor() {
     this.orgService = new OrgService();
   }
-
 
   /**
    * @swagger
@@ -105,8 +104,7 @@ export class OrgController {
       });
     }
   }
-  
-  
+
   /**
    * @swagger
    * /api/org/{org_id}:
@@ -183,7 +181,8 @@ export class OrgController {
           message: "Invalid user ID or authentication mismatch.",
         });
       }
-      const organizations = await this.orgService.getOrganizationsByUserId(userId);
+      const organizations =
+        await this.orgService.getOrganizationsByUserId(userId);
 
       if (organizations.length === 0) {
         return res.status(200).json({
@@ -210,7 +209,6 @@ export class OrgController {
     }
   }
 
- 
   async getSingleOrg(req: Request, res: Response) {
     try {
       const org = await this.orgService.getSingleOrg(req.params.org_id);
@@ -238,7 +236,4 @@ export class OrgController {
       });
     }
   }
-
-  
-  
 }
