@@ -9,6 +9,7 @@ const config = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_PORT: process.env.DB_PORT,
   DB_NAME: process.env.DB_NAME,
+  DB_URL: process.env.DB_URL,
   TOKEN_SECRET: process.env.AUTH_SECRET,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
@@ -18,7 +19,6 @@ const config = {
   TWILIO_SID: process.env.TWILIO_SID,
   TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
   TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
-
 };
 
 export default config;
