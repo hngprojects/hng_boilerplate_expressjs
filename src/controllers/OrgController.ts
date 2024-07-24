@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+ import { Request, Response } from "express";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -10,7 +10,10 @@ export class OrgController {
 
   async removeUser(req: Request, res: Response) {
     try {
-      const user = await this.orgService.removeUser(req.params.org_id, req.params.user_id);
+      const user = await this.orgService.removeUser(
+        req.params.org_id,
+        req.params.user_id,
+      );
       if (!user) {
         return res.status(404).json({
           status: "forbidden",
@@ -66,4 +69,36 @@ export class OrgController {
       });
     }
   }
+
+ 
+  async getSingleOrg(req: Request, res: Response) {
+    try {
+      const org = await this.orgService.getSingleOrg(req.params.org_id);
+      if (!org) {
+        return res.status(404).json({
+          status: "forbidden",
+          message: "Organization not found",
+          status_code: 404,
+        });
+      }
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        data: {
+          org_id: org.id,
+          name: org.name,
+          description: org.description,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to get user organisation. Please try again later.",
+      });
+    }
+  }
+
+  
+  
 }

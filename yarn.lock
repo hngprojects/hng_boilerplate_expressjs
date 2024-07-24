@@ -1773,6 +1773,11 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+express-rate-limit@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.npmjs.org/express-rate-limit/-/express-rate-limit-7.4.0.tgz"
+  integrity sha512-v1204w3cXu5gCDmAvgvzI6qjzZzoMWKnyVDk3ACgfswTQLYiGen+r8w0VnXnGMmzEN/g8fwIQ4JrFFd4ZP6ssg==
+
 express-validator@^7.1.0:
   version "7.1.0"
   resolved "https://registry.npmjs.org/express-validator/-/express-validator-7.1.0.tgz"
@@ -1781,7 +1786,7 @@ express-validator@^7.1.0:
     lodash "^4.17.21"
     validator "~13.12.0"
 
-express@^4.19.2, "express@>=4.0.0 || >=5.0.0-beta":
+express@^4.19.2, "express@>=4.0.0 || >=5.0.0-beta", "express@4 || 5 || ^5.0.0-beta.1":
   version "4.19.2"
   resolved "https://registry.npmjs.org/express/-/express-4.19.2.tgz"
   integrity sha512-5T6nhjsT+EOMzuck8JjBHARTHfMht0POzlA60WV2pMD3gyXw2LZnZ+ueGdNxG+0calOJcWKbpFcuzLZ91YWq9Q==
@@ -4189,3 +4194,8 @@ z-schema@^5.0.1:
     validator "^13.7.0"
   optionalDependencies:
     commander "^10.0.0"
+
+zod@^3.23.8:
+  version "3.23.8"
+  resolved "https://registry.npmjs.org/zod/-/zod-3.23.8.tgz"
+  integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
