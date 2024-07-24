@@ -55,4 +55,13 @@ export class ProductService {
       throw new Error(err.message);
     }
   }
+  async getOneProduct(id: string): Promise<Product> {
+
+    const product = await this.productRepository.findOneBy({id});
+
+    return product;
+
+
+  }
+
 }
