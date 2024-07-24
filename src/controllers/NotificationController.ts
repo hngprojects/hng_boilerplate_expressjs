@@ -144,7 +144,6 @@ const CreateNotification = async (req: Request, res: Response) => {
       });
     }
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       status: "error",
       code: 500,

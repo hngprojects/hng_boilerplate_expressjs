@@ -144,7 +144,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(user);
 
       await expect(authService.verifyEmail(token, otp)).rejects.toThrow(
-        HttpError
+        HttpError,
       );
     });
   });
@@ -198,6 +198,87 @@ describe("AuthService", () => {
       (comparePassword as jest.Mock).mockResolvedValue(false);
 
       await expect(authService.login(payload)).rejects.toThrow(HttpError);
+    });
+  });
+
+  describe("changePassword", () => {
+    it("should change password successfully with correct old password", async () => {
+      const userId = 1;
+      const oldPassword = "oldPassword123";
+      const newPassword = "newPassword123";
+      const confirmPassword = "newPassword123";
+
+      const user = {
+        id: userId,
+        password: "hashedOldPassword", // Hashed version of oldPassword
+      };
+
+      const hashedNewPassword = "hashedNewPassword";
+
+      (User.findOne as jest.Mock).mockResolvedValue(user);
+      (comparePassword as jest.Mock).mockResolvedValue(true);
+      (hashPassword as jest.Mock).mockResolvedValue(hashedNewPassword);
+      mockManager.save.mockResolvedValue({
+        ...user,
+        password: hashedNewPassword,
+      });
+
+      const result = await authService.changePassword(
+        userId,
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      );
+
+      expect(result).toEqual({ message: "Password changed successfully" }); // Updated to match actual result
+    });
+
+    it("should throw an error if old password is incorrect", async () => {
+      const userId = 1;
+      const oldPassword = "wrongOldPassword";
+      const newPassword = "newPassword123";
+      const confirmPassword = "newPassword123";
+
+      const user = {
+        id: userId,
+        password: "hashedOldPassword",
+      };
+
+      (User.findOne as jest.Mock).mockResolvedValue(user);
+      (comparePassword as jest.Mock).mockResolvedValue(false);
+
+      await expect(
+        authService.changePassword(
+          userId,
+          oldPassword,
+          newPassword,
+          confirmPassword,
+        ),
+      ).rejects.toThrow(HttpError);
+    });
+
+    it("should throw an error if new password and confirm password do not match", async () => {
+      const userId = 1;
+      const oldPassword = "oldPassword123";
+      const newPassword = "newPassword123";
+      const confirmPassword = "differentPassword123";
+
+      const user = {
+        id: userId,
+        password: "hashedOldPassword",
+      };
+
+      (User.findOne as jest.Mock).mockResolvedValue(user);
+      (comparePassword as jest.Mock).mockResolvedValue(true);
+
+      await expect(
+        authService.changePassword(
+          userId,
+          oldPassword,
+          newPassword,
+          confirmPassword,
+        ),
+      ).rejects.toThrow(HttpError);
     });
   });
 });
