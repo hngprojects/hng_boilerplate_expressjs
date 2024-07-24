@@ -67,7 +67,7 @@ export class HelpService {
       });
       return newArticle;
     } catch (error) {
-      console.error(error);
+      
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -125,8 +125,7 @@ export const verifyAdmin = async (
     const user = await userRepository.findOne({
       where: { id: decodedToken.userId },
     });
-    console.log(user.role);
-
+    
     if (user.role !== "admin") {
       return res.status(403).json({
         success: false,
