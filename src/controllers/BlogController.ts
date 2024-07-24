@@ -1,16 +1,16 @@
 import { Request, Response } from 'express';
 import { BlogService } from '../services'; 
 
-
 export class BlogController {
   private blogService = new BlogService();
 
   async listBlogs(req: Request, res: Response): Promise<void> {
     try {
+      const user = req.user;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
 
-      if (page <= 0 || limit <= 0) {
+      if (!user || page <= 0 || limit <= 0) {
         res.status(400).json({
           status: "bad request",
           message: "Invalid query params passed",
@@ -20,7 +20,7 @@ export class BlogController {
       }
 
       const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(page, limit);
+        await this.blogService.getPaginatedBlogsByUser(user.id, page, limit);
 
       res.json({
         status: "success",
@@ -28,8 +28,8 @@ export class BlogController {
         data: blogs.map((blog) => ({
           title: blog.title,
           content: blog.content,
-          author: blog.author,
-          published_at: blog.published_at,
+          author: blog.author.name,
+          published_date: blog.published_at,
         })),
         pagination: {
           current_page: page,
@@ -46,5 +46,4 @@ export class BlogController {
       });
     }
   }
-
 }
