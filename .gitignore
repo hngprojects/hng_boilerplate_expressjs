@@ -9,3 +9,4 @@ env
 src/entity
 src/ormconfig.ts
 build
+ package-lock.json

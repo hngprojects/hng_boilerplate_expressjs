@@ -1,102 +1,9 @@
-
-
 /**
  * @swagger
- * /api/v1/sms:
- *   post:
- *     tags:
- *       - SMS
- *     summary: Send an SMS
- *     description: Sends an SMS to a specified phone number
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               phone_number:
- *                 type: string
- *                 example: "+1234567890"
- *               message:
- *                 type: string
- *                 example: "Hello, this is a test message."
- *             required:
- *               - phone_number
- *               - message
- *     responses:
- *       200:
- *         description: SMS sent successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: success
- *                 status_code:
- *                   type: integer
- *                   example: 200
- *                 message:
- *                   type: string
- *                   example: SMS sent successfully.
- *       400:
- *         description: Invalid input
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: unsuccessful
- *                 status_code:
- *                   type: integer
- *                   example: 400
- *                 message:
- *                   type: string
- *                   example: Valid phone number, message content, and sender ID must be provided.
- *       404:
- *         description: Sender not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: unsuccessful
- *                 status_code:
- *                   type: integer
- *                   example: 404
- *                 message:
- *                   type: string
- *                   example: Sender not found.
- *       500:
- *         description: Failed to send SMS
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 status:
- *                   type: string
- *                   example: unsuccessful
- *                 status_code:
- *                   type: integer
- *                   example: 500
- *                 message:
- *                   type: string
- *                   example: Failed to send SMS. Please try again later.
- */
-
-/**
- * @swagger
- * /api/v1/emailTemplates:
+ * /api/v1/email-templates:
  *   get:
  *     tags:
- *       - emailTemplates
+ *       - Email
  *     summary: Get all email templates
  *     description: Retrieve a list of all email templates
  *     responses:
@@ -108,11 +15,26 @@
  *               type: array
  *               items:
  *                 $ref: '#/components/schemas/EmailTemplates'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error."
+ */
+
+/**
+ * @swagger
+ * /api/v1/send-email:
  *   post:
  *     tags:
- *       - Emailtemplates
- *     summary: Create a new email template
- *     description: Create a new email template with the provided details
+ *       - Email
+ *     summary: Send an email using a predefined template
+ *     description: Submits an email sending request referencing a specific template.
  *     requestBody:
  *       required: true
  *       content:
@@ -120,62 +42,77 @@
  *           schema:
  *             type: object
  *             properties:
- *               title:
+ *               template_id:
  *                 type: string
- *                 example: "Welcome Email"
- *               details:
+ *                 example: "account-activation-request"
+ *               recipient:
  *                 type: string
- *                 example: "Hello, welcome to our service!"
- *             required:
- *               - title
- *               - details
+ *                 example: "john.doe@example.com"
+ *               variables:
+ *                 type: object
+ *                 properties:
+ *                   title:
+ *                     type: string
+ *                     example: "Activate Your Account"
+ *                   activationLinkUrl:
+ *                     type: string
+ *                     example: "https://example.com"
+ *                   user_name:
+ *                     type: string
+ *                     example: "John Doe"
  *     responses:
- *       201:
- *         description: The email template was successfully created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/EmailTemplates'
- *       400:
- *         description: Invalid input
+ *       202:
+ *         description: Email sending request accepted and is being processed in the background.
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 status:
- *                   type: string
- *                   example: "unsuccessful"
- *                 status_code:
- *                   type: integer
- *                   example: 400
  *                 message:
  *                   type: string
- *                   example: "Title and details are required."
+ *                   example: "Email sending request accepted and is being processed in the background."
+ *       400:
+ *         description: An invalid request was sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "An invalid request was sent."
+ *       404:
+ *         description: Template not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Template not found."
+ *       405:
+ *         description: This method is not allowed.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "This method is not allowed."
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error."
  */
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     EmailTemplates:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *         title:
- *           type: string
- *         details:
- *           type: string
- *         created_at:
- *           type: string
- *           format: date-time
- *         updated_at:
- *           type: string
- *           format: date-time
- *         user_id:
- *           type: integer
- */
 import { Request, Response } from "express";
 import SmsService from "../services/sms.services";
 import AppDataSource from "../data-source";
