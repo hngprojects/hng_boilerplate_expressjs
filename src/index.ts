@@ -24,6 +24,8 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
 import updateRouter from "./routes/updateOrg";
+import { authMiddleware } from "./middleware/auth";
+
 
 dotenv.config();
 
@@ -58,11 +60,14 @@ server.use("/api/v1/blog", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-server.use(routeNotFound);
-server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
+server.use("/api/v1", authMiddleware, orgRouter);
+
+server.use(routeNotFound);
+server.use(errorHandler);
+
 
 AppDataSource.initialize()
   .then(async () => {
