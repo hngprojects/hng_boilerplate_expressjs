@@ -18,6 +18,9 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
+import { Like } from "./like";
+import { Payment } from "./payment";
+import { PasswordResetToken } from "./password-reset-token";
 
 @Entity()
 @Unique(["email"])
@@ -32,8 +35,11 @@ export class User extends ExtendedBaseEntity {
   @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
+
+  @Column({ nullable: true })
+  google_id: string;
 
   @Column({
     default: false,
@@ -64,14 +70,20 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
 
+  @OneToMany(() => Like, (like) => like.user)
+  likes: Like[];
+
   @OneToMany(
     () => UserOrganization,
-    (userOrganization) => userOrganization.user
+    (userOrganization) => userOrganization.user,
   )
   userOrganizations: UserOrganization[];
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
   sms: Sms[];
+
+  @OneToMany(() => Payment, (payment) => payment.user)
+  payments: Payment[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
     cascade: true,
@@ -85,9 +97,15 @@ export class User extends ExtendedBaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @Column({ type: "boolean", default: false })
+  is_deleted: boolean;
+
+  @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
 
-  @Column({ nullable: true })
-  isDeleted: boolean;
+  @OneToMany(
+    () => PasswordResetToken,
+    (passwordResetToken) => passwordResetToken.user,
+  )
+  passwordResetTokens: PasswordResetToken[];
 }

@@ -5,6 +5,10 @@ build/
 tmp/
 temp/
 .env
-env
 src/entity
 src/ormconfig.ts
+yarn.lock
+build
+issueformat.md
+requests.rest
+package-lock.json
