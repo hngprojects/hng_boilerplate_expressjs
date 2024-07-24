@@ -6,4 +6,4 @@ export * from "./HelpController";
 export * from "./roleController";
 export * from "./AdminController";
 export * from "./NotificationController";
-export * from "./BlogController"
+export * from "./BlogController";

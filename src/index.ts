@@ -16,7 +16,7 @@ import {
   productRouter,
   jobRouter,
   blogRouter,
-  adminRouter
+  adminRouter,
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -40,7 +40,7 @@ server.use(
       "Content-Type",
       "Authorization",
     ],
-  })
+  }),
 );
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));

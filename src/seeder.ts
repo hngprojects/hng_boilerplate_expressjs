@@ -1,12 +1,6 @@
 // // src/seeder.ts
 // import AppDataSource from "./data-source";
-// import {
-//   User,
-//   Organization,
-//   Product,
-//   Profile,
-//   OrganisationInvitation,
-// } from "./models";
+// import { User, Organization, Product, Profile } from "./models";
 // import log from "./utils/logger";
 
 // const seed = async () => {
@@ -88,22 +82,6 @@
 //   user1.organizations = [organization1, organization2];
 //   user2.organizations = [organization1, organization2, organization3];
 
-//   // Create invitations
-//   const invitation1 = new OrganisationInvitation();
-//   invitation1.invitation_link = `invite-${organization1.id}-${Date.now()}`;
-//   invitation1.organization = organization1;
-//   invitation1.user = user1;
-
-//   const invitation2 = new OrganisationInvitation();
-//   invitation2.invitation_link = `invite-${organization2.id}-${Date.now()}`;
-//   invitation2.organization = organization2;
-//   invitation2.user = user2;
-
-//   const invitation3 = new OrganisationInvitation();
-//   invitation3.invitation_link = `invite-${organization3.id}-${Date.now()}`;
-//   invitation3.organization = organization3;
-//   invitation3.user = user2;
-
 //   // Save entities
 
 //   await AppDataSource.manager.save(organization1);
@@ -113,9 +91,6 @@
 //   await AppDataSource.manager.save(product2);
 //   await AppDataSource.manager.save(product3);
 //   await AppDataSource.manager.save(product4);
-//   await AppDataSource.manager.save(invitation1);
-//   await AppDataSource.manager.save(invitation2);
-//   await AppDataSource.manager.save(invitation3);
 
 //   log.info("Seeding completed successfully.");
 // };
