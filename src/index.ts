@@ -23,6 +23,7 @@ import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
+import { swaggerUi as blogSwaggerUi, blogSwaggerSpec } from './blogSwaggerConfig';
 import { organisationRoute } from "./routes/createOrg";
 
 dotenv.config();
@@ -58,6 +59,7 @@ server.use("/api/v1/blog", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use('/api/v1/docs/blog', blogSwaggerUi.serve, blogSwaggerUi.setup(blogSwaggerSpec))
 server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
