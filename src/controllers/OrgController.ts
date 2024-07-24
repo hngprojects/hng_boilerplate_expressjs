@@ -8,6 +8,77 @@ export class OrgController {
     this.orgService = new OrgService();
   }
 
+
+  /**
+   * @swagger
+   * /api/org/{org_id}/user/{user_id}:
+   *   delete:
+   *     summary: Remove a user from an organization
+   *     description: Delete a user from a specific organization by user ID and organization ID
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: user_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the user
+   *     responses:
+   *       200:
+   *         description: Successful operation
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: User deleted successfully
+   *       404:
+   *         description: User not found in the organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: forbidden
+   *                 message:
+   *                   type: string
+   *                   example: User not found in the organization
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       400:
+   *         description: Failed to remove user from organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: Bad Request
+   *                 message:
+   *                   type: string
+   *                   example: Failed to remove user from organization
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   */
   async removeUser(req: Request, res: Response) {
     try {
       const user = await this.orgService.removeUser(
@@ -27,10 +98,79 @@ export class OrgController {
         status_code: 200,
       });
     } catch (error) {
-      log.error("Failed to remove user from organization:", error);
-      res.status(400).json({ message: "Failed to remove user from organization" });
+      res.status(400).json({
+        status: "Bad Request",
+        message: "Failed to remove user from organization",
+        status_code: "400",
+      });
     }
   }
+  
+  
+  /**
+   * @swagger
+   * /api/org/{org_id}:
+   *   get:
+   *     summary: Get a single organization
+   *     description: Retrieve details of a specific organization by its ID
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *     responses:
+   *       200:
+   *         description: Successful operation
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   description: The organization details
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: forbidden
+   *                 message:
+   *                   type: string
+   *                   example: Organization not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: Failed to get user organisation. Please try again later.
+   */
 
   async getOrganizations(req: Request, res: Response) {
     try {
