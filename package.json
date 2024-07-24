@@ -46,6 +46,7 @@
     "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
     "express-validator": "^7.1.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
@@ -62,6 +63,7 @@
     "ts-jest": "^29.2.3",
     "ts-node-dev": "^2.0.0",
     "twilio": "^5.2.2",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.20",
+    "zod": "^3.23.8"
   }
 }
