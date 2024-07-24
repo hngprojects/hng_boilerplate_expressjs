@@ -8,12 +8,14 @@ const blogRouter = Router();
 const blogController = new BlogController();
 
 blogRouter.post("/create", authMiddleware, createBlogController);
+blogRouter.get("/", blogController.listBlogs.bind(blogController));
 blogRouter.get(
   "/",
   authMiddleware,
   blogController.listBlogs.bind(blogController),
 );
 blogRouter.put("/:id", authMiddleware, updateBlogController);
+blogRouter.get("/", authMiddleware, blogController.listBlogs.bind(blogController));
 
 blogRouter.delete("/:id", blogController.deleteBlogPost.bind(blogController));
 

@@ -268,6 +268,7 @@ export class ProductController {
           message: "Product not found",
           status_code: 404,
         });
+
       }
       return res.status(200).json(product);
     } catch (error) {
@@ -402,7 +403,7 @@ export class ProductController {
    *                   example: "Failed to update product. Please try again later."
    */
 
-  async updateProductById(req: Request, res: Response) {}
+  async updateProductById(req: Request, res: Response) { }
 
   /**
    * @swagger
@@ -480,7 +481,7 @@ export class ProductController {
    *                 message:
    *                   type: string
    */
-  async createProduct(req: Request, res: Response) {}
+  async createProduct(req: Request, res: Response) { }
 
   /**
    * @swagger
@@ -561,6 +562,7 @@ export class ProductController {
    *                   type: string
    *                   example: Product not found
    */
+
   async deleteProduct(req: Request, res: Response) {}
 }
 
