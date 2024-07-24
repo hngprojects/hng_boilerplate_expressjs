@@ -29,6 +29,7 @@ export class BlogService {
       const result = await this.blogRepository.delete(id);
       return result.affected !== 0;
     } catch (error) {
+      //console.error('Error deleting blog post:', error);
       throw new Error("Error deleting blog post");
     }
   }

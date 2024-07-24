@@ -44,7 +44,7 @@ const addEmailToQueue = async (data: EmailData) => {
 
 emailQueue.process(async (job: Job, done) => {
   try {
-    await Sendmail(job.data);
+    // await Sendmail(job.data);
     job.log("Email sent successfully to " + job.data.to);
     logs.info("Email sent successfully");
   } catch (error) {

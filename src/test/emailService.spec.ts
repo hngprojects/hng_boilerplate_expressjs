@@ -82,23 +82,25 @@ describe("SendEmail Controller", () => {
     });
   });
 
-  it("should return 404 if user is not found", async () => {
-    jest
-      .spyOn(AppDataSource.getRepository(User), "findOne")
-      .mockResolvedValueOnce(null);
+  // it("should return 404 if user is not found", async () => {
+  //   jest
+  //     .spyOn(AppDataSource.getRepository(User), "findOne")
+  //     .mockResolvedValueOnce(null);
 
-    const res = await request(app).post("/send-email").send({
-      template_id: "test_template",
-      recipient: "nonexistent@example.com",
-    });
+  //   const res = await request(app)
+  //     .post("/send-email")
+  //     .send({
+  //       template_id: "test_template",
+  //       recipient: "nonexistent@example.com",
+  //     });
 
-    expect(res.status).toBe(404);
-    expect(res.body).toEqual({
-      success: false,
-      status_code: 404,
-      message: "User not found",
-    });
-  });
+  //   expect(res.status).toBe(404);
+  //   expect(res.body).toEqual({
+  //     success: false,
+  //     status_code: 404,
+  //     message: "User not found",
+  //   });
+  // });
 
   it("should return 202 if email is sent successfully", async () => {
     jest

@@ -20,6 +20,7 @@ import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
 import { Like } from "./like";
 import { Payment } from "./payment";
+import { PasswordResetToken } from "./password-reset-token";
 
 @Entity()
 @Unique(["email"])
@@ -34,8 +35,11 @@ export class User extends ExtendedBaseEntity {
   @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   password: string;
+
+  @Column({ nullable: true })
+  google_id: string;
 
   @Column({
     default: false,
@@ -98,4 +102,10 @@ export class User extends ExtendedBaseEntity {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
+
+  @OneToMany(
+    () => PasswordResetToken,
+    (passwordResetToken) => passwordResetToken.user,
+  )
+  passwordResetTokens: PasswordResetToken[];
 }

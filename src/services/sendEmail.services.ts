@@ -33,14 +33,17 @@ export class EmailService {
 
     const data = {
       title: payload.variables?.title,
-      logoUrl: "https://example.com/logo.png",
-      imageUrl: "https://exampleImg.com/reset-password.png",
-      userName: payload.variables?.user_name || user.name,
+      logoUrl: payload.variables?.logoUrl || "https://example.com/logo.png",
+      imageUrl:
+        payload.variables?.imageUrl ||
+        "https://exampleImg.com/reset-password.png",
+      userName: payload.variables?.user_name || user?.name || "User",
       activationLinkUrl: payload.variables?.activationLink,
       resetUrl: payload.variables?.resetUrl,
-      companyName: "Boilerplate",
-      supportUrl: "https://example.com/support",
-      socialIcons: [
+      companyName: payload.variables?.companyName || "Boilerplate",
+      supportUrl:
+        payload.variables?.supportUrl || "https://example.com/support",
+      socialIcons: payload.variables?.socialIcons || [
         {
           url: "https://facebook.com",
           imgSrc:
@@ -60,9 +63,12 @@ export class EmailService {
           alt: "Instagram",
         },
       ],
-      companyWebsite: "https://example.com",
-      preferencesUrl: "https://example.com/preferences",
-      unsubscribeUrl: "https://example.com/unsubscribe",
+      companyWebsite:
+        payload.variables?.companyWebsite || "https://example.com",
+      preferencesUrl:
+        payload.variables?.preferencesUrl || "https://example.com/preferences",
+      unsubscribeUrl:
+        payload.variables?.unsubscribeUrl || "https://example.com/unsubscribe",
     };
 
     const templateSource = fs.readFileSync(templatePath, "utf8");

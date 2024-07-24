@@ -15,16 +15,17 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
+      // const id = "96cf0567-9ca6-4ce0-b9f7-e3fa816fc070";
       if (!id) {
         return res.status(401).json({
           status_code: 401,
-          error: "Unauthorized",
+          error: "Unauthorized! no ID provided",
         });
       }
 
       if (!validate(id)) {
-        return res.status(401).json({
-          status_code: 401,
+        return res.status(400).json({
+          status_code: 400,
           error: "Unauthorized! Invalid User Id Format",
         });
       }
@@ -107,6 +108,27 @@ class UserController {
       }
     }
   }
+
+  public async updateUserProfile(req: Request, res: Response) {
+    try {
+      const user = await this.userService.updateUserProfile(
+        req.params.id,
+        req.body,
+        req.file,
+      );
+      res.status(200).json(user);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message,
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error",
+        });
+      }
+    }
+  }
 }
 
-export default UserController;
+export { UserController };

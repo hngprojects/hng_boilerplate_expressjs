@@ -24,7 +24,7 @@ export const checkPermissions = (roles: UserRole[]) => {
       const user = await userRepository.findOne({
         where: { id: decodedToken.userId },
       });
-      console.log(user);
+      // console.log(user);
       // if (user.role !== 'super_admin' )
       if (!user || !roles.includes(user.role)) {
         return res
