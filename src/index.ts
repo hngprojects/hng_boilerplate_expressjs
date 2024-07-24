@@ -30,6 +30,7 @@ import updateRouter from "./routes/updateOrg";
 import { authMiddleware } from "./middleware/auth";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
+import { swaggerUi as blogSwaggerUi, blogSwaggerSpec } from './blogSwaggerConfig';
 
 dotenv.config();
 
@@ -70,10 +71,10 @@ server.use("/api/v1/products", productRouter);
 server.use("/api/v1/blog", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
-server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use('/api-docs/blog', blogSwaggerUi.serve, blogSwaggerUi.setup(blogSwaggerSpec));
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
