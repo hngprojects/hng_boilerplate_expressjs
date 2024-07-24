@@ -20,6 +20,10 @@ This documentation describes the implementation of an email sending service usin
 - **Endpoint**: `/send-email`
 - **Method**: POST
 - **Description**: Sends an email using a specified template.
+- **Request Headers**:
+
+  Authorization: `Bearer token`
+
 - **Request Body**:
 
   - `template_id`: (string) ID of the email template to use.
@@ -67,6 +71,10 @@ This documentation describes the implementation of an email sending service usin
 - **Endpoint**: `/email-templates`
 - **Method**: GET
 - **Description**: Retrieves a list of available email templates.
+- **Request Headers**:
+
+  Authorization: `Bearer token`
+
 - **Responses**:
 
   - `200 OK`: List of available email templates.
@@ -160,11 +168,9 @@ export const SendEmail = async (req: Request, res: Response) => {
     await emailService.queueEmail(payload, user);
     await emailService.sendEmail(payload);
 
-    return res
-      .status(202)
-      .json({
-        message: "Email sending request accepted and is being processed.",
-      });
+    return res.status(202).json({
+      message: "Email sending request accepted and is being processed.",
+    });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error." });
   }
@@ -218,25 +224,24 @@ export class EmailService {
       throw new ServerError('Invalid template id' + templatePath);
     }
 
-    const data = {
+   const data = {
       title: payload.variables?.title,
-      logoUrl: 'https://example.com/logo.png',
-      imageUrl: 'https://exampleImg.com/reset-password.png',
-      userName: payload.variables?.user_name || user.name,
-      activationLinkUrl: payload.variables?.activationLink,
+      logoUrl:payload.variables?.logoUrl || 'https://example.com/logo.png',
+      imageUrl:payload.variables?.imageUrl || 'https://exampleImg.com/reset-password.png',
+      userName: payload.variables?.user_name || user?.name || 'User',
+      activationLinkUrl:payload.variables?.activationLink,
       resetUrl: payload.variables?.resetUrl,
-      companyName: 'Boilerplate',
-      supportUrl: 'https://example.com/support',
-      socialIcons: [
-        { url: 'https://facebook.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/tiktok@2x.png', alt: 'Facebook' },
-        { url: 'https://twitter.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/twitter@2x.png', alt: 'Twitter' },
-        { url: 'https://instagram.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/instagram@2x.png', alt: 'Instagram' }
+      companyName: payload.variables?.companyName || 'Boilerplate',
+      supportUrl: payload.variables?.supportUrl || 'https://example.com/support',
+      socialIcons: payload.variables?.socialIcons || [
+          { url: 'https://facebook.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/tiktok@2x.png', alt: 'Facebook' },
+          { url: 'https://twitter.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/twitter@2x.png', alt: 'Twitter' },
+          { url: 'https://instagram.com', imgSrc: 'https://app-rsrc.getbee.io/public/resources/social-networks-icon-sets/t-only-logo-dark-gray/instagram@2x.png', alt: 'Instagram' }
       ],
-      companyWebsite: 'https://example.com',
-      preferencesUrl: 'https://example.com/preferences',
-      unsubscribeUrl: 'https://example.com/unsubscribe'
-    };
-
+      companyWebsite: payload.variables?.companyWebsite || 'https://example.com',
+      preferencesUrl: payload.variables?.preferencesUrl|| 'https://example.com/preferences',
+      unsubscribeUrl:payload.variables?.unsubscribeUrl || 'https://example.com/unsubscribe'
+  };
     const templateSource = fs.readFileSync(templatePath, 'utf8');
     const template = Handlebars.compile(templateSource);
     const htmlTemplate = template(data);
