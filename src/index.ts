@@ -26,6 +26,7 @@ import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
 import updateRouter from "./routes/updateOrg";
 import { authMiddleware } from "./middleware/auth";
+import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
 
 dotenv.config();
@@ -45,6 +46,9 @@ server.use(
     ],
   }),
 );
+server.use(routeNotFound);
+server.use(Limiter);
+server.use(errorHandler);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -68,8 +72,6 @@ server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
-server.use(routeNotFound);
-server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
