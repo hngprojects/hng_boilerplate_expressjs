@@ -10,5 +10,7 @@ export * from "./job";
 export * from "./blog";
 export * from "./like";
 export * from "./tag";
+export * from "./emailQueue";
 export * from "./comment";
 export * from "./category";
+export * from "./payment";

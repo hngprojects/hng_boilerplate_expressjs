@@ -84,7 +84,6 @@ export class Blog {
   @UpdateDateColumn()
   updated_at: Date;
 
-  @Column()
+  @Column({ nullable: true })
   published_at: Date;
-
 }

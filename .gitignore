@@ -8,3 +8,7 @@ temp/
 env
 src/entity
 src/ormconfig.ts
+build
+issueformat.md
+requests.rest
+package-lock.json
