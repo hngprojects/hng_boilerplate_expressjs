@@ -52,3 +52,13 @@ declare module "express-serve-static-core" {
     user?: User;
   }
 }
+
+export interface IGoogleAuthService {
+  handleGoogleAuthUser(payload: Profile, authUser: User | null): Promise<{
+    status: string,
+    message: string,
+    user: Partial<User>;
+    access_token: string;
+  }>
+  getUserByGoogleId(google_id: string): Promise<User | null>
+}

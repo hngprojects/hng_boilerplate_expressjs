@@ -6,6 +6,7 @@ import express, { Express, Request, Response } from "express";
 import config from "./config";
 import dotenv from "dotenv";
 import cors from "cors";
+import passport from "./config/google.passport.config";
 import {
   userRouter,
   authRoute,
@@ -40,9 +41,11 @@ server.use(
     ],
   })
 );
+server.use(passport.initialize());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
+
 server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
