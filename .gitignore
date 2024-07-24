@@ -8,8 +8,8 @@ temp/
 env
 src/entity
 src/ormconfig.ts
-<<<<<<< HEAD
 yarn.lock
-=======
 build
->>>>>>> a890899b7d3d3c27c80436a1c1e20c39c2884c14
+issueformat.md
+requests.rest
+package-lock.json

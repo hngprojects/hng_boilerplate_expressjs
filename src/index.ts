@@ -12,19 +12,21 @@ import {
   helpRouter,
   testimonialRoute,
   notificationRouter,
-  smsRouter,
   productRouter,
   jobRouter,
   paymentStripeRouter,
   blogRouter,
-  adminRouter
+  adminRouter,
 } from "./routes";
-// import { seed } from "./seeder";
+import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
+import updateRouter from "./routes/updateOrg";
+import { authMiddleware } from "./middleware/auth";
+import { Limiter } from "./utils";
 
 dotenv.config();
 
@@ -41,8 +43,11 @@ server.use(
       "Content-Type",
       "Authorization",
     ],
-  })
+  }),
 );
+server.use(routeNotFound);
+server.use(Limiter);
+server.use(errorHandler);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(express.json());
@@ -64,6 +69,8 @@ server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use(errorHandler);
 server.use(routeNotFound);
+server.use("/api/v1", orgRouter);
+server.use("/api/v1", authMiddleware, orgRouter);
 
 AppDataSource.initialize()
   .then(async () => {
