@@ -4,6 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import { User, Organization } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
+import { hashPassword } from "../utils/index";
 
 export class AdminOrganisationService {
 
@@ -48,5 +49,42 @@ export class AdminUserService {
     });
 
     return { users, totalUsers };
+  }
+  public async updateUser(req: Request): Promise<User> {
+    try {
+      const { firstName, lastName, email, role, password, isverified } = req.body;
+
+      const userRepository = AppDataSource.getRepository(User);
+
+      const existingUser = await userRepository.findOne({
+        where: { email },
+      });
+      if (!existingUser) {
+        throw new HttpError(404, "User not found");
+      }
+
+      let hashedPassword: string | undefined;
+      if (password) {
+        hashedPassword = await hashPassword(password);
+      }
+
+      const updatedFields = {
+        name: `${firstName} ${lastName}`,
+        email,
+        role,
+        password: hashedPassword || existingUser.password,
+        isverified: isverified !== undefined ? isverified : existingUser.isverified,
+      };
+
+      await userRepository.update(existingUser.id, updatedFields);
+
+      const updatedUser = await userRepository.findOne({
+        where: { id: existingUser.id },
+      });
+      return updatedUser!;
+    } catch (error) {
+      console.error(error);
+      throw new HttpError(error.status || 500, error.message || error);
+    }
   }
 }
