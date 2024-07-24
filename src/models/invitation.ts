@@ -1,9 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./user";
 import { Organization } from "./organization";
+import ExtendedBaseEntity from "./extended-base-entity";
 
 @Entity()
-export class Invitation {
+export class Invitation extends ExtendedBaseEntity  {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
