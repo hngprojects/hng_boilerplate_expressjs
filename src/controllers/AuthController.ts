@@ -197,7 +197,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *                   description: The message indicating the result of the request.
  *                   example: Password reset link sent to your email.
  *       400:
- *         description: Bad request.
+ *         description: Bad request
  *       500:
  *         description: Internal server error.
  */
