@@ -3,7 +3,7 @@ import { Organization } from "../models/organization";
 
 export const UpdateOrganizationDetails = async (
   organizationId: string,
-  updateData: Partial<Organization>
+  updateData: Partial<Organization>,
 ) => {
   const organizationRepository = AppDataSource.getRepository(Organization);
 
