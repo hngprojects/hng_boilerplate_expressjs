@@ -52,11 +52,11 @@ export class AdminOrganisationService {
       const user = await userRepository.findOne({
         where: { id: user_id },
       });
-      
+
       if (!user) {
         throw new HttpError(404, "User not Found");
       }
-   
+
       // Update User Role on the Database
       user.role = role;
       await userRepository.save(user);
