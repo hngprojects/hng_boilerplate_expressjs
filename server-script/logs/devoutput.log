@@ -1,0 +1,32 @@
+yarn run v1.22.22
+error SyntaxError: /home/meeseeks/Desktop/BACKEND_HNG/hng_boilerplate_expressjs/package.json: Expected ',' or '}' after property value in JSON at position 2620
+    at JSON.parse (<anonymous>)
+    at /usr/lib/node_modules/yarn/lib/cli.js:1629:59
+    at Generator.next (<anonymous>)
+    at step (/usr/lib/node_modules/yarn/lib/cli.js:310:30)
+    at /usr/lib/node_modules/yarn/lib/cli.js:321:13
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+yarn run v1.22.22
+error SyntaxError: /home/meeseeks/Desktop/BACKEND_HNG/hng_boilerplate_expressjs/package.json: Expected ',' or '}' after property value in JSON at position 2620
+    at JSON.parse (<anonymous>)
+    at /usr/lib/node_modules/yarn/lib/cli.js:1629:59
+    at Generator.next (<anonymous>)
+    at step (/usr/lib/node_modules/yarn/lib/cli.js:310:30)
+    at /usr/lib/node_modules/yarn/lib/cli.js:321:13
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+yarn run v1.22.22
+error SyntaxError: /home/meeseeks/Desktop/BACKEND_HNG/hng_boilerplate_expressjs/package.json: Expected ',' or '}' after property value in JSON at position 2620
+    at JSON.parse (<anonymous>)
+    at /usr/lib/node_modules/yarn/lib/cli.js:1629:59
+    at Generator.next (<anonymous>)
+    at step (/usr/lib/node_modules/yarn/lib/cli.js:310:30)
+    at /usr/lib/node_modules/yarn/lib/cli.js:321:13
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+yarn run v1.22.22
+error SyntaxError: /home/meeseeks/Desktop/BACKEND_HNG/hng_boilerplate_expressjs/package.json: Expected ',' or '}' after property value in JSON at position 2620
+    at JSON.parse (<anonymous>)
+    at /usr/lib/node_modules/yarn/lib/cli.js:1629:59
+    at Generator.next (<anonymous>)
+    at step (/usr/lib/node_modules/yarn/lib/cli.js:310:30)
+    at /usr/lib/node_modules/yarn/lib/cli.js:321:13
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
