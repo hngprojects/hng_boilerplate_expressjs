@@ -1,10 +1,13 @@
-import   {Router} from 'express';
-import { SendEmail , getEmailTemplates } from '../controllers/sendEmail.controller';
-import { authMiddleware } from '../middleware';
+import { Router } from "express";
+import {
+  SendEmail,
+  getEmailTemplates,
+} from "../controllers/sendEmail.controller";
+import { authMiddleware } from "../middleware";
 
 const sendEmailRoute = Router();
 
-sendEmailRoute.post('/send_email', authMiddleware, SendEmail);
-sendEmailRoute.get('/email_templates', getEmailTemplates);
+sendEmailRoute.post("/send-email", authMiddleware, SendEmail);
+sendEmailRoute.get("/email-templates", getEmailTemplates);
 
 export { sendEmailRoute };
