@@ -5,11 +5,6 @@ import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
 const orgController = new OrgController();
-orgRouter.get(
-  "/users/:id/organizations",
-  orgController.getOrganizations.bind(orgController),
-);
-
 
 orgRouter.get("/organisations/:org_id", authMiddleware, validateOrgId,
   orgController.getSingleOrg.bind(orgController),
