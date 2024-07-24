@@ -11,3 +11,7 @@ src/ormconfig.ts
 data/
 docker-compose.yml
 seeder2.ts
+build
+issueformat.md
+requests.rest
+package-lock.json
