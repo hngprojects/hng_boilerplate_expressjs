@@ -17,6 +17,8 @@ import {
   jobRouter,
   blogRouter,
   adminRouter,
+  exportRouter,
+  sendEmailRoute,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -27,6 +29,7 @@ import { organisationRoute } from "./routes/createOrg";
 import updateRouter from "./routes/updateOrg";
 import { authMiddleware } from "./middleware/auth";
 import { Limiter } from "./utils";
+import ServerAdapter from "./views/bull-board";
 
 dotenv.config();
 
@@ -56,7 +59,10 @@ server.get("/", (req: Request, res: Response) => {
 server.use("/api/v1/admin", adminRouter);
 server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
+server.use("/api/v1", sendEmailRoute);
+server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1/help-center", helpRouter);
+server.use("/api/v1", exportRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/blog", blogRouter);

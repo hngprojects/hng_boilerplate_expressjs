@@ -69,17 +69,19 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Blog, (blog) => blog.author)
   blogs: Blog[];
 
-  @OneToMany(() => Like, like => like.user)
+  @OneToMany(() => Like, (like) => like.user)
   likes: Like[];
 
-  @OneToMany(() => UserOrganization, userOrganization => userOrganization.user)
-
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.user,
+  )
   userOrganizations: UserOrganization[];
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
   sms: Sms[];
 
-  @OneToMany(() => Payment, payment => payment.user)
+  @OneToMany(() => Payment, (payment) => payment.user)
   payments: Payment[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
@@ -94,9 +96,9 @@ export class User extends ExtendedBaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({type: 'boolean', default: false})
+  @Column({ type: "boolean", default: false })
   is_deleted: boolean;
 
-  @DeleteDateColumn({nullable: true})
+  @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
 }
