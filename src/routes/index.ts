@@ -8,3 +8,4 @@ export * from "./notificationsettings";
 export * from "./sms";
 export * from "./job";
 export * from "./admin";
+export * from "./paymentStripe";

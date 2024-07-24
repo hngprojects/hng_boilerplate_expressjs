@@ -1,16 +1,15 @@
-import express from 'express';
+/**
+ * main routes for paymentStripe
+ */
+import {Router} from 'express';
 import { createPaymentIntentStripe } from '../controllers/paymentStripeController';
 import { validatePaymentRequest } from '../middleware/paymentStripeValidation';
 import { authMiddleware} from '../middleware/auth';
 
-const router = express.Router();
+const paymentStripeRouter = Router();
 
-// Route to initiate a payment using Stripe
-router.post(
-  '/api/v1/payments/initiate',
-  authMiddleware, // Middleware for authentication
-  validatePaymentRequest, // Validation middleware
-  createPaymentIntentStripe // Controller to handle the payment initiation
+paymentStripeRouter.post(
+  '/initiate',validatePaymentRequest,validatePaymentRequest,createPaymentIntentStripe
 );
 
-export default router;
+export  {paymentStripeRouter};
