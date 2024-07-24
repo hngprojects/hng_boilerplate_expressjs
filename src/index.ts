@@ -56,6 +56,7 @@ server.use(routeNotFound);
 server.use(errorHandler);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
+server.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 AppDataSource.initialize()
   .then(async () => {
