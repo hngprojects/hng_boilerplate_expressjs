@@ -1,6 +1,6 @@
 // src/controllers/UserController.ts
 import { Request, Response } from "express";
-import { AdminOrganisationService } from "../services";
+import { AdminOrganisationService, AdminUserService } from "../services";
 import { HttpError } from "../middleware";
 import { check, param, validationResult } from "express-validator";
 import { UserRole } from "../enums/userRoles";
@@ -75,4 +75,69 @@ class AdminOrganisationController {
   }
 }
 
-export default { AdminOrganisationController };
+
+class AdminUserController {
+  private adminService: AdminUserService;
+
+  constructor() {
+    this.adminService = new AdminUserService();
+  }
+  
+  async listUsers(req: Request, res: Response): Promise<void> {
+    
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 5;
+
+      if (page <= 0 || limit <= 0) {
+        res.status(400).json({
+          status: 'bad request',
+          message: 'Invalid query params passed',
+          status_code: 400,
+        });
+        return;
+      }
+     
+      const {users, totalUsers} = await this.adminService.getPaginatedUsers(page, limit);
+      const pages =  Math.ceil(totalUsers / limit);
+
+      if (page > pages) {
+        res.status(400).json({
+          status: 'bad request',
+          message: `last page reached page: ${pages}`,
+          status_code: 400,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        message: 'Users retrieved successfully',
+        users: users.map((user) => ({
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        })),
+        pagination: {
+          totalUsers,
+          totalPages: pages,
+          currentPage: page,
+        },
+        status_code: 200,
+      });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        res.status(error.status_code).json({ message: error.message });
+      } else {
+        res
+          .status(500)
+          .json({ message: error.message || "Internal Server Error" });
+      }
+    }
+  }
+}
+
+
+
+export default { AdminOrganisationController, AdminUserController };
