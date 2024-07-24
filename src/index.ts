@@ -15,7 +15,7 @@ import {
   productRouter,
   jobRouter,
   blogRouter,
-  adminRouter
+  adminRouter,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -66,7 +66,6 @@ server.use("/api/v1", orgRouter);
 
 AppDataSource.initialize()
   .then(async () => {
-    // await seed();
     server.use(express.json());
     server.get("/", (req: Request, res: Response) => {
       res.send("Hello world");
