@@ -3,7 +3,7 @@ import { BadRequest } from "../middleware";
 import config from "../config";
 import log from "./logger";
 
-const Sendmail = async (emailcontent: any) => {
+const Sendemail = async (emailcontent: any) => {
   const transporter = nodemailer.createTransport({
     service: config.SMTP_SERVICE,
     host: "smtp.gmail.com",
@@ -23,4 +23,4 @@ const Sendmail = async (emailcontent: any) => {
   }
 };
 
-export { Sendmail };
+export { Sendemail };

@@ -3,7 +3,7 @@
 import AppDataSource from "../data-source";
 import { User } from "../models";
 import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
-import { Sendmail } from "../utils/mail";
+import { Sendemail } from "../utils/mail";
 import jwt from "jsonwebtoken";
 import { Conflict, HttpError } from "../middleware";
 import { AuthService } from "../services";
@@ -70,7 +70,7 @@ describe("AuthService", () => {
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
       mockManager.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
-      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
+      (Sendemail as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.signUp(payload);
 
@@ -144,7 +144,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(user);
 
       await expect(authService.verifyEmail(token, otp)).rejects.toThrow(
-        HttpError
+        HttpError,
       );
     });
   });
