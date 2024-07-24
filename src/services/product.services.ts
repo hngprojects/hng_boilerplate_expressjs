@@ -1,23 +1,60 @@
-import { getRepository, Repository } from 'typeorm';
-import AppDataSource from '../data-source';
-import { Product } from '../models/product';
+import { Product } from "../models/product";
+import { IProduct } from "../types";
+import AppDataSource from "../data-source";
 
 export class ProductService {
-  private productRepository: Repository<Product>;
-
-  constructor() {
-    this.productRepository = AppDataSource.getRepository(Product);
-  }
-
-  async getPaginatedProducts(
+  getPaginatedProducts(
     page: number,
-    limit: number
-  ): Promise<{ products: Product[]; totalItems: number }> {
-    const [products, totalItems] = await this.productRepository.findAndCount({
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    limit: number,
+  ):
+    | { products: any; totalItems: any }
+    | PromiseLike<{ products: any; totalItems: any }> {
+    throw new Error("Method not implemented.");
+  }
+  private productRepository = AppDataSource.getRepository(Product);
 
-    return { products, totalItems };
+  public async getProductPagination(
+    query: any,
+  ): Promise<{
+    page: number;
+    limit: number;
+    totalProducts: number;
+    products: IProduct[];
+  }> {
+    try {
+      const page: number = parseInt(query.page as string, 10);
+      const limit: number = parseInt(query.limit as string, 10);
+
+      if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
+        throw new Error("Page and limit must be positive integers.");
+      }
+
+      const offset: number = (page - 1) * limit;
+
+      const [products, totalProducts] = await Promise.all([
+        this.productRepository.find({ skip: offset, take: limit }),
+        this.productRepository.count(),
+      ]);
+
+      if (!products) {
+        throw new Error("Error retrieving products.");
+      }
+
+      if (products.length === 0 && offset > 0) {
+        throw new Error(
+          "The requested page is out of range. Please adjust the page number.",
+        );
+      }
+
+      return {
+        page,
+        limit,
+        totalProducts,
+        products,
+      };
+    } catch (err) {
+      // Log error details for debugging
+      throw new Error(err.message);
+    }
   }
 }
