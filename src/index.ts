@@ -45,9 +45,6 @@ server.use(
     ],
   }),
 );
-server.use(routeNotFound);
-server.use(Limiter);
-server.use(errorHandler);
 server.use(passport.initialize());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -71,6 +68,12 @@ server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 
+
+server.use(routeNotFound);
+server.use(Limiter);
+server.use(errorHandler);
+
+
 AppDataSource.initialize()
   .then(async () => {
     // await seed();
@@ -84,5 +87,7 @@ AppDataSource.initialize()
     });
   })
   .catch((error) => console.error(error));
+
+  
 
 export default server;

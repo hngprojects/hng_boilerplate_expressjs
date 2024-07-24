@@ -44,7 +44,7 @@ authRoute.get('/test-google-auth', (req, res) => {
  *               type: string
  *               format: uri
  *       '500':
- *         description: Internal Server Error - if something goes wrong during the initiation
+ *         description: Internal Server Error
  */
 authRoute.get('/google', initiateGoogleAuthRequest);
 
