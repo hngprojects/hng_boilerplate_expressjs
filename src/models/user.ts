@@ -19,6 +19,7 @@ import ExtendedBaseEntity from "./extended-base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { UserRole } from "../enums/userRoles";
 import { Like } from "./like";
+import { Payment } from "./payment";
 
 @Entity()
 @Unique(["email"])
@@ -74,6 +75,9 @@ export class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
   sms: Sms[];
+
+  @OneToMany(() => Payment, payment => payment.user)
+  payments: Payment[];
 
   @ManyToMany(() => Organization, (organization) => organization.users, {
     cascade: true,

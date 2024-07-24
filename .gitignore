@@ -8,3 +8,4 @@ temp/
 env
 src/entity
 src/ormconfig.ts
+build
