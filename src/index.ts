@@ -96,6 +96,6 @@ AppDataSource.initialize()
       log.info(`Server is listening on port ${port}`);
     });
   })
-  .catch((error) => console.error(error));
+  .catch((error) => log.error(error));
 
 export default server;
