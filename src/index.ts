@@ -77,6 +77,8 @@ server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use(errorHandler);
 server.use(routeNotFound);
+server.use("/api/v1/", updateRouter);
+server.use("/api/v1/organisation", organisationRoute);
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
@@ -100,6 +102,6 @@ AppDataSource.initialize()
       log.info(`Server is listening on port ${port}`);
     });
   })
-  .catch((error) => console.error(error));
+  .catch((error) => log.error(error));
 
 export default server;
