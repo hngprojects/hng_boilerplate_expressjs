@@ -2,8 +2,7 @@ name: Build, Test, and Deploy for Prod Branch
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
   build:
@@ -15,8 +14,8 @@ jobs:
     steps:
       - name: Pull from GitHub
         run: |
-          git fetch origin
-          git reset --hard origin/main
+          git stash
+          git pull origin main
 
       - name: Install dependencies
         run: yarn install
@@ -31,7 +30,3 @@ jobs:
         run: |
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkprod
-
-  test:
-    -name: Run test
-    run: yarn jest

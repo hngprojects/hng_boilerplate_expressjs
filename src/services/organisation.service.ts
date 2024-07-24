@@ -43,4 +43,17 @@ export class OrgService implements IOrgService {
 
     return user;
   }
+
+  public async getSingleOrg(org_id: string): Promise<Organization | null> {
+    const organization = await AppDataSource.getRepository(
+      Organization
+    ).findOne({
+      where: { id: org_id },
+      relations: ["users"],
+    });
+    if (!organization) {
+      return null;
+    }
+    return organization;
+  }
 }
