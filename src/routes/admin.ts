@@ -9,6 +9,7 @@ const adminRouter = Router();
 
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
+const adminLogController = new admin.AdminLogController();
 
 // Organisation
 adminRouter.patch(
@@ -38,6 +39,8 @@ adminRouter.patch(
 
 adminRouter.post(
   "/users/:user_id/roles", authMiddleware,
+  "/users/:user_id/roles",
+  authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminOrganisationController.setUserRole.bind(adminOrganisationController),
 );

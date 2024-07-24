@@ -13,9 +13,7 @@ export class ProductService {
   }
   private productRepository = AppDataSource.getRepository(Product);
 
-  public async getProductPagination(
-    query: any,
-  ): Promise<{
+  public async getProductPagination(query: any): Promise<{
     page: number;
     limit: number;
     totalProducts: number;
@@ -57,4 +55,13 @@ export class ProductService {
       throw new Error(err.message);
     }
   }
+  async getOneProduct(id: string): Promise<Product> {
+
+    const product = await this.productRepository.findOneBy({id});
+
+    return product;
+
+
+  }
+
 }

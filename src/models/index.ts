@@ -14,3 +14,4 @@ export * from "./emailQueue";
 export * from "./comment";
 export * from "./category";
 export * from "./payment";
+export * from "./log";

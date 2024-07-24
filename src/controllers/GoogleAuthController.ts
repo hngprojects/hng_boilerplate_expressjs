@@ -1,27 +1,38 @@
 import passport from "../config/google.passport.config";
-import {ServerError, Unauthorized } from "../middleware";
+import { ServerError, Unauthorized } from "../middleware";
 import { Request, Response, NextFunction } from "express";
 import { GoogleAuthService } from "../services/google.passport.service";
 
+export const initiateGoogleAuthRequest = passport.authenticate("google", {
+  scope: ["openid", "email", "profile"],
+});
 
-export const initiateGoogleAuthRequest = passport.authenticate('google', { scope: [ 'openid', 'email', 'profile' ] })
-
-export const googleAuthCallback = (req: Request, res: Response, next: NextFunction) => {
-    const authenticate = passport.authenticate('google', async (error, user, info) => {
-        const googleAuthService = new GoogleAuthService();
+export const googleAuthCallback = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const authenticate = passport.authenticate(
+    "google",
+    async (error, user, info) => {
+      const googleAuthService = new GoogleAuthService();
       try {
-        if (error) {            
-            throw new ServerError("Authentication error");
+        if (error) {
+          throw new ServerError("Authentication error");
         }
         if (!user) {
-        throw new Unauthorized("Authentication failed!")
+          throw new Unauthorized("Authentication failed!");
         }
         const isDbUser = await googleAuthService.getUserByGoogleId(user.id);
-        const dbUser = await googleAuthService.handleGoogleAuthUser(user, isDbUser)        
+        const dbUser = await googleAuthService.handleGoogleAuthUser(
+          user,
+          isDbUser,
+        );
         res.status(200).json(dbUser);
-      } catch(error) {
-        next(error)
+      } catch (error) {
+        next(error);
       }
-    });
-    authenticate(req, res, next)
-}
+    },
+  );
+  authenticate(req, res, next);
+};
