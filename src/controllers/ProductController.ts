@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
+import { validateUUID } from "../utils/helper";
 
 export class ProductController {
   private productService: ProductService;
@@ -231,7 +232,32 @@ export class ProductController {
    *                   type: string
    *                   example: An unexpected error occurred
    */
-  async fetchProductById(req: Request, res: Response) {}
+  async fetchProductById(req: Request, res: Response) {
+    const product_service = new ProductService();
+    try {
+      if (!validateUUID(req.params.product_id))
+        return res.status(400).json({
+          status: "Unsuccessful",
+          message: "Invalid product ID",
+          status_code: 400,
+        });
+      const product = await product_service.getProduct(req.params.product_id);
+
+      if (!product)
+        return res.status(404).json({
+          status: "Unsuccessful",
+          message: "Product does not exist",
+          status_code: 404,
+        });
+      res.json(product);
+    } catch (error) {
+      res.status(500).json({
+        status: "Unsuccessful",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+  }
 
   /**
    * @swagger
