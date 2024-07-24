@@ -159,7 +159,6 @@ export class ProductController {
           message: err.message,
           status_code: 500,
         });
-        console.error(err);
       }
     }
   }
