@@ -1,12 +1,12 @@
-import AppDataSource from "../data-source";
-import { Profile, User } from "../models";
-import { IAuthService, IUserSignUp, IUserLogin } from "../types";
-import { Conflict, HttpError } from "../middleware";
-import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
-import { Sendmail } from "../utils/mail";
 import jwt from "jsonwebtoken";
-import { compilerOtp } from "../views/welcome";
 import config from "../config";
+import AppDataSource from "../data-source";
+import { Conflict, HttpError } from "../middleware";
+import { Profile, User } from "../models";
+import { IAuthService, IUserLogin, IUserSignUp } from "../types";
+import { comparePassword, generateNumericOTP, hashPassword } from "../utils";
+import { Sendmail } from "../utils/mail";
+import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
@@ -45,7 +45,7 @@ export class AuthService implements IAuthService {
         config.TOKEN_SECRET,
         {
           expiresIn: "1d",
-        }
+        },
       );
 
       const mailSent = await Sendmail({
@@ -68,7 +68,7 @@ export class AuthService implements IAuthService {
 
   public async verifyEmail(
     token: string,
-    otp: number
+    otp: number,
   ): Promise<{ message: string }> {
     try {
       const decoded: any = jwt.verify(token, config.TOKEN_SECRET);
@@ -96,7 +96,7 @@ export class AuthService implements IAuthService {
   }
 
   public async login(
-    payload: IUserLogin
+    payload: IUserLogin,
   ): Promise<{ access_token: string; user: Partial<User> }> {
     const { email, password } = payload;
 
