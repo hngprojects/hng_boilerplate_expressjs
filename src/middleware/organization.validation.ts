@@ -2,6 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import { User } from "../models";
 import log from "../utils/logger";
 import { z } from "zod";
+import { param, validationResult } from "express-validator";
+import { InvalidInput } from "./error";
 
 export const organizationValidation = async (
   req: Request & { user?: User },
@@ -57,3 +59,23 @@ export const organizationValidation = async (
 
 try {
 } catch (error) {}
+
+
+
+
+export const validateOrgId = [
+  param("org_id")
+    .notEmpty().withMessage("Organisation id is required")
+    .isString().withMessage("Organisation id must be a string")
+    .isUUID().withMessage("Valid org_id must be provided")
+    .trim()
+    .escape(),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      throw new InvalidInput(`${errors.array().map(error => error.msg).join(", ")}`);
+    }
+    next();
+  },
+];
+

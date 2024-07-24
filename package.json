@@ -11,17 +11,14 @@
     "test:organisation": "jest organisation.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
-    "prod": "node dist/index.js",
+    "prod": "node build/index.js",
     "migrate": "typeorm-ts-node-commonjs migration:run -d src/data-source",
     "migration:create": "typeorm-ts-node-commonjs migration:create db/migrations/migration",
     "migration:generate": "typeorm-ts-node-commonjs migration:generate db/migrations/migration -d src/data-source",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d src/data-source"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hngprojects/hng_boilerplate_expressjs"
-  },
-  "author": "",
+  "repository": "https://github.com/hngprojects/hng_boilerplate_expressjs",
+  "author": "StarmannRassy <boronicle@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/hngprojects/hng_boilerplate_expressjs/issues"
@@ -50,6 +47,7 @@
     "dayjs": "^1.11.12",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
     "express-validator": "^7.1.0",
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
