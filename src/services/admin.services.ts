@@ -41,8 +41,6 @@ export class AdminOrganisationService {
     }
   }
 
-<<<<<<< HEAD
-
   public async deleteOrganization(orgId: string): Promise<Organization> {
     const organizationRepository = AppDataSource.getRepository(Organization);
     const organization = await organizationRepository.findOne({ where: { id: orgId } });
@@ -60,7 +58,6 @@ export class AdminOrganisationService {
     return organization; // Return the deleted organization
   }
 
-=======
   public async setUserRole(req: Request): Promise<User> {
     try {
       const { role } = req.body;
@@ -85,7 +82,6 @@ export class AdminOrganisationService {
       throw new HttpError(error.status_code || 500, error.message);
     }
   }
->>>>>>> 242eed47034cff829df6463faa024af69c2ea804
 }
 
 export class AdminUserService {
