@@ -9,7 +9,16 @@ import { hashPassword } from "../utils/index";
 export class AdminOrganisationService {
   public async update(req: Request): Promise<Organization> {
     try {
-      const { name, email, industry, type, country, address, state } = req.body;
+      const {
+        name,
+        email,
+        industry,
+        type,
+        country,
+        address,
+        state,
+        description,
+      } = req.body;
       const org_id = req.params.id;
 
       const orgRepository = AppDataSource.getRepository(Organization);
@@ -18,7 +27,10 @@ export class AdminOrganisationService {
         where: { id: org_id },
       });
       if (!oldOrg) {
-        throw new HttpError(404, "Not Found");
+        throw new HttpError(
+          404,
+          "Organisation not found, please check and try again",
+        );
       }
 
       //Update Organisation on DB
@@ -30,6 +42,7 @@ export class AdminOrganisationService {
         country,
         address,
         state,
+        description,
       });
       //Fetch Updated organisation
       const newOrg = await orgRepository.findOne({
@@ -37,7 +50,6 @@ export class AdminOrganisationService {
       });
       return newOrg;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -117,7 +129,6 @@ export class AdminUserService {
       });
       return updatedUser!;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -153,7 +164,6 @@ export class AdminLogService {
         currentPage: Number(page),
       };
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }

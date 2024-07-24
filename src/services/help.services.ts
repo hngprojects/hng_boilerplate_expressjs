@@ -16,7 +16,7 @@ export class HelpService {
       if (!title || !content || !author) {
         throw new HttpError(
           422,
-          "Validation failed: Title, content, and author are required"
+          "Validation failed: Title, content, and author are required",
         );
       }
 
@@ -67,7 +67,6 @@ export class HelpService {
       });
       return newArticle;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
@@ -76,7 +75,7 @@ export class HelpService {
 export const authMiddleware = (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -106,7 +105,7 @@ export const authMiddleware = (
 export const verifyAdmin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -125,7 +124,6 @@ export const verifyAdmin = async (
     const user = await userRepository.findOne({
       where: { id: decodedToken.userId },
     });
-    console.log(user.role);
 
     if (user.role !== "admin") {
       return res.status(403).json({

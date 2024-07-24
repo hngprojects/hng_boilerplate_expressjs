@@ -38,6 +38,12 @@ export interface IAuthService {
   login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
+  changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<{ message: string }>;
 }
 
 export interface ICreateOrganisation {

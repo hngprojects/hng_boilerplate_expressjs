@@ -7,12 +7,12 @@ const notificationRouter = Router();
 notificationRouter.post(
   "/notification-settings",
   authMiddleware,
-  CreateNotification
+  CreateNotification,
 );
 notificationRouter.get(
   "/notification-settings/:user_id",
   authMiddleware,
-  GetNotification
+  GetNotification,
 );
 
 export { notificationRouter };

@@ -159,7 +159,6 @@ export class ProductController {
           message: err.message,
           status_code: 500,
         });
-        console.error(err);
       }
     }
   }
@@ -251,7 +250,6 @@ export class ProductController {
    */
 
   async fetchProductById(req: Request, res: Response) {
-
     const productId = req.params.product_id;
 
     if (isNaN(Number(productId))) {
@@ -259,11 +257,11 @@ export class ProductController {
         status: "Bad Request",
         message: "Invalid Product Id",
         status_code: 400,
-      })
+      });
     }
 
     try {
-      const product = await this.productService.getOneProduct(productId)
+      const product = await this.productService.getOneProduct(productId);
       if (!product) {
         return res.status(404).json({
           status: "Not found",
@@ -280,7 +278,6 @@ export class ProductController {
         status_code: 500,
       });
     }
-
   }
 
   /**
@@ -565,7 +562,8 @@ export class ProductController {
    *                   type: string
    *                   example: Product not found
    */
-  async deleteProduct(req: Request, res: Response) { }
+
+  async deleteProduct(req: Request, res: Response) {}
 }
 
 export default ProductController;

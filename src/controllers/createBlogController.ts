@@ -10,7 +10,7 @@ export const createBlogController = async (req: Request, res: Response) => {
       content,
       image_url,
       tags,
-      categories
+      categories,
     );
     res.status(201).json({
       status: "success",

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
-import { Blog } from './blog';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Blog } from "./blog";
 
 @Entity()
 export class Tag {
@@ -9,6 +9,6 @@ export class Tag {
   @Column()
   name: string;
 
-  @ManyToMany(() => Blog, blog => blog.tags)
+  @ManyToMany(() => Blog, (blog) => blog.tags)
   blogs: Blog[];
 }
