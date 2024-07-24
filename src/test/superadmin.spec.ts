@@ -14,7 +14,9 @@ describe("AdminUserService", () => {
   let consoleErrorMock: jest.SpyInstance;
 
   beforeAll(() => {
-    consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorMock = jest
+      .spyOn(console, "error")
+      .mockImplementation(() => {});
   });
 
   afterAll(() => {
@@ -34,9 +36,9 @@ describe("AdminUserService", () => {
           email: "existinguser@example.com",
           role: "admin",
           password: "newPassword",
-          isverified: true
+          isverified: true,
         },
-        params: { id: "1" }
+        params: { id: "1" },
       } as unknown as Request;
 
       const mockUser = {
@@ -46,7 +48,7 @@ describe("AdminUserService", () => {
         password: "oldPasswordHash",
         isverified: false,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       } as User;
 
       const updatedFields = {
@@ -54,13 +56,13 @@ describe("AdminUserService", () => {
         email: "existinguser@example.com",
         role: "admin",
         password: "newPasswordHash",
-        isverified: true
+        isverified: true,
       };
 
       const mockUpdatedUser = {
         ...mockUser,
         ...updatedFields,
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       const userRepository = {
@@ -72,18 +74,22 @@ describe("AdminUserService", () => {
         findOneBy: jest.fn().mockResolvedValue(mockUpdatedUser),
       };
 
-      (AppDataSource.getRepository as jest.Mock).mockReturnValue(userRepository);
+      (AppDataSource.getRepository as jest.Mock).mockReturnValue(
+        userRepository,
+      );
       (hashPassword as jest.Mock).mockResolvedValue("newPasswordHash");
 
       const result = await adminUserService.updateUser(req);
 
-      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: "existinguser@example.com" } });
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: "existinguser@example.com" },
+      });
       expect(userRepository.update).toHaveBeenCalledWith("1", {
         name: "New Name",
         email: "existinguser@example.com",
         role: "admin",
         password: "newPasswordHash",
-        isverified: true
+        isverified: true,
       });
       expect(result).toEqual(mockUpdatedUser);
     });
@@ -96,20 +102,26 @@ describe("AdminUserService", () => {
           email: "nonexistentuser@example.com",
           role: "admin",
           password: "newPassword",
-          isverified: true
+          isverified: true,
         },
-        params: { id: "1" }
+        params: { id: "1" },
       } as unknown as Request;
 
       const userRepository = {
         findOne: jest.fn().mockResolvedValue(null),
       };
 
-      (AppDataSource.getRepository as jest.Mock).mockReturnValue(userRepository);
+      (AppDataSource.getRepository as jest.Mock).mockReturnValue(
+        userRepository,
+      );
 
       await expect(adminUserService.updateUser(req)).rejects.toThrow(HttpError);
-      await expect(adminUserService.updateUser(req)).rejects.toThrow("User not found");
-      expect(userRepository.findOne).toHaveBeenCalledWith({ where: { email: "nonexistentuser@example.com" } });
+      await expect(adminUserService.updateUser(req)).rejects.toThrow(
+        "User not found",
+      );
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: "nonexistentuser@example.com" },
+      });
     });
 
     it("should throw an error if hashing the password fails", async () => {
@@ -120,9 +132,9 @@ describe("AdminUserService", () => {
           email: "existinguser@example.com",
           role: "admin",
           password: "newPassword",
-          isverified: true
+          isverified: true,
         },
-        params: { id: "1" }
+        params: { id: "1" },
       } as unknown as Request;
 
       const mockUser = {
@@ -132,7 +144,7 @@ describe("AdminUserService", () => {
         password: "oldPasswordHash",
         isverified: false,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       } as User;
 
       const userRepository = {
@@ -140,10 +152,16 @@ describe("AdminUserService", () => {
         update: jest.fn(),
       };
 
-      (AppDataSource.getRepository as jest.Mock).mockReturnValue(userRepository);
-      (hashPassword as jest.Mock).mockRejectedValue(new Error("Hashing failed"));
+      (AppDataSource.getRepository as jest.Mock).mockReturnValue(
+        userRepository,
+      );
+      (hashPassword as jest.Mock).mockRejectedValue(
+        new Error("Hashing failed"),
+      );
 
-      await expect(adminUserService.updateUser(req)).rejects.toThrow("Hashing failed");
+      await expect(adminUserService.updateUser(req)).rejects.toThrow(
+        "Hashing failed",
+      );
     });
   });
 });

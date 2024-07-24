@@ -8,7 +8,7 @@ class AdminOrganisationController {
   constructor() {
     this.adminService = new AdminOrganisationService();
   }
-  
+
   async updateOrg(req: Request, res: Response): Promise<void> {
     try {
       const org = await this.adminService.update(req);
@@ -48,8 +48,8 @@ class AdminUserController {
   constructor() {
     this.adminUserService = new AdminUserService();
   }
-  
-//Update Single User
+
+  //Update Single User
   async updateUser(req: Request, res: Response): Promise<void> {
     try {
       const user = await this.adminUserService.updateUser(req);
@@ -71,7 +71,9 @@ class AdminUserController {
       if (error instanceof HttpError) {
         res.status(error.status_code).json({ message: error.message });
       } else {
-        res.status(500).json({ message: error.message || "Internal Server Error" });
+        res
+          .status(500)
+          .json({ message: error.message || "Internal Server Error" });
       }
     }
   }
@@ -83,19 +85,20 @@ class AdminUserController {
 
       if (page <= 0 || limit <= 0) {
         res.status(400).json({
-          status: 'bad request',
-          message: 'Invalid query params passed',
+          status: "bad request",
+          message: "Invalid query params passed",
           status_code: 400,
         });
         return;
       }
-     
-      const { users, totalUsers } = await this.adminUserService.getPaginatedUsers(page, limit);
+
+      const { users, totalUsers } =
+        await this.adminUserService.getPaginatedUsers(page, limit);
       const pages = Math.ceil(totalUsers / limit);
 
       if (page > pages) {
         res.status(400).json({
-          status: 'bad request',
+          status: "bad request",
           message: `last page reached page: ${pages}`,
           status_code: 400,
         });
@@ -104,7 +107,7 @@ class AdminUserController {
 
       res.json({
         success: true,
-        message: 'Users retrieved successfully',
+        message: "Users retrieved successfully",
         users: users.map((user) => ({
           name: user.name,
           email: user.email,
@@ -122,7 +125,9 @@ class AdminUserController {
       if (error instanceof HttpError) {
         res.status(error.status_code).json({ message: error.message });
       } else {
-        res.status(500).json({ message: error.message || "Internal Server Error" });
+        res
+          .status(500)
+          .json({ message: error.message || "Internal Server Error" });
       }
     }
   }

@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf } from "zod"
+import { number, object, string, TypeOf } from "zod";
 
 /**
  * @openapi
@@ -53,7 +53,7 @@ const payload = {
       required_error: "Category is required",
     }),
   }),
-}
+};
 
 const params = {
   params: object({
@@ -61,26 +61,26 @@ const params = {
       required_error: "productId is required",
     }),
   }),
-}
+};
 
 export const createProductSchema = object({
   ...payload,
-})
+});
 
 export const updateProductSchema = object({
   ...payload,
   ...params,
-})
+});
 
 export const deleteProductSchema = object({
   ...params,
-})
+});
 
 export const getProductSchema = object({
   ...params,
-})
+});
 
-export type CreateProductInput = TypeOf<typeof createProductSchema>
-export type UpdateProductInput = TypeOf<typeof updateProductSchema>
-export type ReadProductInput = TypeOf<typeof getProductSchema>
-export type DeleteProductInput = TypeOf<typeof deleteProductSchema>
+export type CreateProductInput = TypeOf<typeof createProductSchema>;
+export type UpdateProductInput = TypeOf<typeof updateProductSchema>;
+export type ReadProductInput = TypeOf<typeof getProductSchema>;
+export type DeleteProductInput = TypeOf<typeof deleteProductSchema>;
