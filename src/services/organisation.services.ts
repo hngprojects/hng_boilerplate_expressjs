@@ -81,6 +81,9 @@ export class OrgService implements IOrgService {
 
     await invitationRepository.save(invitation);
 
+    // Generate the invitation link
+    const invitationLink = `https://yourapp.com/invite?token=${token}`;
+
     // Send the invitation email
     const emailContent = {
       from: "no-reply@yourapp.com",
