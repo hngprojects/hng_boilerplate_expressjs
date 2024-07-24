@@ -158,7 +158,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 /**
  * @swagger
- * /auth/forgot-password:
+ * /api/v1/auth/forgotPassword:
  *   post:
  *     summary: Request a password reset
  *     description: Allows a user to request a password reset link by providing their email address.
@@ -217,7 +217,7 @@ const forgotPassword = async (
 
 /**
  * @swagger
- * /auth/reset-password:
+ * /api/v1/auth/resetPassword:
  *   post:
  *     summary: Reset a user's password
  *     description: Allows a user to reset their password by providing a valid reset token and a new password.
