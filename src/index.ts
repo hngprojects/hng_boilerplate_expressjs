@@ -16,6 +16,7 @@ import {
   productRouter,
   jobRouter
 } from "./routes";
+import getUpdatedBlogsRouter from './routes/getUpdatedBlog';
 import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
@@ -49,6 +50,7 @@ server.use("/api/v1", userRouter, orgRouter, organisationRoute);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
+server.use("/api/v1",getUpdatedBlogsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
