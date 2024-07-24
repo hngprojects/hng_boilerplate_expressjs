@@ -1,9 +1,8 @@
-// / src/services/AdminOrganisationService.ts
 import { NextFunction, Request, Response } from "express";
 import { User, Organization } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
-import {hashPassword} from "../utils/index"
+import { hashPassword } from "../utils/index";
 
 export class AdminOrganisationService {
 
@@ -22,7 +21,7 @@ export class AdminOrganisationService {
       }
       
       //Update Organisation on DB
-      await orgRepository.update(org_id, {  name, email, industry, type, country, address, state });
+      await orgRepository.update(org_id, { name, email, industry, type, country, address, state });
       //Fetch Updated organisation
       const newOrg = await orgRepository.findOne({
         where: { id: org_id },
@@ -33,7 +32,6 @@ export class AdminOrganisationService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
-
 }
 
 export class AdminUserService {
@@ -73,5 +71,18 @@ export class AdminUserService {
       console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
+  }
+
+  async getPaginatedUsers(page: number, limit: number): 
+    Promise<{ users: User[]; totalUsers: number }> {
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    const [users, totalUsers] = await userRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { users, totalUsers };
   }
 }
