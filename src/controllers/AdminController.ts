@@ -9,7 +9,7 @@ class AdminOrganisationController {
   constructor() {
     this.adminService = new AdminOrganisationService();
   }
-  
+
   async updateOrg(req: Request, res: Response): Promise<void> {
     try {
       const org = await this.adminService.update(req);

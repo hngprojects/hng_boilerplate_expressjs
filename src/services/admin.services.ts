@@ -11,7 +11,6 @@ export class AdminOrganisationService {
     try {
       const { name, email, industry, type, country, address, state } = req.body;
       const org_id = req.params.id;
-
       const orgRepository = AppDataSource.getRepository(Organization);
       // Check if organisation exists
       const oldOrg = await orgRepository.findOne({
