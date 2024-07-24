@@ -1,7 +1,5 @@
-import { Request, Response } from "express";
-import { BlogService } from "../services";
 import { Request, Response } from 'express';
-import { BlogService } from '../services'; 
+import { BlogService } from '../services';
 
 export class BlogController {
   private blogService = new BlogService();
@@ -122,11 +120,10 @@ export class BlogController {
       }
 
       const { blogs, totalItems } = await this.blogService.getPaginatedblogs(
+        user.id,
         page,
-        limit,
+        limit
       );
-      const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(user.id, page, limit);
 
       res.json({
         status: "success",
@@ -149,37 +146,6 @@ export class BlogController {
         status: "error",
         message: "Internal server error",
         status_code: 500,
-      });
-    }
-  }
-
-  async deleteBlogPost(req: Request, res: Response): Promise<void> {
-    try {
-      const { id } = req.params;
-      if (!id) {
-        res.status(401).json({
-          status_code: 401,
-          error: "Unauthorized",
-        });
-      }
-
-      const deletedPost = await this.blogService.deleteBlogPost(id);
-      if (!deletedPost) {
-        res.status(404).json({
-          status_code: 404,
-          error: "Blog post not found",
-        });
-      }
-
-      res.status(200).json({
-        status_code: 200,
-        message: "Blog post deleted successfully",
-      });
-    } catch (error) {
-      res.status(500).json({
-        status_code: 500,
-        error: "Internal server error",
-        details: error.message,
       });
     }
   }
@@ -242,7 +208,6 @@ export class BlogController {
    *                   type: string
    *                   example: Error message
    */
-  
   async deleteBlogPost(req: Request, res: Response): Promise<void> {
     try {
       const { id } = req.params;
@@ -251,6 +216,7 @@ export class BlogController {
           status_code: 401,
           error: "Unauthorized",
         });
+        return;
       }
 
       const deletedPost = await this.blogService.deleteBlogPost(id);
@@ -259,6 +225,7 @@ export class BlogController {
           status_code: 404,
           error: "Blog post not found",
         });
+        return;
       }
 
       res.status(200).json({
