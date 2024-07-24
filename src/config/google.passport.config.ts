@@ -5,7 +5,7 @@ import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-go
 passport.use(new GoogleStrategy({
     clientID: config.GOOGLE_CLIENT_ID,
     clientSecret: config.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:8000/api/v1/auth/google/callback"
+    callbackURL: config.GOOGLE_AUTH_CALLBACK_URL
   },
   async (_accessToken: string, _refreshToken: string, profile: Profile, done: VerifyCallback) => {
     try {
