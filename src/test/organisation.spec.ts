@@ -10,7 +10,7 @@ import { OrgController } from "../controllers/OrgController.ts";
 import { validateOrgId } from "../middleware/organization.validation.ts";
 import { InvalidInput } from "../middleware/error.ts";
 import { authMiddleware } from "../middleware";
-import { OrgService } from "../services/organisation.service";
+import { orgService } from "../services/organisation.service";
 
 jest.mock("../data-source", () => {
   return {
