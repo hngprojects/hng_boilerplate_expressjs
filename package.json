@@ -75,8 +75,11 @@
     "twilio": "^5.2.2",
     "typeorm": "^0.3.20",
     "zod": "^3.23.8"
+<<<<<<< HEAD
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
+=======
+>>>>>>> 3b86485 (feat: implement docs for product routes)
   }
 }
