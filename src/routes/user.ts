@@ -1,5 +1,5 @@
 import { Router } from "express";
-import UserController from "../controllers/UserController";
+import { UserController } from "../controllers";
 import { authMiddleware } from "../middleware";
 import { multerConfig } from "../config/multer";
 
@@ -19,7 +19,7 @@ userRouter.put(
   "/:id",
   authMiddleware,
   upload,
-  userController.updateUserProfile.bind(userController)
+  userController.updateUserProfile.bind(userController),
 );
 
 export { userRouter };
