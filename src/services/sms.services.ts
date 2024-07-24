@@ -1,20 +1,20 @@
-import { Twilio } from "twilio";
+import Twilio from "twilio";
 import config from "../config";
 import AppDataSource from "../data-source";
 import { Sms } from "../models/sms";
 import { User } from "../models";
 
 class SmsService {
-  private twilioClient: Twilio;
+  private twilioClient: Twilio.Twilio;
 
   constructor() {
-    this.twilioClient = new Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
+    this.twilioClient = Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
   }
 
   public async sendSms(
     sender: User,
     phoneNumber: string,
-    message: string
+    message: string,
   ): Promise<void> {
     await this.twilioClient.messages.create({
       body: message,

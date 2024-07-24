@@ -15,16 +15,17 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
+      // const id = "96cf0567-9ca6-4ce0-b9f7-e3fa816fc070";
       if (!id) {
         return res.status(401).json({
           status_code: 401,
-          error: "Unauthorized",
+          error: "Unauthorized! no ID provided",
         });
       }
 
       if (!validate(id)) {
-        return res.status(401).json({
-          status_code: 401,
+        return res.status(400).json({
+          status_code: 400,
           error: "Unauthorized! Invalid User Id Format",
         });
       }
@@ -81,36 +82,53 @@ class UserController {
 
     if (!id || !isUUID(id)) {
       return res.status(400).json({
-                                status: "unsuccesful",
-                                status_code: 400,
-                                message: "Valid id must be provided",
-                              });
+        status: "unsuccesful",
+        status_code: 400,
+        message: "Valid id must be provided",
+      });
     }
 
     try {
-
       await this.userService.softDeleteUser(id);
 
       return res.status(202).json({
-                              status: "sucess",
-                              message: "User deleted successfully",
-                              status_code: 202,
-                            });
-      
+        status: "sucess",
+        message: "User deleted successfully",
+        status_code: 202,
+      });
     } catch (error) {
-      
       if (error instanceof HttpError) {
         return res.status(error.status_code).json({
-          message: error.message
+          message: error.message,
         });
       } else {
         return res.status(500).json({
-          message: error.message || "Internal Server Error"
+          message: error.message || "Internal Server Error",
         });
       }
+    }
+  }
 
+  public async updateUserProfile(req: Request, res: Response) {
+    try {
+      const user = await this.userService.updateUserProfile(
+        req.params.id,
+        req.body,
+        req.file,
+      );
+      res.status(200).json(user);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message,
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error",
+        });
+      }
     }
   }
 }
 
-export default UserController;
+export { UserController };
