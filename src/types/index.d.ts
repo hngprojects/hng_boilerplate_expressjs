@@ -8,7 +8,11 @@ export interface IUserService {
 }
 
 export interface IOrgService {
-  removeUser(org_id: string, user_id: string): Promise<User | null>;
+  removeUser(
+    org_id: string,
+    user_id: string,
+    inviteToken?: string,
+  ): Promise<User | null>;
 }
 
 export interface IRole {
@@ -54,7 +58,7 @@ export interface ICreateOrganisation {
 export interface IOrganisationService {
   createOrganisation(
     payload: ICreateOrganisation,
-    userId: string
+    userId: string,
   ): Promise<unknown>;
 }
 

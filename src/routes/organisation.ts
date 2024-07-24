@@ -1,11 +1,13 @@
 import Router from "express";
 import { OrgController } from "../controllers/OrgController";
+import { JoinOrgController } from "../controllers/joinOrgController";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
 import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
 const orgController = new OrgController();
+const joinOrgController = new JoinOrgController();
 
 orgRouter.get(
   "/organisations/:org_id",
@@ -33,4 +35,11 @@ orgRouter.get(
   authMiddleware,
   orgController.getOrganizations.bind(orgController),
 );
+
+orgRouter.post(
+  "/organisations/join",
+  authMiddleware,
+  joinOrgController.joinOrganization.bind(joinOrgController),
+);
+
 export { orgRouter };
