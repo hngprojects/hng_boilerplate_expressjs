@@ -10,3 +10,4 @@ src/entity
 src/ormconfig.ts
 data/
 docker-compose.yml
+seeder2.ts
