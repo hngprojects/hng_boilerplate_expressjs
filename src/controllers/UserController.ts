@@ -14,8 +14,7 @@ class UserController {
 
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
-      // const { id } = req.user;
-      const id = "953a46af-c635-4edf-a7d9-17393ab93be2";
+      const { id } = req.user;
       if (!id) {
         return res.status(401).json({
           status_code: 401,
