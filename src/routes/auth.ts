@@ -5,6 +5,7 @@ import {
   changeUserRole,
   forgotPassword,
   resetPassword,
+  changePassword,
 } from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
@@ -91,5 +92,6 @@ authRoute.get("/google/callback", googleAuthCallback);
 
 authRoute.post("/forgotPassword", forgotPassword);
 authRoute.post("/resetPassword", resetPassword);
+authRoute.patch("/change-password", authMiddleware, changePassword);
 
 export { authRoute };

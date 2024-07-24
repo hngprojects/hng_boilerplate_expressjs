@@ -271,4 +271,73 @@ const resetPassword = async (
   }
 };
 
-export { signUp, verifyOtp, login, forgotPassword, resetPassword };
+/**
+ * @swagger
+ * /api/v1/auth/change-password:
+ *   patch:
+ *     summary: Change user password
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               oldPassword:
+ *                 type: string
+ *                 description: Current password of the user
+ *               newPassword:
+ *                 type: string
+ *                 description: New password to set for the user
+ *               confirmPassword:
+ *                 type: string
+ *                 description: Confirmation of the new password
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password changed successfully."
+ *       400:
+ *         description: Bad request, such as mismatched passwords or invalid input
+ *       401:
+ *         description: Unauthorized, invalid credentials or not authenticated
+ *       500:
+ *         description: Some server error
+ */
+const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.user.id;
+    const { message } = await authService.changePassword(
+      userId,
+      oldPassword,
+      newPassword,
+      confirmPassword,
+    );
+    res.status(200).json({ message });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  signUp,
+  verifyOtp,
+  login,
+  forgotPassword,
+  resetPassword,
+  changePassword,
+};

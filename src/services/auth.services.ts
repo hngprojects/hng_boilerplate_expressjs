@@ -195,4 +195,37 @@ export class AuthService implements IAuthService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
+  public async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<{ message: string }> {
+    try {
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
+
+      const isOldPasswordValid = await comparePassword(
+        oldPassword,
+        user.password,
+      );
+      if (!isOldPasswordValid) {
+        throw new HttpError(401, "Old password is incorrect");
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new HttpError(400, "New password and confirmation do not match");
+      }
+
+      user.password = await hashPassword(newPassword);
+      await AppDataSource.manager.save(user);
+
+      return { message: "Password changed successfully" };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
 }
