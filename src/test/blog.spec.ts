@@ -5,8 +5,11 @@ import { BlogService } from "../services";
 import { describe, expect, it, beforeEach, afterEach } from '@jest/globals';
 
 jest.mock("../data-source", () => ({
-  AppDataSource: {
+  __esModule: true, // This property indicates that the module is an ES module
+  default: {
     getRepository: jest.fn(),
+    initialize: jest.fn(),
+    isInitialized: false,
   },
 }));
 
@@ -15,13 +18,16 @@ describe("BlogService", () => {
   let mockRepository: jest.Mocked<Repository<Blog>>;
 
   beforeEach(() => {
-    blogService = new BlogService();
-
     mockRepository = {
       delete: jest.fn(),
-      // add other methods if needed
-    } as any; // casting to any to match the mocked repository
+      // Add other methods if needed
+    } as any; // Casting to any to match the mocked repository
+
+    // Mock the return value of AppDataSource.getRepository
     (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepository);
+
+    // Initialize the BlogService after setting up the mock
+    blogService = new BlogService();
   });
 
   afterEach(() => {
