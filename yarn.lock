@@ -1745,6 +1745,11 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
+express-rate-limit@^7.4.0:
+  version "7.4.0"
+  resolved "https://registry.yarnpkg.com/express-rate-limit/-/express-rate-limit-7.4.0.tgz#5db412b8de83fa07ddb40f610c585ac8c1dab988"
+  integrity sha512-v1204w3cXu5gCDmAvgvzI6qjzZzoMWKnyVDk3ACgfswTQLYiGen+r8w0VnXnGMmzEN/g8fwIQ4JrFFd4ZP6ssg==
+
 express-validator@^7.1.0:
   version "7.1.0"
   resolved "https://registry.npmjs.org/express-validator/-/express-validator-7.1.0.tgz"
