@@ -15,6 +15,8 @@ This documentation describes the implementation of an email sending service usin
 
 ## Endpoints
 
+- **BaseUrl** ``https://api-expressjs.boilerplate.hng.tech/api/v1`
+
 ### Send Email
 
 - **Endpoint**: `/send-email`
