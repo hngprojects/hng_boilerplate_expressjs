@@ -7,6 +7,77 @@ export class OrgController {
     this.orgService = new OrgService();
   }
 
+
+  /**
+   * @swagger
+   * /api/org/{org_id}/user/{user_id}:
+   *   delete:
+   *     summary: Remove a user from an organization
+   *     description: Delete a user from a specific organization by user ID and organization ID
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: user_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the user
+   *     responses:
+   *       200:
+   *         description: Successful operation
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: User deleted successfully
+   *       404:
+   *         description: User not found in the organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: forbidden
+   *                 message:
+   *                   type: string
+   *                   example: User not found in the organization
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       400:
+   *         description: Failed to remove user from organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: Bad Request
+   *                 message:
+   *                   type: string
+   *                   example: Failed to remove user from organization
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   */
   async removeUser(req: Request, res: Response) {
     try {
       const user = await this.orgService.removeUser(
@@ -22,7 +93,7 @@ export class OrgController {
       }
       res.status(200).json({
         status: "success",
-        message: "User deleted succesfully",
+        message: "User deleted successfully",
         status_code: 200,
       });
     } catch (error) {
@@ -33,7 +104,6 @@ export class OrgController {
       });
     }
   }
-
   /**
    * @swagger
    * /api/org/{org_id}:
