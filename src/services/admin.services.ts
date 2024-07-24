@@ -7,7 +7,6 @@ import { HttpError } from "../middleware";
 import { hashPassword } from "../utils/index";
 
 export class AdminOrganisationService {
-
   public async update(req: Request): Promise<Organization> {
     try {
       const { name, email, industry, type, country, address, state } = req.body;
@@ -21,9 +20,17 @@ export class AdminOrganisationService {
       if (!oldOrg) {
         throw new HttpError(404, "Not Found");
       }
-      
+
       //Update Organisation on DB
-      await orgRepository.update(org_id, {  name, email, industry, type, country, address, state });
+      await orgRepository.update(org_id, {
+        name,
+        email,
+        industry,
+        type,
+        country,
+        address,
+        state,
+      });
       //Fetch Updated organisation
       const newOrg = await orgRepository.findOne({
         where: { id: org_id },
@@ -37,10 +44,10 @@ export class AdminOrganisationService {
 }
 
 export class AdminUserService {
-
-  async getPaginatedUsers(page: number, limit: number): 
-    Promise<{ users: User[]; totalUsers: number }> {
-
+  async getPaginatedUsers(
+    page: number,
+    limit: number,
+  ): Promise<{ users: User[]; totalUsers: number }> {
     const userRepository = AppDataSource.getRepository(User);
 
     const [users, totalUsers] = await userRepository.findAndCount({
@@ -52,7 +59,8 @@ export class AdminUserService {
   }
   public async updateUser(req: Request): Promise<User> {
     try {
-      const { firstName, lastName, email, role, password, isverified } = req.body;
+      const { firstName, lastName, email, role, password, isverified } =
+        req.body;
 
       const userRepository = AppDataSource.getRepository(User);
 
@@ -73,7 +81,8 @@ export class AdminUserService {
         email,
         role,
         password: hashedPassword || existingUser.password,
-        isverified: isverified !== undefined ? isverified : existingUser.isverified,
+        isverified:
+          isverified !== undefined ? isverified : existingUser.isverified,
       };
 
       await userRepository.update(existingUser.id, updatedFields);

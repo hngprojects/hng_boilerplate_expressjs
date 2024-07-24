@@ -30,7 +30,7 @@ describe("checkPermissions middleware", () => {
     };
 
     (AppDataSource.getRepository as jest.Mock).mockReturnValue(
-      userRepositoryMock
+      userRepositoryMock,
     );
   });
 

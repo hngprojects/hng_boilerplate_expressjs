@@ -9,9 +9,6 @@ const blogController = new BlogController();
 blogRouter.post("/create", authMiddleware, createBlogController);
 blogRouter.get("/", blogController.listBlogs.bind(blogController));
 
-blogRouter.delete(
-  "/:id",
-  blogController.deleteBlogPost.bind(blogController)
-);
+blogRouter.delete("/:id", blogController.deleteBlogPost.bind(blogController));
 
 export { blogRouter };
