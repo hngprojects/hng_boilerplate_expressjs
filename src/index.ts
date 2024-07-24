@@ -14,9 +14,9 @@ import {
   notificationRouter,
   smsRouter,
   productRouter,
-  adminRouter,
   jobRouter,
-  sendEmailRoute,
+  blogRouter,
+  adminRouter
 } from "./routes";
 // import { seed } from "./seeder";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -25,6 +25,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
 import { organisationRoute } from "./routes/createOrg";
 import ServerAdapter from "./views/bull-board";
+import { sendEmailRoute } from "./routes/sendEmail.route";
 
 dotenv.config();
 
@@ -57,6 +58,8 @@ server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
+server.use("/api/v1/blog", blogRouter);
+server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/admin/queues", ServerAdapter.getRouter());

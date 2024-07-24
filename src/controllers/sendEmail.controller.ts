@@ -41,12 +41,12 @@ export const SendEmail = async (req: Request, res: Response) => {
         }
    
 
-    await emailService.queueEmail(payload , user);
+    // await emailService.queueEmail(payload , user);
     await emailService.sendEmail(payload);
 
     return res.status(202).json({ message: 'Email sending request accepted and is being processed.' });
   } catch (error) {
-    console.error('Error sending email:', error);
+    // console.error('Error sending email:', error);
     return res.status(500).json({ message: 'Internal server error.' });
   }
 };

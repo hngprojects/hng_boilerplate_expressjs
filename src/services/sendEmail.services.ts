@@ -77,7 +77,7 @@ export class EmailService {
     try {
   
     } catch (error) {
-      console.error('Error in sending email:', error);
+      // console.error('Error in sending email:', error);
       throw new ServerError('Internal server error');
 
     }
