@@ -3,12 +3,12 @@ import { UpdateOrganizationDetails } from "../services/updateorg.service";
 
 export const updateOrganization = async (req: Request, res: Response) => {
   const { organization_id } = req.params;
-  const updateData = req.body;
+  const update_data = req.body;
 
   try {
     const organization = await UpdateOrganizationDetails(
       organization_id,
-      updateData
+      update_data
     );
     return res.status(200).json({
       message: "Organization details updated successfully",
