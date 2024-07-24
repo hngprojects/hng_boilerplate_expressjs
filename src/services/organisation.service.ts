@@ -1,9 +1,39 @@
-import { Organization } from "../models/organization";
+import { Organization, User, UserOrganization } from "../models/organization";
 import AppDataSource from "../data-source";
+import { UserRole } from "../enums/userRoles";
 import { User } from "../models/user";
-import { IOrgService, IUserService } from "../types";
+import { IOrgService, IUserService, ICreateOrganisation, IOrganisationService, } from "../types";
 
 export class OrgService implements IOrgService {
+
+
+  public async createOrganisation(
+    payload: ICreateOrganisation,
+    userId: string
+  ): Promise<{
+    newOrganisation: Partial<Organization>;
+  }> {
+    try {
+      const organisation = new Organization();
+      organisation.owner_id = userId;
+      Object.assign(organisation, payload);
+
+      const newOrganisation = await AppDataSource.manager.save(organisation);
+
+      const userOrganization = new UserOrganization();
+      userOrganization.userId = userId;
+      userOrganization.organizationId = newOrganisation.id;
+      userOrganization.role = UserRole.ADMIN;
+
+      await AppDataSource.manager.save(userOrganization);
+
+      return { newOrganisation };
+    } catch (error) {
+      console.log(error);
+      throw new BadRequest("Client error");
+    }
+  }
+  
   public async removeUser(
     org_id: string,
     user_id: string
