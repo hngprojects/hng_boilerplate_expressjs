@@ -40,24 +40,21 @@ export const SendEmail = async (req: Request, res: Response) => {
     const user = await AppDataSource.getRepository(User).findOne({
       where: { email: payload.recipient },
     });
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        status_code: 404,
-        message: "User not found",
-      });
-    }
+    // if (!user) {
+    //   return res.status(404).json({
+    //     success: false,
+    //     status_code: 404,
+    //     message: "User not found",
+    //   });
+    // }
 
-    // await emailService.queueEmail(payload , user);
+    await emailService.queueEmail(payload, user);
     await emailService.sendEmail(payload);
 
-    return res
-      .status(202)
-      .json({
-        message: "Email sending request accepted and is being processed.",
-      });
+    return res.status(202).json({
+      message: "Email sending request accepted and is being processed.",
+    });
   } catch (error) {
-    // console.error('Error sending email:', error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -67,7 +64,6 @@ export const getEmailTemplates = async (req: Request, res: Response) => {
     const templates = await emailService.getEmailTemplates();
     return res.status(200).json({ message: "Available templates", templates });
   } catch (error) {
-    console.error("Error getting email templates:", error);
     return res.status(500).json({ message: "Internal server error." });
   }
 };
