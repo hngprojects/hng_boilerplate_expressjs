@@ -36,4 +36,10 @@ adminRouter.patch(
   adminUserController.updateUser.bind(adminUserController), // Use updateUser method
 );
 
+adminRouter.post(
+    "/users/:user_id/roles", authMiddleware,
+    checkPermissions([UserRole.SUPER_ADMIN]),
+    adminOrganisationController.setUserRole.bind(adminOrganisationController),
+  );
+
 export { adminRouter };
