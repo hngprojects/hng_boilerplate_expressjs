@@ -45,8 +45,14 @@ class AdminOrganisationController {
 
   async setUserRole(req: Request, res: Response): Promise<void> {
     try {
-      await param("user_id").isUUID().withMessage("Valid user ID must be provided.").run(req);
-      await check("role").isIn(Object.values(UserRole)).withMessage("Valid role must be provided.").run(req);
+      await param("user_id")
+        .isUUID()
+        .withMessage("Valid user ID must be provided.")
+        .run(req);
+      await check("role")
+        .isIn(Object.values(UserRole))
+        .withMessage("Valid role must be provided.")
+        .run(req);
 
       const errors = validationResult(req);
 
@@ -69,7 +75,9 @@ class AdminOrganisationController {
         },
       });
     } catch (error) {
-      res.status(error.status_code || 500).json({ message: error.message || "Internal Server Error" });
+      res
+        .status(error.status_code || 500)
+        .json({ message: error.message || "Internal Server Error" });
     }
   }
 }
@@ -161,6 +169,35 @@ class AdminUserController {
           .status(500)
           .json({ message: error.message || "Internal Server Error" });
       }
+    }
+  }
+
+  async getUserBySuperadmin(req: Request, res: Response): Promise<unknown> {
+    const userId = req.params["user-id"];
+    try {
+      const user = await this.adminUserService.getSingleUser(userId);
+      if (!user) {
+        return {
+          status: "unsuccessful",
+          message: "User not found",
+          status_code: 404,
+        };
+      }
+      return res.status(200).json({
+        status: "success",
+        data: {
+          user_id: userId,
+          first_name: user.profile.first_name,
+          last_name: user.profile.last_name,
+          email: user.email,
+          phone: user.profile.phone,
+          profile_picture: user.profile.avatarUrl,
+          role: user.role,
+        },
+        status_code: 200,
+      });
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
     }
   }
 }
