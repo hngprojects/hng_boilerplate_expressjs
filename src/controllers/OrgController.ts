@@ -123,4 +123,37 @@ export class OrgController {
       });
     }
   }
+
+  async getAllOrgs(req: Request, res: Response) {
+    try {
+      const page = parseInt(req.query.page as string) || 1
+      const limit = parseInt(req.query.limit as string) || 10
+      const { data, total } = await this.orgService.getAllOrgs(page, limit)
+      
+      if (data.length === 0) {
+        return res.status(404).json({
+          status: "unsuccessful",
+          status_code: 404,
+          message: "No organizations found.",
+        })
+      }
+      
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        data,
+        pagination: {
+          page,
+          limit,
+          total
+        }
+      })
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to retrieve organizations. Please try again later.",
+      })
+    }
+  }
 }

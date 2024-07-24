@@ -162,3 +162,74 @@ describe("single organization", () => {
     );
   });
 });
+
+describe("getAllOrgs", () => {
+  let orgService: OrgService;
+  let orgController: OrgController;
+  let mockRepository;
+
+  beforeEach(() => {
+    orgService = new OrgService();
+    orgController = new OrgController();
+
+    mockRepository = {
+      findAndCount: jest.fn(),
+    };
+
+    AppDataSource.getRepository = jest.fn().mockReturnValue(mockRepository);
+  });
+
+  it("should get all organizations with pagination", async () => {
+    const organizations = [
+      { id: "1", name: "Org 1", description: "Org 1 description" },
+      { id: "2", name: "Org 2", description: "Org 2 description" },
+    ];
+    const total = 2;
+    mockRepository.findAndCount.mockResolvedValue([organizations, total]);
+
+    const req = {
+      query: { page: "1", limit: "2" },
+    } as unknown as Request;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as unknown as Response;
+
+    await orgController.getAllOrgs(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({
+      status: "success",
+      status_code: 200,
+      data: organizations,
+      pagination: {
+        total,
+        page: 1,
+        limit: 2,
+      },
+    });
+  });
+
+  it("should handle errors", async () => {
+    mockRepository.findAndCount.mockRejectedValue(new Error("Failed to get organizations"));
+
+    const req = {
+      query: { page: "1", limit: "2" },
+    } as unknown as Request;
+
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    } as unknown as Response;
+
+    await orgController.getAllOrgs(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      status: "unsuccessful",
+      status_code: 500,
+      message: "Failed to retrieve organizations. Please try again later.",
+    });
+  });
+});

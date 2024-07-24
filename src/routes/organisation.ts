@@ -15,4 +15,7 @@ orgRouter.delete(
 orgRouter.get("/organisations/:org_id", authMiddleware, validateOrgId,
   orgController.getSingleOrg.bind(orgController),
 );
+
+orgRouter.get("/organisations", authMiddleware, orgController.getAllOrgs.bind(orgController))
+
 export { orgRouter };

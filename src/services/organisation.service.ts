@@ -56,4 +56,15 @@ export class OrgService implements IOrgService {
     }
     return organization;
   }
+
+  public async getAllOrgs(page: number, limit: number): Promise<{ data: Organization[], total: number }> {
+    const organizationRepository = AppDataSource.getRepository(Organization)
+    
+    const [result, total] = await organizationRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    })
+    
+    return { data: result, total }
+  }
 }
