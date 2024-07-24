@@ -8,7 +8,6 @@ export const validateTestimonial = [
   body("testimonial").notEmpty().withMessage("Testimonial is required"),
   (req: Request, res: Response, next: NextFunction) => {
     const errors = validationResult(req);
-    console.log(errors);
     if (!errors.isEmpty()) {
       throw new InvalidInput("Validation failed");
     }
