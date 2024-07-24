@@ -19,6 +19,7 @@ describe('UserService', () => {
       findOne: jest.fn(),
       save: jest.fn(),
       softDelete: jest.fn(),
+      getPaginatedUsers:jest.fn(),
       ...jest.requireActual('typeorm').Repository.prototype,
     } as jest.Mocked<Repository<User>>;
 
@@ -52,6 +53,65 @@ describe('UserService', () => {
       expect(userRepositoryMock.findOne).toHaveBeenCalledWith({ where: { id: '123' } });
       expect(userRepositoryMock.save).not.toHaveBeenCalled();
       expect(userRepositoryMock.softDelete).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('getPaginatedUsers', () => {
+    it('should return paginated users', async () => {
+      const users: User[] = [
+        { id: '123', name: 'John Doe', is_deleted: false } as User,
+        { id: '124', name: 'Jane Doe', is_deleted: false } as User,
+      ];
+      const totalUsers = 2;
+
+      userRepositoryMock.find.mockResolvedValue(users);
+      userRepositoryMock.count.mockResolvedValue(totalUsers);
+
+      const result = await userService.getPaginatedUsers(1, 2, 0);
+
+      expect(userRepositoryMock.find).toHaveBeenCalledWith({
+        skip: 0,
+        take: 2,
+      });
+      expect(result).toEqual(users);
+    });
+
+    it('should throw an error if page is less than 1', async () => {
+      await expect(userService.getPaginatedUsers(0, 10)).rejects.toThrow("Page number must be greater than 0.");
+    });
+
+    it('should throw an error if limit is less than 1', async () => {
+      await expect(userService.getPaginatedUsers(1, 0)).rejects.toThrow("Limit must be greater than 0.");
+    });
+
+    
+    it('should return an empty array if offset is out of range', async () => {
+      const totalUsers = 5;
+
+      userRepositoryMock.count.mockResolvedValue(totalUsers);
+
+      const result = await userService.getPaginatedUsers(1, 10);
+
+      expect(result).toEqual([]);
+    });
+
+    it('should adjust the limit if it exceeds the remaining users', async () => {
+      const users: User[] = [
+        { id: '123', name: 'John Doe', is_deleted: false } as User,
+        { id: '124', name: 'Jane Doe', is_deleted: false } as User,
+      ];
+      const totalUsers = 4;
+
+      userRepositoryMock.find.mockResolvedValue(users);
+      userRepositoryMock.count.mockResolvedValue(totalUsers);
+
+      const result = await userService.getPaginatedUsers(1, 10);
+
+      expect(userRepositoryMock.find).toHaveBeenCalledWith({
+        skip: 3,
+        take: 1,
+      });
+      expect(result).toEqual(users);
     });
   });
 });

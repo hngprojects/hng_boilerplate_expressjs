@@ -28,6 +28,35 @@ export class UserService  {
     return users;
   }
 
+  public async getPaginatedUser(page:number, limit:number):Promise<User[]>{
+    const userRepository = AppDataSource.getRepository(User);
+
+    if(page < 1 || limit < 1) {
+      throw new HttpError(400, "Invalid pagination parameters. Page and limit must be positive integers.");
+    }
+
+    const offset = (page - 1) * limit;
+
+    const totalUsers = await userRepository.count({ where: { is_deleted: false } });
+
+    if (offset >= totalUsers) {
+      return [];
+    }
+
+    if (offset + limit > totalUsers) {
+      limit = totalUsers - offset;
+    }  
+
+    const users = await userRepository.find({
+      skip: offset,
+      take: limit,
+      where: { is_deleted: false }, 
+    });
+
+    return users;
+
+  }
+
   public async softDeleteUser(id:string):Promise<UpdateResult> {
     const user = await this.userRepository.findOne({where: {id}});
 

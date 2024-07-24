@@ -1,5 +1,5 @@
 // src/controllers/UserController.ts
-import { Request, Response, NextFunction } from "express";
+import {  Request,  Response, NextFunction } from "express";
 import { UserService } from "../services";
 import { HttpError } from "../middleware";
 import { isUUID } from "class-validator";
@@ -75,6 +75,24 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async getPaginatedUsers(req: Request, res: Response) {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10
+    try {
+      const users = await this.userService.getPaginatedUser(page,limit);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        data:{
+          "users":users
+        }
+      })
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
 
   async deleteUser(req: Request, res: Response) {
     const id = req.params.id;
