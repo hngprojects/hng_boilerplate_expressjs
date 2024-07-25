@@ -67,16 +67,17 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
+      // const id = "96cf0567-9ca6-4ce0-b9f7-e3fa816fc070";
       if (!id) {
         return res.status(401).json({
           status_code: 401,
-          error: "Unauthorized",
+          error: "Unauthorized! no ID provided",
         });
       }
 
       if (!validate(id)) {
-        return res.status(401).json({
-          status_code: 401,
+        return res.status(400).json({
+          status_code: 400,
           error: "Unauthorized! Invalid User Id Format",
         });
       }
@@ -180,6 +181,120 @@ class UserController {
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/user/{id}:
+   *   delete:
+   *     tags:
+   *       - User
+   *     summary: Delete a user
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the user
+   *     responses:
+   *       202:
+   *         description: User deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: number
+   *                   example: 202
+   *                 message:
+   *                   type: string
+   *                   example: User deleted successfully
+   *       400:
+   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: number
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *                   example: Valid id must be provided
+   *       404:
+   *         description: Not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: number
+   *                   example: 404
+   *                 message:
+   *                   type: string
+   *                   example: User not found
+   *       500:
+   *         description: Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: number
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: Failed to perform soft delete
+   */
+  async deleteUser(req: Request, res: Response) {
+    const id = req.params.id;
+
+    if (!id || !isUUID(id)) {
+      return res.status(400).json({
+        status: "unsuccesful",
+        status_code: 400,
+        message: "Valid id must be provided",
+      });
+    }
+
+    try {
+      await this.userService.softDeleteUser(id);
+
+      return res.status(202).json({
+        status: "sucess",
+        message: "User deleted successfully",
+        status_code: 202,
+      });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message,
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error",
+        });
+      }
     }
   }
 
@@ -301,109 +416,15 @@ class UserController {
    *       500:
    *         description: Server Error
    */
-  async updateUserById() {}
 
-  /**
-   * @swagger
-   * /api/v1/user/{id}:
-   *   delete:
-   *     tags:
-   *       - User
-   *     summary: Delete a user
-   *     security:
-   *       - bearerAuth: []
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the user
-   *     responses:
-   *       202:
-   *         description: User deleted successfully
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: success
-   *                 status_code:
-   *                   type: number
-   *                   example: 202
-   *                 message:
-   *                   type: string
-   *                   example: User deleted successfully
-   *       400:
-   *         description: Bad request
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: number
-   *                   example: 400
-   *                 message:
-   *                   type: string
-   *                   example: Valid id must be provided
-   *       404:
-   *         description: Not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: number
-   *                   example: 404
-   *                 message:
-   *                   type: string
-   *                   example: User not found
-   *       500:
-   *         description: Server Error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: number
-   *                   example: 500
-   *                 message:
-   *                   type: string
-   *                   example: Failed to perform soft delete
-   */
-  async deleteUser(req: Request, res: Response) {
-    const id = req.params.id;
-
-    if (!id || !isUUID(id)) {
-      return res.status(400).json({
-        status: "unsuccesful",
-        status_code: 400,
-        message: "Valid id must be provided",
-      });
-    }
-
+  public async updateUserProfile(req: Request, res: Response) {
     try {
-      await this.userService.softDeleteUser(id);
-
-      return res.status(202).json({
-        status: "sucess",
-        message: "User deleted successfully",
-        status_code: 202,
-      });
+      const user = await this.userService.updateUserProfile(
+        req.params.id,
+        req.body,
+        req.file,
+      );
+      res.status(200).json(user);
     } catch (error) {
       if (error instanceof HttpError) {
         return res.status(error.status_code).json({
@@ -418,4 +439,4 @@ class UserController {
   }
 }
 
-export default UserController;
+export { UserController };
