@@ -216,6 +216,7 @@ export class BlogController {
           status_code: 401,
           error: "Unauthorized",
         });
+        return;
       }
 
       const deletedPost = await this.blogService.deleteBlogPost(id);
@@ -224,6 +225,7 @@ export class BlogController {
           status_code: 404,
           error: "Blog post not found",
         });
+        return;
       }
 
       res.status(200).json({
