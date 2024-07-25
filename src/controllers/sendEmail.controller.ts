@@ -1,6 +1,3 @@
-
-
-
 /**
  * @swagger
  * /api/v1/email-templates:

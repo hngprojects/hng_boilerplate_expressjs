@@ -44,6 +44,13 @@ adminRouter.post(
   adminOrganisationController.setUserRole.bind(adminOrganisationController),
 );
 
+adminRouter.get(
+  "/users/:user-id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminUserController.getUserBySuperadmin.bind(adminUserController),
+);
+
 // Logs
 adminRouter.get(
   "/logs",

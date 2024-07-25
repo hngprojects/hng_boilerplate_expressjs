@@ -132,6 +132,21 @@ export class AdminUserService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
+
+  public async getSingleUser(userId: string): Promise<User> {
+    try {
+      const userRepository = AppDataSource.getRepository(User);
+      const user = await userRepository.findOne({
+        where: { id: userId },
+      });
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
+      return user;
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
 }
 
 export class AdminLogService {

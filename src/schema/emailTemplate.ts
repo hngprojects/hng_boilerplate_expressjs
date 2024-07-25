@@ -1,48 +1,48 @@
 export const emailTTemplateSchema = {
-    type: "object",
-    properties: {
-      id: {
-        type: "integer",
-        format: "int64",
-        example: 6,
-      },
-      title: {
-        type: "string",
-        format: "title",
-        example: "Welome",
-      },
-      description: {
-        type: "string",
-        format: "details",
-        example: "Welcome to our organisation",
-      },
-      created_at: {
-        type: "string",
-        format: "date-time",
-        example: "2019-10-12T07:20:50.52Z",
-      },
-      updated_at: {
-        type: "string",
-        format: "date-time",
-        example: "2022-10-12T07:20:50.52Z",
-      },
+  type: "object",
+  properties: {
+    id: {
+      type: "integer",
+      format: "int64",
+      example: 6,
     },
-  };
-  
+    title: {
+      type: "string",
+      format: "title",
+      example: "Welome",
+    },
+    description: {
+      type: "string",
+      format: "details",
+      example: "Welcome to our organisation",
+    },
+    created_at: {
+      type: "string",
+      format: "date-time",
+      example: "2019-10-12T07:20:50.52Z",
+    },
+    updated_at: {
+      type: "string",
+      format: "date-time",
+      example: "2022-10-12T07:20:50.52Z",
+    },
+  },
+};
+
 export const emailTemplatePaths = {
-  '/emailTemplates': {
+  "/emailTemplates": {
     get: {
-      tags: ['emailTemplates'],
-      summary: 'Get all email templates',
+      tags: ["emailTemplates"],
+      summary: "Get all email templates",
       responses: {
-        '200': {
-          description: 'The list of email templates',
+        "200": {
+          description: "The list of email templates",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                type: 'array',
+                type: "array",
                 items: {
-                  $ref: '#/components/schemas/EmailTemplates',
+                  $ref: "#/components/schemas/EmailTemplates",
                 },
               },
             },
@@ -51,25 +51,25 @@ export const emailTemplatePaths = {
       },
     },
     post: {
-      tags: ['emailTemplates'],
-      summary: 'Create a new email template',
+      tags: ["emailTemplates"],
+      summary: "Create a new email template",
       requestBody: {
         required: true,
         content: {
-          'application/json': {
+          "application/json": {
             schema: {
-              $ref: '#/components/schemas/EmailTemplates',
+              $ref: "#/components/schemas/EmailTemplates",
             },
           },
         },
       },
       responses: {
-        '200': {
-          description: 'The email template was successfully created',
+        "200": {
+          description: "The email template was successfully created",
           content: {
-            'application/json': {
+            "application/json": {
               schema: {
-                $ref: '#/components/schemas/EmailTemplates',
+                $ref: "#/components/schemas/EmailTemplates",
               },
             },
           },

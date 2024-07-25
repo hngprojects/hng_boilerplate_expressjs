@@ -54,7 +54,7 @@ describe("SendEmail Controller", () => {
     jest.clearAllMocks(); // Clear all mocks before each test
   });
 
-  // Uncomment the following line when the server is live. 
+  // Uncomment the following line when the server is live.
   // The current server status may be causing errors, preventing code commits.
   // Ensure that the server is running and accessible before proceeding.
 
