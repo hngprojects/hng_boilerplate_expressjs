@@ -44,7 +44,6 @@ class exportController {
     try {
       const format = req.query.format as string;
       const userId = req.user.id;
-      console.log(`Requested format: ${format}`);
 
       const user = await ExportService.getUserById(userId);
       if (!user) {

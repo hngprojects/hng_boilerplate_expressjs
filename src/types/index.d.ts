@@ -7,13 +7,7 @@ export interface IUserService {
   getAllUsers(): Promise<User[]>;
 }
 
-export interface IOrgService {
-  removeUser(
-    org_id: string,
-    user_id: string,
-    inviteToken?: string,
-  ): Promise<User | null>;
-}
+export interface IOrgService {}
 
 export interface IRole {
   role: "super_admin" | "admin" | "user";
@@ -42,6 +36,12 @@ export interface IAuthService {
   login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, otp: number): Promise<{ message: string }>;
+  changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<{ message: string }>;
 }
 
 export interface ICreateOrganisation {
@@ -60,6 +60,7 @@ export interface IOrganisationService {
     payload: ICreateOrganisation,
     userId: string,
   ): Promise<unknown>;
+  removeUser(org_id: string, user_id: string): Promise<User | null>;
 }
 
 declare module "express-serve-static-core" {

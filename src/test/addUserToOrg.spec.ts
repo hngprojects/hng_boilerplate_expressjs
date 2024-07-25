@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import { OrgService } from "../services/org.services";
 import { User } from "../models/user";
 import { Organization } from "../models/organization";
-import { Invitation } from "../models/invitation";
-import { UserOrganization } from "../models/user-organisation";
+import { UserOrganization, Invitation } from "../models";
 import AppDataSource from "../data-source";
 
 jest.mock("../data-source");

@@ -1,16 +1,18 @@
 import { createBullBoard } from "@bull-board/api";
 import { ExpressAdapter } from "@bull-board/express";
-import  {emailQueue , notificationQueue , smsQueue}  from "../utils/queue";
-import {BullAdapter} from "@bull-board/api/bullAdapter";
+import { emailQueue, notificationQueue, smsQueue } from "../utils/queue";
+import { BullAdapter } from "@bull-board/api/bullAdapter";
 
 const ServerAdapter = new ExpressAdapter();
 
 createBullBoard({
-  queues: [new BullAdapter(emailQueue), new BullAdapter(notificationQueue), new BullAdapter(smsQueue)],
+  queues: [
+    new BullAdapter(emailQueue),
+    new BullAdapter(notificationQueue),
+    new BullAdapter(smsQueue),
+  ],
   serverAdapter: ServerAdapter,
 });
-
-
 
 ServerAdapter.setBasePath("/admin/queues");
 export default ServerAdapter;
