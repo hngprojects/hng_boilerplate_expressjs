@@ -16,7 +16,7 @@ describe("AdminUserService", () => {
   beforeAll(() => {
     consoleErrorMock = jest
       .spyOn(console, "error")
-      .mockImplementation(() => { });
+      .mockImplementation(() => {});
   });
 
   afterAll(() => {

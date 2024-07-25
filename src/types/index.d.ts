@@ -7,9 +7,7 @@ export interface IUserService {
   getAllUsers(): Promise<User[]>;
 }
 
-export interface IOrgService {
-  removeUser(org_id: string, user_id: string): Promise<User | null>;
-}
+export interface IOrgService {}
 
 export interface IRole {
   role: "super_admin" | "admin" | "user";
@@ -62,6 +60,7 @@ export interface IOrganisationService {
     payload: ICreateOrganisation,
     userId: string,
   ): Promise<unknown>;
+  removeUser(org_id: string, user_id: string): Promise<User | null>;
 }
 
 declare module "express-serve-static-core" {

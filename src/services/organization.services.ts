@@ -1,16 +1,18 @@
-import { Organization } from "../models/organization";
-import AppDataSource from "../data-source";
-import { User } from "../models/user";
-import { ICreateOrganisation, IOrgService } from "../types";
-import log from "../utils/logger";
-import { BadRequest } from "../middleware";
+import { Organization, User, UserOrganization } from "../models";
 import { UserRole } from "../enums/userRoles";
-import { UserOrganization } from "../models";
+import AppDataSource from "../data-source";
+import { BadRequest, HttpError } from "../middleware";
+import {
+  IOrgService,
+  IUserService,
+  ICreateOrganisation,
+  IOrganisationService,
+} from "../types";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
     payload: ICreateOrganisation,
-    userId: string,
+    userId: string
   ): Promise<{
     newOrganisation: Partial<Organization>;
   }> {
@@ -37,7 +39,7 @@ export class OrgService implements IOrgService {
 
   public async removeUser(
     org_id: string,
-    user_id: string,
+    user_id: string
   ): Promise<User | null> {
     const userRepository = AppDataSource.getRepository(User);
     const organizationRepository = AppDataSource.getRepository(Organization);
@@ -58,50 +60,20 @@ export class OrgService implements IOrgService {
       return null;
     }
 
+    // Check if the user is part of the organization
     const userInOrganization = organization.users.some(
-      (user) => user.id === user_id,
+      (user) => user.id === user_id
     );
     if (!userInOrganization) {
       return null;
     }
 
+    // Remove the user from the organization
     organization.users = organization.users.filter(
-      (user) => user.id !== user_id,
+      (user) => user.id !== user_id
     );
     await organizationRepository.save(organization);
 
     return user;
-  }
-
-  public async getOrganizationsByUserId(
-    user_id: string,
-  ): Promise<Organization[]> {
-    log.info(`Fetching organizations for user_id: ${user_id}`);
-    try {
-      const organizationRepository = AppDataSource.getRepository(Organization);
-
-      const organizations = await organizationRepository.find({
-        where: { owner_id: user_id },
-      });
-
-      log.info(`Organizations found: ${organizations.length}`);
-      return organizations;
-    } catch (error) {
-      log.error(`Error fetching organizations for user_id: ${user_id}`, error);
-      throw new Error("Failed to fetch organizations");
-    }
-  }
-
-  public async getSingleOrg(org_id: string): Promise<Organization | null> {
-    const organization = await AppDataSource.getRepository(
-      Organization,
-    ).findOne({
-      where: { id: org_id },
-      relations: ["users"],
-    });
-    if (!organization) {
-      return null;
-    }
-    return organization;
   }
 }

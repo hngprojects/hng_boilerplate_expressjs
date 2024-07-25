@@ -6,3 +6,6 @@ export * from "./blog.services";
 export * from "./admin.services";
 export * from "./export.services";
 export * from "./sendEmail.services";
+export * from "./organization.services";
+export * from "./payment/flutter.service";
+
