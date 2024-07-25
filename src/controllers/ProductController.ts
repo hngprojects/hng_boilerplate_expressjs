@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
+import { ProductDTO } from "../models";
 
 export class ProductController {
   private productService: ProductService;
@@ -482,7 +483,45 @@ export class ProductController {
    *                 message:
    *                   type: string
    */
-  async createProduct(req: Request, res: Response) {}
+  async createProduct(req: Request, res: Response) {
+    try {
+      const { user } = req;
+      const { sanitizedData } = req.body;
+
+      if (!user) {
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "Unauthorized User",
+        });
+      }
+
+      const productDTO = new ProductDTO(sanitizedData);
+      await productDTO.validate();
+
+      const product = await this.productService.createProduct({
+        ...sanitizedData,
+        user,
+      });
+
+      const { user: _, ...productWithoutUser } = product;
+
+      return res.status(201).json({
+        status: "success",
+        status_code: 201,
+        message: "Product created successfully",
+        data: { productWithoutUser },
+      });
+    } catch (error) {
+      // console.error('Error creating product:', error)
+      return res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Internal server error",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
 
   /**
    * @swagger
