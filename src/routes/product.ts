@@ -90,11 +90,17 @@ productRouter.get(
   authMiddleware,
   productController.getProductPagination.bind(productController),
 );
+
+productRouter.get(
+  "/:product_id",
+  authMiddleware,
+  productController.fetchProductById,
+);
 productRouter
   .route("/")
   .post(
     validateProductDetails,
     authMiddleware,
-    productController.createProduct.bind(productController)
+    productController.createProduct.bind(productController),
   );
 export { productRouter };

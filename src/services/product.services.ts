@@ -63,4 +63,9 @@ export class ProductService {
     const product = this.productRepository.create(productDetails);
     return await this.productRepository.save(product);
   }
+
+  public async getOneProduct(id: string): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
+    return product;
+  }
 }

@@ -160,7 +160,6 @@ export class ProductController {
           message: err.message,
           status_code: 500,
         });
-        console.error(err);
       }
     }
   }
@@ -169,7 +168,7 @@ export class ProductController {
    * @swagger
    * /api/v1/products/{product_id}:
    *   get:
-   *     summary: Fetch a product by {id}
+   *     summary: Fetch a product by its ID
    *     tags: [Product]
    *     parameters:
    *       - in: path
@@ -177,17 +176,17 @@ export class ProductController {
    *         required: true
    *         schema:
    *           type: integer
-   *         description: String ID of the product
+   *         description: The ID of the product to fetch
    *     responses:
    *       200:
-   *         description: Successful response
+   *         description: Product retrieved successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
    *                 id:
-   *                   type: string
+   *                   type: integer
    *                   example: 123
    *                 name:
    *                   type: string
@@ -197,30 +196,42 @@ export class ProductController {
    *                   example: Product is robust
    *                 price:
    *                   type: number
-   *                   exanple: 19
+   *                   example: 19
    *                 category:
    *                   type: string
    *                   example: Gadgets
    *       400:
-   *         description: Bad request
+   *         description: Bad request due to invalid product ID
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
    *                   type: string
-   *                   example: Invalid product ID
+   *                   example: Bad Request
+   *                 message:
+   *                   type: string
+   *                   example: Invalid Product Id
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
    *       404:
-   *         description: Not found
+   *         description: Product not found
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
+   *                   type: string
+   *                   example: Not Found
+   *                 message:
    *                   type: string
    *                   example: Product not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
    *       500:
    *         description: Internal server error
    *         content:
@@ -228,11 +239,46 @@ export class ProductController {
    *             schema:
    *               type: object
    *               properties:
-   *                 error:
+   *                 status:
    *                   type: string
    *                   example: An unexpected error occurred
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
    */
-  async fetchProductById(req: Request, res: Response) {}
+
+  async fetchProductById(req: Request, res: Response) {
+    const productId = req.params.product_id;
+
+    if (isNaN(Number(productId))) {
+      return res.status(400).json({
+        status: "Bad Request",
+        message: "Invalid Product Id",
+        status_code: 400,
+      });
+    }
+
+    try {
+      const product = await this.productService.getOneProduct(productId);
+      if (!product) {
+        return res.status(404).json({
+          status: "Not found",
+          message: "Product not found",
+          status_code: 404,
+        });
+      }
+      return res.status(200).json(product);
+    } catch (error) {
+      return res.status(500).json({
+        status: "An unexpected error occurred",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+  }
 
   /**
    * @swagger
@@ -339,6 +385,8 @@ export class ProductController {
    *                 message:
    *                   type: string
    *                   example: "Valid product ID, name, description, price, and stock must be provided."
+   *       401:
+   *        description: Unauthorized
    *       500:
    *         description: Server error
    *         content:
@@ -554,6 +602,7 @@ export class ProductController {
    *                   type: string
    *                   example: Product not found
    */
+
   async deleteProduct(req: Request, res: Response) {}
 }
 
