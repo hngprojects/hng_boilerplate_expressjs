@@ -11,7 +11,6 @@ import config from "../config";
 import { Payment } from "../models/payment";
 import AppDataSource from "../data-source";
 
-
 /**
  * @swagger
  * /api/v1/payments/lemonsqueezy/initiate:
@@ -50,7 +49,6 @@ export const makePaymentLemonSqueezy = async (req: Request, res: Response) => {
       .json({ error: "An error occurred while processing the payment" });
   }
 };
-
 
 /**
  * @swagger
