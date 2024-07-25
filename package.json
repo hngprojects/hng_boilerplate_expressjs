@@ -8,6 +8,7 @@
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest --forceExit",
     "test:email": "jest views/email/tests",
+    "test:organisation": "jest organisation.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
     "seed": "ts-node src/seeder.ts",
