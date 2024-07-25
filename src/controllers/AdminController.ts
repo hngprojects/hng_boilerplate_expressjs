@@ -158,6 +158,117 @@ class AdminOrganisationController {
         .json({ message: error.message || "Internal Server Error" });
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/admin/organizations/{org_id}/delete:
+   *   delete:
+   *     summary: Admin-Delete an existing organization
+   *     tags: [Admin]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         description: The ID of the organization to delete
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Organization deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                 message:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                     name:
+   *                       type: string
+   *                     description:
+   *                       type: string
+   *                     createdAt:
+   *                       type: string
+   *                       format: date-time
+   *                     updatedAt:
+   *                       type: string
+   *                       format: date-time
+   *       400:
+   *         description: Valid organization ID must be provided
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                 message:
+   *                   type: string
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                 message:
+   *                   type: string
+   *       500:
+   *         description: Failed to delete organization. Please try again later.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                 message:
+   *                   type: string
+   */
+
+  // Delete an organization
+  async deleteOrganization(req: Request, res: Response) {
+    const { org_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: "Valid organization ID must be provided.",
+      });
+    }
+
+    try {
+      await this.adminService.deleteOrganization(org_id);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Organization deleted successfully.",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to delete organization. Please try again later.",
+      });
+    }
+  }
 }
 
 class AdminUserController {
