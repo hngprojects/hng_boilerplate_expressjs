@@ -30,7 +30,6 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      console.log(error);
       throw new BadRequest("Client error");
     }
   }

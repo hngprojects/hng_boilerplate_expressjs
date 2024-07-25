@@ -1,10 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const app = require("express")();
-app.use(require("express").json());
-
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const config = {
   port: process.env.PORT ?? 8000,
   "api-prefix": "api/v1",
