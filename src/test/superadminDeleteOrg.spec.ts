@@ -27,7 +27,6 @@ describe("AdminUserService", () => {
   describe("deleteOrganisation", () => {
     it("should delete the organization successfully", async () => {
       const orgId = "org123";
-
       const mockOrganization = {
         id: orgId,
         name: "Test Organization",
@@ -75,7 +74,6 @@ describe("AdminUserService", () => {
 
     it("should throw an error if deletion fails", async () => {
       const orgId = "org123";
-
       const mockOrganization = {
         id: orgId,
         name: "Test Organization",

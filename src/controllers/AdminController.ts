@@ -242,7 +242,7 @@ class AdminOrganisationController {
    *                   type: string
    */
 
-  // Delete an organization
+  // Delete organization
   async deleteOrganization(req: Request, res: Response) {
     const { org_id } = req.params;
 
