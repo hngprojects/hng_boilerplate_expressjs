@@ -59,6 +59,10 @@ describe("Organisation", () => {
       const mockUpdatedOrg = {
         ...mockOrg,
         ...updatedOrg,
+        address: undefined,
+        description: undefined,
+        industry: undefined,
+        type: undefined,
         updatedAt: new Date(),
       };
 

@@ -1,10 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const app = require("express")();
-app.use(require("express").json());
-
-const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const config = {
   port: process.env.PORT ?? 8000,
   "api-prefix": "api/v1",
@@ -30,6 +26,10 @@ const config = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
   GOOGLE_AUTH_CALLBACK_URL: process.env.GOOGLE_AUTH_CALLBACK_URL,
+  FLW_PUBLIC_KEY: process.env.FLW_PUBLIC_KEY,
+  FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
+  FLW_ENCRYPTION_KEY: process.env.FLW_ENCRYPTION_KEY,
+  LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY,
 };
 
 export default config;

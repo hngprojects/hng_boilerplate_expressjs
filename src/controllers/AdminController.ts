@@ -384,6 +384,113 @@ class AdminUserController {
       }
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/admin/users/:{user-id}:
+   *   get:
+   *     summary: Superadmin - Get a single user
+   *     tags: [Admin]
+   *     parameters:
+   *       - in: path
+   *         name: user-id
+   *         required: true
+   *         description: The ID of the user data to retrieve
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: User retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     user_id:
+   *                       type: string
+   *                     first_name:
+   *                       type: string
+   *                     last_name:
+   *                       type: string
+   *                     email:
+   *                       type: string
+   *                     phone:
+   *                       type: string
+   *                     profile_picture:
+   *                       type: string
+   *                     role:
+   *                       type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *       404:
+   *         description: User not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 message:
+   *                   type: string
+   *                   example: User not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal Server Error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  async getUserBySuperadmin(req: Request, res: Response): Promise<unknown> {
+    const userId = req.params["user-id"];
+    try {
+      const user = await this.adminUserService.getSingleUser(userId);
+      if (!user) {
+        return {
+          status: "unsuccessful",
+          message: "User not found",
+          status_code: 404,
+        };
+      }
+      return res.status(200).json({
+        status: "success",
+        data: {
+          user_id: userId,
+          first_name: user.profile.first_name,
+          last_name: user.profile.last_name,
+          email: user.email,
+          phone: user.profile.phone,
+          profile_picture: user.profile.avatarUrl,
+          role: user.role,
+        },
+        status_code: 200,
+      });
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
 }
 
 // Get activities log

@@ -1,6 +1,6 @@
 import { Organization, User, UserOrganization } from "../models";
-import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
+import AppDataSource from "../data-source";
 import { BadRequest, HttpError } from "../middleware";
 import {
   IOrgService,
@@ -74,18 +74,5 @@ export class OrgService implements IOrgService {
     await organizationRepository.save(organization);
 
     return user;
-  }
-
-  public async getSingleOrg(org_id: string): Promise<Organization | null> {
-    const organization = await AppDataSource.getRepository(
-      Organization,
-    ).findOne({
-      where: { id: org_id },
-      relations: ["users"],
-    });
-    if (!organization) {
-      return null;
-    }
-    return organization;
   }
 }

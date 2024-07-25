@@ -2,6 +2,7 @@ import Router from "express";
 import { OrgController } from "../controllers/OrgController";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
+import { organizationValidation } from "../middleware/organization.validation";
 import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
@@ -15,22 +16,20 @@ orgRouter.get(
 );
 orgRouter.delete(
   "/organizations/:org_id/users/:user_id",
-  authMiddleware,
-  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
-  validateOrgId,
   orgController.removeUser.bind(orgController),
 );
 
-orgRouter.get(
-  "/organisations/:org_id",
+orgRouter.post(
+  "/",
   authMiddleware,
-  validateOrgId,
-  orgController.getSingleOrg.bind(orgController),
+  organizationValidation,
+  orgController.createOrganisation.bind(orgController),
 );
 
 orgRouter.get(
-  "/users/:id/organizations",
+  "/users/:id/organisations",
   authMiddleware,
   orgController.getOrganizations.bind(orgController),
 );
+
 export { orgRouter };
