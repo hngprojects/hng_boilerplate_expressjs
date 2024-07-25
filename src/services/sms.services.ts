@@ -6,7 +6,6 @@ import { User } from "../models";
 
 class SmsService {
   private twilioClient: Twilio.Twilio;
-
   constructor() {
     this.twilioClient = Twilio(config.TWILIO_SID, config.TWILIO_AUTH_TOKEN);
   }
