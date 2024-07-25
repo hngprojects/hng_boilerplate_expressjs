@@ -274,11 +274,11 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/org/{org_id}:
+   * /api/v1/organisations/{org_id}:
    *   get:
    *     summary: Get a single organization
    *     description: Retrieve details of a specific organization by its ID
-   *     tags: [Organizations]
+   *     tags: [Organisations]
    *     parameters:
    *       - in: path
    *         name: org_id
