@@ -11,12 +11,12 @@ export class OrgController {
    * @swagger
    * /organisation:
    *   post:
-   *     security:
-           - Bearer: []
    *     summary: Create a new organisation
    *     description: This endpoint allows a user to create a new organisation
-   *     tags:[Organisations]
+   *     tags: [Organisations]
    *     operationId: createOrganisation
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       description: Organisation payload
    *       required: true
@@ -54,13 +54,6 @@ export class OrgController {
    *               - type
    *               - country
    *               - state
-   *     securityDefinitions:
-   *       Bearer:
-   *         type: apiKey
-   *         name: Authorization
-   *         in: header
-   *         description: >-
-   *           Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
    *     responses:
    *       '201':
    *         description: Organisation created successfully
@@ -149,7 +142,14 @@ export class OrgController {
    *                 status_code:
    *                   type: integer
    *                   example: 500
+   * components:
+   *   securitySchemes:
+   *     bearerAuth:
+   *       type: http
+   *       scheme: bearer
+   *       bearerFormat: JWT
    */
+
   async createOrganisation(req: Request, res: Response, next: NextFunction) {
     try {
       const payload = req.body;
