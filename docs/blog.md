@@ -14,8 +14,9 @@ Make sure you have the following installed on your machine:
 ### Installation
 
 1. Clone the repository:
+
    ```bash
-   git clone repo 
+   git clone repo
    cd repo
    ```
 
@@ -27,6 +28,7 @@ Make sure you have the following installed on your machine:
 ### Running the Server
 
 To start the server, run:
+
 ```bash
 yarn start
 ```
@@ -38,6 +40,7 @@ yarn start
 Ensure that users are authenticated before accessing the endpoints that modify or delete resources.
 
 #### Login
+
 - **URL**: `/api/v1/auth/login`
 - **Method**: `POST`
 - **Request Body**:
@@ -52,6 +55,7 @@ Ensure that users are authenticated before accessing the endpoints that modify o
   - `401 Unauthorized`: Invalid credentials
 
 #### Register
+
 - **URL**: `/api/v1/auth/register`
 - **Method**: `POST`
 - **Request Body**:
@@ -170,4 +174,7 @@ Ensure that users are authenticated before accessing the endpoints that modify o
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+```
+
 ```

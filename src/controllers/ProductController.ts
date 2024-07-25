@@ -384,6 +384,8 @@ export class ProductController {
    *                 message:
    *                   type: string
    *                   example: "Valid product ID, name, description, price, and stock must be provided."
+   *       401:
+   *        description: Unauthorized
    *       500:
    *         description: Server error
    *         content:

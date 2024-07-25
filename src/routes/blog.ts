@@ -71,7 +71,6 @@ blogRouter.post("/create", authMiddleware, createBlogController);
 
 blogRouter.get("/", blogController.listBlogs.bind(blogController));
 
-
 blogRouter.get(
   "/",
   authMiddleware,
