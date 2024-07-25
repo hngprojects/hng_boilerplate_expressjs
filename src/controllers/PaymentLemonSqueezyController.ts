@@ -43,7 +43,6 @@ export const makePaymentLemonSqueezy = async (req: Request, res: Response) => {
       `<a href="https://ifeoluwa-hng-stage-5.lemonsqueezy.com/buy/bf9fee27-d226-4637-a32f-013bd717c3b3?embed=1" class="lemonsqueezy-button">Make Payments</a><script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>`,
     );
   } catch (error) {
-    console.error(error);
     res
       .status(500)
       .json({ error: "An error occurred while processing the payment" });
@@ -126,7 +125,6 @@ export const LemonSqueezyWebhook = async (req: Request, res: Response) => {
     await paymentRepository.save(payment);
     res.status(200).send("Webhook received");
   } catch (error) {
-    console.error("Webhook verification failed:", error.message);
     res.status(400).send("Webhook verification failed");
   }
 };
