@@ -1,8 +1,42 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Payments
+ *   description: Payment management with LemonSqueezy
+ */
+
 import { Request, Response } from "express";
 import crypto from "crypto";
 import config from "../config";
 import { Payment } from "../models/payment";
 import AppDataSource from "../data-source";
+
+
+/**
+ * @swagger
+ * /api/v1/payments/lemonsqueezy/initiate:
+ *   get:
+ *     summary: Initiates a payment using LemonSqueezy
+ *     tags: [Payments]
+ *     responses:
+ *       200:
+ *         description: Payment initiation link
+ *         content:
+ *           text/html:
+ *             schema:
+ *               type: string
+ *               example: <a href="https://ifeoluwa-hng-stage-5.lemonsqueezy.com/buy/bf9fee27-d226-4637-a32f-013bd717c3b3?embed=1" class="lemonsqueezy-button">Make Payments</a><script src="https://assets.lemonsqueezy.com/lemon.js" defer></script>
+ *       500:
+ *         description: An error occurred while processing the payment
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: An error occurred while processing the payment
+ */
 
 export const makePaymentLemonSqueezy = async (req: Request, res: Response) => {
   try {
@@ -16,6 +50,36 @@ export const makePaymentLemonSqueezy = async (req: Request, res: Response) => {
       .json({ error: "An error occurred while processing the payment" });
   }
 };
+
+
+/**
+ * @swagger
+ * /api/v1/payments/lemonsqueezy/webhook:
+ *   post:
+ *     summary: Handles LemonSqueezy webhook notifications
+ *     tags: [Payments]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         text/plain:
+ *           schema:
+ *             type: string
+ *     responses:
+ *       200:
+ *         description: Webhook received successfully
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Webhook received
+ *       400:
+ *         description: Webhook verification failed
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *               example: Webhook verification failed
+ */
 
 export const LemonSqueezyWebhook = async (req: Request, res: Response) => {
   try {
