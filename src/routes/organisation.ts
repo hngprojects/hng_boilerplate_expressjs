@@ -19,16 +19,17 @@ orgRouter.delete(
   orgController.removeUser.bind(orgController),
 );
 
-orgRouter.get(
-  "/organisations/:org_id",
+orgRouter.post(
+  "/",
   authMiddleware,
-  validateOrgId,
-  orgController.getSingleOrg.bind(orgController),
+  organizationValidation,
+  orgController.createOrganisation.bind(orgController),
 );
 
 orgRouter.get(
-  "/users/:id/organizations",
+  "/users/:id/organisations",
   authMiddleware,
   orgController.getOrganizations.bind(orgController),
 );
+
 export { orgRouter };
