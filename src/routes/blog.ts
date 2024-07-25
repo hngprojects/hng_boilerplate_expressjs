@@ -7,7 +7,6 @@ import { updateBlogController } from "../controllers/updateBlogController";
 const blogRouter = Router();
 const blogController = new BlogController();
 
-
 /**
  * @swagger
  * /api/v1/blog/create:
