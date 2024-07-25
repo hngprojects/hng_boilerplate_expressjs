@@ -13,4 +13,6 @@ issueformat.md
 requests.rest
 package-lock.json
 docker-compose.yml
+package.json
+package-lock.json
 
