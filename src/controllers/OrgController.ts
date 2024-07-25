@@ -11,10 +11,11 @@ export class OrgController {
    * @swagger
    * /organisation:
    *   post:
+   *     security:
+           - Bearer: []
    *     summary: Create a new organisation
    *     description: This endpoint allows a user to create a new organisation
-   *     tags:
-   *       - Organisation
+   *     tags:[Organisations]
    *     operationId: createOrganisation
    *     requestBody:
    *       description: Organisation payload
@@ -30,8 +31,36 @@ export class OrgController {
    *               description:
    *                 type: string
    *                 example: This is a sample organisation.
+   *               email:
+   *                 type: string
+   *                 example: name@gmail.com
+   *               industry:
+   *                 type: string
+   *                 example: entertainment
+   *               type:
+   *                 type: string
+   *                 example: music
+   *               country:
+   *                 type: string
+   *                 example: Nigeria
+   *               state:
+   *                 type: string
+   *                 example: Oyo
    *             required:
    *               - name
+   *               - description
+   *               - email
+   *               - industry
+   *               - type
+   *               - country
+   *               - state
+   *     securityDefinitions:
+   *       Bearer:
+   *         type: apiKey
+   *         name: Authorization
+   *         in: header
+   *         description: >-
+   *           Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
    *     responses:
    *       '201':
    *         description: Organisation created successfully
@@ -58,6 +87,27 @@ export class OrgController {
    *                     description:
    *                       type: string
    *                       example: This is a sample organisation.
+   *                     email:
+   *                       type: string
+   *                       example: abc@gmail.com
+   *                     industry:
+   *                       type: string
+   *                       example: entertainment
+   *                     type:
+   *                       type: string
+   *                       example: music
+   *                     country:
+   *                       type: string
+   *                       example: Nigeria
+   *                     state:
+   *                       type: string
+   *                       example: Oyo
+   *                     slug:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a77
+   *                     owner_id:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a76
    *                     createdAt:
    *                       type: string
    *                       format: date-time
