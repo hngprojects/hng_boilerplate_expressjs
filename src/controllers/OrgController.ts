@@ -13,9 +13,10 @@ export class OrgController {
    *   post:
    *     summary: Create a new organisation
    *     description: This endpoint allows a user to create a new organisation
-   *     tags:
-   *       - Organisation
+   *     tags: [Organisations]
    *     operationId: createOrganisation
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       description: Organisation payload
    *       required: true
@@ -30,8 +31,29 @@ export class OrgController {
    *               description:
    *                 type: string
    *                 example: This is a sample organisation.
+   *               email:
+   *                 type: string
+   *                 example: name@gmail.com
+   *               industry:
+   *                 type: string
+   *                 example: entertainment
+   *               type:
+   *                 type: string
+   *                 example: music
+   *               country:
+   *                 type: string
+   *                 example: Nigeria
+   *               state:
+   *                 type: string
+   *                 example: Oyo
    *             required:
    *               - name
+   *               - description
+   *               - email
+   *               - industry
+   *               - type
+   *               - country
+   *               - state
    *     responses:
    *       '201':
    *         description: Organisation created successfully
@@ -58,6 +80,27 @@ export class OrgController {
    *                     description:
    *                       type: string
    *                       example: This is a sample organisation.
+   *                     email:
+   *                       type: string
+   *                       example: abc@gmail.com
+   *                     industry:
+   *                       type: string
+   *                       example: entertainment
+   *                     type:
+   *                       type: string
+   *                       example: music
+   *                     country:
+   *                       type: string
+   *                       example: Nigeria
+   *                     state:
+   *                       type: string
+   *                       example: Oyo
+   *                     slug:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a77
+   *                     owner_id:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a76
    *                     createdAt:
    *                       type: string
    *                       format: date-time
@@ -99,7 +142,14 @@ export class OrgController {
    *                 status_code:
    *                   type: integer
    *                   example: 500
+   * components:
+   *   securitySchemes:
+   *     bearerAuth:
+   *       type: http
+   *       scheme: bearer
+   *       bearerFormat: JWT
    */
+
   async createOrganisation(req: Request, res: Response, next: NextFunction) {
     try {
       const payload = req.body;
@@ -224,11 +274,11 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/org/{org_id}:
+   * /api/v1/organisations/{org_id}:
    *   get:
    *     summary: Get a single organization
    *     description: Retrieve details of a specific organization by its ID
-   *     tags: [Organizations]
+   *     tags: [Organisations]
    *     parameters:
    *       - in: path
    *         name: org_id

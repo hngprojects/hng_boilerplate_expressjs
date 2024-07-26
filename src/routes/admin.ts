@@ -45,7 +45,7 @@ adminRouter.post(
 );
 
 adminRouter.get(
-  "/users/:user-id",
+  "/users/:id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.getUserBySuperadmin.bind(adminUserController),

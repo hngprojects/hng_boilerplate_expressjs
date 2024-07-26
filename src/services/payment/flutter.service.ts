@@ -55,7 +55,6 @@ export const initializePayment = async (
     });
     return response;
   } catch (error) {
-    console.error("Error initializing payment:", error);
     throw error;
   }
 };
@@ -79,7 +78,6 @@ export const verifyPayment = async (transactionId: string): Promise<object> => {
 
     return response;
   } catch (error) {
-    console.error("Error verifying payment:", error);
     await updatePaymentStatus(transactionId, "failed");
     throw error;
   }
