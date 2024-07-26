@@ -10,7 +10,7 @@ const userController = new UserController();
 
 /**
  * @openapi
- * /users:
+ * /api/v1/users:
  *   get:
  *     summary: Retrieves a list of all users
  *     tags:
@@ -44,7 +44,7 @@ userRouter.get("/", userController.getAllUsers.bind(UserController));
 
 /**
  * @openapi
- * /users/{id}:
+ * /api/v1/users/{id}:
  *   delete:
  *     summary: Deletes a user by ID
  *     tags:
@@ -113,7 +113,7 @@ userRouter.delete(
 
 /**
  * @openapi
- * /users/me:
+ * /api/v1/users/me:
  *   get:
  *     summary: Retrieves the profile data of the currently authenticated user
  *     tags:
@@ -221,7 +221,7 @@ userRouter.get("/me", authMiddleware, UserController.getProfile);
 
 /**
  * @openapi
- * /users/{id}:
+ * /api/v1/users/{id}:
  *   put:
  *     summary: Updates the profile of a user
  *     tags:
