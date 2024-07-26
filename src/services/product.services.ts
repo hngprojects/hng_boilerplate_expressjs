@@ -1,6 +1,7 @@
 import { Product } from "../models/product";
 import { IProduct } from "../types";
 import AppDataSource from "../data-source";
+import { ProductDTO } from "../models/product";
 
 export class ProductService {
   getPaginatedProducts(
@@ -55,9 +56,16 @@ export class ProductService {
       throw new Error(err.message);
     }
   }
-  async getOneProduct(id: string): Promise<Product> {
-    const product = await this.productRepository.findOneBy({ id });
 
+  public async createProduct(
+    productDetails: Partial<ProductDTO>,
+  ): Promise<Product> {
+    const product = this.productRepository.create(productDetails);
+    return await this.productRepository.save(product);
+  }
+
+  public async getOneProduct(id: string): Promise<Product> {
+    const product = await this.productRepository.findOne({ where: { id } });
     return product;
   }
 }
