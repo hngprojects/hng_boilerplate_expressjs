@@ -9,7 +9,7 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
-  "/organisations/:org_id",
+  "/:org_id",
   authMiddleware,
   validateOrgId,
   orgController.getSingleOrg.bind(orgController),

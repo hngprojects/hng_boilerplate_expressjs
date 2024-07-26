@@ -30,6 +30,7 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
+      console.log(error);
       throw new BadRequest("Client error");
     }
   }
@@ -92,15 +93,21 @@ export class OrgService implements IOrgService {
   }
 
   public async getSingleOrg(org_id: string): Promise<Organization | null> {
-    const organization = await AppDataSource.getRepository(
-      Organization,
-    ).findOne({
-      where: { id: org_id },
-      relations: ["users"],
-    });
-    if (!organization) {
-      return null;
+    try {
+      const organization = await AppDataSource.getRepository(
+        Organization,
+      ).findOne({
+        where: {
+          id: org_id,
+        },
+        relations: ["users"],
+      });
+      if (!organization) {
+        return null;
+      }
+      return organization;
+    } catch (error) {
+      throw new Error("Failed to fetch organization");
     }
-    return organization;
   }
 }
