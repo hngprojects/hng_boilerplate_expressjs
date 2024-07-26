@@ -125,7 +125,7 @@ describe("UserService", () => {
         expect(res.status).toHaveBeenCalledWith(404);
         expect(res.json).toHaveBeenCalledWith({
           status_code: 404,
-          error: "User not found! (soft deleted user)",
+          error: "User not found!",
         });
       });
 
