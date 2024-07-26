@@ -15,7 +15,7 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
-      // const id = "96cf0567-9ca6-4ce0-b9f7-e3fa816fc070";
+      // const id = "953a46af-c635-4edf-a7d9-17393ab93be2";
       if (!id) {
         return res.status(401).json({
           status_code: 401,
@@ -41,7 +41,7 @@ class UserController {
       if (user?.deletedAt || user?.is_deleted) {
         return res.status(404).json({
           status_code: 404,
-          error: "User not found! (soft deleted user)",
+          error: "User not found!",
         });
       }
 
