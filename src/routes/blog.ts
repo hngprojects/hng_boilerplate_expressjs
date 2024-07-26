@@ -13,3 +13,4 @@ blogRouter.get("/user", authMiddleware, blogController.listBlogsByUser.bind(blog
 blogRouter.delete("/:id", blogController.deleteBlogPost.bind(blogController));
 
 export { blogRouter };
+

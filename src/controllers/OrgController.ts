@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -6,6 +6,173 @@ export class OrgController {
   private orgService: OrgService;
   constructor() {
     this.orgService = new OrgService();
+  }
+  /**
+   * @swagger
+   * /organisation:
+   *   post:
+   *     summary: Create a new organisation
+   *     description: This endpoint allows a user to create a new organisation
+   *     tags: [Organisations]
+   *     operationId: createOrganisation
+   *     security:
+   *       - bearerAuth: []
+   *     requestBody:
+   *       description: Organisation payload
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: My Organisation
+   *               description:
+   *                 type: string
+   *                 example: This is a sample organisation.
+   *               email:
+   *                 type: string
+   *                 example: name@gmail.com
+   *               industry:
+   *                 type: string
+   *                 example: entertainment
+   *               type:
+   *                 type: string
+   *                 example: music
+   *               country:
+   *                 type: string
+   *                 example: Nigeria
+   *               state:
+   *                 type: string
+   *                 example: Oyo
+   *             required:
+   *               - name
+   *               - description
+   *               - email
+   *               - industry
+   *               - type
+   *               - country
+   *               - state
+   *     responses:
+   *       '201':
+   *         description: Organisation created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 message:
+   *                   type: string
+   *                   example: Organisation created successfully
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "1"
+   *                     name:
+   *                       type: string
+   *                       example: My Organisation
+   *                     description:
+   *                       type: string
+   *                       example: This is a sample organisation.
+   *                     email:
+   *                       type: string
+   *                       example: abc@gmail.com
+   *                     industry:
+   *                       type: string
+   *                       example: entertainment
+   *                     type:
+   *                       type: string
+   *                       example: music
+   *                     country:
+   *                       type: string
+   *                       example: Nigeria
+   *                     state:
+   *                       type: string
+   *                       example: Oyo
+   *                     slug:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a77
+   *                     owner_id:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a76
+   *                     createdAt:
+   *                       type: string
+   *                       format: date-time
+   *                     updatedAt:
+   *                       type: string
+   *                       format: date-time
+   *                 status_code:
+   *                   type: integer
+   *                   example: 201
+   *       '400':
+   *         description: Bad Request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Invalid input
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       '500':
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   * components:
+   *   securitySchemes:
+   *     bearerAuth:
+   *       type: http
+   *       scheme: bearer
+   *       bearerFormat: JWT
+   */
+
+  async createOrganisation(req: Request, res: Response, next: NextFunction) {
+    try {
+      const payload = req.body;
+      const user = req.user;
+      const userId = user.id;
+
+      const organisationService = new OrgService();
+      const newOrganisation = await organisationService.createOrganisation(
+        payload,
+        userId,
+      );
+
+      const respObj = {
+        status: "success",
+        message: "organisation created successfully",
+        data: newOrganisation,
+        status_code: 201,
+      };
+
+      return res.status(201).json(respObj);
+    } catch (error) {
+      next(error);
+    }
   }
 
   /**
@@ -107,11 +274,11 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/org/{org_id}:
+   * /api/v1/organisations/{org_id}:
    *   get:
    *     summary: Get a single organization
    *     description: Retrieve details of a specific organization by its ID
-   *     tags: [Organizations]
+   *     tags: [Organisations]
    *     parameters:
    *       - in: path
    *         name: org_id

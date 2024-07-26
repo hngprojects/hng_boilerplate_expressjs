@@ -12,7 +12,7 @@ export const createBlogPost = async (
   content: string,
   image_url?: string,
   tags?: number[],
-  categories?: number[]
+  categories?: number[],
 ) => {
   const newBlog = new Blog();
   newBlog.title = title;
