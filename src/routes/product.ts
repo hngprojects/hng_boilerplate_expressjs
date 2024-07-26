@@ -101,6 +101,6 @@ productRouter
   .post(
     validateProductDetails,
     authMiddleware,
-    productController.createProduct.bind(productController),
+    productController.createProduct.bind(productController.createProduct),
   );
 export { productRouter };
