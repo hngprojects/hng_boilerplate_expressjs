@@ -387,13 +387,13 @@ class AdminUserController {
 
   /**
    * @swagger
-   * /api/v1/admin/users/:{user-id}:
+   * /api/v1/admin/users/:id:
    *   get:
    *     summary: Superadmin - Get a single user
    *     tags: [Admin]
    *     parameters:
    *       - in: path
-   *         name: user-id
+   *         name: id
    *         required: true
    *         description: The ID of the user data to retrieve
    *         schema:
@@ -464,7 +464,7 @@ class AdminUserController {
    */
 
   async getUserBySuperadmin(req: Request, res: Response): Promise<unknown> {
-    const userId = req.params["user-id"];
+    const userId = req.params.id;
     try {
       const user = await this.adminUserService.getSingleUser(userId);
       if (!user) {
