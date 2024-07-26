@@ -69,7 +69,7 @@ export const editComment = async (commentId: number, content: string) => {
   }
 
   //update the comment data
-  const updateResult = commentRepository.update(commentId, { content });
+  const updateResult = await commentRepository.update(commentId, { content });
 
   return updateResult;
 };
