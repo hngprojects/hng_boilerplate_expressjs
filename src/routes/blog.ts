@@ -7,7 +7,8 @@ const blogRouter = Router();
 const blogController = new BlogController();
 
 blogRouter.post("/create", authMiddleware, createBlogController);
-blogRouter.get("/", authMiddleware, blogController.listBlogs.bind(blogController));
+blogRouter.get("/", blogController.listBlogs.bind(blogController));
+blogRouter.get("/user", authMiddleware, blogController.listBlogsByUser.bind(blogController));
 
 blogRouter.delete("/:id", blogController.deleteBlogPost.bind(blogController));
 

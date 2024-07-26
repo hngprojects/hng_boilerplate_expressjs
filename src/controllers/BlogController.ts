@@ -8,8 +8,8 @@ export class BlogController {
    * @swagger
    * /api/v1/blogs:
    *   get:
-   *     summary: Get a paginated list of blogs by user
-   *     description: Retrieve a paginated list of blog posts created by the authenticated user
+   *     summary: Get a paginated list of blogs
+   *     description: Retrieve a paginated list of blog posts
    *     tags: [Blog]
    *     parameters:
    *       - in: query
@@ -106,6 +106,148 @@ export class BlogController {
    */
   async listBlogs(req: Request, res: Response): Promise<void> {
     try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+
+      if (page <= 0 || limit <= 0) {
+        res.status(400).json({
+          status: "bad request",
+          message: "Invalid query params passed",
+          status_code: 400,
+        });
+        return;
+      }
+
+      const { blogs, totalItems } =
+        await this.blogService.getPaginatedblogs(page, limit);
+
+      res.json({
+        status: "success",
+        status_code: 200,
+        data: blogs.map((blog) => ({
+          title: blog.title,
+          content: blog.content,
+          author: blog.author,
+          published_at: blog.published_at,
+        })),
+        pagination: {
+          current_page: page,
+          per_page: limit,
+          total_pages: Math.ceil(totalItems / limit),
+          total_items: totalItems,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/blog/user:
+   *   get:
+   *     summary: Get a paginated list of blogs by user
+   *     description: Retrieve a paginated list of blog posts created by the authenticated user
+   *     tags: [Blog]
+   *     parameters:
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           default: 1
+   *         description: Page number for pagination
+   *       - in: query
+   *         name: limit
+   *         schema:
+   *           type: integer
+   *           default: 10
+   *         description: Number of blog posts per page
+   *     responses:
+   *       200:
+   *         description: A paginated list of blog posts by the user
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       title:
+   *                         type: string
+   *                         example: My First Blog
+   *                       content:
+   *                         type: string
+   *                         example: This is the content of my first blog post.
+   *                       author:
+   *                         type: string
+   *                         example: John Doe
+   *                       published_date:
+   *                         type: string
+   *                         format: date-time
+   *                         example: 2023-07-21T19:58:00.000Z
+   *                 pagination:
+   *                   type: object
+   *                   properties:
+   *                     current_page:
+   *                       type: integer
+   *                       example: 1
+   *                     per_page:
+   *                       type: integer
+   *                       example: 10
+   *                     total_pages:
+   *                       type: integer
+   *                       example: 2
+   *                     total_items:
+   *                       type: integer
+   *                       example: 15
+   *       400:
+   *         description: Invalid query parameters
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: bad request
+   *                 message:
+   *                   type: string
+   *                   example: Invalid query params passed
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+  async listBlogsByUser(req: Request, res: Response): Promise<void> {
+    try {
       const user = req.user;
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
@@ -120,7 +262,7 @@ export class BlogController {
       }
 
       const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(user.id, page, limit);
+        await this.blogService.getPaginatedBlogsByUser(user.id, page, limit);
 
       res.json({
         status: "success",

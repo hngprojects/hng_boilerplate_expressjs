@@ -10,6 +10,18 @@ export class BlogService {
   }
 
   async getPaginatedblogs(
+    page: number,
+    limit: number
+  ): Promise<{ blogs: Blog[]; totalItems: number }> {
+    const [blogs, totalItems] = await this.blogRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { blogs, totalItems };
+  }
+
+  async getPaginatedBlogsByUser(
     userId: string,
     page: number,
     limit: number,
