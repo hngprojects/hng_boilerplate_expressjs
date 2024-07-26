@@ -15,7 +15,6 @@ export class PaymentController {
 
       return res.json(paymentResponse);
     } catch (error) {
-      console.error("Error initiating payment:", error);
       return res.status(500).json({ error: "Payment initiation failed" });
     }
   }
@@ -35,7 +34,6 @@ export class PaymentController {
 
       return res.json(verificationResponse);
     } catch (error) {
-      console.error("Error verifying payment:", error);
       return res.status(500).json({ error: "Payment verification failed" });
     }
   }

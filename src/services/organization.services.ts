@@ -12,7 +12,7 @@ import {
 export class OrgService implements IOrgService {
   public async createOrganisation(
     payload: ICreateOrganisation,
-    userId: string
+    userId: string,
   ): Promise<{
     newOrganisation: Partial<Organization>;
   }> {
@@ -32,14 +32,13 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      console.log(error);
       throw new BadRequest("Client error");
     }
   }
 
   public async removeUser(
     org_id: string,
-    user_id: string
+    user_id: string,
   ): Promise<User | null> {
     const userRepository = AppDataSource.getRepository(User);
     const organizationRepository = AppDataSource.getRepository(Organization);
@@ -62,7 +61,7 @@ export class OrgService implements IOrgService {
 
     // Check if the user is part of the organization
     const userInOrganization = organization.users.some(
-      (user) => user.id === user_id
+      (user) => user.id === user_id,
     );
     if (!userInOrganization) {
       return null;
@@ -70,7 +69,7 @@ export class OrgService implements IOrgService {
 
     // Remove the user from the organization
     organization.users = organization.users.filter(
-      (user) => user.id !== user_id
+      (user) => user.id !== user_id,
     );
     await organizationRepository.save(organization);
 
