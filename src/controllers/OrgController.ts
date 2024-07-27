@@ -7,6 +7,39 @@ export class OrgController {
   constructor() {
     this.orgService = new OrgService();
   }
+
+  public async joinOrganization(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { inviteToken } = req.body;
+      if (!inviteToken) {
+        res.status(422).json({
+          status: "Unsuccessful",
+          status_code: 422,
+          message: "Invite token is required!",
+        });
+        return;
+      }
+      const userId = req.user.id;
+      await this.orgService.joinOrganizationByInvite(inviteToken, userId);
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "User successfully added to the organization.",
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: error.message,
+      });
+    }
+  }
+
   /**
    * @swagger
    * /organisation:
@@ -148,6 +181,8 @@ export class OrgController {
    *       type: http
    *       scheme: bearer
    *       bearerFormat: JWT
+   *
+   *
    */
 
   async createOrganisation(req: Request, res: Response, next: NextFunction) {

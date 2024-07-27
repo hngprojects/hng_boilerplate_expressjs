@@ -9,21 +9,25 @@ const blogRouter = Router();
 const blogController = new BlogController();
 const blogCommentController = new BlogCommentController();
 
-blogRouter.post("/create", authMiddleware, createBlogController);
-blogRouter.get("/", blogController.listBlogs.bind(blogController));
 blogRouter.get(
   "/",
   authMiddleware,
   blogController.listBlogs.bind(blogController),
+);
+blogRouter.post("/create", authMiddleware, createBlogController);
+
+blogRouter.get(
+  "/user",
+  authMiddleware,
+  blogController.listBlogsByUser.bind(blogController),
 );
 blogRouter.put("/:id", authMiddleware, updateBlogController);
-blogRouter.get(
-  "/",
-  authMiddleware,
-  blogController.listBlogs.bind(blogController),
-);
 
-blogRouter.delete("/:id", blogController.deleteBlogPost.bind(blogController));
+blogRouter.delete(
+  "/:id",
+  authMiddleware,
+  blogController.deleteBlogPost.bind(blogController),
+);
 
 //endpoint to create a comment on a blog post
 blogRouter.post(
