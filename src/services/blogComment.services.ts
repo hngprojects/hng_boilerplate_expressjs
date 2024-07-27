@@ -6,7 +6,7 @@ const commentRepository = AppDataSource.getRepository(Comment);
 const blogRepository = AppDataSource.getRepository(Blog);
 
 export const createComment = async (blogId: string, content: string) => {
-  const blog = await blogRepository.findOneBy({ id: blogId });
+  const blog = await blogRepository.findOneBy({ blog_id: blogId });
 
   if (!blog) throw new Error("Blog not found");
 
