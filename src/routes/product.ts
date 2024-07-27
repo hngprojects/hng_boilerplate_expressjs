@@ -94,7 +94,7 @@ productRouter.get(
 productRouter.get(
   "/:product_id",
   authMiddleware,
-  productController.fetchProductById,
+  productController.fetchProductById.bind(productController),
 );
 productRouter
   .route("/")

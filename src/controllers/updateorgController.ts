@@ -72,7 +72,7 @@ import { UpdateOrganizationDetails } from "../services/updateorg.service";
  *       500:
  *         description: Failed to update organization details
  *         content:
- *           application/json
+ *           application/json:
  *             schema:
  *               type: object
  *               properties:
@@ -83,6 +83,7 @@ import { UpdateOrganizationDetails } from "../services/updateorg.service";
  *                 message:
  *                   type: string
  */
+
 export const updateOrganization = async (req: Request, res: Response) => {
   const { organization_id } = req.params;
   const updateData = req.body;

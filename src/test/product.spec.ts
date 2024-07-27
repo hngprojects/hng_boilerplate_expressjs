@@ -36,12 +36,10 @@ describe("ProductController - createProduct", () => {
     mockUser = { id: "1", name: "sampleUser", email: "user@sample.com" };
     mockRequest = {
       body: {
-        sanitizedData: {
-          name: "Test Product",
-          description: "Test Description",
-          price: 10.99,
-          category: "Test Category",
-        },
+        name: "Test Product",
+        description: "Test Description",
+        price: 10.99,
+        category: "Test Category",
       },
       user: mockUser,
     };
@@ -92,7 +90,7 @@ describe("ProductController - createProduct", () => {
     expect(nextFunction).toHaveBeenCalled();
     expect(ProductDTO.prototype.validate).toHaveBeenCalled();
     expect(ProductService.prototype.createProduct).toHaveBeenCalledWith({
-      ...mockRequest.body.sanitizedData,
+      ...mockRequest.body,
       user: mockUser,
     });
     expect(mockResponse.status).toHaveBeenCalledWith(201);
@@ -101,10 +99,8 @@ describe("ProductController - createProduct", () => {
       status_code: 201,
       message: "Product created successfully",
       data: {
-        productWithoutUser: {
-          id: "product123",
-          ...mockRequest.body.sanitizedData,
-        },
+        id: "product123",
+        ...mockRequest.body.sanitizedData,
       },
     });
   });
