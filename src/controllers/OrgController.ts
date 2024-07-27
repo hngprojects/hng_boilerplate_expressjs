@@ -272,71 +272,6 @@ export class OrgController {
     }
   }
 
-  /**
-   * @swagger
-   * /api/v1/organisations/{org_id}:
-   *   get:
-   *     summary: Get a single organization
-   *     description: Retrieve details of a specific organization by its ID
-   *     tags: [Organisations]
-   *     parameters:
-   *       - in: path
-   *         name: org_id
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the organization
-   *     responses:
-   *       200:
-   *         description: Successful operation
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: success
-   *                 status_code:
-   *                   type: integer
-   *                   example: 200
-   *                 data:
-   *                   type: object
-   *                   description: The organization details
-   *       404:
-   *         description: Organization not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: forbidden
-   *                 message:
-   *                   type: string
-   *                   example: Organization not found
-   *                 status_code:
-   *                   type: integer
-   *                   example: 404
-   *       500:
-   *         description: Server error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: integer
-   *                   example: 500
-   *                 message:
-   *                   type: string
-   *                   example: Failed to get user organisation. Please try again later.
-   */
-
   async getOrganizations(req: Request, res: Response) {
     try {
       const userId = req.params.id;
@@ -376,9 +311,84 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organisation/{org_id}:
+   *   get:
+   *     summary: Get a single organization
+   *     description: Retrieve details of a specific organization by its ID
+   *     tags: [Organisations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *     responses:
+   *       200:
+   *         description: Successful operation
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                       org_id:
+   *                          type: string
+   *                          example: "2928a3d6-2b85-4abc-9438-ff9769b126ed"
+   *                       name:
+   *                          type: string
+   *                          example: "Organisation 1"
+   *                       description:
+   *                          type: string
+   *                          example: "Description of the organisation"
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: forbidden
+   *                 message:
+   *                   type: string
+   *                   example: Organization not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: Failed to get user organisation. Please try again later.
+   */
+
   async getSingleOrg(req: Request, res: Response) {
     try {
       const org = await this.orgService.getSingleOrg(req.params.org_id);
+      // check if org exists
       if (!org) {
         return res.status(404).json({
           status: "forbidden",
@@ -386,6 +396,7 @@ export class OrgController {
           status_code: 404,
         });
       }
+
       res.status(200).json({
         status: "success",
         status_code: 200,
