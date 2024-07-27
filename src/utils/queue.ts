@@ -1,6 +1,7 @@
 import Bull, { Job } from "bull";
 import config from "../config";
 import { Sendmail } from "./mail";
+import SmsService from "../services/sms.services";
 import logs from "./logger";
 import smsServices from "../services/sms.services";
 
@@ -13,9 +14,9 @@ interface EmailData {
 }
 
 interface SmsData {
-  sender: string;
+  sender_id: string;
   message: string;
-  phoneNumber: string;
+  phone_number: string;
 }
 
 const retries: number = 3;
@@ -44,7 +45,7 @@ const addEmailToQueue = async (data: EmailData) => {
 
 emailQueue.process(async (job: Job, done) => {
   try {
-    // await Sendmail(job.data);
+    await Sendmail(job.data);
     job.log("Email sent successfully to " + job.data.to);
     logs.info("Email sent successfully");
   } catch (error) {
@@ -99,9 +100,11 @@ const addSmsToQueue = async (data: SmsData) => {
 };
 
 smsQueue.process(async (job: Job, done) => {
+  // console.log("SMS sent successfully to " + job.data);
   try {
-    // const {sender , message , phoneNumber} = job.data;
-    // await smsServices.sendSms(sender , message , phoneNumber);
+    const { sender_id, message, phone_number } = job.data;
+    await smsServices.sendSms(message, phone_number, sender_id);
+    console.log("SMS sent successfully to " + job.data);
     job.log("SMS sent successfully to " + job.data);
     logs.info("SMS sent successfully");
   } catch (error) {
@@ -110,6 +113,36 @@ smsQueue.process(async (job: Job, done) => {
   } finally {
     done();
   }
+});
+
+smsQueue.on("completed", (job: Job) => {
+  logs.info(`Job with id ${job.id} has been completed`);
+});
+
+smsQueue.on("failed", (job: Job, error: Error) => {
+  logs.error(
+    `Job with id ${job.id} has been failed with error: ${error.message}`,
+  );
+});
+
+notificationQueue.on("completed", (job: Job) => {
+  logs.info(`Job with id ${job.id} has been completed`);
+});
+
+notificationQueue.on("failed", (job: Job, error: Error) => {
+  logs.error(
+    `Job with id ${job.id} has been failed with error: ${error.message}`,
+  );
+});
+
+emailQueue.on("completed", (job: Job) => {
+  logs.info(`Job with id ${job.id} has been completed`);
+});
+
+emailQueue.on("failed", (job: Job, error: Error) => {
+  logs.error(
+    `Job with id ${job.id} has been failed with error: ${error.message}`,
+  );
 });
 
 export {

@@ -81,21 +81,13 @@ server.use("/api/v1/payments/stripe", paymentStripeRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
-server.use(errorHandler);
-server.use(routeNotFound);
 server.use("/api/v1/", updateRouter);
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/payments", paymentRouter);
-server.use(routeNotFound);
-server.use(errorHandler);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
-
-server.use(routeNotFound);
-server.use(errorHandler);
-
 server.use(routeNotFound);
 server.use(errorHandler);
 
