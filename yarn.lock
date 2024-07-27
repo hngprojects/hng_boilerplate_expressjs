@@ -1111,12 +1111,17 @@
   dependencies:
     "@types/express" "*"
 
-"@types/node@*", "@types/node@>=8.1.0", "@types/node@^20.14.12":
+"@types/node@*", "@types/node@>=8.1.0":
   version "20.14.12"
   resolved "https://registry.npmjs.org/@types/node/-/node-20.14.12.tgz"
   integrity sha512-r7wNXakLeSsGT0H1AU863vS2wa5wBOK4bWMjZz2wj+8nBx+m5PeIn0k8AloSLpRuiwdRQZwarZqHE4FNArPuJQ==
   dependencies:
     undici-types "~5.26.4"
+
+"@types/node@^16.18.103":
+  version "16.18.104"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.18.104.tgz#33d5f4886c54133af0ff02445e57c5254025ee53"
+  integrity sha512-OF3keVCbfPlkzxnnDBUZJn1RiCJzKeadjiW0xTEb0G1SUJ5gDVb3qnzZr2T4uIFvsbKJbXy1v2DN7e2zaEY7jQ==
 
 "@types/nodemailer@^6.4.15":
   version "6.4.15"
@@ -1660,9 +1665,22 @@ buffer@^6.0.3:
     base64-js "^1.3.1"
     ieee754 "^1.2.1"
 
-bull@*, bull@^4.15.1:
+bull@*:
   version "4.15.1"
   resolved "https://registry.npmjs.org/bull/-/bull-4.15.1.tgz"
+  integrity sha512-knVKiZdrXbRkB+fWqNryDz85b3JfsT3dBrZexkztwvTH/AFmpHvsC933VB3JX18aJCz47E+xdO57xbDvxljoAg==
+  dependencies:
+    cron-parser "^4.2.1"
+    get-port "^5.1.1"
+    ioredis "^5.3.2"
+    lodash "^4.17.21"
+    msgpackr "^1.10.1"
+    semver "^7.5.2"
+    uuid "^8.3.0"
+
+bull@^4.15.1:
+  version "4.15.1"
+  resolved "https://registry.yarnpkg.com/bull/-/bull-4.15.1.tgz#f76e76ca0d1a9eecf311dd9f306e3cf9ffb57cfb"
   integrity sha512-knVKiZdrXbRkB+fWqNryDz85b3JfsT3dBrZexkztwvTH/AFmpHvsC933VB3JX18aJCz47E+xdO57xbDvxljoAg==
   dependencies:
     cron-parser "^4.2.1"
@@ -1847,10 +1865,10 @@ clone@^2.1.2:
   resolved "https://registry.npmjs.org/clone/-/clone-2.1.2.tgz"
   integrity sha512-3Pe/CF1Nn94hyhIYpjtiLhdCoEoz0DqQ+988E9gmeEdQZlojxnOb74wctFyuwWQHzqyf9X7C7MG8juUpqBJT8w==
 
-cloudinary@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.npmjs.org/cloudinary/-/cloudinary-2.3.0.tgz"
-  integrity sha512-QBa/ePVVfVcVOB1Vut236rjAbTZAArzOm0e2IWUkQJSZFS65Sjf+i3DyRGen4QX8GZzrcbzvKI9b8BTHAv1zqQ==
+cloudinary@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/cloudinary/-/cloudinary-2.3.1.tgz#0ba04ac32d9afeec73327941f0474881ffa8c8f5"
+  integrity sha512-DW63pfRhN6Ob9czyLSG8G3Vz+m1tijLYyTZMOuFpFWPwtVXZVdFrc2ggDtGrbIBYpvr94tjPOkOdWgYW2ae3rA==
   dependencies:
     lodash "^4.17.21"
     q "^1.5.1"
@@ -4328,7 +4346,7 @@ multer-storage-cloudinary@^4.0.0:
 
 multer@^1.4.5-lts.1:
   version "1.4.5-lts.1"
-  resolved "https://registry.npmjs.org/multer/-/multer-1.4.5-lts.1.tgz"
+  resolved "https://registry.yarnpkg.com/multer/-/multer-1.4.5-lts.1.tgz#803e24ad1984f58edffbc79f56e305aec5cfd1ac"
   integrity sha512-ywPWvcDMeH+z9gQq5qYHCCy+ethsk4goepZ45GLD63fOu0YcNecQxi64nDs3qluZB+murG3/D4dJ7+dGctcCQQ==
   dependencies:
     append-field "^1.0.0"
@@ -4590,7 +4608,7 @@ parseurl@~1.3.3:
 
 passport-google-oauth2@^0.2.0:
   version "0.2.0"
-  resolved "https://registry.npmjs.org/passport-google-oauth2/-/passport-google-oauth2-0.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/passport-google-oauth2/-/passport-google-oauth2-0.2.0.tgz#fc9ea59e7091f02e24fd16d6be9257ea982ebbc3"
   integrity sha512-62EdPtbfVdc55nIXi0p1WOa/fFMM8v/M8uQGnbcXA4OexZWCnfsEi3wo2buag+Is5oqpuHzOtI64JpHk0Xi5RQ==
   dependencies:
     passport-oauth2 "^1.1.2"
@@ -5521,6 +5539,14 @@ stripe@*:
   version "16.4.0"
   resolved "https://registry.npmjs.org/stripe/-/stripe-16.4.0.tgz"
   integrity sha512-rFIcDJaF+z28BsR4GXoy0YhAjE24D0AymJRsrAS0YbQAIJi0gOO/4mctbhNzrySS+bLVJOQLefdblDQMMNm58Q==
+  dependencies:
+    "@types/node" ">=8.1.0"
+    qs "^6.11.0"
+
+stripe@^16.5.0:
+  version "16.5.0"
+  resolved "https://registry.yarnpkg.com/stripe/-/stripe-16.5.0.tgz#a0126936c52bac8396a33a54c691a2cd9a4512ce"
+  integrity sha512-5qY2Va8pmnqS/dcKsQKJnk9kkYCtS6hqjN7kktZEmdxVohZHvbT9pOWK8UUKRInTXYkCNl6x505tO5416KLPsQ==
   dependencies:
     "@types/node" ">=8.1.0"
     qs "^6.11.0"
