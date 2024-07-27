@@ -6,7 +6,7 @@ import { User } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
 import config from "../config";
-import { Repository } from "typeorm";
+import { DeleteResult, Repository } from "typeorm";
 
 export class HelpService {
   private helpRepository: Repository<HelpCenterTopic>;
@@ -99,6 +99,27 @@ export class HelpService {
         where: { id: article_id },
       });
 
+      return article;
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async delete(id: string): Promise<DeleteResult> {
+    try {
+      const article_id = id;
+
+      // Check if article exists
+      const existingArticle = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
+
+      if (!existingArticle) {
+        throw new HttpError(404, "Not Found");
+      }
+
+      //Delete article
+      const article = await this.helpRepository.delete({ id: article_id });
       return article;
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);

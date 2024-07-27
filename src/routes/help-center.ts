@@ -27,4 +27,9 @@ helpRouter.get(
   authMiddleware,
   helpController.getTopicById.bind(helpController),
 );
+helpRouter.delete(
+  "/topics/:id",
+  authMiddleware,
+  helpController.deleteTopic.bind(helpController),
+);
 export { helpRouter };
