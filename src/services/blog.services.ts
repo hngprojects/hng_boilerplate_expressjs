@@ -10,6 +10,18 @@ export class BlogService {
   }
 
   async getPaginatedblogs(
+    page: number,
+    limit: number,
+  ): Promise<{ blogs: Blog[]; totalItems: number }> {
+    const [blogs, totalItems] = await this.blogRepository.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return { blogs, totalItems };
+  }
+
+  async getPaginatedBlogsByUser(
     userId: string,
     page: number,
     limit: number,
@@ -29,7 +41,6 @@ export class BlogService {
       const result = await this.blogRepository.delete(id);
       return result.affected !== 0;
     } catch (error) {
-      //console.error('Error deleting blog post:', error);
       throw new Error("Error deleting blog post");
     }
   }

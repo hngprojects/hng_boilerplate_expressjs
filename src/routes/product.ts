@@ -1,6 +1,7 @@
-import express from 'express';
-import ProductController from '../controllers/ProductController';
-import { authMiddleware } from '../middleware';
+import express from "express";
+import ProductController from "../controllers/ProductController";
+import { authMiddleware } from "../middleware";
+import { validateProductDetails } from "../middleware/product";
 
 const productRouter = express.Router();
 const productController = new ProductController();
@@ -85,9 +86,21 @@ const productController = new ProductController();
  */
 
 productRouter.get(
-  '/',
+  "/",
   authMiddleware,
-  productController.getProductPagination.bind(productController)
+  productController.getProductPagination.bind(productController),
 );
 
+productRouter.get(
+  "/:product_id",
+  authMiddleware,
+  productController.fetchProductById.bind(productController),
+);
+productRouter
+  .route("/")
+  .post(
+    validateProductDetails,
+    authMiddleware,
+    productController.createProduct.bind(productController),
+  );
 export { productRouter };
