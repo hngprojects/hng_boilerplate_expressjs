@@ -7,6 +7,40 @@ export class OrgController {
   constructor() {
     this.orgService = new OrgService();
   }
+  public async createInvitation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { email } = req.body;
+      const orgId = req.params.orgId;
+      const inviterId = req.user.id;
+
+      if (!email) {
+        res.status(422).json({
+          status: "Unsuccessful",
+          status_code: 422,
+          message: "Email is required!",
+        });
+        return;
+      }
+
+      await this.orgService.createInvitation(orgId, email, inviterId);
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Invitation successfully sent.",
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: error.message,
+      });
+    }
+  }
 
   public async joinOrganization(
     req: Request,
@@ -15,6 +49,7 @@ export class OrgController {
   ) {
     try {
       const { inviteToken } = req.body;
+      const userId = req.user.id; //id of the user to join the org  by invite
       if (!inviteToken) {
         res.status(422).json({
           status: "Unsuccessful",
@@ -23,7 +58,6 @@ export class OrgController {
         });
         return;
       }
-      const userId = req.user.id;
       await this.orgService.joinOrganizationByInvite(inviteToken, userId);
 
       res.status(200).json({

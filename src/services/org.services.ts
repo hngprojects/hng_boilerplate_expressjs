@@ -6,6 +6,7 @@ import log from "../utils/logger";
 import { BadRequest } from "../middleware";
 import { UserRole } from "../enums/userRoles";
 import { UserOrganization, Invitation } from "../models";
+import { v4 as uuidv4 } from "uuid";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
@@ -41,7 +42,6 @@ export class OrgService implements IOrgService {
   ): Promise<User | null> {
     const userRepository = AppDataSource.getRepository(User);
     const organizationRepository = AppDataSource.getRepository(Organization);
-    const invitationRepository = AppDataSource.getRepository(Invitation);
 
     const user = await userRepository.findOne({
       where: { id: user_id },
@@ -111,6 +111,51 @@ export class OrgService implements IOrgService {
       throw new Error("Failed to fetch organization");
     }
   }
+
+  public async createInvitation(
+    orgId: string,
+    email: string,
+    inviterId: string,
+  ): Promise<void> {
+    const invitationRepository = AppDataSource.getRepository(Invitation);
+    const organisationRepository = AppDataSource.getRepository(Organization);
+    const userRepository = AppDataSource.getRepository(User);
+
+    const organization = await organisationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!organization) {
+      throw new Error("Organization not found.");
+    }
+
+    const inviter = await userRepository.findOne({ where: { id: inviterId } });
+    if (!inviter) {
+      throw new Error("Inviter not found.");
+    }
+
+    if (![UserRole.ADMIN, UserRole.SUPER_ADMIN].includes(inviter.role)) {
+      throw new Error("Permission denied.");
+    }
+
+    const token = uuidv4();
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // Token valid for 7days
+
+    const invitation = new Invitation();
+    invitation.token = token;
+    invitation.expires_at = expiresAt;
+    invitation.organization = organization;
+    invitation.user = inviter;
+    invitation.email = email;
+
+    await invitationRepository.save(invitation);
+
+    // add the base url in the .env file
+    const inviteLink = `https://yourdomain.com/accept-invite?token=${token}`;
+    // await sendInvitationEmail(email, inviteLink);
+    console.log(token);
+  }
+
   public async joinOrganizationByInvite(
     inviteToken: string,
     userId: string,
@@ -121,17 +166,18 @@ export class OrgService implements IOrgService {
     const userOrganizationRepository =
       AppDataSource.getRepository(UserOrganization);
 
+    const user = await userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new Error(
+        "User is not registered. Please register to join the organisation",
+      );
+    }
     const invitation = await invitationRepository.findOne({
-      where: { token: inviteToken },
-      relations: ["user", "organization"],
+      where: { token: inviteToken, email: user.email },
+      relations: ["organization"],
     });
     if (!invitation || invitation.expires_at < new Date()) {
       throw new Error("Invalid or expired invitation.");
-    }
-
-    const user = await userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new Error("User not found.");
     }
 
     const organization = await organizationRepository.findOne({
@@ -139,7 +185,7 @@ export class OrgService implements IOrgService {
       relations: ["userOrganizations"],
     });
     if (!organization) {
-      throw new Error("Organization not found.");
+      throw new Error("Organisation not found.");
     }
 
     const existingUserOrg = organization.userOrganizations.find(
@@ -147,7 +193,7 @@ export class OrgService implements IOrgService {
     );
 
     if (existingUserOrg) {
-      throw new Error("User is already a member of the organization.");
+      throw new Error("User is already a member of the organisation.");
     }
 
     const userOrganization = new UserOrganization();

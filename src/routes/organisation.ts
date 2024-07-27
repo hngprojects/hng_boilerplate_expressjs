@@ -30,6 +30,12 @@ orgRouter.post(
   authMiddleware,
   orgController.joinOrganization.bind(orgController),
 );
+orgRouter.post(
+  "/organisations/:orgId/invite",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
+  orgController.createInvitation.bind(orgController),
+);
 orgRouter.get(
   "/users/:id/organisations",
   authMiddleware,
