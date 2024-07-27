@@ -31,6 +31,7 @@
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.6",
     "ts-node": "^10.9.2",
+    "typedoc": "^0.26.5",
     "typescript": "^5.5.3"
   },
   "dependencies": {
@@ -50,6 +51,7 @@
     "fs-extra": "^11.2.0",
     "handlebars": "^4.7.8",
     "jest": "^29.7.0",
+    "jsdoc": "^4.0.3",
     "jsonwebtoken": "^9.0.2",
     "node-mailer": "^0.1.1",
     "pg": "^8.12.0",

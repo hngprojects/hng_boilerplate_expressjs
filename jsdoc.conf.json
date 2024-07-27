@@ -1,0 +1,12 @@
+{
+    "source": {
+      "include": ["src/controllers/*.ts", "src/services/*.ts"],
+      "exclude": ["node_modules"]
+    },
+    "opts": {
+      "destination": "./docs",
+      "recurse": true
+    },
+    "plugins": ["plugins/markdown"]
+  }
+  
