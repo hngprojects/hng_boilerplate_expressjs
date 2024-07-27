@@ -2,7 +2,7 @@ import { Blog } from "../models/blog";
 import AppDataSource from "../data-source";
 
 export const updateBlogPost = async (
-  id: string,
+  blog_id: string,
   title: string,
   content: string,
   published_at?: Date,
@@ -12,7 +12,7 @@ export const updateBlogPost = async (
 
   let blog;
   try {
-    blog = await blogRepository.findOne({ where: { id } });
+    blog = await blogRepository.findOne({ where: { blog_id } });
   } catch (error) {
     throw new Error("Error finding blog post.");
   }
