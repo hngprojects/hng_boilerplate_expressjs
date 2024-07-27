@@ -111,4 +111,33 @@ describe("HelpService", () => {
       ).rejects.toThrow(HttpError);
     });
   });
+
+  describe("getTopicById", () => {
+    it("should return the article if it exists", async () => {
+      const id = "1";
+      const existingArticle = {
+        id,
+        title: "Title",
+        content: "Content",
+        author: "Author",
+      };
+
+      (helpRepository.findOne as jest.Mock).mockResolvedValue(existingArticle);
+
+      const result = await helpService.getTopicById(id);
+
+      expect(helpRepository.findOne).toHaveBeenCalledWith({ where: { id } });
+      expect(result).toEqual(existingArticle);
+    });
+
+    it("should throw a HttpError if the article does not exist", async () => {
+      const id = "non-existing-id";
+
+      (helpRepository.findOne as jest.Mock).mockResolvedValue(null);
+
+      await expect(helpService.getTopicById(id)).rejects.toThrow(HttpError);
+      await expect(helpService.getTopicById(id)).rejects.toThrow("Not Found");
+      expect(helpRepository.findOne).toHaveBeenCalledWith({ where: { id } });
+    });
+  });
 });
