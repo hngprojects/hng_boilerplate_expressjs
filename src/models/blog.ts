@@ -50,7 +50,7 @@ import { Like } from "./like";
 @Entity()
 export class Blog {
   @PrimaryGeneratedColumn("uuid")
-  id: string;
+  blog_id: string;
 
   @Column()
   title: string;
