@@ -93,13 +93,17 @@ export class OrgService implements IOrgService {
     }
   }
 
-  public async getSingleOrg(org_id: string): Promise<Organization | null> {
+  public async getSingleOrg(
+    org_id: string,
+    user_id: string,
+  ): Promise<Organization | null> {
     try {
       const organization = await AppDataSource.getRepository(
         Organization,
       ).findOne({
         where: {
           id: org_id,
+          owner_id: user_id,
         },
         relations: ["users"],
       });
@@ -111,6 +115,7 @@ export class OrgService implements IOrgService {
       throw new Error("Failed to fetch organization");
     }
   }
+
   public async joinOrganizationByInvite(
     inviteToken: string,
     userId: string,
