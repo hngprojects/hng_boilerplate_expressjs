@@ -179,6 +179,7 @@ export class OrgService implements IOrgService {
         "User is not registered. Please register to join the organisation",
       );
     }
+
     const invitation = await invitationRepository.findOne({
       where: { token: inviteToken, email: user.email },
       relations: ["organization"],
