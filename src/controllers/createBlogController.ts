@@ -137,7 +137,7 @@ export const createBlogController = async (req: Request, res: Response) => {
       author_id,
       image_url,
       tags,
-      categories
+      categories,
     );
 
      // Transform the response to only include author's name and email

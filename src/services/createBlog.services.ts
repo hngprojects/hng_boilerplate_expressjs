@@ -16,6 +16,7 @@ export const createBlogPost = async (
   image_url?: string,
   tags?: string[],
   categories?: string[]
+
 ) => {
 
   // Find or create the author
