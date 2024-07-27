@@ -10,35 +10,6 @@ import {
   IsNotEmpty,
 } from "class-validator";
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Product:
- *       type: object
- *       required:
- *         - name
- *         - description
- *         - price
- *         - category
- *       properties:
- *         id:
- *           type: string
- *           description: The auto-generated id of the product
- *         name:
- *           type: string
- *           description: Name of the product
- *         description:
- *           type: string
- *           description: Description of the product
- *         price:
- *           type: number
- *           description: Price of the product
- *         category:
- *           type: string
- *           description: Category of the product
- */
-
 @Entity()
 export class Product extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -52,6 +23,9 @@ export class Product extends ExtendedBaseEntity {
 
   @Column()
   price: number;
+
+  @Column({ default: 1 })
+  quantity: number;
 
   @Column()
   category: string;
@@ -74,6 +48,10 @@ export class ProductDTO {
   @IsNumber({}, { message: "Price must be a number" })
   @IsPositive({ message: "Price must be positive" })
   price: number;
+
+  @IsNumber({}, { message: "Price must be a number" })
+  @IsPositive({ message: "Price must be positive" })
+  quantity: number = 1;
 
   @IsString({ message: "Category must be a string" })
   @IsNotEmpty({ message: "Category must not be empty" })

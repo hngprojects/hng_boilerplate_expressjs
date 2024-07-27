@@ -54,6 +54,25 @@ export class AdminOrganisationService {
     }
   }
 
+  public async deleteOrganization(orgId: string): Promise<Organization> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const organization = await organizationRepository.findOne({
+      where: { id: orgId },
+    });
+
+    if (!organization) {
+      throw new HttpError(404, "Organization not found");
+    }
+
+    try {
+      await organizationRepository.remove(organization);
+    } catch (error) {
+      throw new HttpError(500, "Deletion failed");
+    }
+
+    return organization; // Return the deleted organization
+  }
+
   public async setUserRole(req: Request): Promise<User> {
     try {
       const { role } = req.body;

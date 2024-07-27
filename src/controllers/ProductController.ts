@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
 import { ProductDTO } from "../models";
+import { ValidationError } from "class-validator";
 
 export class ProductController {
   private productService: ProductService;
@@ -13,6 +14,35 @@ export class ProductController {
    * tags:
    *  name: Product
    *  description: Product related routes
+   */
+
+  /**
+   * @swagger
+   * components:
+   *   schemas:
+   *     Product:
+   *       type: object
+   *       required:
+   *         - name
+   *         - description
+   *         - price
+   *         - category
+   *       properties:
+   *         id:
+   *           type: string
+   *           description: The auto-generated id of the product
+   *         name:
+   *           type: string
+   *           description: Name of the product
+   *         description:
+   *           type: string
+   *           description: Description of the product
+   *         price:
+   *           type: number
+   *           description: Price of the product
+   *         category:
+   *           type: string
+   *           description: Category of the product
    */
 
   /**
@@ -486,7 +516,7 @@ export class ProductController {
   async createProduct(req: Request, res: Response) {
     try {
       const { user } = req;
-      const { sanitizedData } = req.body;
+      const sanitizedData = req.body;
 
       if (!user) {
         return res.status(401).json({
@@ -510,10 +540,29 @@ export class ProductController {
         status: "success",
         status_code: 201,
         message: "Product created successfully",
-        data: { productWithoutUser },
+        data: productWithoutUser,
       });
     } catch (error) {
-      // console.error('Error creating product:', error)
+      // Check if the error is an array of ValidationError
+      if (
+        Array.isArray(error) &&
+        error.every((err) => err instanceof ValidationError)
+      ) {
+        const constraints = error.map((err) => ({
+          property: err.property,
+          constraints: err.constraints,
+        }));
+
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "Validation error",
+          errors: constraints,
+        });
+      }
+
+      // For other types of errors
+      console.error("Error creating product:", error);
       return res.status(500).json({
         status: "unsuccessful",
         status_code: 500,

@@ -60,8 +60,9 @@ export class ProductService {
   public async createProduct(
     productDetails: Partial<ProductDTO>,
   ): Promise<Product> {
-    const product = this.productRepository.create(productDetails);
-    return await this.productRepository.save(product);
+    let product = this.productRepository.create(productDetails);
+    product = await this.productRepository.save(product);
+    return product;
   }
 
   public async getOneProduct(id: string): Promise<Product> {

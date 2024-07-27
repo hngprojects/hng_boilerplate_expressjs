@@ -21,6 +21,8 @@ import {
   exportRouter,
   sendEmailRoute,
   paymentRouter,
+  contactRouter,
+  paymentFlutterwaveRouter,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -67,7 +69,7 @@ server.use("/api/v1/users", userRouter);
 server.use("/api/v1/auth", authRoute);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1/sms", smsRouter);
-server.use("/api/v1/organisation", orgRouter);
+server.use("/api/v1", orgRouter);
 server.use("/api/v1/help-center", helpRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1/sms", smsRouter);
@@ -76,25 +78,19 @@ server.use("/api/v1/products", productRouter);
 server.use("/api/v1/blogs", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
-server.use("/api/v1/payments", paymentRouter);
+server.use("/api/v1/payments", paymentFlutterwaveRouter);
 server.use("/api/v1/payments/stripe", paymentStripeRouter);
+server.use("/api/v1", contactRouter);
 server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
-server.use(errorHandler);
-server.use(routeNotFound);
+server.use("/api/v1", orgRouter);
+server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/api/v1/", updateRouter);
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/payments", paymentRouter);
-server.use(routeNotFound);
-server.use(errorHandler);
 server.use("/api/v1/jobs", jobRouter);
-server.use("/api/v1", orgRouter);
-server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/admin/queues", ServerAdapter.getRouter());
-
-server.use(routeNotFound);
-server.use(errorHandler);
 
 server.use(routeNotFound);
 server.use(errorHandler);
