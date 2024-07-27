@@ -37,7 +37,6 @@ export class HelpService {
       const article = await this.helpRepository.save(articleEntity);
       return article;
     } catch (error) {
-      console.log(error.status_code);
       throw new HttpError(error.status_code, error.message || error);
     }
   }
@@ -51,10 +50,14 @@ export class HelpService {
     }
   }
 
-  public async update(req: Request): Promise<HelpCenterTopic> {
+  public async update(
+    id: string,
+    title: string,
+    content: string,
+    author: string,
+  ): Promise<HelpCenterTopic> {
     try {
-      const { title, content, author } = req.body;
-      const article_id = req.params.id;
+      const article_id = id;
 
       // Check if article exists
       const existingArticle = await this.helpRepository.findOne({
@@ -73,6 +76,30 @@ export class HelpService {
         where: { id: article_id },
       });
       return newArticle;
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async getTopicById(id: string): Promise<HelpCenterTopic> {
+    try {
+      const article_id = id;
+
+      // Check if article exists
+      const existingArticle = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
+
+      if (!existingArticle) {
+        throw new HttpError(404, "Not Found");
+      }
+
+      //Fetch Updated article
+      const article = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
+
+      return article;
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }

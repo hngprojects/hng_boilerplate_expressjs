@@ -22,4 +22,9 @@ helpRouter.get(
   authMiddleware,
   helpController.getAllTopics.bind(helpController),
 );
+helpRouter.get(
+  "/topics/:id",
+  authMiddleware,
+  helpController.getTopicById.bind(helpController),
+);
 export { helpRouter };
