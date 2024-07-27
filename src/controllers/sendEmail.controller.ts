@@ -164,7 +164,6 @@ export const SendEmail = async (req: Request, res: Response) => {
     // }
 
     await emailService.queueEmail(payload, user);
-    await emailService.sendEmail(payload);
 
     return res.status(202).json({
       message: "Email sending request accepted and is being processed.",

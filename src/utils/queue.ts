@@ -4,12 +4,12 @@ import { Sendmail } from "./mail";
 import SmsService from "../services/sms.services";
 import logs from "./logger";
 import smsServices from "../services/sms.services";
+import emailVariable from "./emailVariable";
 
 interface EmailData {
   from: string;
   to: string;
   subject: string;
-  text?: string;
   html: string;
 }
 
@@ -28,7 +28,6 @@ const redisConfig = {
   // password: config.REDIS_PASSWORD,
 };
 
-// Email Queue
 const emailQueue = new Bull("Email", {
   redis: redisConfig,
 });
