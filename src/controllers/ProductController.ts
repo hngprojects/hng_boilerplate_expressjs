@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.services"; // Adjust the import path as necessary
+import { ProductDTO } from "../models";
+import { ValidationError } from "class-validator";
 
 export class ProductController {
 	private productService: ProductService;
@@ -7,12 +9,6 @@ export class ProductController {
 	constructor() {
 		this.productService = new ProductService();
 	}
-	/**
-	 * @swagger
-	 * tags:
-	 *  name: Product
-	 *  description: Product related routes
-	 */
 
 	/**
 	 * @swagger
@@ -159,7 +155,6 @@ export class ProductController {
 					message: err.message,
 					status_code: 500,
 				});
-				console.error(err);
 			}
 		}
 	}
@@ -253,7 +248,7 @@ export class ProductController {
 	async fetchProductById(req: Request, res: Response) {
 		const productId = req.params.product_id;
 
-		if (isNaN(Number(productId))) {
+		if (!productId) {
 			return res.status(400).json({
 				status: "Bad Request",
 				message: "Invalid Product Id",
@@ -401,13 +396,14 @@ export class ProductController {
 		const productId = req.params.product_id;
 		const productData = req.body;
 
-		if (isNaN(Number(productId))) {
+		if (!productId) {
 			return res.status(400).json({
 				status: "Bad Request",
 				message: "Invalid Product Id",
 				status_code: 400,
 			});
 		}
+
 		try {
 			const updatedProduct = await this.productService.updateProductById(
 				productId,
@@ -434,84 +430,6 @@ export class ProductController {
 			});
 		}
 	}
-
-	/**
-	 * @swagger
-	 * /api/v1/products:
-	 *   post:
-	 *     tags:
-	 *       - Product
-	 *     summary: Create a product
-	 *     security:
-	 *       - bearerAuth: []
-	 *     requestBody:
-	 *       required: true
-	 *       content:
-	 *         application/json:
-	 *           schema:
-	 *             type: object
-	 *             properties:
-	 *               name:
-	 *                 type: string
-	 *               description:
-	 *                 type: string
-	 *               price:
-	 *                 type: number
-	 *               category:
-	 *                 type: string
-	 *     responses:
-	 *       201:
-	 *         description: The product was Created
-	 *         content:
-	 *           application/json:
-	 *             schema:
-	 *               type: object
-	 *               properties:
-	 *                 status:
-	 *                   type: string
-	 *                 status_code:
-	 *                   type: number
-	 *                 message:
-	 *                   type: string
-	 *                 data:
-	 *                   type: object
-	 *                   properties:
-	 *                     name:
-	 *                       type: string
-	 *                     description:
-	 *                       type: string
-	 *                     price:
-	 *                       type: number
-	 *                     category:
-	 *                       type: string
-	 *       401:
-	 *         description: Unauthorized user | Invalid product detail
-	 *         content:
-	 *           application/json:
-	 *             schema:
-	 *               type: object
-	 *               properties:
-	 *                 status:
-	 *                   type: string
-	 *                 status_code:
-	 *                   type: number
-	 *                 message:
-	 *                   type: string
-	 *       500:
-	 *         description: Server Error
-	 *         content:
-	 *           application/json:
-	 *             schema:
-	 *               type: object
-	 *               properties:
-	 *                 status:
-	 *                   type: string
-	 *                 status_code:
-	 *                   type: number
-	 *                 message:
-	 *                   type: string
-	 */
-	async createProduct(req: Request, res: Response) {}
 
 	/**
 	 * @swagger
@@ -593,7 +511,7 @@ export class ProductController {
 	async deleteProduct(req: Request, res: Response) {
 		const productId = req.params.product_id;
 
-		if (isNaN(Number(productId))) {
+		if (!productId) {
 			res.status(400).json({
 				status: "Bad Request",
 				message: "Invalid Product Id",
@@ -623,7 +541,171 @@ export class ProductController {
 			});
 		}
 	}
-	o;
+
+	/**
+	 * @swagger
+	 * /api/v1/products:
+	 *   post:
+	 *     tags:
+	 *       - Product
+	 *     summary: Create a product
+	 *     security:
+	 *       - bearerAuth: []
+	 *     requestBody:
+	 *       required: true
+	 *       content:
+	 *         application/json:
+	 *           schema:
+	 *             type: object
+	 *             properties:
+	 *               name:
+	 *                 type: string
+	 *               description:
+	 *                 type: string
+	 *               price:
+	 *                 type: number
+	 *               category:
+	 *                 type: string
+	 *               quantity:
+	 *                 type: integer
+	 *     responses:
+	 *       201:
+	 *         description: Product created successfully
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 status:
+	 *                   type: string
+	 *                   example: success
+	 *                 status_code:
+	 *                   type: integer
+	 *                   example: 201
+	 *                 message:
+	 *                   type: string
+	 *                   example: Product created successfully
+	 *                 data:
+	 *                   type: object
+	 *                   properties:
+	 *                     name:
+	 *                       type: string
+	 *                     description:
+	 *                       type: string
+	 *                     price:
+	 *                       type: number
+	 *                     quantity:
+	 *                       type: integer
+	 *                     category:
+	 *                       type: string
+	 *                     id:
+	 *                       type: string
+	 *       401:
+	 *         description: Unauthorized user | Invalid product detail | Invalid token
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               oneOf:
+	 *                 - type: object
+	 *                   properties:
+	 *                     status:
+	 *                       type: string
+	 *                       example: unsuccessful
+	 *                     status_code:
+	 *                       type: integer
+	 *                       example: 401
+	 *                     message:
+	 *                       type: string
+	 *                       example: Validation error
+	 *                     errors:
+	 *                       type: array
+	 *                       items:
+	 *                         type: object
+	 *                         properties:
+	 *                           property:
+	 *                             type: string
+	 *                           constraints:
+	 *                             type: object
+	 *                 - type: object
+	 *                   properties:
+	 *                     status_code:
+	 *                       type: string
+	 *                       example: "401"
+	 *                     message:
+	 *                       type: string
+	 *                       example: Invalid token
+	 *       500:
+	 *         description: Server Error
+	 *         content:
+	 *           application/json:
+	 *             schema:
+	 *               type: object
+	 *               properties:
+	 *                 status:
+	 *                   type: string
+	 *                 status_code:
+	 *                   type: integer
+	 *                 message:
+	 *                   type: string
+	 */
+	async createProduct(req: Request, res: Response) {
+		try {
+			const { user } = req;
+			const sanitizedData = req.body;
+
+			if (!user) {
+				return res.status(401).json({
+					status: "unsuccessful",
+					status_code: 401,
+					message: "Unauthorized User",
+				});
+			}
+
+			const productDTO = new ProductDTO(sanitizedData);
+			await productDTO.validate();
+
+			const product = await this.productService.createProduct({
+				...sanitizedData,
+				user,
+			});
+
+			const { user: _, ...productWithoutUser } = product;
+
+			return res.status(201).json({
+				status: "success",
+				status_code: 201,
+				message: "Product created successfully",
+				data: productWithoutUser,
+			});
+		} catch (error) {
+			// Check if the error is an array of ValidationError
+			if (
+				Array.isArray(error) &&
+				error.every((err) => err instanceof ValidationError)
+			) {
+				const constraints = error.map((err) => ({
+					property: err.property,
+					constraints: err.constraints,
+				}));
+
+				return res.status(401).json({
+					status: "unsuccessful",
+					status_code: 401,
+					message: "Validation error",
+					errors: constraints,
+				});
+			}
+
+			// For other types of errors
+			console.error("Error creating product:", error);
+			return res.status(500).json({
+				status: "unsuccessful",
+				status_code: 500,
+				message: "Internal server error",
+				error: error instanceof Error ? error.message : "Unknown error",
+			});
+		}
+	}
 }
 
 export default ProductController;

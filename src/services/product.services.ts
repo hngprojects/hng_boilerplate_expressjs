@@ -1,6 +1,7 @@
 import { Product } from "../models/product";
 import { IProduct } from "../types";
 import AppDataSource from "../data-source";
+import { ProductDTO } from "../models/product";
 
 export class ProductService {
 	getPaginatedProducts(
@@ -77,5 +78,13 @@ export class ProductService {
 		}
 		this.productRepository.merge(product, productData);
 		return this.productRepository.save(product);
+	}
+
+	public async createProduct(
+		productDetails: Partial<ProductDTO>
+	): Promise<Product> {
+		let product = this.productRepository.create(productDetails);
+		product = await this.productRepository.save(product);
+		return product;
 	}
 }

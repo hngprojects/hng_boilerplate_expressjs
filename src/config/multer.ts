@@ -13,7 +13,7 @@ interface CustomParams {
 const cloudinaryConfigOptions = cloudinaryConfig(
   process.env["CLOUDINARY_CLOUD_NAME"] as string,
   process.env["CLOUDINARY_API_KEY"] as string,
-  process.env["CLOUDINARY_API_SECRET"] as string
+  process.env["CLOUDINARY_API_SECRET"] as string,
 );
 
 cloudinary.config(cloudinaryConfigOptions);
@@ -45,4 +45,3 @@ export const multerConfig = multer({
 });
 
 export { cloudinary };
-

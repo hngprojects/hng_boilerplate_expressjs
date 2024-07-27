@@ -1,15 +1,16 @@
-import AppDataSource from "../data-source";
-import { Profile, User } from "../models";
-import { IAuthService, IUserSignUp, IUserLogin } from "../types";
-import { Conflict, HttpError } from "../middleware";
-import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
-import { Sendmail } from "../utils/mail";
-import jwt from "jsonwebtoken";
-import { compilerOtp } from "../views/welcome";
-import config from "../config";
-import generateResetToken from "../utils/generate-reset-token";
-import { PasswordResetToken } from "../models/password-reset-token";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import config from "../config";
+import AppDataSource from "../data-source";
+import { Conflict, HttpError } from "../middleware";
+import { Profile, User } from "../models";
+import { PasswordResetToken } from "../models/password-reset-token";
+import { IAuthService, IUserLogin, IUserSignUp } from "../types";
+import { comparePassword, generateNumericOTP, hashPassword } from "../utils";
+import generateResetToken from "../utils/generate-reset-token";
+import { Sendmail } from "../utils/mail";
+import { compilerOtp } from "../views/welcome";
+
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
     mailSent: string;
@@ -191,6 +192,39 @@ export class AuthService implements IAuthService {
       await passwordResetTokenRepository.remove(passwordResetToken);
 
       return { message: "Password reset successfully." };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+  public async changePassword(
+    userId: string,
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string,
+  ): Promise<{ message: string }> {
+    try {
+      const user = await User.findOne({ where: { id: userId } });
+
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
+
+      const isOldPasswordValid = await comparePassword(
+        oldPassword,
+        user.password,
+      );
+      if (!isOldPasswordValid) {
+        throw new HttpError(401, "Old password is incorrect");
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new HttpError(400, "New password and confirmation do not match");
+      }
+
+      user.password = await hashPassword(newPassword);
+      await AppDataSource.manager.save(user);
+
+      return { message: "Password changed successfully" };
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }

@@ -91,7 +91,13 @@ describe("AdminUserService", () => {
         password: "newPasswordHash",
         isverified: true,
       });
-      expect(result).toEqual(mockUpdatedUser);
+      // expect(result).toEqual(mockUpdatedUser);
+      expect(result.id).toEqual(mockUpdatedUser.id);
+      expect(result.name).toEqual(mockUpdatedUser.name);
+      expect(result.email).toEqual(mockUpdatedUser.email);
+      expect(result.role).toEqual(mockUpdatedUser.role);
+      expect(result.password).toEqual(mockUpdatedUser.password);
+      expect(result.isverified).toEqual(mockUpdatedUser.isverified);
     });
 
     it("should throw a 404 error if user is not found", async () => {

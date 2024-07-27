@@ -1,4 +1,4 @@
-import { number, object, string, TypeOf } from "zod";
+import { boolean, number, object, string, TypeOf } from "zod";
 
 /**
  * @openapi
@@ -55,6 +55,12 @@ const payload = {
   }),
 };
 
+const paginationSchema = object({
+  totalItems: number(),
+  totalPages: number(),
+  currentPage: number(),
+});
+
 const params = {
   params: object({
     productId: string({
@@ -80,7 +86,16 @@ export const getProductSchema = object({
   ...params,
 });
 
+export const getAllProductSchema = object({
+  success: boolean(),
+  message: string(),
+  status_code: number(),
+  pagination: paginationSchema,
+  ...payload,
+});
+
 export type CreateProductInput = TypeOf<typeof createProductSchema>;
 export type UpdateProductInput = TypeOf<typeof updateProductSchema>;
 export type ReadProductInput = TypeOf<typeof getProductSchema>;
 export type DeleteProductInput = TypeOf<typeof deleteProductSchema>;
+export type GetAllProductsResponse = TypeOf<typeof getAllProductSchema>;

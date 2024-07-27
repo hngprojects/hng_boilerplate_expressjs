@@ -9,6 +9,7 @@ const adminRouter = Router();
 
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
+const adminLogController = new admin.AdminLogController();
 
 // Organisation
 adminRouter.patch(
@@ -17,6 +18,16 @@ adminRouter.patch(
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminOrganisationController.updateOrg.bind(adminOrganisationController),
+);
+
+// Organisation
+adminRouter.delete(
+  "/organizations/:org_id/delete",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminOrganisationController.deleteOrganization.bind(
+    adminOrganisationController,
+  ),
 );
 
 // User
@@ -37,9 +48,26 @@ adminRouter.patch(
 );
 
 adminRouter.post(
-    "/users/:user_id/roles", authMiddleware,
-    checkPermissions([UserRole.SUPER_ADMIN]),
-    adminOrganisationController.setUserRole.bind(adminOrganisationController),
-  );
+  "/users/:user_id/roles",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminOrganisationController.setUserRole.bind(adminOrganisationController),
+);
+
+adminRouter.get(
+  "/users/:id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminUserController.getUserBySuperadmin.bind(adminUserController),
+);
+
+// Logs
+adminRouter.get(
+  "/logs",
+  Limiter,
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminLogController.getLogs.bind(adminLogController),
+);
 
 export { adminRouter };
