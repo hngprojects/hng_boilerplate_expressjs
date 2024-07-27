@@ -93,6 +93,10 @@ import { Request, Response } from "express";
 import AppDataSource from "../data-source";
 import { User } from "../models";
 import { addSmsToQueue } from "../utils/queue";
+import parsePhoneNumberFromString, {
+  isPossiblePhoneNumber,
+  PhoneNumber,
+} from "libphonenumber-js";
 
 export const sendSms = async (req: Request, res: Response): Promise<void> => {
   const { phone_number, message } = req.body;
@@ -104,6 +108,47 @@ export const sendSms = async (req: Request, res: Response): Promise<void> => {
       status_code: 400,
       message:
         "Valid phone number, message content, and sender ID must be provided.",
+    });
+    return;
+  }
+
+  let parsedPhone: PhoneNumber;
+  try {
+    parsedPhone = parsePhoneNumberFromString(phone_number);
+
+    if (!parsedPhone || !parsedPhone.isValid()) {
+      const defaultCountryCode = "NG";
+      parsedPhone = parsePhoneNumberFromString(
+        phone_number,
+        defaultCountryCode,
+      );
+    }
+  } catch (error) {
+    res.status(422).json({
+      errors: [
+        {
+          field: "phone",
+          message: "Phone must be a valid international or local number",
+        },
+      ],
+    });
+    return;
+  }
+  console.log(parsedPhone);
+  if (
+    !parsedPhone ||
+    !parsedPhone.isValid() ||
+    !isPossiblePhoneNumber(parsedPhone.number) ||
+    parsedPhone.number.length < 8 ||
+    parsedPhone.number.length > 15
+  ) {
+    res.status(422).json({
+      errors: [
+        {
+          field: "phone",
+          message: "Phone must be a valid international or local number",
+        },
+      ],
     });
     return;
   }
@@ -123,7 +168,7 @@ export const sendSms = async (req: Request, res: Response): Promise<void> => {
 
     await addSmsToQueue({
       message,
-      phone_number,
+      phone_number: parsedPhone.number,
       sender_id,
     });
     res.status(200).json({

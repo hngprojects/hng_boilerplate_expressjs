@@ -131,6 +131,15 @@ export const SendEmail = async (req: Request, res: Response) => {
     });
   }
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(recipient)) {
+    return res.status(400).json({
+      success: false,
+      status_code: 400,
+      message: "Invalid email address",
+    });
+  }
+
   const payload: EmailQueuePayload = {
     templateId: template_id,
     recipient,
