@@ -17,3 +17,4 @@ export * from "./paymentStripe";
 export * from "./export";
 export * from "./paymentLemonSqueezy";
 export * from "./contactRoutes";
+export * from "./payment";
