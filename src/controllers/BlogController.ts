@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { BlogService } from '../services'; 
+import { Request, Response } from "express";
+import { BlogService } from "../services";
 
 export class BlogController {
   private blogService = new BlogService();
@@ -52,7 +52,7 @@ export class BlogController {
    *                       author:
    *                         type: string
    *                         example: John Doe
-   *                       published_date:
+   *                       published_at:
    *                         type: string
    *                         format: date-time
    *                         example: 2023-07-21T19:58:00.000Z
@@ -118,8 +118,10 @@ export class BlogController {
         return;
       }
 
-      const { blogs, totalItems } =
-        await this.blogService.getPaginatedblogs(page, limit);
+      const { blogs, totalItems } = await this.blogService.getPaginatedblogs(
+        page,
+        limit,
+      );
 
       res.json({
         status: "success",

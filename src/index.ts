@@ -73,7 +73,7 @@ server.use("/api/v1", exportRouter);
 server.use("/api/v1/sms", smsRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1/products", productRouter);
-server.use("/api/v1/blog", blogRouter);
+server.use("/api/v1/blogs", blogRouter);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/payments", paymentRouter);
