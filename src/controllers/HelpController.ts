@@ -70,7 +70,6 @@ class HelpController {
   async getTopicById(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;
-      console.log(id);
 
       //Validate Input
       if (!id) {
@@ -82,6 +81,31 @@ class HelpController {
         message: "Fetch Successful",
         data: topic,
         status_code: 201,
+      });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        res.status(error.status_code).json({ message: error.message });
+      } else {
+        res
+          .status(error.status_code || 500)
+          .json({ message: error.message || "Internal Server Error" });
+      }
+    }
+  }
+
+  async deleteTopic(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+
+      //Validate Input
+      if (!id) {
+        throw new HttpError(422, "Validation failed: Valid ID required");
+      }
+      await this.helpService.delete(id);
+      res.status(201).json({
+        success: true,
+        message: "Delete Successful",
+        status_code: 202,
       });
     } catch (error) {
       if (error instanceof HttpError) {
