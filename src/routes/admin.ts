@@ -20,6 +20,16 @@ adminRouter.patch(
   adminOrganisationController.updateOrg.bind(adminOrganisationController),
 );
 
+// Organisation
+adminRouter.delete(
+  "/organizations/:org_id/delete",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminOrganisationController.deleteOrganization.bind(
+    adminOrganisationController,
+  ),
+);
+
 // User
 adminRouter.get(
   "/users",
