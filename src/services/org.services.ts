@@ -39,39 +39,43 @@ export class OrgService implements IOrgService {
     org_id: string,
     user_id: string,
   ): Promise<User | null> {
-    const userRepository = AppDataSource.getRepository(User);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
     const organizationRepository = AppDataSource.getRepository(Organization);
-    const invitationRepository = AppDataSource.getRepository(Invitation);
+    const userRepository = AppDataSource.getRepository(User);
 
-    const user = await userRepository.findOne({
-      where: { id: user_id },
-      relations: ["organizations"],
-    });
-    if (!user) {
-      return null;
+    try {
+      // Find the UserOrganization entry
+      const userOrganization = await userOrganizationRepository.findOne({
+        where: { userId: user_id, organizationId: org_id },
+        relations: ["user", "organization"],
+      });
+
+      if (!userOrganization) {
+        return null;
+      }
+
+      // Remove the UserOrganization entry
+      await userOrganizationRepository.remove(userOrganization);
+
+      // Update the organization's users list
+      const organization = await organizationRepository.findOne({
+        where: { id: org_id, owner_id: user_id },
+        relations: ["users"],
+      });
+
+      if (organization) {
+        organization.users = organization.users.filter(
+          (user) => user.id !== user_id,
+        );
+        await organizationRepository.save(organization);
+      }
+
+      // Return the removed user
+      return userOrganization.user;
+    } catch (error) {
+      throw new Error("Failed to remove user from organization");
     }
-
-    const organization = await organizationRepository.findOne({
-      where: { id: org_id },
-      relations: ["users"],
-    });
-    if (!organization) {
-      return null;
-    }
-
-    const userInOrganization = organization.users.some(
-      (user) => user.id === user_id,
-    );
-    if (!userInOrganization) {
-      return null;
-    }
-
-    organization.users = organization.users.filter(
-      (user) => user.id !== user_id,
-    );
-    await organizationRepository.save(organization);
-
-    return user;
   }
 
   public async getOrganizationsByUserId(
@@ -79,14 +83,18 @@ export class OrgService implements IOrgService {
   ): Promise<Organization[]> {
     log.info(`Fetching organizations for user_id: ${user_id}`);
     try {
-      const organizationRepository = AppDataSource.getRepository(Organization);
+      const userOrganizationRepository =
+        AppDataSource.getRepository(UserOrganization);
 
-      const organizations = await organizationRepository.find({
-        where: { owner_id: user_id },
+      const userOrganizations = await userOrganizationRepository.find({
+        where: { userId: user_id },
+        relations: ["organization"],
       });
 
-      log.info(`Organizations found: ${organizations.length}`);
-      return organizations;
+      const organization = userOrganizations.map((org) => org.organization);
+
+      log.info(`Organizations found: ${userOrganizations.length}`);
+      return organization;
     } catch (error) {
       log.error(`Error fetching organizations for user_id: ${user_id}`, error);
       throw new Error("Failed to fetch organizations");
@@ -98,19 +106,17 @@ export class OrgService implements IOrgService {
     user_id: string,
   ): Promise<Organization | null> {
     try {
-      const organization = await AppDataSource.getRepository(
-        Organization,
-      ).findOne({
-        where: {
-          id: org_id,
-          owner_id: user_id,
-        },
-        relations: ["users"],
+      const userOrganizationRepository =
+        AppDataSource.getRepository(UserOrganization);
+
+      const userOrganization = await userOrganizationRepository.findOne({
+        where: { userId: user_id, organizationId: org_id },
+        relations: ["organization"],
       });
-      if (!organization) {
-        return null;
-      }
-      return organization;
+
+      console.log(userOrganization);
+
+      return userOrganization?.organization || null;
     } catch (error) {
       throw new Error("Failed to fetch organization");
     }

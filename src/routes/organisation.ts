@@ -16,6 +16,8 @@ orgRouter.get(
 );
 orgRouter.delete(
   "/organisations/:org_id/user/:user_id",
+  authMiddleware,
+  validateOrgId,
   orgController.removeUser.bind(orgController),
 );
 

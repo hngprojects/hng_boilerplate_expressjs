@@ -367,7 +367,6 @@ export class OrgController {
    *                   example: Failed to get user organisation. Please try again later.
    */
 
-  // TODO: GET single org
   async getSingleOrg(req: Request, res: Response) {
     try {
       const org = await this.orgService.getSingleOrg(
