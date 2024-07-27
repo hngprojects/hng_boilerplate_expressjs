@@ -5,7 +5,7 @@ import { ICreateOrganisation, IOrgService } from "../types";
 import log from "../utils/logger";
 import { BadRequest } from "../middleware";
 import { UserRole } from "../enums/userRoles";
-import { UserOrganization } from "../models";
+import { UserOrganization, Invitation } from "../models";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
@@ -41,6 +41,7 @@ export class OrgService implements IOrgService {
   ): Promise<User | null> {
     const userRepository = AppDataSource.getRepository(User);
     const organizationRepository = AppDataSource.getRepository(Organization);
+    const invitationRepository = AppDataSource.getRepository(Invitation);
 
     const user = await userRepository.findOne({
       where: { id: user_id },
@@ -109,5 +110,54 @@ export class OrgService implements IOrgService {
     } catch (error) {
       throw new Error("Failed to fetch organization");
     }
+  }
+  public async joinOrganizationByInvite(
+    inviteToken: string,
+    userId: string,
+  ): Promise<void> {
+    const invitationRepository = AppDataSource.getRepository(Invitation);
+    const userRepository = AppDataSource.getRepository(User);
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+
+    const invitation = await invitationRepository.findOne({
+      where: { token: inviteToken },
+      relations: ["user", "organization"],
+    });
+    if (!invitation || invitation.expires_at < new Date()) {
+      throw new Error("Invalid or expired invitation.");
+    }
+
+    const user = await userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new Error("User not found.");
+    }
+
+    const organization = await organizationRepository.findOne({
+      where: { id: invitation.organization.id },
+      relations: ["userOrganizations"],
+    });
+    if (!organization) {
+      throw new Error("Organization not found.");
+    }
+
+    const existingUserOrg = organization.userOrganizations.find(
+      (userOrg) => userOrg.userId === userId,
+    );
+
+    if (existingUserOrg) {
+      throw new Error("User is already a member of the organization.");
+    }
+
+    const userOrganization = new UserOrganization();
+    userOrganization.user = user;
+    userOrganization.organization = organization;
+    userOrganization.role = UserRole.USER;
+
+    await userOrganizationRepository.save(userOrganization);
+
+    // delete invitation used
+    await invitationRepository.remove(invitation);
   }
 }
