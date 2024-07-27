@@ -22,4 +22,14 @@ helpRouter.get(
   authMiddleware,
   helpController.getAllTopics.bind(helpController),
 );
+helpRouter.get(
+  "/topics/:id",
+  authMiddleware,
+  helpController.getTopicById.bind(helpController),
+);
+helpRouter.delete(
+  "/topics/:id",
+  authMiddleware,
+  helpController.deleteTopic.bind(helpController),
+);
 export { helpRouter };
