@@ -4,6 +4,6 @@ import { createBlogController } from "../controllers/createBlogController";
 
 const blogRouter = Router();
 
-blogRouter.post("/blog/create", createBlogController);
+blogRouter.post("/blog/create", authMiddleware, createBlogController);
 
 export { blogRouter };
