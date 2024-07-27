@@ -1,7 +1,6 @@
 import Handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
-import { body } from "express-validator";
 
 interface EmailVariable {
   title: string;

@@ -1,10 +1,8 @@
 import Bull, { Job } from "bull";
 import config from "../config";
 import { Sendmail } from "./mail";
-import SmsService from "../services/sms.services";
 import logs from "./logger";
 import smsServices from "../services/sms.services";
-import emailVariable from "./emailVariables";
 
 interface EmailData {
   from: string;
