@@ -1665,22 +1665,9 @@ buffer@^6.0.3:
     base64-js "^1.3.1"
     ieee754 "^1.2.1"
 
-bull@*:
+bull@*, bull@^4.15.1:
   version "4.15.1"
   resolved "https://registry.npmjs.org/bull/-/bull-4.15.1.tgz"
-  integrity sha512-knVKiZdrXbRkB+fWqNryDz85b3JfsT3dBrZexkztwvTH/AFmpHvsC933VB3JX18aJCz47E+xdO57xbDvxljoAg==
-  dependencies:
-    cron-parser "^4.2.1"
-    get-port "^5.1.1"
-    ioredis "^5.3.2"
-    lodash "^4.17.21"
-    msgpackr "^1.10.1"
-    semver "^7.5.2"
-    uuid "^8.3.0"
-
-bull@^4.15.1:
-  version "4.15.1"
-  resolved "https://registry.yarnpkg.com/bull/-/bull-4.15.1.tgz#f76e76ca0d1a9eecf311dd9f306e3cf9ffb57cfb"
   integrity sha512-knVKiZdrXbRkB+fWqNryDz85b3JfsT3dBrZexkztwvTH/AFmpHvsC933VB3JX18aJCz47E+xdO57xbDvxljoAg==
   dependencies:
     cron-parser "^4.2.1"
