@@ -6,36 +6,46 @@ import { User } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
 import config from "../config";
+import { Repository } from "typeorm";
 
 export class HelpService {
-  public async create(req: Request): Promise<HelpCenterTopic> {
+  private helpRepository: Repository<HelpCenterTopic>;
+
+  constructor() {
+    this.helpRepository = AppDataSource.getRepository(HelpCenterTopic);
+  }
+
+  public async create(
+    title: string,
+    content: string,
+    author: string,
+  ): Promise<HelpCenterTopic> {
     try {
-      const { title, content, author } = req.body;
-
-      //Validate Input
-      if (!title || !content || !author) {
-        throw new HttpError(
-          422,
-          "Validation failed: Title, content, and author are required"
-        );
-      }
-
       //Check for Existing Title
-      const articleRepository = AppDataSource.getRepository(HelpCenterTopic);
-      const existingTitle = await articleRepository.findOne({
+      const existingTitle = await this.helpRepository.findOne({
         where: { title },
       });
       if (existingTitle) {
         throw new HttpError(422, "Article already exists");
       }
 
-      const articleEntity = articleRepository.create({
+      const articleEntity = this.helpRepository.create({
         title,
         content,
         author,
       });
-      const article = await articleRepository.save(articleEntity);
+      const article = await this.helpRepository.save(articleEntity);
       return article;
+    } catch (error) {
+      console.log(error.status_code);
+      throw new HttpError(error.status_code, error.message || error);
+    }
+  }
+
+  public async getAll(): Promise<HelpCenterTopic[]> {
+    try {
+      const articles = await this.helpRepository.find();
+      return articles;
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
@@ -46,11 +56,8 @@ export class HelpService {
       const { title, content, author } = req.body;
       const article_id = req.params.id;
 
-      //Get article repo
-      const articleRepository = AppDataSource.getRepository(HelpCenterTopic);
-
       // Check if article exists
-      const existingArticle = await articleRepository.findOne({
+      const existingArticle = await this.helpRepository.findOne({
         where: { id: article_id },
       });
 
@@ -59,54 +66,23 @@ export class HelpService {
       }
 
       //Update Article on DB
-      await articleRepository.update(article_id, { title, content, author });
+      await this.helpRepository.update(article_id, { title, content, author });
 
       //Fetch Updated article
-      const newArticle = await articleRepository.findOne({
+      const newArticle = await this.helpRepository.findOne({
         where: { id: article_id },
       });
       return newArticle;
     } catch (error) {
-      console.error(error);
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
 }
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Access denied. No token provided",
-      status_code: 401,
-    });
-  }
-
-  try {
-    const verified = jwt.verify(token, config.TOKEN_SECRET);
-    if (verified) {
-      next();
-    }
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: "Access denied. Invalid token",
-      status_code: 401,
-    });
-  }
-};
-
 export const verifyAdmin = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -125,9 +101,8 @@ export const verifyAdmin = async (
     const user = await userRepository.findOne({
       where: { id: decodedToken.userId },
     });
-    console.log(user.role);
 
-    if (user.role !== "admin") {
+    if (user.role !== "super_admin") {
       return res.status(403).json({
         success: false,
         message: "Access denied! You are not an admin",
