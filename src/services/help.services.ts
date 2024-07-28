@@ -6,51 +6,61 @@ import { User } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
 import config from "../config";
+import { DeleteResult, Repository } from "typeorm";
 
 export class HelpService {
-  public async create(req: Request): Promise<HelpCenterTopic> {
+  private helpRepository: Repository<HelpCenterTopic>;
+
+  constructor() {
+    this.helpRepository = AppDataSource.getRepository(HelpCenterTopic);
+  }
+
+  public async create(
+    title: string,
+    content: string,
+    author: string,
+  ): Promise<HelpCenterTopic> {
     try {
-      const { title, content, author } = req.body;
-
-      //Validate Input
-      if (!title || !content || !author) {
-        throw new HttpError(
-          422,
-          "Validation failed: Title, content, and author are required",
-        );
-      }
-
       //Check for Existing Title
-      const articleRepository = AppDataSource.getRepository(HelpCenterTopic);
-      const existingTitle = await articleRepository.findOne({
+      const existingTitle = await this.helpRepository.findOne({
         where: { title },
       });
       if (existingTitle) {
         throw new HttpError(422, "Article already exists");
       }
 
-      const articleEntity = articleRepository.create({
+      const articleEntity = this.helpRepository.create({
         title,
         content,
         author,
       });
-      const article = await articleRepository.save(articleEntity);
+      const article = await this.helpRepository.save(articleEntity);
       return article;
+    } catch (error) {
+      throw new HttpError(error.status_code, error.message || error);
+    }
+  }
+
+  public async getAll(): Promise<HelpCenterTopic[]> {
+    try {
+      const articles = await this.helpRepository.find();
+      return articles;
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
 
-  public async update(req: Request): Promise<HelpCenterTopic> {
+  public async update(
+    id: string,
+    title: string,
+    content: string,
+    author: string,
+  ): Promise<HelpCenterTopic> {
     try {
-      const { title, content, author } = req.body;
-      const article_id = req.params.id;
-
-      //Get article repo
-      const articleRepository = AppDataSource.getRepository(HelpCenterTopic);
+      const article_id = id;
 
       // Check if article exists
-      const existingArticle = await articleRepository.findOne({
+      const existingArticle = await this.helpRepository.findOne({
         where: { id: article_id },
       });
 
@@ -59,10 +69,10 @@ export class HelpService {
       }
 
       //Update Article on DB
-      await articleRepository.update(article_id, { title, content, author });
+      await this.helpRepository.update(article_id, { title, content, author });
 
       //Fetch Updated article
-      const newArticle = await articleRepository.findOne({
+      const newArticle = await this.helpRepository.findOne({
         where: { id: article_id },
       });
       return newArticle;
@@ -70,37 +80,52 @@ export class HelpService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
-}
 
-export const authMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  public async getTopicById(id: string): Promise<HelpCenterTopic> {
+    try {
+      const article_id = id;
 
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Access denied. No token provided",
-      status_code: 401,
-    });
-  }
+      // Check if article exists
+      const existingArticle = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
 
-  try {
-    const verified = jwt.verify(token, config.TOKEN_SECRET);
-    if (verified) {
-      next();
+      if (!existingArticle) {
+        throw new HttpError(404, "Not Found");
+      }
+
+      //Fetch Updated article
+      const article = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
+
+      return article;
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
     }
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      message: "Access denied. Invalid token",
-      status_code: 401,
-    });
   }
-};
+
+  public async delete(id: string): Promise<DeleteResult> {
+    try {
+      const article_id = id;
+
+      // Check if article exists
+      const existingArticle = await this.helpRepository.findOne({
+        where: { id: article_id },
+      });
+
+      if (!existingArticle) {
+        throw new HttpError(404, "Not Found");
+      }
+
+      //Delete article
+      const article = await this.helpRepository.delete({ id: article_id });
+      return article;
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+}
 
 export const verifyAdmin = async (
   req: Request,
@@ -125,7 +150,7 @@ export const verifyAdmin = async (
       where: { id: decodedToken.userId },
     });
 
-    if (user.role !== "admin") {
+    if (user.role !== "super_admin") {
       return res.status(403).json({
         success: false,
         message: "Access denied! You are not an admin",

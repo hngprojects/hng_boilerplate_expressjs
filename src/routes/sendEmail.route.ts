@@ -8,6 +8,6 @@ import { authMiddleware } from "../middleware";
 const sendEmailRoute = Router();
 
 sendEmailRoute.post("/send-email", authMiddleware, SendEmail);
-sendEmailRoute.get("/email-templates", getEmailTemplates);
+sendEmailRoute.get("/email-templates", authMiddleware, getEmailTemplates);
 
 export { sendEmailRoute };

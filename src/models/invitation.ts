@@ -2,7 +2,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
@@ -26,6 +25,9 @@ export class Invitation {
 
   @ManyToOne(() => Organization)
   organization: Organization;
+
+  @Column()
+  email: string;
 
   @CreateDateColumn()
   created_at: Date;
