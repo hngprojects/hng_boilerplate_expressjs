@@ -697,7 +697,6 @@ export class ProductController {
 			}
 
 			// For other types of errors
-			console.error("Error creating product:", error);
 			return res.status(500).json({
 				status: "unsuccessful",
 				status_code: 500,
