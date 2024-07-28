@@ -8,12 +8,12 @@ import BodyParser from "body-parser";
 const paymentRouter = Router();
 
 paymentRouter.get(
-  "/lemonsqueezy/initiate",
+  "/payments/lemonsqueezy/initiate",
   authMiddleware,
   makePaymentLemonSqueezy,
 );
 paymentRouter.post(
-  "/lemonsqueezy/webhook",
+  "/payments/lemonsqueezy/webhook",
   BodyParser.text({ type: "*/*" }),
   LemonSqueezyWebhook,
 );

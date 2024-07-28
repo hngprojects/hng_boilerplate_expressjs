@@ -17,12 +17,11 @@ import {
 
 const authRoute = Router();
 
-authRoute.post("/signup", signUp);
-authRoute.post("/verify-otp", verifyOtp);
-authRoute.post("/login", login);
-authRoute.post("/login", login);
+authRoute.post("/auth/signup", signUp);
+authRoute.post("/auth/verify-otp", verifyOtp);
+authRoute.post("/auth/login", login);
 authRoute.put(
-  "/api/v1/organizations/:organization_id/users/:user_id/role",
+  "/auth/organizations/:organization_id/users/:user_id/role",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
   changeUserRole,
@@ -31,7 +30,7 @@ authRoute.put(
 // ---------------------------Google Auth Route Begins-------------------------  //
 
 // For manually testing google auth functionality locally
-authRoute.get("/test-google-auth", (req, res) => {
+authRoute.get("/auth/test-google-auth", (req, res) => {
   res.send(
     '<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>',
   );
@@ -86,12 +85,12 @@ authRoute.get("/google", initiateGoogleAuthRequest);
  *       '500':
  *         description: Internal Server Error - if something goes wrong during the callback handling
  */
-authRoute.get("/google/callback", googleAuthCallback);
+authRoute.get("/auth/google/callback", googleAuthCallback);
 
 // ---------------------------Google Auth Route Ends-------------------------  //
 
-authRoute.post("/forgot-password", forgotPassword);
-authRoute.post("/reset-password", resetPassword);
-authRoute.patch("/change-password", authMiddleware, changePassword);
+authRoute.post("/auth/forgot-password", forgotPassword);
+authRoute.post("/auth/reset-password", resetPassword);
+authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
 export { authRoute };
