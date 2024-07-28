@@ -3,8 +3,6 @@ import {
   verifyOtp,
   login,
   changeUserRole,
-  forgotPassword,
-  resetPassword,
   changePassword,
   handleGoogleAuth,
 } from "../controllers";
@@ -14,7 +12,7 @@ import { UserRole } from "../enums/userRoles";
 
 const authRoute = Router();
 
-authRoute.post("/auth/signup", signUp);
+authRoute.post("/auth/register", signUp);
 authRoute.post("/auth/verify-otp", verifyOtp);
 authRoute.post("/auth/login", login);
 authRoute.put(
@@ -26,8 +24,6 @@ authRoute.put(
 
 authRoute.post("/auth/google", handleGoogleAuth);
 
-authRoute.post("/auth/forgot-password", forgotPassword);
-authRoute.post("/auth/reset-password", resetPassword);
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
 export { authRoute };
