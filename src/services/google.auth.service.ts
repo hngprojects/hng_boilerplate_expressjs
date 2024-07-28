@@ -20,13 +20,14 @@ interface IGoogleAuthService {
 
 export class GoogleAuthService implements IGoogleAuthService {
   public async handleGoogleAuthUser(
-    payload: GoogleUser, authUser: null | User
+    payload: GoogleUser,
+    authUser: null | User,
   ): Promise<{
     user: Partial<User>;
     access_token: string;
   }> {
     try {
-      const { email, email_verified, name, picture, sub } = payload
+      const { email, email_verified, name, picture, sub } = payload;
       let user: User;
       let profile: UserProfile;
       let googleUser: User;
@@ -42,7 +43,7 @@ export class GoogleAuthService implements IGoogleAuthService {
         user.otp = 1234;
         user.isverified = email_verified;
         user.otp_expires_at = new Date(Date.now());
-        profile.phone = "";
+        profile.phone_number = "";
         profile.first_name = first_name;
         profile.last_name = last_name;
         profile.avatarUrl = picture;
@@ -51,11 +52,13 @@ export class GoogleAuthService implements IGoogleAuthService {
         googleUser = await AppDataSource.manager.save(user);
       } else {
         if (authUser.email !== payload.email) {
-          throw new BadRequest("The google id is not assigned to this gmail profile");
+          throw new BadRequest(
+            "The google id is not assigned to this gmail profile",
+          );
         }
         googleUser = authUser;
       }
-      
+
       const access_token = jwt.sign(
         { userId: googleUser.id },
         config.TOKEN_SECRET,

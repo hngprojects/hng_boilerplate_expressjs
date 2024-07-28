@@ -604,7 +604,7 @@ class AdminUserController {
           first_name: user.profile.first_name,
           last_name: user.profile.last_name,
           email: user.email,
-          phone: user.profile.phone,
+          phone: user.profile.phone_number,
           profile_picture: user.profile.avatarUrl,
           role: user.role,
         },
