@@ -17,10 +17,17 @@ import { UserRole } from "../enums/userRoles";
 
 /**
  * @swagger
- * /api/v1/admin/organisation/:id:
+ * /api/v1/admin/organisation/{id}:
  *   patch:
  *     summary: Admin-Update an existing organisation
  *     tags: [Admin]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -85,6 +92,7 @@ import { UserRole } from "../enums/userRoles";
  *                       format: date-time
  *                 status_code:
  *                   type: integer
+ *                   example: 200
  *       400:
  *         description: Bad Request
  *       500:
@@ -184,6 +192,7 @@ class AdminOrganisationController {
    *                   type: string
    *                 status_code:
    *                   type: integer
+   *                   example: 200
    *                 message:
    *                   type: string
    *                 data:
@@ -212,6 +221,7 @@ class AdminOrganisationController {
    *                   type: string
    *                 status_code:
    *                   type: integer
+   *                   example: 400
    *                 message:
    *                   type: string
    *       404:
@@ -225,6 +235,7 @@ class AdminOrganisationController {
    *                   type: string
    *                 status_code:
    *                   type: integer
+   *                   example: 404
    *                 message:
    *                   type: string
    *       500:
@@ -238,6 +249,7 @@ class AdminOrganisationController {
    *                   type: string
    *                 status_code:
    *                   type: integer
+   *                   example: 500
    *                 message:
    *                   type: string
    */
@@ -280,7 +292,7 @@ class AdminUserController {
 
   /**
    * @swagger
-   * /api/v1/admin/users/:id:
+   * /api/v1/admin/users/{id}:
    *   patch:
    *     summary: Admin-Update an existing user
    *     tags: [Admin]
@@ -498,7 +510,7 @@ class AdminUserController {
 
   /**
    * @swagger
-   * /api/v1/admin/users/:id:
+   * /api/v1/admin/users/{id}:
    *   get:
    *     summary: Superadmin - Get a single user
    *     tags: [Admin]
