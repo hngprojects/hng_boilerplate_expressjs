@@ -94,7 +94,7 @@ export class EmailService {
   // async sendEmail(payload: EmailQueuePayload): Promise<void> {
   //   try {
   //   } catch (error) {
-  //     throw new ServerError("Internal server error");
+  //     throw new ServerError( "Internal server error");
   //   }
   // }
 }
