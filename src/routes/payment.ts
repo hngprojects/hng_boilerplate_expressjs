@@ -5,12 +5,12 @@ import { authMiddleware } from "../middleware";
 const paymentFlutterwaveRouter = Router();
 
 paymentFlutterwaveRouter.post(
-  "/flutterwave/initiate",
+  "/payments/flutterwave/initiate",
   authMiddleware,
   PaymentController.initiatePayment,
 );
 paymentFlutterwaveRouter.get(
-  "/flutterwave/verify/:transactionId",
+  "/payments/flutterwave/verify/:transactionId",
   authMiddleware,
   PaymentController.verifyPayment,
 );

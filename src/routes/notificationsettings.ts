@@ -5,12 +5,12 @@ import { authMiddleware } from "../middleware";
 const notificationRouter = Router();
 
 notificationRouter.post(
-  "/notification-settings",
+  "/settings/notification-settings",
   authMiddleware,
   CreateNotification,
 );
 notificationRouter.get(
-  "/notification-settings/:user_id",
+  "/settings/notification-settings/:user_id",
   authMiddleware,
   GetNotification,
 );

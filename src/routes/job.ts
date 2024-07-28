@@ -7,9 +7,9 @@ const jobRouter = Router();
 const jobController = new JobController();
 
 jobRouter.post(
-  "/",
+  "/jobs",
   authMiddleware,
-  jobController.createJob.bind(jobController)
+  jobController.createJob.bind(jobController),
 );
 
 export { jobRouter };
