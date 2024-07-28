@@ -600,4 +600,132 @@ export class OrgController {
       });
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/organisations/{orgId}/invite:
+   *   post:
+   *     summary: Create an invitation to join an organization
+   *     tags: [Organisation]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: orgId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               email:
+   *                 type: string
+   *                 description: The email of the invitee
+   *                 example: "invitee@example.com"
+   *     responses:
+   *       200:
+   *         description: Invitation successfully sent
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "success"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "Invitation successfully sent."
+   *       400:
+   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "unsuccessful"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *                   example: "Error message describing the issue."
+   *       422:
+   *         description: Unprocessable Entity
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "Unsuccessful"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 422
+   *                 message:
+   *                   type: string
+   *                   example: "Email is required!"
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "unsuccessful"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: "Internal server error."
+   */
+
+  public async createInvitation(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const { email } = req.body;
+      const orgId = req.params.orgId;
+      const inviterId = req.user.id;
+
+      if (!email) {
+        res.status(422).json({
+          status: "Unsuccessful",
+          status_code: 422,
+          message: "Email is required!",
+        });
+        return;
+      }
+
+      await this.orgService.createInvitation(orgId, email, inviterId);
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Invitation successfully sent.",
+      });
+    } catch (error) {
+      res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: error.message,
+      });
+    }
+  }
 }

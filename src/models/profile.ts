@@ -10,15 +10,15 @@ import {
 import { getIsInvalidMessage } from "../utils";
 
 @ValidatorConstraint({ name: "IsValidMobilePhone", async: false })
-class IsValidMobilePhone implements ValidatorConstraintInterface {
-  validate(phone: string, args: ValidationArguments) {
-    return /^(?:\+\d{1,3}[- ]?)?\d{10}$/.test(phone);
-  }
+// class IsValidMobilePhone implements ValidatorConstraintInterface {
+//   validate(phone: string, args: ValidationArguments) {
+//     return /^(?:\+\d{1,3}[- ]?)?\d{10}$/.test(phone);
+//   }
 
-  defaultMessage(args: ValidationArguments) {
-    return getIsInvalidMessage("Phone number");
-  }
-}
+//   defaultMessage(args: ValidationArguments) {
+//     return getIsInvalidMessage("Phone number");
+//   }
+// }
 
 @Entity()
 export class Profile extends ExtendedBaseEntity {
@@ -32,7 +32,6 @@ export class Profile extends ExtendedBaseEntity {
   last_name: string;
 
   @Column()
-  @Validate(IsValidMobilePhone)
   phone: string;
 
   @Column()
