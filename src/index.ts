@@ -80,7 +80,7 @@ server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", updateRouter);
-server.use("/admin/queues", ServerAdapter.getRouter());
+server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 server.use(routeNotFound);
