@@ -10,7 +10,7 @@ const userController = new UserController();
 
 /**
  * @openapi
- * /users:
+ * /api/v1/users:
  *   get:
  *     summary: Retrieves a list of all users
  *     tags:
@@ -40,11 +40,11 @@ const userController = new UserController();
  *       '500':
  *         description: Internal Server Error
  */
-userRouter.get("/", userController.getAllUsers.bind(UserController));
+userRouter.get("/users/", userController.getAllUsers.bind(UserController));
 
 /**
  * @openapi
- * /users/{id}:
+ * /api/v1/users/{id}:
  *   delete:
  *     summary: Deletes a user by ID
  *     tags:
@@ -106,14 +106,14 @@ userRouter.get("/", userController.getAllUsers.bind(UserController));
  *         description: Internal Server Error
  */
 userRouter.delete(
-  "/:id",
+  "/users/:id",
   authMiddleware,
   userController.deleteUser.bind(userController),
 );
 
 /**
  * @openapi
- * /users/me:
+ * /api/v1/users/me:
  *   get:
  *     summary: Retrieves the profile data of the currently authenticated user
  *     tags:
@@ -217,11 +217,11 @@ userRouter.delete(
  *                   type: string
  *                   example: Internal Server Error
  */
-userRouter.get("/me", authMiddleware, UserController.getProfile);
+userRouter.get("/users/me", authMiddleware, UserController.getProfile);
 
 /**
  * @openapi
- * /users/{id}:
+ * /api/v1/users/{id}:
  *   put:
  *     summary: Updates the profile of a user
  *     tags:
@@ -314,7 +314,7 @@ userRouter.get("/me", authMiddleware, UserController.getProfile);
  *         description: Internal Server Error
  */
 userRouter.put(
-  "/:id",
+  "/users/:id",
   authMiddleware,
   upload,
   userController.updateUserProfile.bind(userController),

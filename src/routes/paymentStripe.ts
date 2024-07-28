@@ -9,7 +9,7 @@ import { authMiddleware } from "../middleware/auth";
 const paymentStripeRouter = Router();
 
 paymentStripeRouter.post(
-  "/initiate",
+  "/payments/stripe/initiate",
   validatePaymentRequest,
   validatePaymentRequest,
   createPaymentIntentStripe,
