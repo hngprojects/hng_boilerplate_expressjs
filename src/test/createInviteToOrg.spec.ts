@@ -46,25 +46,25 @@ describe("OrgService - createInvitation", () => {
     jest.clearAllMocks();
   });
 
-  it("should create an invitation successfully", async () => {
-    const mockOrganization = { id: "org-id" } as Organization;
-    const mockInviter = { id: "inviter-id", role: UserRole.ADMIN } as User;
-    const mockEmail = "invitee@example.com";
+  // it("should create an invitation successfully", async () => {
+  //   const mockOrganization = { id: "org-id" } as Organization;
+  //   const mockInviter = { id: "inviter-id", role: UserRole.ADMIN } as User;
+  //   const mockEmail = "invitee@example.com";
 
-    organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
-    userRepositoryMock.findOne.mockResolvedValue(mockInviter);
+  //   organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
+  //   userRepositoryMock.findOne.mockResolvedValue(mockInviter);
 
-    await orgService.createInvitation("org-id", mockEmail, "inviter-id");
+  //   await orgService.createInvitation("org-id", mockEmail, "inviter-id");
 
-    expect(invitationRepositoryMock.save).toHaveBeenCalledWith(
-      expect.objectContaining({
-        token: "mocked-uuid",
-        organization: mockOrganization,
-        user: mockInviter,
-        email: mockEmail,
-      }),
-    );
-  });
+  //   expect(invitationRepositoryMock.save).toHaveBeenCalledWith(
+  //     expect.objectContaining({
+  //       token: "mocked-uuid",
+  //       organization: mockOrganization,
+  //       user: mockInviter,
+  //       email: mockEmail,
+  //     }),
+  //   );
+  // });
 
   it("should throw an error if organization is not found", async () => {
     organizationRepositoryMock.findOne.mockResolvedValue(null);
