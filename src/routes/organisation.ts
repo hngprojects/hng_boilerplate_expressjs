@@ -9,13 +9,15 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
-  "/:org_id",
+  "/organisations/:org_id",
   authMiddleware,
   validateOrgId,
   orgController.getSingleOrg.bind(orgController),
 );
 orgRouter.delete(
-  "/organizations/:org_id/users/:user_id",
+  "/organisations/:org_id/user/:user_id",
+  authMiddleware,
+  validateOrgId,
   orgController.removeUser.bind(orgController),
 );
 

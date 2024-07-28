@@ -86,18 +86,18 @@ const productController = new ProductController();
  */
 
 productRouter.get(
-  "/",
+  "/product/",
   authMiddleware,
   productController.getProductPagination.bind(productController),
 );
 
 productRouter.get(
-  "/:product_id",
+  "/product/:product_id",
   authMiddleware,
   productController.fetchProductById.bind(productController),
 );
 productRouter
-  .route("/")
+  .route("/product/")
   .post(
     validateProductDetails,
     authMiddleware,

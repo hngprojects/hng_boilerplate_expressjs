@@ -6,7 +6,7 @@ export class BlogController {
 
   /**
    * @swagger
-   * /api/v1/blogs:
+   * /api/v1/blog:
    *   get:
    *     summary: Get a paginated list of blogs
    *     description: Retrieve a paginated list of blog posts
