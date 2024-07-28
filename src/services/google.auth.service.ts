@@ -3,16 +3,15 @@ import { User } from "../models";
 import { Profile } from "passport-google-oauth2";
 import config from "../config";
 import jwt from "jsonwebtoken";
-import { HttpError } from "../middleware";
+import { BadRequest, HttpError } from "../middleware";
 import { Profile as UserProfile } from "../models";
+import { GoogleUser } from "../types";
 
 interface IGoogleAuthService {
   handleGoogleAuthUser(
     payload: Profile,
     authUser: User | null,
   ): Promise<{
-    status: string;
-    message: string;
     user: Partial<User>;
     access_token: string;
   }>;
@@ -21,51 +20,53 @@ interface IGoogleAuthService {
 
 export class GoogleAuthService implements IGoogleAuthService {
   public async handleGoogleAuthUser(
-    payload: Profile,
-    authUser: User | null,
+    payload: GoogleUser, authUser: null | User
   ): Promise<{
-    status: string;
-    message: string;
     user: Partial<User>;
     access_token: string;
   }> {
     try {
+      const { email, email_verified, name, picture, sub } = payload
       let user: User;
       let profile: UserProfile;
+      let googleUser: User;
       if (!authUser) {
         user = new User();
         profile = new UserProfile();
+
+        const [first_name, last_name] = name.split(" ");
+
+        user.name = `${first_name} ${last_name}`;
+        user.email = email;
+        user.google_id = sub;
+        user.otp = 1234;
+        user.isverified = email_verified;
+        user.otp_expires_at = new Date(Date.now());
+        profile.phone = "";
+        profile.first_name = first_name;
+        profile.last_name = last_name;
+        profile.avatarUrl = picture;
+        user.profile = profile;
+
+        googleUser = await AppDataSource.manager.save(user);
       } else {
-        user = authUser;
-        profile = user.profile;
+        if (authUser.email !== payload.email) {
+          throw new BadRequest("The google id is not assigned to this gmail profile");
+        }
+        googleUser = authUser;
       }
-
-      user.name = payload.displayName;
-      user.email = payload.email;
-      user.google_id = payload.id;
-      user.otp = 1234;
-      user.isverified = true;
-      user.otp_expires_at = new Date(Date.now());
-      profile.phone = "";
-      profile.first_name = payload.given_name;
-      profile.last_name = payload.family_name;
-      profile.avatarUrl = payload.picture;
-      user.profile = profile;
-
-      const createdUser = await AppDataSource.manager.save(user);
+      
       const access_token = jwt.sign(
-        { userId: createdUser.id },
+        { userId: googleUser.id },
         config.TOKEN_SECRET,
         {
           expiresIn: "1d",
         },
       );
 
-      const { password: _, ...rest } = createdUser;
+      const { password: _, ...rest } = googleUser;
 
       return {
-        status: "success",
-        message: "User successfully authenticated",
         access_token,
         user: rest,
       };
