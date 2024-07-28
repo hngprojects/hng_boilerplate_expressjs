@@ -86,8 +86,12 @@ AppDataSource.initialize()
       res.send("Hello world");
     });
 
-    server.use("/probe", (req: Request, res: Response) => {
-      res.send("I am the express api responding");
+    server.get("/probe", (req, res) => {
+      try {
+        res.send("I am the express api responding");
+      } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     server.listen(port, () => {
