@@ -39,7 +39,9 @@ export class UserService {
   }
 
   public async softDeleteUser(id: string): Promise<UpdateResult> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
 
     if (!user) {
       throw new HttpError(404, "User Not Found");

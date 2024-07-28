@@ -283,7 +283,7 @@ export class ProductController {
   async fetchProductById(req: Request, res: Response) {
     const productId = req.params.product_id;
 
-    if (isNaN(Number(productId))) {
+    if (!productId) {
       return res.status(400).json({
         status: "Bad Request",
         message: "Invalid Product Id",
@@ -461,9 +461,11 @@ export class ProductController {
    *                 type: number
    *               category:
    *                 type: string
+   *               quantity:
+   *                 type: integer
    *     responses:
    *       201:
-   *         description: The product was Created
+   *         description: Product created successfully
    *         content:
    *           application/json:
    *             schema:
@@ -471,10 +473,13 @@ export class ProductController {
    *               properties:
    *                 status:
    *                   type: string
+   *                   example: success
    *                 status_code:
-   *                   type: number
+   *                   type: integer
+   *                   example: 201
    *                 message:
    *                   type: string
+   *                   example: Product created successfully
    *                 data:
    *                   type: object
    *                   properties:
@@ -484,21 +489,46 @@ export class ProductController {
    *                       type: string
    *                     price:
    *                       type: number
+   *                     quantity:
+   *                       type: integer
    *                     category:
    *                       type: string
+   *                     id:
+   *                       type: string
    *       401:
-   *         description: Unauthorized user | Invalid product detail
+   *         description: Unauthorized user | Invalid product detail | Invalid token
    *         content:
    *           application/json:
    *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                 status_code:
-   *                   type: number
-   *                 message:
-   *                   type: string
+   *               oneOf:
+   *                 - type: object
+   *                   properties:
+   *                     status:
+   *                       type: string
+   *                       example: unsuccessful
+   *                     status_code:
+   *                       type: integer
+   *                       example: 401
+   *                     message:
+   *                       type: string
+   *                       example: Validation error
+   *                     errors:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                         properties:
+   *                           property:
+   *                             type: string
+   *                           constraints:
+   *                             type: object
+   *                 - type: object
+   *                   properties:
+   *                     status_code:
+   *                       type: string
+   *                       example: "401"
+   *                     message:
+   *                       type: string
+   *                       example: Invalid token
    *       500:
    *         description: Server Error
    *         content:
@@ -509,7 +539,7 @@ export class ProductController {
    *                 status:
    *                   type: string
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                 message:
    *                   type: string
    */
