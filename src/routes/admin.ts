@@ -13,7 +13,7 @@ const adminLogController = new admin.AdminLogController();
 
 // Organisation
 adminRouter.patch(
-  "/organisation/:id",
+  "/admin/organisation/:id",
   Limiter,
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
@@ -22,7 +22,7 @@ adminRouter.patch(
 
 // Organisation
 adminRouter.delete(
-  "/organizations/:org_id/delete",
+  "/admin/organizations/:org_id/delete",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminOrganisationController.deleteOrganization.bind(
@@ -32,7 +32,7 @@ adminRouter.delete(
 
 // User
 adminRouter.get(
-  "/users",
+  "/admin/users",
   Limiter,
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
@@ -41,21 +41,21 @@ adminRouter.get(
 
 // User
 adminRouter.patch(
-  "/users/:id",
+  "/admin/users/:id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.updateUser.bind(adminUserController), // Use updateUser method
 );
 
 adminRouter.post(
-  "/users/:user_id/roles",
+  "/admin/users/:user_id/roles",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminOrganisationController.setUserRole.bind(adminOrganisationController),
 );
 
 adminRouter.get(
-  "/users/:id",
+  "/admin/users/:id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminUserController.getUserBySuperadmin.bind(adminUserController),
@@ -63,7 +63,7 @@ adminRouter.get(
 
 // Logs
 adminRouter.get(
-  "/logs",
+  "/admin/logs",
   Limiter,
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),

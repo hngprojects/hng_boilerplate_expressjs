@@ -32,10 +32,10 @@ productRouter.get(
 );
 
 productRouter
-	.route("/")
-	.post(
-		validateProductDetails,
-		authMiddleware,
-		productController.createProduct.bind(productController)
-	);
+  .route("/product/")
+  .post(
+    validateProductDetails,
+    authMiddleware,
+    productController.createProduct.bind(productController),
+  );
 export { productRouter };

@@ -40,7 +40,7 @@ const userController = new UserController();
  *       '500':
  *         description: Internal Server Error
  */
-userRouter.get("/", userController.getAllUsers.bind(UserController));
+userRouter.get("/users/", userController.getAllUsers.bind(UserController));
 
 /**
  * @openapi
@@ -106,7 +106,7 @@ userRouter.get("/", userController.getAllUsers.bind(UserController));
  *         description: Internal Server Error
  */
 userRouter.delete(
-  "/:id",
+  "/users/:id",
   authMiddleware,
   userController.deleteUser.bind(userController),
 );
@@ -217,7 +217,7 @@ userRouter.delete(
  *                   type: string
  *                   example: Internal Server Error
  */
-userRouter.get("/me", authMiddleware, UserController.getProfile);
+userRouter.get("/users/me", authMiddleware, UserController.getProfile);
 
 /**
  * @openapi
@@ -314,7 +314,7 @@ userRouter.get("/me", authMiddleware, UserController.getProfile);
  *         description: Internal Server Error
  */
 userRouter.put(
-  "/:id",
+  "/users/:id",
   authMiddleware,
   upload,
   userController.updateUserProfile.bind(userController),
