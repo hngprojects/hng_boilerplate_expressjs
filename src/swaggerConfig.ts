@@ -12,7 +12,7 @@ const swaggerDefinition: SwaggerDefinition = {
   },
   servers: [
     {
-      url: config.port,
+      url: `http://localhost:${config.port}/`,
       description: "Local server",
     },
     {

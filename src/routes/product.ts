@@ -5,30 +5,28 @@ import { validateProductDetails } from "../middleware/product";
 const productRouter = express.Router();
 const productController = new ProductController();
 
-
-
 productRouter.get(
-	"/",
-	authMiddleware,
-	productController.getProductPagination.bind(productController)
+  "/",
+  authMiddleware,
+  productController.getProductPagination.bind(productController),
 );
 
 productRouter.put(
-	"/:product_id",
-	authMiddleware,
-	productController.updateProductById.bind(productController)
+  "/:product_id",
+  authMiddleware,
+  productController.updateProductById.bind(productController),
 );
 
 productRouter.delete(
-	"/:product_id",
-	authMiddleware,
-	productController.deleteProduct.bind(productController)
+  "/:product_id",
+  authMiddleware,
+  productController.deleteProduct.bind(productController),
 );
 
 productRouter.get(
-	"/:product_id",
-	authMiddleware,
-	productController.fetchProductById.bind(productController)
+  "/:product_id",
+  authMiddleware,
+  productController.fetchProductById.bind(productController),
 );
 
 productRouter
