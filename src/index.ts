@@ -80,7 +80,6 @@ server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
-server.use("/api/v1/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);
