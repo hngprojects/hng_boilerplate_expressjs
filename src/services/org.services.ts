@@ -7,6 +7,8 @@ import { BadRequest } from "../middleware";
 import { UserRole } from "../enums/userRoles";
 import { UserOrganization, Invitation } from "../models";
 import { v4 as uuidv4 } from "uuid";
+import { addEmailToQueue } from "../utils/queue";
+import customEmail from "../utils/emailVariables";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
@@ -164,14 +166,19 @@ export class OrgService implements IOrgService {
     // add the base url in the .env file
     const inviteLink = `https://appdomain.com/accept-invite?token=${token}`;
     // add a customised email
-
+    const emailcontent = {
+      userName: "",
+      title: "Invitation to Join Organization",
+      body: `<p>You have been invited to join  ${invitation.organization.name} organisation. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
+    };
     const mailOptions = {
       from: "your-email@gmail.com",
       to: email,
       subject: "Invitation to Join Organization",
-      html: `<p>You have been invited to join an organization. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
+      html: customEmail(emailcontent),
     };
-    // await sendEmail(email, inviteLink);
+
+    await addEmailToQueue(mailOptions);
   }
 
   public async joinOrganizationByInvite(

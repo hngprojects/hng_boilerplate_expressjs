@@ -91,10 +91,10 @@ export class EmailService {
     return newEmail;
   }
 
-  async sendEmail(payload: EmailQueuePayload): Promise<void> {
-    try {
-    } catch (error) {
-      throw new ServerError("Internal server error");
-    }
-  }
+  // async sendEmail(payload: EmailQueuePayload): Promise<void> {
+  //   try {
+  //   } catch (error) {
+  //     throw new ServerError("Internal server error");
+  //   }
+  // }
 }
