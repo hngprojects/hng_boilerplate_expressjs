@@ -74,3 +74,11 @@ export interface EmailQueuePayload {
   recipient: string;
   variables?: Record<string, any>;
 }
+
+export interface GoogleUser {
+  email: string;
+  email_verified: boolean;
+  name: string;
+  picture: string;
+  sub: string;
+}
