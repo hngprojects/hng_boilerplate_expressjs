@@ -31,8 +31,7 @@ import swaggerSpec from "./swaggerConfig";
 import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
-import passport from "passport";
-
+import passport from "./config/google.passport.config";
 dotenv.config();
 
 const port = config.port;
@@ -50,7 +49,7 @@ server.use(
     ],
   }),
 );
-
+server.use("/api/v1", authRoute);
 server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -64,7 +63,7 @@ server.get("/api/v1", (req: Request, res: Response) => {
 // });
 
 server.use("/api/v1", userRouter);
-server.use("/api/v1", authRoute);
+
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1/sms", smsRouter);

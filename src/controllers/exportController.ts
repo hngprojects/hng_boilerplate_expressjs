@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import ExportService from "../services/export.services";
 /**
  * @swagger
- * /api/v1/export-data:
+ * /api/v1/organisation/members/export:
  *   get:
  *     summary: Export signed-in user information
  *     tags: [Export user data by csv or pdf format]
