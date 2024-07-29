@@ -82,7 +82,7 @@ server.use("/api/v1", orgRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
-server.use("/api/v1/product", productRouter);
+server.use("/api/v1/products", productRouter);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
 server.use("/api/v1", orgRouter);

@@ -30,7 +30,7 @@ productRouter.get(
 );
 
 productRouter
-  .route("/product/")
+  .route("/")
   .post(
     validateProductDetails,
     authMiddleware,
