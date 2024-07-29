@@ -35,7 +35,8 @@ authRoute.get("/auth/test-google-auth", (req, res) => {
   );
 });
 
-authRoute.get("/auth/google", initiateGoogleAuthRequest);
+authRoute.get("/auth/social/google?provider=google", initiateGoogleAuthRequest);
+
 
 authRoute.get("/auth/google/callback", googleAuthCallback);
 
