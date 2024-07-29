@@ -55,13 +55,13 @@ server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(passport.initialize());
-server.get("/", (req: Request, res: Response) => {
-  res.send("Hello world");
+server.get("/api/v1", (req: Request, res: Response) => {
+  res.json({ message: "I am the express API responding for team Panther" });
 });
 
-server.get("/api/v1/probe", (req: Request, res: Response) => {
-  res.send("I am the express api responding for team panther");
-});
+// server.get("/api/v1/probe", (req: Request, res: Response) => {
+//   res.send("I am the express api responding for team panther");
+// });
 
 server.use("/api/v1", userRouter);
 server.use("/api/v1", authRoute);
