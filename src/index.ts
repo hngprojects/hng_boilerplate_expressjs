@@ -59,6 +59,10 @@ server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
 
+server.get("/api/v1/probe", (req: Request, res: Response) => {
+  res.send("I am the express api responding for team panther");
+});
+
 server.use("/api/v1", userRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", adminRouter);
