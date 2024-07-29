@@ -696,7 +696,6 @@ export class ProductController {
         });
       }
 
-      // For other types of errors
       return res.status(500).json({
         status: "unsuccessful",
         status_code: 500,

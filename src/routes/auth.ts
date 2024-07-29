@@ -10,6 +10,11 @@ import {
   verifyOtp,
 } from "../controllers";
 import { UserRole } from "../enums/userRoles";
+
+import {
+  googleAuthCallback,
+  initiateGoogleAuthRequest,
+} from "../controllers/GoogleAuthController";
 import { authMiddleware, checkPermissions } from "../middleware";
 
 const authRoute = Router();
@@ -24,7 +29,18 @@ authRoute.put(
   changeUserRole,
 );
 
-authRoute.post("/auth/google", handleGoogleAuth);
+authRoute.post("/auth/google-signin", handleGoogleAuth);
+
+// For manually testing google auth functionality locally
+authRoute.get("/auth/test-google-auth", (req, res) => {
+  res.send(
+    '<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>',
+  );
+});
+
+authRoute.get("/auth/social/google?provider=google", initiateGoogleAuthRequest);
+
+authRoute.get("/auth/google/callback", googleAuthCallback);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
