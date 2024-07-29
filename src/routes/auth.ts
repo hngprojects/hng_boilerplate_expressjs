@@ -9,7 +9,10 @@ import {
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
-import { googleAuthCallback, initiateGoogleAuthRequest } from "../controllers/GoogleAuthController";
+import {
+  googleAuthCallback,
+  initiateGoogleAuthRequest,
+} from "../controllers/GoogleAuthController";
 
 const authRoute = Router();
 
@@ -26,13 +29,15 @@ authRoute.put(
 authRoute.post("/auth/google-signin", handleGoogleAuth);
 
 // For manually testing google auth functionality locally
-authRoute.get('/auth/test-google-auth', (req, res) => {
-  res.send('<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>');
+authRoute.get("/auth/test-google-auth", (req, res) => {
+  res.send(
+    '<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>',
+  );
 });
 
-authRoute.get('/auth/google', initiateGoogleAuthRequest);
+authRoute.get("/auth/social/google?provider=google", initiateGoogleAuthRequest);
 
-authRoute.get('/auth/google/callback', googleAuthCallback);
+authRoute.get("/auth/google/callback", googleAuthCallback);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
