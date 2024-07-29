@@ -8,7 +8,7 @@ import { UserRole } from "../enums/userRoles";
 import { UserOrganization, Invitation } from "../models";
 import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
-import customEmail from "../utils/emailVariables";
+import renderTemplate from "../views/email/renderTemplate";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
@@ -175,10 +175,10 @@ export class OrgService implements IOrgService {
       from: "your-email@gmail.com",
       to: email,
       subject: "Invitation to Join Organization",
-      html: customEmail(emailcontent),
+      html: renderTemplate("invitation", emailcontent),
     };
 
-    await addEmailToQueue(mailOptions);
+    addEmailToQueue(mailOptions);
   }
 
   public async joinOrganizationByInvite(
