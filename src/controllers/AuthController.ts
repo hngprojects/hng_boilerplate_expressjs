@@ -4,9 +4,17 @@ import config from "../config";
 import { BadRequest } from "../middleware";
 import { User } from "../models";
 import { AuthService } from "../services/auth.services";
-import { GoogleAuthService } from "../services/google.auth.service";
+import {
+  GoogleAuthService,
+  GoogleUserInfo,
+} from "../services/google.auth.service";
+
 import { emailSchema } from "../utils/request-body-validator";
 import RequestUtils from "../utils/request.utils";
+
+// import { GoogleUserInfo } from "../services/google.auth.service";
+import jwt from "jsonwebtoken";
+import { verifyToken } from "../config/google.passport.config";
 
 const authService = new AuthService();
 
@@ -516,19 +524,45 @@ const authenticateUserMagicLink = async (
   } catch (err) {
     if (err instanceof BadRequest) {
       return res.status(400).json({ status: "error", message: err.message });
+      next(err);
     }
-    next(err);
+  }
+};
+
+const googleAuthCall = async (req: Request, res: Response) => {
+  try {
+    const { id_token } = req.body;
+
+    // Verify the ID token from google
+    const userInfo = await verifyToken(id_token);
+
+    // update user info
+    const user = await GoogleUserInfo(userInfo);
+
+    // generate access token for the user
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "5m" },
+    );
+
+    // Return the JWT and User
+    res.json({ user: user, access_token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Authentication failed" });
   }
 };
 
 export {
   authenticateUserMagicLink,
-  // forgotPassword,
-  // resetPassword,
   changePassword,
   createMagicToken,
+  googleAuthCall,
   handleGoogleAuth,
   login,
   signUp,
+  // forgotPassword,
+  // resetPassword,
   verifyOtp,
 };

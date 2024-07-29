@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { BadRequest, HttpError } from "../middleware";
 import { Profile as UserProfile } from "../models";
 import { GoogleUser } from "../types";
+import { getRepository } from "typeorm";
 
 interface IGoogleAuthService {
   handleGoogleAuthUser(
@@ -158,4 +159,24 @@ export class GoogleAuthService implements IGoogleAuthService {
       throw new HttpError(error.status || 500, error.message || error);
     }
   }
+}
+
+export async function GoogleUserInfo(userInfo: any) {
+  const { sub: google_id, email, name, picture } = userInfo;
+  // const userRepository = getRepository(User);
+
+  let user = await AppDataSource.getRepository(User).findOne({
+    where: { google_id },
+  });
+
+  if (!user) {
+    user = new User();
+    user.google_id = google_id;
+    user.email = email;
+    user.name = name;
+    user.profile.avatarUrl = picture;
+  }
+
+  await AppDataSource.manager.save(user);
+  return user;
 }
