@@ -6,7 +6,7 @@ const contactService = new ContactService();
 
 /**
  * @swagger
- * /api/v1/contact:
+ * /api/v1/contact-us:
  *   post:
  *     summary: Submit a contact form
  *     description: Allows users to submit their contact details and message.
