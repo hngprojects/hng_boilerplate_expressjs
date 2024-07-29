@@ -1,3 +1,4 @@
+import fs from "fs";
 import swaggerJsdoc, { SwaggerDefinition } from "swagger-jsdoc";
 import { version } from "../package.json";
 import config from "./config";
@@ -47,5 +48,8 @@ const options = {
 };
 
 const specs = swaggerJsdoc(options);
+fs.writeFileSync("./swagger.json", JSON.stringify(specs, null, 2));
+const swaggerSpecsContent = JSON.stringify(specs, null, 2);
 
+export { swaggerSpecsContent };
 export default specs;

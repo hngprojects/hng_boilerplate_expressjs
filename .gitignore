@@ -14,4 +14,4 @@ requests.rest
 package-lock.json
 docker-compose.yml
 package-lock.json
-
+swagger.json

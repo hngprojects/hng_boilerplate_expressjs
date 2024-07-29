@@ -1,37 +1,40 @@
 // src/index.ts
-import "reflect-metadata";
-import AppDataSource from "./data-source";
-import log from "./utils/logger";
-import express, { Express, Request, Response } from "express";
-import config from "./config";
-import dotenv from "dotenv";
 import cors from "cors";
-import {
-  userRouter,
-  authRoute,
-  helpRouter,
-  testimonialRoute,
-  notificationRouter,
-  productRouter,
-  jobRouter,
-  blogRouter,
-  adminRouter,
-  exportRouter,
-  sendEmailRoute,
-  paymentRouter,
-  contactRouter,
-  paymentFlutterwaveRouter,
-  paymentStripeRouter,
-} from "./routes";
-import { smsRouter } from "./routes/sms";
-import { routeNotFound, errorHandler, authMiddleware } from "./middleware";
-import { orgRouter } from "./routes/organisation";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import "reflect-metadata";
 import swaggerUi from "swagger-ui-express";
+import config from "./config";
+import passport from "./config/google.passport.config";
+import AppDataSource from "./data-source";
 import swaggerSpec from "./swaggerConfig";
+
+import { authMiddleware, errorHandler, routeNotFound } from "./middleware";
+import {
+  adminRouter,
+  authRoute,
+  blogRouter,
+  contactRouter,
+  docsRouter,
+  exportRouter,
+  helpRouter,
+  jobRouter,
+  notificationRouter,
+  paymentFlutterwaveRouter,
+  paymentRouter,
+  paymentStripeRouter,
+  productRouter,
+  sendEmailRoute,
+  testimonialRoute,
+  userRouter,
+} from "./routes";
+
+import { orgRouter } from "./routes/organisation";
+import { smsRouter } from "./routes/sms";
 import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
+import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
-import passport from "./config/google.passport.config";
 dotenv.config();
 
 const port = config.port;
@@ -93,7 +96,7 @@ server.use("/api/v1", orgRouter);
 server.use("/api/v1", updateRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+server.use("/api/v1/docs", docsRouter);
 server.use(routeNotFound);
 server.use(errorHandler);
 
