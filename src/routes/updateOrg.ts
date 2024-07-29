@@ -6,8 +6,8 @@ import { UserRole } from "../enums/userRoles";
 
 const router = express.Router();
 
-router.put(
-  "/organization/:organization_id",
+router.patch(
+  "/organization/:org_id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
   updateOrganization,
