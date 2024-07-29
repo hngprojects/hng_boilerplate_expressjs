@@ -3,9 +3,8 @@ import {
   verifyOtp,
   login,
   changeUserRole,
-  forgotPassword,
-  resetPassword,
   changePassword,
+  handleGoogleAuth,
 } from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
@@ -17,7 +16,7 @@ import {
 
 const authRoute = Router();
 
-authRoute.post("/auth/signup", signUp);
+authRoute.post("/auth/register", signUp);
 authRoute.post("/auth/verify-otp", verifyOtp);
 authRoute.post("/auth/login", login);
 authRoute.put(
@@ -27,7 +26,7 @@ authRoute.put(
   changeUserRole,
 );
 
-// ---------------------------Google Auth Route Begins-------------------------  //
+authRoute.post("/auth/google-signin", handleGoogleAuth);
 
 // For manually testing google auth functionality locally
 authRoute.get("/auth/test-google-auth", (req, res) => {
@@ -36,61 +35,11 @@ authRoute.get("/auth/test-google-auth", (req, res) => {
   );
 });
 
-/**
- * @openapi
- * /auth/google:
- *   get:
- *     summary: Initiates the Google authentication process
- *     tags:
- *       - Auth
- *     responses:
- *       '302':
- *         description: Redirects to Google login page for user authentication
- *         headers:
- *           Location:
- *             description: The URL to which the client is redirected (Google's OAuth2 authorization URL)
- *             schema:
- *               type: string
- *               format: uri
- *       '500':
- *         description: Internal Server Error
- */
-authRoute.get("/google", initiateGoogleAuthRequest);
+authRoute.get("/auth/social/google?provider=google", initiateGoogleAuthRequest);
 
-/**
- * @openapi
- * /auth/google/callback:
- *   get:
- *     summary: Handle Google authentication callback
- *     tags:
- *       - Auth
- *     parameters:
- *       - in: query
- *         name: code
- *         schema:
- *           type: string
- *         required: true
- *         description: The authorization code returned by Google
- *     responses:
- *       '302':
- *         description: Redirects to the dashboard after successful authentication
- *         headers:
- *           Location:
- *             description: The URL to which the client is redirected
- *             schema:
- *               type: string
- *               format: uri
- *       '401':
- *         description: Unauthorized - if authentication fails
- *       '500':
- *         description: Internal Server Error - if something goes wrong during the callback handling
- */
+
 authRoute.get("/auth/google/callback", googleAuthCallback);
 
-// ---------------------------Google Auth Route Ends-------------------------  //
-
-authRoute.post("/auth/forgot-password", forgotPassword);
-authRoute.post("/auth/reset-password", resetPassword);
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
 export { authRoute };

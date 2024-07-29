@@ -56,17 +56,35 @@ export class ProductService {
       throw new Error(err.message);
     }
   }
+  async getOneProduct(id: string): Promise<Product> {
+    const product = await this.productRepository.findOneBy({ id });
+
+    return product;
+  }
+
+  async deleteProductById(id: string): Promise<boolean> {
+    const deleteResult = await this.productRepository.delete(id);
+    return deleteResult.affected !== 0;
+  }
+  async updateProductById(
+    productId: string,
+    productData: Partial<Product>,
+  ): Promise<Product | null> {
+    const product = await this.productRepository.findOne({
+      where: { id: productId },
+    });
+    if (!product) {
+      return null;
+    }
+    this.productRepository.merge(product, productData);
+    return this.productRepository.save(product);
+  }
 
   public async createProduct(
     productDetails: Partial<ProductDTO>,
   ): Promise<Product> {
     let product = this.productRepository.create(productDetails);
     product = await this.productRepository.save(product);
-    return product;
-  }
-
-  public async getOneProduct(id: string): Promise<Product> {
-    const product = await this.productRepository.findOne({ where: { id } });
     return product;
   }
 }

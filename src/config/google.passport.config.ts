@@ -1,10 +1,10 @@
-import config from ".";
 import passport from "passport";
 import {
   Strategy as GoogleStrategy,
   Profile,
   VerifyCallback,
 } from "passport-google-oauth2";
+import config from ".";
 
 passport.use(
   new GoogleStrategy(

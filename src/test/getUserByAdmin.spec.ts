@@ -20,7 +20,7 @@ describe("AdminUserService - getSingleUser", () => {
       profile: {
         first_name: "Precious",
         last_name: "Ifeaka",
-        phone: "1234567890",
+        phone_number: "1234567890",
         avatarUrl: "http://example.com/avatar.jpg",
       },
       email: "ifeakaa@example.com",

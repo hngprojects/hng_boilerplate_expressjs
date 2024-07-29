@@ -139,7 +139,7 @@ describe("UserService", () => {
             id: "profile-id",
             first_name: "Test",
             last_name: "User",
-            phone: "1234567890",
+            phone_number: "1234567890",
             avatarUrl: "http://example.com/avatar.png",
           },
         } as User;
@@ -159,7 +159,7 @@ describe("UserService", () => {
             profile_id: user.profile?.id,
             first_name: user.profile?.first_name,
             last_name: user.profile?.last_name,
-            phone: user.profile?.phone,
+            phone_number: user.profile?.phone_number,
             avatar_url: user.profile?.avatarUrl,
           },
         });
