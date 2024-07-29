@@ -169,7 +169,7 @@ class AdminOrganisationController {
 
   /**
    * @swagger
-   * /api/v1/admin/organizations/{org_id}/delete:
+   * /api/v1/organisations/{org_id}/delete:
    *   delete:
    *     summary: Admin-Delete an existing organization
    *     tags: [Admin]

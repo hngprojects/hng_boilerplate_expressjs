@@ -6,6 +6,7 @@ import { Organization } from "../models";
 import { Limiter } from "../utils";
 
 const adminRouter = Router();
+const orgRouter = Router();
 
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
@@ -22,7 +23,7 @@ adminRouter.patch(
 
 // Organisation
 adminRouter.delete(
-  "/admin/organizations/:org_id/delete",
+  "/organisations/:org_id/delete",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminOrganisationController.deleteOrganization.bind(
