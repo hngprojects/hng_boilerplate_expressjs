@@ -49,7 +49,7 @@ server.use(
     ],
   }),
 );
-server.use("/api/v1", authRoute);
+
 server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -63,7 +63,7 @@ server.get("/api/v1", (req: Request, res: Response) => {
 // });
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
-
+server.use("/api/v1", authRoute);
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1/sms", smsRouter);
@@ -78,18 +78,15 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", notificationRouter);
 server.use("/api/v1", paymentRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", orgRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1/product", productRouter);
 server.use("/api/v1/settings", notificationRouter);
 server.use("/api/v1/jobs", jobRouter);
-server.use("/api/v1", orgRouter);
 server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", orgRouter);
 server.use("/api/v1", updateRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
