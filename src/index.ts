@@ -31,8 +31,7 @@ import swaggerSpec from "./swaggerConfig";
 import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
-import passport from "passport";
-
+import passport from "./config/google.passport.config";
 dotenv.config();
 
 const port = config.port;
