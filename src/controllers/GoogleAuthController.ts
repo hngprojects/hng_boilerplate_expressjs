@@ -1,7 +1,6 @@
 import passport from "../config/google.passport.config";
 import { ServerError, Unauthorized } from "../middleware";
 import { Request, Response, NextFunction } from "express";
-import { GoogleAuthService } from "../services/google.auth.service";
 
 /**
  * @swagger
@@ -90,29 +89,29 @@ export const initiateGoogleAuthRequest = passport.authenticate("google", {
  *       500:
  *         description: Internal Server Error - An error occurred during the authentication process
  */
-export const googleAuthCallback = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const authenticate = passport.authenticate(
-    "google",
-    async (error, user, info) => {
-      const googleAuthService = new GoogleAuthService();
-      try {
-        if (error) {
-          throw new ServerError("Authentication error");
-        }
-        if (!user) {
-          throw new Unauthorized("Authentication failed!");
-        }
-        const isDbUser = await googleAuthService.getUserByGoogleId(user.id);
-        const dbUser = await googleAuthService.handleGoogleAuth(user, isDbUser);
-        res.status(200).json(dbUser);
-      } catch (error) {
-        next(error);
-      }
-    },
-  );
-  authenticate(req, res, next);
-};
+// export const googleAuthCallback = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   const authenticate = passport.authenticate(
+//     "google",
+//     async (error, user, info) => {
+//       const googleAuthService = new GoogleAuthService();
+//       try {
+//         if (error) {
+//           throw new ServerError("Authentication error");
+//         }
+//         if (!user) {
+//           throw new Unauthorized("Authentication failed!");
+//         }
+//         const isDbUser = await googleAuthService.getUserByGoogleId(user.id);
+//         const dbUser = await googleAuthService.handleGoogleAuth(user, isDbUser);
+//         res.status(200).json(dbUser);
+//       } catch (error) {
+//         next(error);
+//       }
+//     },
+//   );
+//   authenticate(req, res, next);
+// };
