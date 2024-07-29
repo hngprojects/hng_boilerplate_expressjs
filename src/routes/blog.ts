@@ -9,11 +9,7 @@ const blogRouter = Router();
 const blogController = new BlogController();
 const blogCommentController = new BlogCommentController();
 
-blogRouter.get(
-  "/blog/",
-  authMiddleware,
-  blogController.listBlogs.bind(blogController),
-);
+blogRouter.get("/blog/", blogController.listBlogs.bind(blogController));
 blogRouter.post("/create", authMiddleware, createBlogController);
 
 blogRouter.get(

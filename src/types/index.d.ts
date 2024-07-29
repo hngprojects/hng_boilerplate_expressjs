@@ -14,11 +14,10 @@ export interface IRole {
 }
 
 export interface IUserSignUp {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  phone: string;
 }
 export interface IUserLogin {
   email: string;
@@ -73,4 +72,12 @@ export interface EmailQueuePayload {
   templateId: string;
   recipient: string;
   variables?: Record<string, any>;
+}
+
+export interface GoogleUser {
+  email: string;
+  email_verified: boolean;
+  name: string;
+  picture: string;
+  sub: string;
 }

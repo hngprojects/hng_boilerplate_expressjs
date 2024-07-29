@@ -55,6 +55,7 @@ describe("OrgService", () => {
       },
       user: {
         id: "user-id",
+        email: "user@example.com",
       },
     };
     res = {
@@ -73,8 +74,9 @@ describe("OrgService", () => {
       token: "valid-token",
       expires_at: new Date(Date.now() + 100000),
       organization: { id: "org-id" } as Organization,
+      email: "user@example.com",
     } as Invitation;
-    const mockUser = { id: "user-id" } as User;
+    const mockUser = { id: "user-id", email: "user@example.com" } as User;
     const mockOrganization = {
       id: "org-id",
       userOrganizations: [],
@@ -95,12 +97,25 @@ describe("OrgService", () => {
     );
   });
 
+  it("should throw error if user is not registered", async () => {
+    const mockUser = { id: "user-id", email: "user@example.com" } as User;
+
+    userRepositoryMock.findOneBy.mockResolvedValue(mockUser);
+
+    await expect(
+      orgService.joinOrganizationByInvite("valid-token", "user-id"),
+    ).rejects.toThrow("Invalid or expired invitation.");
+  });
+
   it("should throw error if invitation is invalid or expired", async () => {
     const mockInvitation = {
       token: "expired-token",
       expires_at: new Date(Date.now() - 100000),
+      email: "user@example.com",
     } as Invitation;
+    const mockUser = { id: "user-id", email: "user@example.com" } as User;
 
+    userRepositoryMock.findOneBy.mockResolvedValue(mockUser);
     invitationRepositoryMock.findOne.mockResolvedValue(mockInvitation);
 
     await expect(
@@ -113,8 +128,9 @@ describe("OrgService", () => {
       token: "valid-token",
       expires_at: new Date(Date.now() + 100000),
       organization: { id: "org-id" } as Organization,
+      email: "user@example.com",
     } as Invitation;
-    const mockUser = { id: "user-id" } as User;
+    const mockUser = { id: "user-id", email: "user@example.com" } as User;
     const mockOrganization = {
       id: "org-id",
       userOrganizations: [
@@ -122,12 +138,12 @@ describe("OrgService", () => {
       ],
     } as unknown as Organization;
 
-    invitationRepositoryMock.findOne.mockResolvedValue(mockInvitation);
     userRepositoryMock.findOneBy.mockResolvedValue(mockUser);
+    invitationRepositoryMock.findOne.mockResolvedValue(mockInvitation);
     organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
 
     await expect(
       orgService.joinOrganizationByInvite("valid-token", "user-id"),
-    ).rejects.toThrow("User is already a member of the organization.");
+    ).rejects.toThrow("User is already a member of the organisation.");
   });
 });

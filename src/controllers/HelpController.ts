@@ -14,7 +14,7 @@ import { HttpError } from "../middleware";
  * @swagger
  * /api/v1/help-center/:
  *   post:
- *     summary: Create a new help center topic
+ *     summary: SuperAdmin- Create a new help center topic
  *     tags: [HelpCenter]
  *     requestBody:
  *       required: true
@@ -63,7 +63,8 @@ import { HttpError } from "../middleware";
  *                       type: string
  *                       format: date-time
  *                 status_code:
- *                   type: number
+ *                   type: integer
+ *                   example: 201
  *       422:
  *         description: Validation failed
  *       500:
@@ -108,14 +109,15 @@ import { HttpError } from "../middleware";
  *                         type: string
  *                         format: date-time
  *                 status_code:
- *                   type: number
+ *                   type: integer
+ *                   example: 201
  *       500:
  *         description: Internal Server Error
  */
 
 /**
  * @swagger
- * /api/v1/help-center/topics/:id:
+ * /api/v1/help-center/topics/{id}:
  *   get:
  *     summary: Get a help center topic by ID
  *     tags: [HelpCenter]
@@ -156,7 +158,8 @@ import { HttpError } from "../middleware";
  *                       type: string
  *                       format: date-time
  *                 status_code:
- *                   type: number
+ *                   type: integer
+ *                   example: 201
  *       422:
  *         description: Validation failed
  *       404:
@@ -167,9 +170,9 @@ import { HttpError } from "../middleware";
 
 /**
  * @swagger
- * /api/v1/help-center/topic/:id:
+ * /api/v1/help-center/topic/{:id}:
  *   delete:
- *     summary: Delete a help center topic by ID
+ *     summary: SuperAdmin- Delete a help center topic by ID
  *     tags: [HelpCenter]
  *     parameters:
  *       - in: path
@@ -191,9 +194,12 @@ import { HttpError } from "../middleware";
  *                 message:
  *                   type: string
  *                 status_code:
- *                   type: number
+ *                   type: integer
+ *                   example: 201
  *       422:
  *         description: Validation failed
+ *       403:
+ *         description: Access denied! You are not an admin
  *       404:
  *         description: Not Found
  *       500:
@@ -204,7 +210,7 @@ import { HttpError } from "../middleware";
  * @swagger
  * /api/v1/help-center/topic/{id}:
  *   patch:
- *     summary: Update a help center topic by ID
+ *     summary: SuperAdmin- Update a help center topic by ID
  *     tags: [HelpCenter]
  *     parameters:
  *       - in: path
@@ -260,9 +266,12 @@ import { HttpError } from "../middleware";
  *                       type: string
  *                       format: date-time
  *                 status_code:
- *                   type: number
+ *                   type: integer
+ *                   example: 200
  *       422:
  *         description: Validation failed
+ *       403:
+ *         description: Access denied! You are not an admin
  *       404:
  *         description: Not Found
  *       500:
@@ -388,14 +397,6 @@ class HelpController {
     try {
       const { title, content, author } = req.body;
       const id = req.params.id;
-
-      //Validate Input
-      if (!title || !content || !author) {
-        throw new HttpError(
-          422,
-          "Validation failed: Title, content, and author are required",
-        );
-      }
 
       //Validate ID
       if (!id) {
