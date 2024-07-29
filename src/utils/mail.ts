@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import config from "../config";
 import { BadRequest } from "../middleware";
+import log from "./logger";
 
 const Sendmail = async (emailcontent: any) => {
   const transporter = nodemailer.createTransport({
@@ -17,7 +18,7 @@ const Sendmail = async (emailcontent: any) => {
     await transporter.sendMail(emailcontent);
     return "Email sent successfully.";
   } catch (error) {
-    console.log(error);
+    log.error(error);
     throw new BadRequest("Error sending email");
   }
 };

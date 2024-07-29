@@ -433,7 +433,8 @@ const createMagicToken = async (
   next: NextFunction,
 ) => {
   try {
-    const email = req.body.email;
+    const email = req.body?.email;
+    console.log(req.body);
     if (!email) {
       throw new BadRequest("Email is missing in request body.");
     }
@@ -458,6 +459,7 @@ const createMagicToken = async (
         status_code: 400,
       });
     }
+    console.log(error);
     const err = new Error("Server Error");
     next(error);
   }
