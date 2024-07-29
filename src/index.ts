@@ -104,7 +104,7 @@ AppDataSource.initialize()
 
     server.get("/probe", (req: Request, res: Response) => {
       try {
-        res.send("I am the express api responding");
+        res.send("I am the express api responding for team panther");
       } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
       }
