@@ -21,6 +21,14 @@ export const updateBlogController = async (req: Request, res: Response) => {
       data: updatedBlog,
     });
   } catch (error) {
+    if (error.message === "Blog post not found.") {
+      return res.status(404).json({
+        status: "unsuccessful",
+        status_code: 404,
+        message: "Blog post not found.",
+      });
+    }
+
     return res.status(500).json({
       status: "unsuccessful",
       status_code: 500,
