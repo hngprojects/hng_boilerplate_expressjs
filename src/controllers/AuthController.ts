@@ -336,7 +336,7 @@ const changePassword = async (
 
 /**
  * @swagger
- * /api/v1/auth/google:
+ * /api/v1/auth/google-signin:
  *   post:
  *     summary: Handle Google authentication and register/login a user
  *     description: This endpoint handles Google OAuth2.0 authentication. It accepts a Google user payload and either registers a new user or logs in an existing one.
