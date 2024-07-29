@@ -175,7 +175,7 @@ export class OrgService implements IOrgService {
       from: "your-email@gmail.com",
       to: email,
       subject: "Invitation to Join Organization",
-      html: renderTemplate("invitation", emailcontent),
+      html: renderTemplate("custom-email", emailcontent),
     };
 
     addEmailToQueue(mailOptions);
