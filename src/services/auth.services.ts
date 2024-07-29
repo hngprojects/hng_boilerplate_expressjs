@@ -1,12 +1,25 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import APP_CONFIG from "../config/app.config";
 import AppDataSource from "../data-source";
-import { Conflict, HttpError } from "../middleware";
+import {
+  BadRequest,
+  Conflict,
+  HttpError,
+  ResourceNotFound,
+} from "../middleware";
 import { Profile, User } from "../models";
 import { IAuthService, IUserLogin, IUserSignUp } from "../types";
-import { comparePassword, generateNumericOTP, hashPassword } from "../utils";
+import {
+  comparePassword,
+  generateAccessToken,
+  generateNumericOTP,
+  generateToken,
+  hashPassword,
+  verifyToken,
+} from "../utils";
 import { Sendmail } from "../utils/mail";
+import { generateMagicLinkEmail } from "../views/magic-link.email";
 import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
@@ -231,7 +244,76 @@ export class AuthService implements IAuthService {
 
       return { message: "Password changed successfully" };
     } catch (error) {
-      throw new HttpError(error.status || 500, error.message || error);
+      throw error;
+    }
+  }
+
+  public async generateMagicLink(email: string) {
+    try {
+      // Check if user exists in database
+      const user = await User.findOne({ where: { email } });
+      if (user === null || !user) {
+        throw new ResourceNotFound("User is not registered");
+      }
+      // Generate Token
+      const token = generateToken({ email: email });
+      const protocol = APP_CONFIG.USE_HTTPS ? "https" : "http";
+      const magicLinkUrl = `${protocol}://${config.BASE_URL}/api/v1/auth/magic-link?token=${token}`;
+
+      // Send email to the user
+      const mailToBeSentToUser = await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "MAGIC LINK LOGIN",
+        html: generateMagicLinkEmail(magicLinkUrl, email),
+      });
+
+      return {
+        ok: mailToBeSentToUser === "Email sent successfully.",
+        message: "Email sent successfully.",
+        user,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public async validateMagicLinkToken(token: string) {
+    try {
+      // validate the token and get payload
+      const { email } = verifyToken(token as string);
+      if (!email) {
+        throw new BadRequest("Invalid JWT");
+      }
+
+      const user = await User.findOne({
+        where: { email: String(email) },
+      });
+
+      if (user === null || !user) {
+        throw new ResourceNotFound("User not found");
+      }
+
+      return {
+        status: "ok",
+        email: user.email,
+        userId: user.id,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async passwordlessLogin(userId: string) {
+    try {
+      // generate new token and log the user in
+      const access_token = await generateAccessToken(userId);
+
+      return {
+        access_token,
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }

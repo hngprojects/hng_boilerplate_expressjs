@@ -62,7 +62,7 @@ const errorHandler = (
   err: HttpError,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) => {
   const { success, status_code, message } = err;
   const cleanedMessage = message.replace(/"/g, "");
@@ -74,14 +74,14 @@ const errorHandler = (
 };
 
 export {
-  ServerError,
-  Conflict,
-  Forbidden,
-  Unauthorized,
-  ResourceNotFound,
   BadRequest,
-  InvalidInput,
-  HttpError,
-  routeNotFound,
+  Conflict,
   errorHandler,
+  Forbidden,
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  routeNotFound,
+  ServerError,
+  Unauthorized,
 };

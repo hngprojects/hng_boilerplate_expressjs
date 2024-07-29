@@ -1,14 +1,16 @@
+import { Router } from "express";
 import {
+  authenticateUserMagicLink,
+  changePassword,
+  changeUserRole,
+  createMagicToken,
+  handleGoogleAuth,
+  login,
   signUp,
   verifyOtp,
-  login,
-  changeUserRole,
-  changePassword,
-  handleGoogleAuth,
 } from "../controllers";
-import { Router } from "express";
-import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
+import { authMiddleware, checkPermissions } from "../middleware";
 
 const authRoute = Router();
 
@@ -25,5 +27,8 @@ authRoute.put(
 authRoute.post("/auth/google", handleGoogleAuth);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
+
+authRoute.post("/auth/magic-link", createMagicToken);
+authRoute.get("/auth/magic-link", authenticateUserMagicLink);
 
 export { authRoute };

@@ -1,7 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../services/auth.services";
+import { NextFunction, Request, Response } from "express";
+import { z } from "zod";
+import config from "../config";
 import { BadRequest } from "../middleware";
+import { User } from "../models";
+import { AuthService } from "../services/auth.services";
 import { GoogleAuthService } from "../services/google.auth.service";
+import { emailSchema } from "../utils/request-body-validator";
+import RequestUtils from "../utils/request.utils";
 
 const authService = new AuthService();
 
@@ -422,12 +427,103 @@ const handleGoogleAuth = async (
   }
 };
 
+const createMagicToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const email = req.body.email;
+    if (!email) {
+      throw new BadRequest("Email is missing in request body.");
+    }
+    emailSchema.parse(email);
+
+    const response = await authService.generateMagicLink(email);
+    if (!response.ok) {
+      throw new BadRequest("Error processing request");
+    }
+    const requestUtils = new RequestUtils(req, res);
+    requestUtils.addDataToState("localUser", response.user);
+
+    return res.status(200).json({
+      status: "ok",
+      status_code: 200,
+      message: response.message,
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        message: "Invalid email provided",
+        status_code: 400,
+      });
+    }
+    const err = new Error("Server Error");
+    next(error);
+  }
+};
+
+const authenticateUserMagicLink = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.query.token;
+    const response = await authService.validateMagicLinkToken(token as string);
+
+    if (response.status !== "ok") {
+      throw new BadRequest("Invalid Request");
+    }
+
+    const { access_token } = await authService.passwordlessLogin(
+      response.userId,
+    );
+
+    const requestUtils = new RequestUtils(req, res);
+    let user = requestUtils.getDataFromState("local_user");
+    if (!user?.email && !user?.id) {
+      user = await User.findOne({
+        where: { email: response.email },
+      });
+    }
+
+    const { password: _, otp: __, otp_expires_at: ___, ...rest } = user;
+
+    res.header("Authorization", access_token);
+    res.cookie("hng_token", access_token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: config.NODE_ENV !== "development",
+      sameSite: config.NODE_ENV === "development" ? "lax" : "none",
+      path: "/",
+    });
+
+    if (req.query?.redirect === "true") {
+      return res.redirect("/");
+    } else {
+      return res.status(200).json({
+        status: "ok",
+        data: rest,
+        access_token,
+      });
+    }
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      return res.status(400).json({ status: "error", message: err.message });
+    }
+    next(err);
+  }
+};
+
 export {
-  signUp,
-  verifyOtp,
-  login,
+  authenticateUserMagicLink,
   // forgotPassword,
   // resetPassword,
   changePassword,
+  createMagicToken,
   handleGoogleAuth,
+  login,
+  signUp,
+  verifyOtp,
 };
