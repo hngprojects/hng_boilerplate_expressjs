@@ -34,7 +34,7 @@ export class GoogleAuthService implements IGoogleAuthService {
         user = new User();
         profile = new UserProfile();
 
-        const [first_name, last_name] = name.split(" ");
+        const [first_name = '', last_name = ''] = name.split(" ");
 
         user.name = `${first_name} ${last_name}`;
         user.email = email;
