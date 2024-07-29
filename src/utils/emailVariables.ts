@@ -1,6 +1,7 @@
 import Handlebars from "handlebars";
 import fs from "fs";
 import path from "path";
+import { custom } from "zod";
 
 interface EmailVariable {
   title: string;
@@ -8,7 +9,7 @@ interface EmailVariable {
   body: string;
 }
 
-const emailVariable = (emailVariable: EmailVariable) => {
+const customEmail = (emailVariable: EmailVariable) => {
   const templatePath = path.resolve(
     "src/views/email/templates/custom-email.hbs",
   );
@@ -54,4 +55,4 @@ const emailVariable = (emailVariable: EmailVariable) => {
   return html;
 };
 
-export default emailVariable;
+export default customEmail;
