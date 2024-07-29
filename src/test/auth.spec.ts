@@ -39,11 +39,11 @@ describe("AuthService", () => {
   describe("signUp", () => {
     it("should sign up a new user", async () => {
       const payload = {
-        firstName: "John",
-        lastName: "Doe",
+        first_name: "John",
+        last_name: "Doe",
         email: "john.doe@example.com",
         password: "password123",
-        phone: "1234567890",
+        phone_number: "1234567890",
       };
 
       const hashedPassword = "hashedPassword";
@@ -55,7 +55,7 @@ describe("AuthService", () => {
         email: "john.doe@example.com",
         password: hashedPassword,
         profile: {
-          phone: "1234567890",
+          phone_number: "1234567890",
           first_name: "John",
           last_name: "Doe",
           avatarUrl: "",
@@ -81,13 +81,11 @@ describe("AuthService", () => {
           name: "John Doe",
           email: "john.doe@example.com",
           profile: {
-            phone: "1234567890",
+            phone_number: "1234567890",
             first_name: "John",
             last_name: "Doe",
             avatarUrl: "",
           },
-          otp: parseInt(otp),
-          otp_expires_at: expect.any(Date),
         },
         access_token: token,
       });
@@ -95,8 +93,8 @@ describe("AuthService", () => {
 
     it("should throw a Conflict error if the user already exists", async () => {
       const payload = {
-        firstName: "John",
-        lastName: "Doe",
+        first_name: "John",
+        last_name: "Doe",
         email: "john.doe@example.com",
         password: "password123",
         phone: "1234567890",

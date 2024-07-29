@@ -14,7 +14,7 @@ const authService = new AuthService();
 
 /**
  * @swagger
- * api/v1/auth/signup:
+ * api/v1/auth/register:
  *   post:
  *     summary: Sign up a new user
  *     tags: [Auth]
@@ -25,16 +25,15 @@ const authService = new AuthService();
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
+ *               first_name:
  *                 type: string
- *               lastName:
+ *               last_name:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               phone:
- *                 type: string
+
  *     responses:
  *       201:
  *         description: The user was successfully created
@@ -203,19 +202,19 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error.
  */
-const forgotPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { email } = req.body;
-    const { message } = await authService.forgotPassword(email);
-    res.status(200).json({ status: "sucess", status_code: 200, message });
-  } catch (error) {
-    next(error);
-  }
-};
+// const forgotPassword = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { email } = req.body;
+//     const { message } = await authService.forgotPassword(email);
+//     res.status(200).json({ status: "sucess", status_code: 200, message });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 /**
  * @swagger
@@ -259,19 +258,19 @@ const forgotPassword = async (
  *       500:
  *         description: Internal server error.
  */
-const resetPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { token, newPassword } = req.body;
-    const { message } = await authService.resetPassword(token, newPassword);
-    res.status(200).json({ message });
-  } catch (error) {
-    next(error);
-  }
-};
+// const resetPassword = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { token, newPassword } = req.body;
+//     const { message } = await authService.resetPassword(token, newPassword);
+//     res.status(200).json({ message });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 /**
  * @swagger
@@ -334,7 +333,6 @@ const changePassword = async (
     next(error);
   }
 };
-
 
 /**
  * @swagger
@@ -417,7 +415,7 @@ const handleGoogleAuth = async (
       status: "success",
       message: "User successfully authenticated",
       access_token: dbUser.access_token,
-      user: dbUser.user
+      user: dbUser.user,
     });
   } catch (error) {
     next(error);
@@ -428,8 +426,8 @@ export {
   signUp,
   verifyOtp,
   login,
-  forgotPassword,
-  resetPassword,
+  // forgotPassword,
+  // resetPassword,
   changePassword,
-  handleGoogleAuth
+  handleGoogleAuth,
 };

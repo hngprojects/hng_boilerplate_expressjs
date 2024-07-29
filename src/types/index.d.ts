@@ -14,11 +14,10 @@ export interface IRole {
 }
 
 export interface IUserSignUp {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  phone: string;
 }
 export interface IUserLogin {
   email: string;

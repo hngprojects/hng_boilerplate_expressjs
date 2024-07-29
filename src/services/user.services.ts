@@ -10,7 +10,7 @@ import { cloudinary } from "../config/multer";
 interface IUserProfileUpdate {
   first_name: string;
   last_name: string;
-  phone: string;
+  phone_number: string;
   avatarUrl: string;
 }
 
@@ -74,7 +74,7 @@ export class UserService {
       const profile: Partial<Profile> = {
         first_name: payload.first_name,
         last_name: payload.last_name,
-        phone: payload.phone,
+        phone_number: payload.phone_number,
         avatarUrl: file ? file.path : undefined,
       };
 
