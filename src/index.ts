@@ -28,7 +28,7 @@ import { routeNotFound, errorHandler, authMiddleware } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
-import updateRouter from "./routes/updateOrg";
+// import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
 import passport from "./config/google.passport.config";
@@ -90,7 +90,7 @@ server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", orgRouter);
-server.use("/api/v1", updateRouter);
+// server.use("/api/v1", updateRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
