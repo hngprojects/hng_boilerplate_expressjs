@@ -434,7 +434,6 @@ const createMagicToken = async (
 ) => {
   try {
     const email = req.body?.email;
-    console.log(req.body);
     if (!email) {
       throw new BadRequest("Email is missing in request body.");
     }
@@ -448,9 +447,9 @@ const createMagicToken = async (
     requestUtils.addDataToState("localUser", response.user);
 
     return res.status(200).json({
-      status: "ok",
       status_code: 200,
-      message: response.message,
+      message:
+        `Sign-in token sent to ${response?.user?.email}` || response.message,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -459,7 +458,7 @@ const createMagicToken = async (
         status_code: 400,
       });
     }
-    console.log(error);
+
     const err = new Error("Server Error");
     next(error);
   }
@@ -483,14 +482,18 @@ const authenticateUserMagicLink = async (
     );
 
     const requestUtils = new RequestUtils(req, res);
-    let user = requestUtils.getDataFromState("local_user");
+    let user: User = requestUtils.getDataFromState("local_user");
     if (!user?.email && !user?.id) {
       user = await User.findOne({
         where: { email: response.email },
       });
     }
 
-    const { password: _, otp: __, otp_expires_at: ___, ...rest } = user;
+    const responseData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
 
     res.header("Authorization", access_token);
     res.cookie("hng_token", access_token, {
@@ -506,7 +509,7 @@ const authenticateUserMagicLink = async (
     } else {
       return res.status(200).json({
         status: "ok",
-        data: rest,
+        data: responseData,
         access_token,
       });
     }
