@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.services";
 import { BadRequest } from "../middleware";
 import { GoogleAuthService } from "../services/google.auth.service";
+import { GoogleUserInfo } from "../services/google.auth.service";
+import { verifyToken } from "../config/google.passport.config";
+import jwt from "jsonwebtoken";
 
 const authService = new AuthService();
 
@@ -422,6 +425,31 @@ const handleGoogleAuth = async (
   }
 };
 
+const googleAuthCall = async (req: Request, res: Response) => {
+  try {
+    const { id_token } = req.body;
+
+    // Verify the ID token from google
+    const userInfo = await verifyToken(id_token);
+
+    // update user info
+    const user = await GoogleUserInfo(userInfo);
+
+    // generate access token for the user
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      process.env.JWT_SECRET!,
+      { expiresIn: "5m" },
+    );
+
+    // Return the JWT and User
+    res.json({ user: user, access_token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Authentication failed" });
+  }
+};
+
 export {
   signUp,
   verifyOtp,
@@ -430,4 +458,5 @@ export {
   // resetPassword,
   changePassword,
   handleGoogleAuth,
+  googleAuthCall,
 };
