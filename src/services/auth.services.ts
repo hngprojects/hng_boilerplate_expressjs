@@ -128,6 +128,10 @@ export class AuthService implements IAuthService {
         throw new HttpError(404, "User not found");
       }
 
+      if (user.google_id && user.password === null) {
+        throw new HttpError(401, "User Created with Google");
+      }
+
       const isPasswordValid = await comparePassword(password, user.password);
       if (!isPasswordValid) {
         throw new HttpError(401, "Invalid credentials");

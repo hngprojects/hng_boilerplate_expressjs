@@ -1,20 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import { z } from "zod";
 import config from "../config";
+import { verifyToken } from "../config/google.passport.config";
 import { BadRequest } from "../middleware";
 import { User } from "../models";
 import { AuthService } from "../services/auth.services";
-import {
-  GoogleAuthService,
-  GoogleUserInfo,
-} from "../services/google.auth.service";
-
+import { GoogleUserInfo } from "../services/google.auth.service";
 import { emailSchema } from "../utils/request-body-validator";
 import RequestUtils from "../utils/request.utils";
-
-// import { GoogleUserInfo } from "../services/google.auth.service";
-import jwt from "jsonwebtoken";
-import { verifyToken } from "../config/google.passport.config";
 
 const authService = new AuthService();
 
@@ -215,19 +209,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error.
  */
-// const forgotPassword = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const { email } = req.body;
-//     const { message } = await authService.forgotPassword(email);
-//     res.status(200).json({ status: "sucess", status_code: 200, message });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+
+const forgotPassword = async () => {};
 
 /**
  * @swagger
@@ -284,6 +267,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 //     next(error);
 //   }
 // };
+const resetPassword = async () => {};
 
 /**
  * @swagger
@@ -408,32 +392,8 @@ const changePassword = async (
  *       500:
  *         description: Internal Server Error - An unexpected error occurred
  */
-const handleGoogleAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const googleAuthService = new GoogleAuthService();
-  const userData = req.body;
-  try {
-    if (!userData) {
-      throw new BadRequest("Bad request");
-    }
-    const isDbUser = await googleAuthService.getUserByGoogleId(userData.sub);
-    const dbUser = await googleAuthService.handleGoogleAuthUser(
-      userData,
-      isDbUser,
-    );
-    res.status(200).json({
-      status: "success",
-      message: "User successfully authenticated",
-      access_token: dbUser.access_token,
-      user: dbUser.user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+
+const googleSignIn = async () => {};
 
 const createMagicToken = async (
   req: Request,
@@ -540,11 +500,9 @@ const googleAuthCall = async (req: Request, res: Response) => {
     const user = await GoogleUserInfo(userInfo);
 
     // generate access token for the user
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "5m" },
-    );
+    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
 
     // Return the JWT and User
     res.json({ user: user, access_token: token });
@@ -559,7 +517,7 @@ export {
   changePassword,
   createMagicToken,
   googleAuthCall,
-  handleGoogleAuth,
+  // handleGoogleAuth,
   login,
   signUp,
   // forgotPassword,
