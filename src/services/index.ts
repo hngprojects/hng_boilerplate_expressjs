@@ -10,3 +10,4 @@ export * from "./organization.services";
 export * from "./payment/flutter.service";
 export * from "./contactService";
 export * from "./faq.services";
+export * from "./SearchMembersServices";

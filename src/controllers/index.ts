@@ -15,3 +15,4 @@ export * from "./BlogController";
 export * from "./PaymentLemonSqueezyController";
 export * from "./contactController";
 export * from "./FaqController";
+export * from "./SearchMembersController"
