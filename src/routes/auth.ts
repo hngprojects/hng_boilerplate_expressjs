@@ -5,6 +5,8 @@ import {
   changeUserRole,
   changePassword,
   handleGoogleAuth,
+  facebookAuth,
+  facebookAuthCallback,
 } from "../controllers";
 import { Router } from "express";
 import { authMiddleware, checkPermissions } from "../middleware";
@@ -25,5 +27,8 @@ authRoute.put(
 authRoute.post("/auth/google", handleGoogleAuth);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
+
+authRoute.get("/auth/facebook", facebookAuth);
+authRoute.get("/auth/facebook/callback", facebookAuthCallback);
 
 export { authRoute };

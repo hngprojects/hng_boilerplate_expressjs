@@ -31,6 +31,8 @@ import swaggerSpec from "./swaggerConfig";
 import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
+import passport from "passport";
+import "./services/facebook.auth.services";
 
 dotenv.config();
 
@@ -58,6 +60,7 @@ server.get("/", (req: Request, res: Response) => {
   res.send("Hello world");
 });
 
+server.use(passport.initialize());
 server.use("/api/v1", userRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", adminRouter);
