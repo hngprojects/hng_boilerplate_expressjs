@@ -59,10 +59,10 @@ export class User extends ExtendedBaseEntity {
   })
   role: UserRole;
 
-  @Column()
+  @Column({ nullable: true })
   otp: number;
 
-  @Column()
+  @Column({ nullable: true })
   otp_expires_at: Date;
 
   @OneToMany(() => Product, (product) => product.user, { cascade: true })

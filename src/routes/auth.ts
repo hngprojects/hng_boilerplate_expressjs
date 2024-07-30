@@ -4,7 +4,7 @@ import {
   login,
   changeUserRole,
   changePassword,
-  handleGoogleAuth,
+  googleAuthCall,
   facebookAuth,
   facebookAuthCallback,
 } from "../controllers";
@@ -24,7 +24,7 @@ authRoute.put(
   changeUserRole,
 );
 
-authRoute.post("/auth/google", handleGoogleAuth);
+authRoute.post("/auth/google", googleAuthCall);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
