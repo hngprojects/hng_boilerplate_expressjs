@@ -17,3 +17,4 @@ package-lock.json
 
 .mail.ts.bk
 src/bk
+swagger.json
