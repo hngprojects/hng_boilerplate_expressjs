@@ -500,7 +500,7 @@ const googleAuthCall = async (req: Request, res: Response) => {
     });
 
     // Return the JWT and User
-    res.json({ user: user, access_token: token });
+    res.json({ user, access_token: token });
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Authentication failed" });
