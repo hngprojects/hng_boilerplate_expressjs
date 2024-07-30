@@ -1,21 +1,20 @@
-// // // src/seeder.ts
-// // import AppDataSource from "./data-source";
-// // import { User, Organization, Product, Profile } from "./models";
-// // import log from "./utils/logger";
+// import AppDataSource from "./data-source";
+// import { User, Organization, Product, Profile } from "./models";
+// import log from "./utils/logger";
+// import { hashPassword } from "./utils"; // Import the hashPassword function
 
 // const createUsers = async () => {
 //   try {
 //     log.info("Creating user1...");
 //     const user1 = new User();
 //     user1.name = "John Doe";
-//     user1.email = "johndoe@example.com";
-//     user1.password = "password";
+//     user1.email = "johndoe2@example.com";
+//     user1.password = await hashPassword("password");
 //     user1.otp = Math.floor(Math.random() * 10000);
 //     user1.otp_expires_at = new Date(Date.now() + 3600 * 1000);
 //     user1.profile = new Profile();
 //     user1.profile.first_name = "John";
 //     user1.profile.last_name = "Doe";
-//     user1.profile.phone = "1234567890";
 //     user1.profile.avatarUrl = "http://example.com/avatar.jpg";
 
 //     log.info("User1 created: ", user1);
@@ -23,14 +22,13 @@
 //     log.info("Creating user2...");
 //     const user2 = new User();
 //     user2.name = "Jane Doe";
-//     user2.email = "janedoe@example.com";
-//     user2.password = "password";
+//     user2.email = "janedoe2@example.com";
+//     user2.password = await hashPassword("password");
 //     user2.otp = Math.floor(Math.random() * 10000);
 //     user2.otp_expires_at = new Date(Date.now() + 3600 * 1000);
 //     user2.profile = new Profile();
 //     user2.profile.first_name = "Jane";
 //     user2.profile.last_name = "Doe";
-//     user2.profile.phone = "0987654321";
 //     user2.profile.avatarUrl = "http://example.com/avatar.jpg";
 
 //     log.info("User2 created: ", user2);
@@ -100,26 +98,38 @@
 //     organization2.owner_id = users[0].id; // Set owner_id
 //     organization2.description = "Description for org 2";
 
-// //   const organization3 = new Organization();
-// //   organization3.name = "Org 3";
-// //   organization3.description = "Description for org 3";
-// //   organization3.owner_id = user2.id;
+//     const organization3 = new Organization();
+//     organization3.name = "Org 3";
+//     organization3.owner_id = users[1].id; // Set owner_id
+//     organization3.description = "Description for org 3";
 
-// //   // Assign organizations to users
-// //   user1.organizations = [organization1, organization2];
-// //   user2.organizations = [organization1, organization2, organization3];
+//     log.info("Saving organizations...");
+//     await AppDataSource.manager.save([organization1, organization2, organization3]);
+//     log.info("Organizations created successfully");
+//   } catch (error) {
+//     log.error("Error creating organizations: ", error.message);
+//     log.error(error.stack);
+//     throw error;
+//   }
+// };
 
-// //   // Save entities
+// const seed = async () => {
+//   try {
+//     await AppDataSource.initialize();
+//     const users = await createUsers();
+//     await createProducts(users);
+//     await createOrganizations(users);
+//     log.info("Seeding completed successfully.");
+//     await AppDataSource.destroy();
+//   } catch (error) {
+//     log.error("Error during seeding: ", error.message);
+//     log.error(error.stack);
+//   }
+// };
 
-// //   await AppDataSource.manager.save(organization1);
-// //   await AppDataSource.manager.save(organization2);
-// //   await AppDataSource.manager.save(organization3);
-// //   await AppDataSource.manager.save(product1);
-// //   await AppDataSource.manager.save(product2);
-// //   await AppDataSource.manager.save(product3);
-// //   await AppDataSource.manager.save(product4);
+// seed().catch((error) => {
+//   log.error("Unhandled error during seeding: ", error.message);
+//   log.error(error.stack);
+// });
 
-// //   log.info("Seeding completed successfully.");
-// // };
-
-// // export { seed };
+// export { seed };
