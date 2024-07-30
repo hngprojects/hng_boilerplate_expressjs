@@ -491,6 +491,7 @@ const googleAuthCall = async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error - An unexpected error occurred
  */
+
 const facebookAuth = passport.authenticate("facebook", { scope: ["email"] });
 
 const facebookAuthCallback = async (
