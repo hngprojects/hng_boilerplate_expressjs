@@ -284,7 +284,6 @@ export class AuthService implements IAuthService {
 
   public async validateMagicLinkToken(token: string) {
     try {
-      // validate the token and get payload
       const { email } = verifyToken(token as string);
       if (!email) {
         throw new BadRequest("Invalid JWT");
@@ -310,7 +309,6 @@ export class AuthService implements IAuthService {
 
   public async passwordlessLogin(userId: string) {
     try {
-      // generate new token and log the user in
       const access_token = await generateAccessToken(userId);
 
       return {

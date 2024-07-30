@@ -416,8 +416,7 @@ const createMagicToken = async (
 
     return res.status(200).json({
       status_code: 200,
-      message:
-        `Sign-in token sent to ${response?.user?.email}` || response.message,
+      message: `Sign-in token sent to email` || response.message,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -426,8 +425,6 @@ const createMagicToken = async (
         status_code: 400,
       });
     }
-
-    const err = new Error("Server Error");
     next(error);
   }
 };
@@ -440,11 +437,9 @@ const authenticateUserMagicLink = async (
   try {
     const token = req.query.token;
     const response = await authService.validateMagicLinkToken(token as string);
-
     if (response.status !== "ok") {
       throw new BadRequest("Invalid Request");
     }
-
     const { access_token } = await authService.passwordlessLogin(
       response.userId,
     );
@@ -484,8 +479,8 @@ const authenticateUserMagicLink = async (
   } catch (err) {
     if (err instanceof BadRequest) {
       return res.status(400).json({ status: "error", message: err.message });
-      next(err);
     }
+    next(err);
   }
 };
 
