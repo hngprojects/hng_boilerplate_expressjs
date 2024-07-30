@@ -2,7 +2,6 @@ import * as bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import config from "../config";
-import { Unauthorized } from "../middleware";
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
   `${fieldLabel} is invalid`;

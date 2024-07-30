@@ -39,11 +39,11 @@ describe("AuthService", () => {
   describe("signUp", () => {
     it("should sign up a new user", async () => {
       const payload = {
-        firstName: "John",
-        lastName: "Doe",
+        first_name: "John",
+        last_name: "Doe",
         email: "john.doe@example.com",
         password: "password123",
-        phone: "1234567890",
+        phone_number: "1234567890",
       };
 
       const hashedPassword = "hashedPassword";
@@ -55,7 +55,7 @@ describe("AuthService", () => {
         email: "john.doe@example.com",
         password: hashedPassword,
         profile: {
-          phone: "1234567890",
+          phone_number: "1234567890",
           first_name: "John",
           last_name: "Doe",
           avatarUrl: "",
@@ -81,13 +81,11 @@ describe("AuthService", () => {
           name: "John Doe",
           email: "john.doe@example.com",
           profile: {
-            phone: "1234567890",
+            phone_number: "1234567890",
             first_name: "John",
             last_name: "Doe",
             avatarUrl: "",
           },
-          otp: parseInt(otp),
-          otp_expires_at: expect.any(Date),
         },
         access_token: token,
       });
@@ -95,8 +93,8 @@ describe("AuthService", () => {
 
     it("should throw a Conflict error if the user already exists", async () => {
       const payload = {
-        firstName: "John",
-        lastName: "Doe",
+        first_name: "John",
+        last_name: "Doe",
         email: "john.doe@example.com",
         password: "password123",
         phone: "1234567890",
@@ -282,3 +280,88 @@ describe("AuthService", () => {
     });
   });
 });
+
+// describe('GoogleAuthService', () => {
+//   let googleAuthService: GoogleAuthService;
+
+//   beforeEach(() => {
+//     googleAuthService = new GoogleAuthService();
+//   });
+
+//   afterEach(() => {
+//     jest.clearAllMocks();
+//   });
+
+//   it('should register a new user if authUser is null', async () => {
+//     const payload = {
+//       email: 'user@example.com',
+//       email_verified: true,
+//       name: 'John Doe',
+//       picture: 'https://example.com/avatar.jpg',
+//       sub: '1234567890',
+//     };
+
+//     // Mock the save function to simulate database saving
+//     const saveMock = jest.fn().mockResolvedValue({ ...new User(), id: '1', profile: new UserProfile() });
+//     AppDataSource.manager.save = saveMock;
+
+//     // Mock jwt.sign to return a dummy token
+//     const jwtSignMock = jest.spyOn(jwt, 'sign').mockReturnValue('dummy_token');
+
+//     const result = await googleAuthService.handleGoogleAuthUser(payload, null);
+
+//     expect(result).toHaveProperty('access_token', 'dummy_token');
+//     expect(result.user).toHaveProperty('email', payload.email);
+//     expect(saveMock).toHaveBeenCalled();
+//     expect(jwtSignMock).toHaveBeenCalledWith(
+//       { userId: '1' }, // Assume '1' is the user ID returned from the mock save
+//       config.TOKEN_SECRET,
+//       { expiresIn: '1d' },
+//     );
+//   });
+
+//   it('should use existing user if authUser is provided', async () => {
+//     // Mock payload data
+//     const payload = {
+//       email: 'user@example.com',
+//       email_verified: true,
+//       name: 'John Doe',
+//       picture: 'https://example.com/avatar.jpg',
+//       sub: '1234567890',
+//     };
+
+//     const authUser = new User();
+//     authUser.email = payload.email;
+//     authUser.profile = new UserProfile();
+
+//     // Mock jwt.sign to return a dummy token
+//     const jwtSignMock = jest.spyOn(jwt, 'sign').mockReturnValue('dummy_token');
+
+//     const result = await googleAuthService.handleGoogleAuthUser(payload, authUser);
+
+//     expect(result).toHaveProperty('access_token', 'dummy_token');
+//     expect(result.user).toHaveProperty('email', payload.email);
+//     expect(jwtSignMock).toHaveBeenCalledWith(
+//       { userId: authUser.id },
+//       config.TOKEN_SECRET,
+//       { expiresIn: '1d' },
+//     );
+//   });
+
+//   it('should throw BadRequest error if email does not match', async () => {
+//     // Mock payload data
+//     const payload = {
+//       email: 'user@example.com',
+//       email_verified: true,
+//       name: 'John Doe',
+//       picture: 'https://example.com/avatar.jpg',
+//       sub: '1234567890',
+//     };
+
+//     const authUser = new User();
+//     authUser.email = 'different@example.com';
+//     authUser.profile = new UserProfile();
+
+//     await expect(googleAuthService.handleGoogleAuthUser(payload, authUser)).rejects.toThrow(BadRequest);
+//   });
+// });

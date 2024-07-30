@@ -16,3 +16,6 @@ export * from "./comment";
 export * from "./category";
 export * from "./payment";
 export * from "./log";
+export * from "./invitation";
+export * from "./contact-us";
+export * from "./faq";

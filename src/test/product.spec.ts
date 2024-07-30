@@ -36,12 +36,10 @@ describe("ProductController - createProduct", () => {
     mockUser = { id: "1", name: "sampleUser", email: "user@sample.com" };
     mockRequest = {
       body: {
-        sanitizedData: {
-          name: "Test Product",
-          description: "Test Description",
-          price: 10.99,
-          category: "Test Category",
-        },
+        name: "Test Product",
+        description: "Test Description",
+        price: 10.99,
+        category: "Test Category",
       },
       user: mockUser,
     };
@@ -92,7 +90,7 @@ describe("ProductController - createProduct", () => {
     expect(nextFunction).toHaveBeenCalled();
     expect(ProductDTO.prototype.validate).toHaveBeenCalled();
     expect(ProductService.prototype.createProduct).toHaveBeenCalledWith({
-      ...mockRequest.body.sanitizedData,
+      ...mockRequest.body,
       user: mockUser,
     });
     expect(mockResponse.status).toHaveBeenCalledWith(201);
@@ -101,10 +99,8 @@ describe("ProductController - createProduct", () => {
       status_code: 201,
       message: "Product created successfully",
       data: {
-        productWithoutUser: {
-          id: "product123",
-          ...mockRequest.body.sanitizedData,
-        },
+        id: "product123",
+        ...mockRequest.body.sanitizedData,
       },
     });
   });
@@ -185,82 +181,3 @@ describe("ProductController - createProduct", () => {
     expect(mockResponse.json).toHaveBeenCalledWith({ errors: mockErrors });
   });
 });
-
-// get one product
-
-// jest.mock("../data-source", () => ({
-//   __esModule: true,
-//   default: {
-//     getRepository: jest.fn(),
-//     initialize: jest.fn(),
-//     isInitialized: false
-//   }
-// }));
-
-// describe("ProductService - getOneProduct", () => {
-//   let productService: ProductService;
-//   let mockRepository: jest.Mocked<Repository<Product>>;
-
-//   beforeEach(() => {
-//     mockRepository = {
-//       findOneBy: jest.fn()
-//       // Add other methods if needed
-//     } as any;
-
-//     (AppDataSource.getRepository as jest.Mock).mockReturnValue(mockRepository);
-
-//     productService = new ProductService();
-//   });
-
-//   afterEach(() => {
-//     jest.resetAllMocks();
-//   });
-
-//   describe("fetchProductById", () => {
-//     it("should return the product if it exists", async () => {
-//       const productId = "123";
-//       const user: User = {
-//         id: "user-123",
-//         name: "John Doe"
-//         // Add any other necessary properties
-//       } as User;
-//       const product = {
-//         id: "123",
-//         name: "Product 1",
-//         description: "Product is robust",
-//         price: 19,
-//         category: "Gadgets",
-//         user: user
-//       } as Product;
-
-//       mockRepository.findOneBy.mockResolvedValue(product);
-
-//       const result = await productService.getOneProduct(productId);
-//       expect(result).toEqual(product);
-//       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: productId });
-//     });
-
-//     it("should return null if the product does not exist", async () => {
-//       const productId = "non-existing-id";
-
-//       mockRepository.findOneBy.mockResolvedValue(null);
-
-//       const result = await productService.getOneProduct(productId);
-
-//       expect(result).toBeNull();
-//       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: productId });
-//     });
-
-//     it("should throw an error if there is an issue with fetching the product", async () => {
-//       const productId = "123";
-//       const error = new Error("Error fetching product");
-
-//       mockRepository.findOneBy.mockRejectedValue(error);
-
-//       await expect(productService.getOneProduct(productId)).rejects.toThrow(
-//         "Error fetching product"
-//       );
-//       expect(mockRepository.findOneBy).toHaveBeenCalledWith({ id: productId });
-//     });
-//   });
-// });

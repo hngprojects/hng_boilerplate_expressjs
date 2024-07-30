@@ -37,7 +37,7 @@ class UserController {
    *              type: object
    *              properties:
    *                status_code:
-   *                  type: number
+   *                  type: integer
    *                  example: 200
    *                data:
    *                  type: object
@@ -67,7 +67,7 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
-      // const id = "953a46af-c635-4edf-a7d9-17393ab93be2";
+
       if (!id) {
         return res.status(401).json({
           status_code: 401,
@@ -108,7 +108,7 @@ class UserController {
           profile_id: user.profile?.id,
           first_name: user.profile?.first_name,
           last_name: user.profile?.last_name,
-          phone: user.profile?.phone,
+          phone_number: user.profile?.phone_number,
           avatar_url: user.profile?.avatarUrl,
         },
       });
@@ -190,7 +190,7 @@ class UserController {
    *   delete:
    *     tags:
    *       - User
-   *     summary: Delete a user
+   *     summary: Soft Delete a user
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -198,7 +198,7 @@ class UserController {
    *         name: id
    *         required: true
    *         schema:
-   *           type: string
+   *           type: uuid
    *         description: The ID of the user
    *     responses:
    *       202:
@@ -212,7 +212,7 @@ class UserController {
    *                   type: string
    *                   example: success
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 202
    *                 message:
    *                   type: string
@@ -228,7 +228,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 400
    *                 message:
    *                   type: string
@@ -244,7 +244,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 404
    *                 message:
    *                   type: string
@@ -260,7 +260,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 500
    *                 message:
    *                   type: string
@@ -304,7 +304,7 @@ class UserController {
    *   patch:
    *     tags:
    *       - User
-   *     summary: Update a user
+   *     summary: SuperAdmin- Update a user
    *     description: API endpoint that allows authenticated super admins to update a single user's details. This endpoint ensures that only users with super admin privileges can modify user information, maintaining system security.
    *     security:
    *       - bearerAuth: []
@@ -348,7 +348,7 @@ class UserController {
    *                   type: string
    *                   example: success
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 200
    *                 data:
    *                   type: object

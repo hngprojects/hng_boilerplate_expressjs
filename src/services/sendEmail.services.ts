@@ -19,7 +19,10 @@ export class EmailService {
     return availableTemplate;
   }
 
-  async queueEmail(payload: EmailQueuePayload, user): Promise<EmailQueue> {
+  async queueEmail(
+    payload: EmailQueuePayload,
+    user: User,
+  ): Promise<EmailQueue> {
     const emailQueueRepository = AppDataSource.getRepository(EmailQueue);
     const newEmail = emailQueueRepository.create(payload);
     await emailQueueRepository.save(newEmail);
@@ -37,9 +40,10 @@ export class EmailService {
       imageUrl:
         payload.variables?.imageUrl ||
         "https://exampleImg.com/reset-password.png",
-      userName: payload.variables?.user_name || user?.name || "User",
+      userName: payload.variables?.userName || "User",
       activationLinkUrl: payload.variables?.activationLink,
       resetUrl: payload.variables?.resetUrl,
+      body: payload.variables?.body,
       companyName: payload.variables?.companyName || "Boilerplate",
       supportUrl:
         payload.variables?.supportUrl || "https://example.com/support",
@@ -87,10 +91,10 @@ export class EmailService {
     return newEmail;
   }
 
-  async sendEmail(payload: EmailQueuePayload): Promise<void> {
-    try {
-    } catch (error) {
-      throw new ServerError("Internal server error");
-    }
-  }
+  // async sendEmail(payload: EmailQueuePayload): Promise<void> {
+  //   try {
+  //   } catch (error) {
+  //     throw new ServerError( "Internal server error");
+  //   }
+  // }
 }

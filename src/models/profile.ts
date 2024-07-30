@@ -13,8 +13,8 @@ export class Profile extends ExtendedBaseEntity {
   @Column()
   last_name: string;
 
-  @Column()
-  phone: string;
+  @Column({ nullable: true })
+  phone_number: string;
 
   @Column()
   avatarUrl: string;

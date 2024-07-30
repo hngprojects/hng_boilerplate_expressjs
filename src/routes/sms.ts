@@ -4,6 +4,6 @@ import { authMiddleware } from "../middleware";
 
 const smsRouter = Router();
 
-smsRouter.post("/send", authMiddleware, sendSms);
+smsRouter.post("/sms/send", authMiddleware, sendSms);
 
 export { smsRouter };

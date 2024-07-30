@@ -7,24 +7,31 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { User } from "./user";
+import { Organization } from "./organization";
 
 @Entity()
-export class PasswordResetToken {
+export class Invitation {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   token: string;
 
   @Column()
-  expiresAt: Date;
+  expires_at: Date;
 
-  @ManyToOne(() => User, (user) => user.passwordResetTokens)
+  @ManyToOne(() => User)
   user: User;
 
+  @ManyToOne(() => Organization)
+  organization: Organization;
+
+  @Column()
+  email: string;
+
   @CreateDateColumn()
-  createdAt: Date;
+  created_at: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updated_at: Date;
 }

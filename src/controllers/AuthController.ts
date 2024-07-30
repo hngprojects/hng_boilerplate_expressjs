@@ -1,5 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.services";
+import { BadRequest } from "../middleware";
+import { GoogleUserInfo } from "../services/google.auth.service";
+import { verifyToken } from "../config/google.passport.config";
+import jwt from "jsonwebtoken";
+import config from "../config";
 
 const authService = new AuthService();
 
@@ -12,7 +17,7 @@ const authService = new AuthService();
 
 /**
  * @swagger
- * api/v1/auth/signup:
+ * api/v1/auth/register:
  *   post:
  *     summary: Sign up a new user
  *     tags: [Auth]
@@ -23,16 +28,15 @@ const authService = new AuthService();
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
+ *               first_name:
  *                 type: string
- *               lastName:
+ *               last_name:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               phone:
- *                 type: string
+
  *     responses:
  *       201:
  *         description: The user was successfully created
@@ -201,19 +205,19 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error.
  */
-const forgotPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { email } = req.body;
-    const { message } = await authService.forgotPassword(email);
-    res.status(200).json({ status: "sucess", status_code: 200, message });
-  } catch (error) {
-    next(error);
-  }
-};
+// const forgotPassword = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { email } = req.body;
+//     const { message } = await authService.forgotPassword(email);
+//     res.status(200).json({ status: "sucess", status_code: 200, message });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 /**
  * @swagger
@@ -257,19 +261,19 @@ const forgotPassword = async (
  *       500:
  *         description: Internal server error.
  */
-const resetPassword = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { token, newPassword } = req.body;
-    const { message } = await authService.resetPassword(token, newPassword);
-    res.status(200).json({ message });
-  } catch (error) {
-    next(error);
-  }
-};
+// const resetPassword = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const { token, newPassword } = req.body;
+//     const { message } = await authService.resetPassword(token, newPassword);
+//     res.status(200).json({ message });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 /**
  * @swagger
@@ -333,11 +337,97 @@ const changePassword = async (
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/auth/google-signin:
+ *   post:
+ *     summary: Handle Google authentication and register/login a user
+ *     description: This endpoint handles Google OAuth2.0 authentication. It accepts a Google user payload and either registers a new user or logs in an existing one.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The user's email address.
+ *                 example: user@example.com
+ *               email_verified:
+ *                 type: boolean
+ *                 description: Whether the user's email is verified.
+ *                 example: true
+ *               name:
+ *                 type: string
+ *                 description: The user's full name.
+ *                 example: "John Doe"
+ *               picture:
+ *                 type: string
+ *                 format: url
+ *                 description: URL to the user's profile picture.
+ *                 example: "https://example.com/avatar.jpg"
+ *               sub:
+ *                 type: string
+ *                 description: Google user ID (subject claim).
+ *                 example: "1234567890"
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Verify if authentication is successful
+ *                   example: Authentication successful
+ *                 user:
+ *                   type: object
+ *                   description: The authenticated user object.
+ *                 access_token:
+ *                   type: string
+ *                   description: JWT access token for authentication.
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       400:
+ *         description: Bad Request - Invalid or missing data in request body
+ *       500:
+ *         description: Internal Server Error - An unexpected error occurred
+ */
+
+const googleAuthCall = async (req: Request, res: Response) => {
+  try {
+    const { id_token } = req.body;
+
+    // Verify the ID token from google
+    const userInfo = await verifyToken(id_token);
+
+    // update user info
+    const user = await GoogleUserInfo(userInfo);
+
+    // generate access token for the user
+    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // Return the JWT and User
+    res.json({ user, access_token: token });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Authentication failed" });
+  }
+};
+
 export {
   signUp,
   verifyOtp,
   login,
-  forgotPassword,
-  resetPassword,
+  // forgotPassword,
+  // resetPassword,
   changePassword,
+  googleAuthCall,
 };

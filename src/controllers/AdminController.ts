@@ -17,10 +17,17 @@ import { UserRole } from "../enums/userRoles";
 
 /**
  * @swagger
- * /api/v1/admin/organisation/:id:
+ * /api/v1/admin/organisation/{id}:
  *   patch:
  *     summary: Admin-Update an existing organisation
  *     tags: [Admin]
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -85,6 +92,7 @@ import { UserRole } from "../enums/userRoles";
  *                       format: date-time
  *                 status_code:
  *                   type: integer
+ *                   example: 200
  *       400:
  *         description: Bad Request
  *       500:
@@ -158,6 +166,121 @@ class AdminOrganisationController {
         .json({ message: error.message || "Internal Server Error" });
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/admin/organizations/{org_id}/delete:
+   *   delete:
+   *     summary: Admin-Delete an existing organization
+   *     tags: [Admin]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         description: The ID of the organization to delete
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Organization deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                     name:
+   *                       type: string
+   *                     description:
+   *                       type: string
+   *                     createdAt:
+   *                       type: string
+   *                       format: date-time
+   *                     updatedAt:
+   *                       type: string
+   *                       format: date-time
+   *       400:
+   *         description: Valid organization ID must be provided
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *                 message:
+   *                   type: string
+   *       500:
+   *         description: Failed to delete organization. Please try again later.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   */
+
+  // Delete organization
+  async deleteOrganization(req: Request, res: Response) {
+    const { org_id } = req.params;
+
+    if (!org_id) {
+      return res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: "Valid organization ID must be provided.",
+      });
+    }
+
+    try {
+      await this.adminService.deleteOrganization(org_id);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Organization deleted successfully.",
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to delete organization. Please try again later.",
+      });
+    }
+  }
 }
 
 class AdminUserController {
@@ -169,7 +292,7 @@ class AdminUserController {
 
   /**
    * @swagger
-   * /api/v1/admin/users/:id:
+   * /api/v1/admin/users/{id}:
    *   patch:
    *     summary: Admin-Update an existing user
    *     tags: [Admin]
@@ -387,7 +510,7 @@ class AdminUserController {
 
   /**
    * @swagger
-   * /api/v1/admin/users/:id:
+   * /api/v1/admin/users/{id}:
    *   get:
    *     summary: Superadmin - Get a single user
    *     tags: [Admin]
@@ -481,7 +604,7 @@ class AdminUserController {
           first_name: user.profile.first_name,
           last_name: user.profile.last_name,
           email: user.email,
-          phone: user.profile.phone,
+          phone: user.profile.phone_number,
           profile_picture: user.profile.avatarUrl,
           role: user.role,
         },

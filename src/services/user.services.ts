@@ -10,7 +10,7 @@ import { cloudinary } from "../config/multer";
 interface IUserProfileUpdate {
   first_name: string;
   last_name: string;
-  phone: string;
+  phone_number: string;
   avatarUrl: string;
 }
 
@@ -39,7 +39,9 @@ export class UserService {
   }
 
   public async softDeleteUser(id: string): Promise<UpdateResult> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
 
     if (!user) {
       throw new HttpError(404, "User Not Found");
@@ -72,7 +74,7 @@ export class UserService {
       const profile: Partial<Profile> = {
         first_name: payload.first_name,
         last_name: payload.last_name,
-        phone: payload.phone,
+        phone_number: payload.phone_number,
         avatarUrl: file ? file.path : undefined,
       };
 

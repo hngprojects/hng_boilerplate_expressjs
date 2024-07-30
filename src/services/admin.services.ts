@@ -26,6 +26,7 @@ export class AdminOrganisationService {
       const oldOrg = await orgRepository.findOne({
         where: { id: org_id },
       });
+
       if (!oldOrg) {
         throw new HttpError(
           404,
@@ -52,6 +53,25 @@ export class AdminOrganisationService {
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
+  }
+
+  public async deleteOrganization(orgId: string): Promise<Organization> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const organization = await organizationRepository.findOne({
+      where: { id: orgId },
+    });
+
+    if (!organization) {
+      throw new HttpError(404, "Organization not found");
+    }
+
+    try {
+      await organizationRepository.remove(organization);
+    } catch (error) {
+      throw new HttpError(500, "Deletion failed");
+    }
+
+    return organization; // Return the deleted organization
   }
 
   public async setUserRole(req: Request): Promise<User> {

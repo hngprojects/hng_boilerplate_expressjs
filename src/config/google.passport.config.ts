@@ -1,10 +1,13 @@
-import config from ".";
 import passport from "passport";
 import {
   Strategy as GoogleStrategy,
   Profile,
   VerifyCallback,
 } from "passport-google-oauth2";
+import config from ".";
+
+import { OAuth2Client } from "google-auth-library";
+const client = new OAuth2Client();
 
 passport.use(
   new GoogleStrategy(
@@ -29,3 +32,15 @@ passport.use(
 );
 
 export default passport;
+
+export async function verifyToken(idToken: string) {
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+  const payload = ticket.getPayload();
+  if (!payload) {
+    throw new Error("Unable to verify token");
+  }
+  return payload;
+}

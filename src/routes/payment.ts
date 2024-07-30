@@ -2,13 +2,17 @@ import { Router } from "express";
 import { PaymentController } from "../controllers";
 import { authMiddleware } from "../middleware";
 
-const paymentRouter = Router();
+const paymentFlutterwaveRouter = Router();
 
-paymentRouter.post(
-  "/flutterwave/initiate",
+paymentFlutterwaveRouter.post(
+  "/payments/flutterwave/initiate",
   authMiddleware,
   PaymentController.initiatePayment,
 );
-// paymentRouter.get('/flutterwave/verify/:transactionId',authMiddleware, PaymentController.verifyPayment);
+paymentFlutterwaveRouter.get(
+  "/payments/flutterwave/verify/:transactionId",
+  authMiddleware,
+  PaymentController.verifyPayment,
+);
 
-export { paymentRouter };
+export { paymentFlutterwaveRouter };

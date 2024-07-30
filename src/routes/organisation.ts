@@ -15,17 +15,29 @@ orgRouter.get(
   orgController.getSingleOrg.bind(orgController),
 );
 orgRouter.delete(
-  "/organizations/:org_id/users/:user_id",
+  "/organisations/:org_id/user/:user_id",
+  authMiddleware,
+  validateOrgId,
   orgController.removeUser.bind(orgController),
 );
 
 orgRouter.post(
-  "/",
+  "/organisations",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController),
 );
-
+orgRouter.post(
+  "/organisations/join",
+  authMiddleware,
+  orgController.joinOrganization.bind(orgController),
+);
+orgRouter.post(
+  "/organisations/:orgId/invite",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
+  orgController.createInvitation.bind(orgController),
+);
 orgRouter.get(
   "/users/:id/organisations",
   authMiddleware,
