@@ -6,8 +6,8 @@ import FaqController from "../controllers/FaqController";
 const faqRouter = Router();
 const faqController = new FaqController();
 
-faqRouter.get("/faq/info", faqController.getAllFaq.bind(faqController));
+faqRouter.get("/faqs/info", faqController.getAllFaq.bind(faqController));
 
-faqRouter.post("/faq", faqController.createFaq.bind(faqController));
+faqRouter.post("/faqs", faqController.createFaq.bind(faqController));
 
 export { faqRouter };
