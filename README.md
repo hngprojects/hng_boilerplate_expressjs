@@ -1,8 +1,8 @@
-# [App Name] Integration Documentation
+# HomeWork AI Integration Documentation
 
 ## Overview
 
-[Description]
+Backend Code for the HomeWork AI, an application that collects pictures of homework then solves it and send right answers
 
 ## Folder Structure
 
