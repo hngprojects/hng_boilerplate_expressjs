@@ -44,4 +44,9 @@ orgRouter.get(
   orgController.getOrganizations.bind(orgController),
 );
 
+orgRouter.get(
+  "/members/search",
+  authMiddleware,
+  orgController.searchOrganizationMembers.bind(orgController),
+);
 export { orgRouter };
