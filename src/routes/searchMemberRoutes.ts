@@ -4,6 +4,6 @@ import { authMiddleware } from "../middleware/auth";
 
 const searchOrganizationMembersRouter = Router();
 
-searchOrganizationMembersRouter.post("/members/search", authMiddleware, searchOrganizationMembers);
+searchOrganizationMembersRouter.get("/members/search", authMiddleware, searchOrganizationMembers);
 
 export { searchOrganizationMembersRouter };
