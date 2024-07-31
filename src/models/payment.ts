@@ -21,6 +21,12 @@ export class Payment {
   @Column()
   currency: string;
 
+  @Column()
+  productId: string;
+
+  @Column()
+  paymentServiceId: string;
+
   @Column({
     type: "enum",
     enum: ["pending", "completed", "failed"],
@@ -46,10 +52,6 @@ export class Payment {
     nullable: true,
   })
   organization: Organization | null;
-
-  @Column({ nullable: true })
-  @IsEmail()
-  payer_email: string;
 
   @Column({ nullable: true })
   description: string;
