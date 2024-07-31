@@ -1,51 +1,19 @@
-// import {
-//   Entity,
-//   PrimaryGeneratedColumn,
-//   Column,
-//   CreateDateColumn,
-//   ManyToOne,
-//   UpdateDateColumn,
-// } from "typeorm";
-// import ExtendedBaseEntity from "./extended-base-entity";
-// import { User } from "./user";
-
-// @Entity()
-// export class Blog extends ExtendedBaseEntity {
-//   @PrimaryGeneratedColumn("uuid")
-//   id: string;
-
-//   @Column()
-//   title: string;
-
-//   @Column()
-//   content: string;
-
-//   @ManyToOne(() => User, (user) => user.blogs)
-//   author: User;
-
-//   @CreateDateColumn()
-//   createdAt: Date;
-
-//   @UpdateDateColumn()
-//   updatedAt: Date;
-// }
-
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
+  CreateDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToMany,
-  ManyToMany,
-  JoinTable,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { User } from "./user";
-import { Comment } from "./comment";
-import { Tag } from "./tag";
 import { Category } from "./category";
+import { Comment } from "./comment";
 import { Like } from "./like";
+import { Tag } from "./tag";
+import { User } from "./user";
 
 @Entity()
 export class Blog {

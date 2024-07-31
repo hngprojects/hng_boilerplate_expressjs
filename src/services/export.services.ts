@@ -2,7 +2,7 @@ import AppDataSource from "../data-source";
 import { User } from "../models/user";
 import { Parser } from "json2csv";
 import PDFDocument from "pdfkit";
-import fs from "fs";
+import { PassThrough } from "stream";
 
 class ExportService {
   static async getUserById(id: string) {
@@ -15,23 +15,27 @@ class ExportService {
     return json2csvParser.parse(users);
   }
 
-  static generatePDF(users: User[]): Buffer {
-    const doc = new PDFDocument();
-    const filePath = "users.pdf";
-    const stream = fs.createWriteStream(filePath);
+  static async generatePDF(users: User[]): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const doc = new PDFDocument();
+      const stream = new PassThrough();
+      const buffers: Buffer[] = [];
 
-    doc.pipe(stream);
+      doc.pipe(stream);
 
-    users.forEach((user) => {
-      doc.text(`ID: ${user.id}`);
-      doc.text(`Name: ${user.name}`);
-      doc.text(`Email: ${user.email}`);
-      doc.moveDown();
+      stream.on("data", (chunk) => buffers.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(buffers)));
+      stream.on("error", reject);
+
+      users.forEach((user) => {
+        doc.text(`ID: ${user.id}`);
+        doc.text(`Name: ${user.name}`);
+        doc.text(`Email: ${user.email}`);
+        doc.moveDown();
+      });
+
+      doc.end();
     });
-
-    doc.end();
-
-    return fs.readFileSync(filePath);
   }
 }
 

@@ -114,10 +114,10 @@
  */
 
 import { Request, Response } from "express";
+import AppDataSource from "../data-source";
+import { User } from "../models";
 import { EmailService } from "../services";
 import { EmailQueuePayload } from "../types";
-import { User } from "../models";
-import AppDataSource from "../data-source";
 
 const emailService = new EmailService();
 
