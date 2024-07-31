@@ -62,6 +62,8 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
+
+server.use("/api/v1", faqRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
 server.use("/api/v1", adminRouter);
@@ -80,7 +82,6 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
-server.use("/api/v1", faqRouter);
 
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
