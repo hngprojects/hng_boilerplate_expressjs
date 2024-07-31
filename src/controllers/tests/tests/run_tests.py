@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import pprintpp
 
 def run_tests():
     python_executable = sys.executable
@@ -9,8 +10,10 @@ def run_tests():
 
 if __name__ == "__main__":
     output, exit_code = run_tests()
-    print(output)
+    # print(output)
+    pprintpp.pprint(output)
     if exit_code != 0:
         print("Some tests failed.")
     else:
         print("All tests passed.")
+      

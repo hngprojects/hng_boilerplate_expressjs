@@ -3,6 +3,6 @@ import { runTestController } from "../controllers";
 
 const runTestRouter = Router();
 
-runTestRouter.get("/run-tests", runTestController);
+runTestRouter.get("/", runTestController);
 
 export { runTestRouter };
