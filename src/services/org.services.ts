@@ -232,4 +232,56 @@ export class OrgService implements IOrgService {
     // delete invitation used
     await invitationRepository.remove(invitation);
   }
+  // public async updateOrganizationDetails(
+  //   org_id: string,
+  //   update_data: Partial<Organization>
+  // ): Promise<Organization> {
+  //   const organizationRepository = AppDataSource.getRepository(Organization);
+
+  //   const organization = await organizationRepository.findOne({
+  //     where: { id: org_id },
+  //   });
+
+  //   if (!organization) {
+  //     throw new Error("Organization not found");
+  //   }
+
+  //   console.log("Updating organization with data:", update_data);
+
+  //   Object.assign(organization, update_data);
+
+  //   try {
+  //     await organizationRepository.save(organization);
+  //   } catch (error) {
+  //     console.error("Error saving organization:", error);
+  //     throw error;
+  //   }
+  //   return organization;
+  // }
+  public async updateOrganizationDetails(
+    org_id: string,
+    update_data: Partial<Organization>,
+  ): Promise<Organization> {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+
+    const organization = await organizationRepository.findOne({
+      where: { id: org_id },
+    });
+
+    if (!organization) {
+      throw new Error("Organization not found");
+    }
+
+    console.log("Updating organization with data:", update_data);
+
+    Object.assign(organization, update_data);
+
+    try {
+      await organizationRepository.save(organization);
+    } catch (error) {
+      console.error("Error saving organization:", error);
+      throw error;
+    }
+    return organization;
+  }
 }

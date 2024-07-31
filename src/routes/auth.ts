@@ -26,7 +26,6 @@ authRoute.put(
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
   changeUserRole,
 );
-
 authRoute.post("/auth/google", googleAuthCall);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);

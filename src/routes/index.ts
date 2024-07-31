@@ -14,6 +14,6 @@ export * from "./product";
 export * from "./sendEmail.route";
 export * from "./sms";
 export * from "./testimonial";
-export * from "./updateOrg";
+// export * from "./updateOrg";
 export * from "./user";
 export * from "./faq";

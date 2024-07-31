@@ -728,4 +728,192 @@ export class OrgController {
       });
     }
   }
+
+  /**
+   * @swagger
+   * /organisation/{org_id}:
+   *   put:
+   *     summary: Update an existing organisation
+   *     description: This endpoint allows a user to update an existing organisation
+   *     tags: [Organisations]
+   *     operationId: updateOrganisation
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organisation to update
+   *     requestBody:
+   *       description: Organisation payload
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               name:
+   *                 type: string
+   *                 example: Updated Organisation Name
+   *               description:
+   *                 type: string
+   *                 example: Updated description
+   *               email:
+   *                 type: string
+   *                 example: updated_email@gmail.com
+   *               industry:
+   *                 type: string
+   *                 example: Updated industry
+   *               type:
+   *                 type: string
+   *                 example: Updated type
+   *               country:
+   *                 type: string
+   *                 example: Updated country
+   *               state:
+   *                 type: string
+   *                 example: Updated state
+   *             required:
+   *               - name
+   *               - description
+   *               - email
+   *               - industry
+   *               - type
+   *               - country
+   *               - state
+   *     responses:
+   *       '200':
+   *         description: Organisation updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 message:
+   *                   type: string
+   *                   example: Organisation updated successfully
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "1"
+   *                     name:
+   *                       type: string
+   *                       example: Updated Organisation Name
+   *                     description:
+   *                       type: string
+   *                       example: Updated description
+   *                     email:
+   *                       type: string
+   *                       example: updated_email@gmail.com
+   *                     industry:
+   *                       type: string
+   *                       example: Updated industry
+   *                     type:
+   *                       type: string
+   *                       example: Updated type
+   *                     country:
+   *                       type: string
+   *                       example: Updated country
+   *                     state:
+   *                       type: string
+   *                       example: Updated state
+   *                     slug:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a77
+   *                     owner_id:
+   *                       type: string
+   *                       example: 86820688-fd94-4b58-9bdd-99a701714a76
+   *                     createdAt:
+   *                       type: string
+   *                       format: date-time
+   *                     updatedAt:
+   *                       type: string
+   *                       format: date-time
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *       '400':
+   *         description: Bad Request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Invalid input
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       '404':
+   *         description: Organisation not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Organisation not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       '500':
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+  async updateOrganisation(req: Request, res: Response, next: NextFunction) {
+    try {
+      const orgId = req.params.org_id;
+      const payload = req.body;
+
+      const updatedOrganisation =
+        await this.orgService.updateOrganizationDetails(orgId, payload);
+
+      if (!updatedOrganisation) {
+        return res.status(404).json({
+          status: "error",
+          message: "Organisation not found",
+          status_code: 404,
+        });
+      }
+
+      const respObj = {
+        status: "success",
+        message: "Organisation updated successfully",
+        data: updatedOrganisation,
+        status_code: 200,
+      };
+
+      return res.status(200).json(respObj);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
