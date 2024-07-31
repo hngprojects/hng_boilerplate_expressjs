@@ -1,12 +1,10 @@
 // src/index.ts
 import cors from "cors";
+
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import "reflect-metadata";
-import swaggerUi from "swagger-ui-express";
-import config from "./config";
-import passport from "./config/google.passport.config";
-import AppDataSource from "./data-source";
+
 import { errorHandler, routeNotFound } from "./middleware";
 import {
   adminRouter,
@@ -14,6 +12,7 @@ import {
   blogRouter,
   contactRouter,
   exportRouter,
+  faqRouter,
   helpRouter,
   jobRouter,
   notificationRouter,
@@ -27,6 +26,12 @@ import {
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
+
+import swaggerUi from "swagger-ui-express";
+import config from "./config";
+import passport from "./config/google.passport.config";
+import AppDataSource from "./data-source";
+
 import updateRouter from "./routes/updateOrg";
 import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
@@ -82,6 +87,8 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
+server.use("/api/v1", faqRouter);
+
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

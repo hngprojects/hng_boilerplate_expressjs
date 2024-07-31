@@ -14,3 +14,4 @@ export * from "./PaymentController";
 export * from "./BlogController";
 export * from "./PaymentLemonSqueezyController";
 export * from "./contactController";
+export * from "./FaqController";

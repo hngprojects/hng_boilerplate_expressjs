@@ -40,20 +40,12 @@ describe("BlogService", () => {
     userRepositoryMock = {
       findOne: jest.fn(),
     } as any;
-
-    // Mock the return value of AppDataSource.getRepository
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(
-      blogRepositoryMock,
-    );
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(
-      userRepositoryMock,
-    );
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(
-      tagRepositoryMock,
-    );
-    (AppDataSource.getRepository as jest.Mock).mockReturnValue(
-      categoryRepositoryMock,
-    );
+    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
+      if (entity === Blog) return blogRepositoryMock;
+      if (entity === User) return userRepositoryMock;
+      if (entity === Tag) return tagRepositoryMock;
+      if (entity === Category) return categoryRepositoryMock;
+    });
 
     // Initialize the BlogService after setting up the mock
     blogService = new BlogService();
@@ -125,18 +117,23 @@ describe("BlogService", () => {
       const mockCategory2 = { name: "category-2" } as Category;
 
       userRepositoryMock.findOne.mockResolvedValue(mockUser);
-      tagRepositoryMock.findOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(null);
-      tagRepositoryMock.create
-        .mockReturnValue(mockTag)
-        .mockReturnValue(mockTag2);
-      categoryRepositoryMock.findOne
-        .mockResolvedValueOnce(null)
-        .mockResolvedValue(null);
-      categoryRepositoryMock.create
-        .mockReturnValue(mockCategory)
-        .mockReturnValue(mockCategory2);
+      tagRepositoryMock.findOne.mockResolvedValue(null);
+      tagRepositoryMock.create.mockImplementation((tagData) => tagData as Tag);
+      tagRepositoryMock.save.mockImplementation((tag) =>
+        Promise.resolve({
+          id: 1,
+          blogs: tag.blogs as any,
+          name: tag.name as any,
+        }),
+      );
+      categoryRepositoryMock.findOne.mockResolvedValue(null);
+      categoryRepositoryMock.create.mockImplementation(
+        (categoryData) => categoryData as Category,
+      );
+
+      categoryRepositoryMock.save.mockImplementation((category) =>
+        Promise.resolve(category as any),
+      );
 
       const expectedBlog = {
         id: "some-id",
@@ -163,7 +160,13 @@ describe("BlogService", () => {
         payload.categories,
       );
 
-      // expect(response).toEqual(expectedBlog);
+      expect(response).toEqual(expectedBlog);
+      expect(tagRepositoryMock.findOne).toHaveBeenCalledTimes(2);
+      expect(tagRepositoryMock.create).toHaveBeenCalledTimes(2);
+      expect(tagRepositoryMock.save).toHaveBeenCalledTimes(2);
+      expect(categoryRepositoryMock.findOne).toHaveBeenCalledTimes(2);
+      expect(categoryRepositoryMock.create).toHaveBeenCalledTimes(2);
+      expect(categoryRepositoryMock.save).toHaveBeenCalledTimes(2);
     });
   });
 });
