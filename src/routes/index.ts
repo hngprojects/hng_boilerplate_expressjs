@@ -17,4 +17,5 @@ export * from "./testimonial";
 export * from "./updateOrg";
 export * from "./user";
 export * from "./faq";
+export * from "./roles";
 export * from "./run-test";

@@ -1,3 +1,4 @@
+import { User } from "../models";
 import { NotificationSetting } from "../models/notification";
 import { Request, Response } from "express";
 
@@ -126,6 +127,15 @@ const CreateNotification = async (req: Request, res: Response) => {
         .json({ status: "error", code: 400, message: validation.message });
     }
     const { user_id } = req.body;
+
+    const user = await User.findOne({ where: { id: user_id } });
+    if (!user) {
+      return res.status(404).json({
+        status: "error",
+        code: 404,
+        message: "User not found",
+      });
+    }
 
     // Check if a notification setting already exists for this user_id
     const existingSetting = await NotificationSetting.findOne({
