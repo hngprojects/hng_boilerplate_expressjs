@@ -25,7 +25,6 @@ import {
   sendEmailRoute,
   testimonialRoute,
   userRouter,
-  searchOrganizationMembersRouter
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -85,7 +84,6 @@ server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
 server.use("/api/v1", faqRouter);
-server.use("/api/v1", searchOrganizationMembersRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
