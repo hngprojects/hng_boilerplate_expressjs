@@ -27,13 +27,13 @@ export class AuthService implements IAuthService {
       }
       const hashedPassword = await hashPassword(password);
       const otp = generateNumericOTP(6);
-      const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const otpExpires = new Date(Date.now() + 24 * 3600 * 1000);
       const user = new User();
       user.name = `${first_name} ${last_name}`;
       user.email = email;
       user.password = hashedPassword;
       user.profile = new Profile();
-      user.profile.first_name = last_name;
+      user.profile.first_name = first_name;
       user.profile.last_name = last_name;
       user.profile.avatarUrl = "";
       user.otp = parseInt(otp);
