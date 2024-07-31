@@ -393,6 +393,79 @@ const changePassword = async (
 
 const googleSignIn = async () => {};
 
+/**
+ * @swagger
+ * /api/v1/auth/magic-link:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Passwordless sign-in with email
+ *     description: API endpoint to initiate passwordless sign-in by sending email to the registered user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Sign-in token sent to email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Sign-in token sent to email
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request body
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
 const createMagicToken = async (
   req: Request,
   res: Response,
@@ -419,6 +492,80 @@ const createMagicToken = async (
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/auth/magic-link:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Authenticate user with magic link
+ *     description: Validates the magic link token and authenticates the user
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Magic link token
+ *       - in: query
+ *         name: redirect
+ *         schema:
+ *           type: boolean
+ *         description: Whether to redirect after authentication (true/false)
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ *         headers:
+ *           Authorization:
+ *             schema:
+ *               type: string
+ *             description: Bearer token for authentication
+ *           Set-Cookie:
+ *             schema:
+ *               type: string
+ *             description: Contains the hng_token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: user123
+ *                     email:
+ *                       type: string
+ *                       example: user@example.com
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                 access_token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       302:
+ *         description: Redirect to home page (when redirect=true)
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Request
+ *       500:
+ *         description: Internal server error
+ *     security: []
+ */
 const authenticateUserMagicLink = async (
   req: Request,
   res: Response,
@@ -461,7 +608,7 @@ const authenticateUserMagicLink = async (
       return res.redirect("/");
     } else {
       return res.status(200).json({
-        status: "ok",
+        status_code: 200,
         data: responseData,
         access_token,
       });
