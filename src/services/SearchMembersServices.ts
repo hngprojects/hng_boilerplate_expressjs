@@ -20,14 +20,12 @@ export const searchOrganizationMembersService = async (criteria: SearchCriteria)
 
         if (name) {
             query.andWhere("LOWER(user.name) LIKE LOWER(:name)", { name: `%${name}%` });
-        }
-
-        if (email) {
+        } else if (email) {
             query.andWhere("LOWER(user.email) LIKE LOWER(:email)", { email: `%${email}%` });
         }
 
         const userOrganizations = await query.getMany();
-
+        
         if (userOrganizations.length > 0) {
             // Map organization details and group users by organization
             const organizationsMap = new Map<string, any>();
