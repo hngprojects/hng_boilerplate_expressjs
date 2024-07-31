@@ -14,6 +14,7 @@ import {
   blogRouter,
   contactRouter,
   exportRouter,
+  faqRouter,
   helpRouter,
   jobRouter,
   notificationRouter,
@@ -82,6 +83,8 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
+server.use("/api/v1", faqRouter);
+
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
