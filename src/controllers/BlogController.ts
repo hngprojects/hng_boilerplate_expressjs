@@ -2,7 +2,11 @@ import { Request, Response } from "express";
 import { BlogService } from "../services";
 
 export class BlogController {
-  private blogService = new BlogService();
+  private blogService: BlogService;
+
+  constructor() {
+    this.blogService = new BlogService();
+  }
 
   /**
    * @swagger
@@ -376,6 +380,36 @@ export class BlogController {
         status_code: 500,
         error: "Internal server error",
         details: error.message,
+      });
+    }
+  }
+
+  async createBlogController(req: Request, res: Response) {
+    const { title, content, image_url, tags, categories } = req.body;
+
+    try {
+      const newBlog = await this.blogService.createBlogPost(
+        title,
+        content,
+        req.user.id,
+        image_url,
+        tags,
+        categories,
+      );
+      res.status(201).json({
+        status: "success",
+        status_code: 201,
+        message: "Blog post created successfully",
+        data: {
+          blog: newBlog,
+          author: req.user.id,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: error.message,
       });
     }
   }

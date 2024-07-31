@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
-import { BadRequest } from "../middleware";
 import config from "../config";
+import { BadRequest } from "../middleware";
 import log from "./logger";
 
 const Sendmail = async (emailcontent: any) => {

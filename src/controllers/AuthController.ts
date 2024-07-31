@@ -1,10 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import { AuthService } from "../services/auth.services";
-import { BadRequest } from "../middleware";
-import { GoogleUserInfo } from "../services/google.auth.service";
-import { verifyToken } from "../config/google.passport.config";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import { verifyToken } from "../config/google.passport.config";
+import { BadRequest } from "../middleware";
+import { User } from "../models";
+import { AuthService } from "../services/auth.services";
+import { GoogleUserInfo } from "../services/google.auth.service";
+import RequestUtils from "../utils/request.utils";
 
 const authService = new AuthService();
 
@@ -205,19 +207,8 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error.
  */
-// const forgotPassword = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const { email } = req.body;
-//     const { message } = await authService.forgotPassword(email);
-//     res.status(200).json({ status: "sucess", status_code: 200, message });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
+
+const forgotPassword = async () => {};
 
 /**
  * @swagger
@@ -274,6 +265,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 //     next(error);
 //   }
 // };
+const resetPassword = async () => {};
 
 /**
  * @swagger
@@ -399,6 +391,89 @@ const changePassword = async (
  *         description: Internal Server Error - An unexpected error occurred
  */
 
+const googleSignIn = async () => {};
+
+const createMagicToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const email = req.body?.email;
+    if (!email) {
+      throw new BadRequest("Email is missing in request body.");
+    }
+    const response = await authService.generateMagicLink(email);
+    if (!response.ok) {
+      throw new BadRequest("Error processing request");
+    }
+    const requestUtils = new RequestUtils(req, res);
+    requestUtils.addDataToState("localUser", response.user);
+
+    return res.status(200).json({
+      status_code: 200,
+      message: `Sign-in token sent to email` || response.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const authenticateUserMagicLink = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.query.token;
+    const response = await authService.validateMagicLinkToken(token as string);
+    if (response.status !== "ok") {
+      throw new BadRequest("Invalid Request");
+    }
+    const { access_token } = await authService.passwordlessLogin(
+      response.userId,
+    );
+
+    const requestUtils = new RequestUtils(req, res);
+    let user: User = requestUtils.getDataFromState("local_user");
+    if (!user?.email && !user?.id) {
+      user = await User.findOne({
+        where: { email: response.email },
+      });
+    }
+
+    const responseData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
+    res.header("Authorization", access_token);
+    res.cookie("hng_token", access_token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: config.NODE_ENV !== "development",
+      sameSite: config.NODE_ENV === "development" ? "lax" : "none",
+      path: "/",
+    });
+
+    if (req.query?.redirect === "true") {
+      return res.redirect("/");
+    } else {
+      return res.status(200).json({
+        status: "ok",
+        data: responseData,
+        access_token,
+      });
+    }
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      return res.status(400).json({ status: "error", message: err.message });
+    }
+    next(err);
+  }
+};
+
 const googleAuthCall = async (req: Request, res: Response) => {
   try {
     const { id_token } = req.body;
@@ -417,17 +492,19 @@ const googleAuthCall = async (req: Request, res: Response) => {
     // Return the JWT and User
     res.json({ user, access_token: token });
   } catch (error) {
-    console.error(error);
     res.status(400).json({ error: "Authentication failed" });
   }
 };
 
 export {
-  signUp,
-  verifyOtp,
+  authenticateUserMagicLink,
+  changePassword,
+  createMagicToken,
+  googleAuthCall,
+  // handleGoogleAuth,
   login,
+  signUp,
   // forgotPassword,
   // resetPassword,
-  changePassword,
-  googleAuthCall,
+  verifyOtp,
 };

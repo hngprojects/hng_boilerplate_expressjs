@@ -10,6 +10,7 @@ const config = {
   DB_PORT: process.env.DB_PORT,
   DB_NAME: process.env.DB_NAME,
   TOKEN_SECRET: process.env.AUTH_SECRET,
+  TOKEN_EXPIRY: process.env.AUTH_EXPIRY,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_HOST: process.env.SMTP_HOST,
@@ -30,6 +31,7 @@ const config = {
   FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
   FLW_ENCRYPTION_KEY: process.env.FLW_ENCRYPTION_KEY,
   LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY,
+  BASE_URL: process.env.BASE_URL,
 };
 
 export default config;

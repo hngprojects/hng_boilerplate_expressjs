@@ -1,12 +1,25 @@
-import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import APP_CONFIG from "../config/app.config";
 import AppDataSource from "../data-source";
-import { Conflict, HttpError } from "../middleware";
+import {
+  BadRequest,
+  Conflict,
+  HttpError,
+  ResourceNotFound,
+} from "../middleware";
 import { Profile, User } from "../models";
 import { IAuthService, IUserLogin, IUserSignUp } from "../types";
-import { comparePassword, generateNumericOTP, hashPassword } from "../utils";
+import {
+  comparePassword,
+  generateAccessToken,
+  generateNumericOTP,
+  generateToken,
+  hashPassword,
+  verifyToken,
+} from "../utils";
 import { Sendmail } from "../utils/mail";
+import { generateMagicLinkEmail } from "../views/magic-link.email";
 import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
@@ -33,11 +46,12 @@ export class AuthService implements IAuthService {
       user.email = email;
       user.password = hashedPassword;
       user.profile = new Profile();
-      user.profile.first_name = last_name;
+      user.profile.first_name = first_name;
       user.profile.last_name = last_name;
       user.profile.avatarUrl = "";
       user.otp = parseInt(otp);
       user.otp_expires_at = otpExpires;
+      user.isverified = true;
 
       const createdUser = await AppDataSource.manager.save(user);
       const access_token = jwt.sign(
@@ -48,7 +62,7 @@ export class AuthService implements IAuthService {
         },
       );
 
-      const mailSent = await Sendmail({
+     const mailSent = await Sendmail({
         from: `Boilerplate <support@boilerplate.com>`,
         to: email,
         subject: "OTP VERIFICATION",
@@ -235,7 +249,72 @@ export class AuthService implements IAuthService {
 
       return { message: "Password changed successfully" };
     } catch (error) {
-      throw new HttpError(error.status || 500, error.message || error);
+      throw error;
+    }
+  }
+
+  public async generateMagicLink(email: string) {
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (user === null || !user) {
+        throw new ResourceNotFound("User is not registered");
+      }
+
+      const token = generateToken({ email: email });
+      const protocol = APP_CONFIG.USE_HTTPS ? "https" : "http";
+      const magicLinkUrl = `${protocol}://${config.BASE_URL}/api/v1/auth/magic-link?token=${token}`;
+
+      const mailToBeSentToUser = await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "MAGIC LINK LOGIN",
+        html: generateMagicLinkEmail(magicLinkUrl, email),
+      });
+
+      return {
+        ok: mailToBeSentToUser === "Email sent successfully.",
+        message: "Email sent successfully.",
+        user,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public async validateMagicLinkToken(token: string) {
+    try {
+      const { email } = verifyToken(token as string);
+      if (!email) {
+        throw new BadRequest("Invalid JWT");
+      }
+
+      const user = await User.findOne({
+        where: { email: String(email) },
+      });
+
+      if (user === null || !user) {
+        throw new ResourceNotFound("User not found");
+      }
+
+      return {
+        status: "ok",
+        email: user.email,
+        userId: user.id,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async passwordlessLogin(userId: string) {
+    try {
+      const access_token = await generateAccessToken(userId);
+
+      return {
+        access_token,
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }
