@@ -1,15 +1,9 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils";
-import { User } from "../models";
-import {
-  HttpError,
-  ResourceNotFound,
-  ServerError,
-  Unauthorized,
-} from "./error";
-import log from "../utils/logger";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import { User } from "../models";
+import log from "../utils/logger";
+import { ServerError } from "./error";
 
 export const authMiddleware = async (
   req: Request & { user?: User },

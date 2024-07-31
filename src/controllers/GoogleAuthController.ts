@@ -1,6 +1,4 @@
 import passport from "../config/google.passport.config";
-import { ServerError, Unauthorized } from "../middleware";
-import { Request, Response, NextFunction } from "express";
 
 /**
  * @swagger
