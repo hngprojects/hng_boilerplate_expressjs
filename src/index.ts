@@ -95,8 +95,13 @@ AppDataSource.initialize()
   .then(async () => {
     // await seed();
     server.use(express.json());
+    // server.get("/", (req: Request, res: Response) => {
+    //   // res.send("Hello world");
+    //   res.send("Hello world");
+    // });
     server.get("/", (req: Request, res: Response) => {
-      res.send("Hello world");
+      // res.send("Hello world");
+      res.send({ message: "I am the express API responding for team panther" });
     });
 
     server.get("/probe", (req: Request, res: Response) => {
