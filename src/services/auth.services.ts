@@ -33,7 +33,7 @@ export class AuthService implements IAuthService {
       user.email = email;
       user.password = hashedPassword;
       user.profile = new Profile();
-      user.profile.first_name = last_name;
+      user.profile.first_name = first_name;
       user.profile.last_name = last_name;
       user.profile.avatarUrl = "";
       user.otp = parseInt(otp);

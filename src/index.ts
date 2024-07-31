@@ -22,6 +22,7 @@ import {
   contactRouter,
   paymentFlutterwaveRouter,
   paymentStripeRouter,
+  faqRouter,
 } from "./routes";
 import { smsRouter } from "./routes/sms";
 import { routeNotFound, errorHandler } from "./middleware";
@@ -79,6 +80,8 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
+server.use("/api/v1", faqRouter);
+
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -89,8 +92,13 @@ AppDataSource.initialize()
   .then(async () => {
     // await seed();
     server.use(express.json());
+    // server.get("/", (req: Request, res: Response) => {
+    //   // res.send("Hello world");
+    //   res.send("Hello world");
+    // });
     server.get("/", (req: Request, res: Response) => {
-      res.send("Hello world");
+      // res.send("Hello world");
+      res.send({ message: "I am the express API responding for team panther" });
     });
 
     server.get("/probe", (req: Request, res: Response) => {
