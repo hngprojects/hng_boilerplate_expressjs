@@ -62,6 +62,13 @@ export class AuthService implements IAuthService {
         },
       );
 
+     const mailSent = await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "OTP VERIFICATION",
+        html: compilerOtp(parseInt(otp), user.name),
+      });
+
       const {
         password: _,
         otp: __,
