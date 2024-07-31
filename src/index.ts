@@ -21,9 +21,7 @@ import {
   paymentFlutterwaveRouter,
   paymentRouter,
   paymentStripeRouter,
-  faqRouter,
   searchOrganizationMembersRouter,
-
   productRouter,
   sendEmailRoute,
   testimonialRoute,
