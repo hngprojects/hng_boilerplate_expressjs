@@ -208,7 +208,21 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *         description: Internal server error.
  */
 
-const forgotPassword = async () => {};
+const forgotPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const resetURL = `${req.protocol}://${req.get("host")}/${config["api-prefix"]}/auth/reset-password/`;
+    const { message } = await authService.forgotPassword(email, resetURL);
+
+    res.status(200).json({ status: "sucess", status_code: 200, message });
+  } catch (error) {
+    next(error);
+  }
+};
 
 /**
  * @swagger
@@ -252,21 +266,21 @@ const forgotPassword = async () => {};
  *       500:
  *         description: Internal server error.
  */
-// const resetPassword = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction,
-// ) => {
-//   try {
-//     const { token, newPassword } = req.body;
-//     const { message } = await authService.resetPassword(token, newPassword);
-//     res.status(200).json({ message });
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-const resetPassword = async () => {};
 
+const resetPassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { token } = req.params;
+    const { newPassword } = req.body;
+    const { message } = await authService.resetPassword(token, newPassword);
+    res.status(200).json({ status: "success", status_code: 200, message });
+  } catch (error) {
+    next(error);
+  }
+};
 /**
  * @swagger
  * /api/v1/auth/change-password:
@@ -647,11 +661,11 @@ export {
   authenticateUserMagicLink,
   changePassword,
   createMagicToken,
+  forgotPassword,
   googleAuthCall,
   // handleGoogleAuth,
   login,
+  resetPassword,
   signUp,
-  // forgotPassword,
-  // resetPassword,
   verifyOtp,
 };

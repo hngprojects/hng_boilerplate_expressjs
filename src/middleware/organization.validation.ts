@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../models";
-import log from "../utils/logger";
-import { z } from "zod";
 import { param, validationResult } from "express-validator";
-import { InvalidInput } from "./error";
+import { z } from "zod";
+import { User } from "../models";
 import { OrgService } from "../services/org.services";
+import log from "../utils/logger";
+import { InvalidInput } from "./error";
 
 export const organizationValidation = async (
   req: Request & { user?: User },
@@ -93,7 +93,7 @@ export const validateUserToOrg = async (
   try {
     const { org_id } = req.params;
     const { user } = req;
-    console.log(org_id, user.id);
+    log.error(org_id, user.id);
 
     if (!user || !org_id) {
       return res.status(400).json({
@@ -112,7 +112,7 @@ export const validateUserToOrg = async (
       });
     }
 
-    console.log(org_id, user, userOrg);
+    log.error(org_id, user, userOrg);
     next();
   } catch (error) {
     console.error("Error:", error);
