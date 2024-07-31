@@ -23,6 +23,9 @@ jobs:
       - name: Build the dist
         run: yarn build
 
+      - name: migrate
+        run: yarn migrate
+
       - name: Setup service file
         run: sudo cp server-script/aihomeworkprod.service /etc/systemd/system
 

@@ -1,12 +1,14 @@
-import { Organization } from "../models/organization";
+import { v4 as uuidv4 } from "uuid";
 import AppDataSource from "../data-source";
+import { UserRole } from "../enums/userRoles";
+import { BadRequest } from "../middleware";
+import { Invitation, UserOrganization } from "../models";
+import { Organization } from "../models/organization";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
 import log from "../utils/logger";
-import { BadRequest } from "../middleware";
-import { UserRole } from "../enums/userRoles";
-import { UserOrganization, Invitation } from "../models";
-import { v4 as uuidv4 } from "uuid";
+import { addEmailToQueue } from "../utils/queue";
+import renderTemplate from "../views/email/renderTemplate";
 
 export class OrgService implements IOrgService {
   public async createOrganisation(
@@ -31,7 +33,7 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      console.log(error);
+      log.error(error);
       throw new BadRequest("Client error");
     }
   }
@@ -115,7 +117,7 @@ export class OrgService implements IOrgService {
         relations: ["organization"],
       });
 
-      console.log(userOrganization);
+      log.error(userOrganization);
 
       return userOrganization?.organization || null;
     } catch (error) {
@@ -164,14 +166,19 @@ export class OrgService implements IOrgService {
     // add the base url in the .env file
     const inviteLink = `https://appdomain.com/accept-invite?token=${token}`;
     // add a customised email
-
+    const emailcontent = {
+      userName: "",
+      title: "Invitation to Join Organization",
+      body: `<p>You have been invited to join  ${invitation.organization.name} organisation. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
+    };
     const mailOptions = {
       from: "your-email@gmail.com",
       to: email,
       subject: "Invitation to Join Organization",
-      html: `<p>You have been invited to join an organization. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
+      html: renderTemplate("custom-email", emailcontent),
     };
-    // await sendEmail(email, inviteLink);
+
+    addEmailToQueue(mailOptions);
   }
 
   public async joinOrganizationByInvite(
@@ -224,5 +231,63 @@ export class OrgService implements IOrgService {
 
     // delete invitation used
     await invitationRepository.remove(invitation);
+  }
+
+  //search for orgaisation members by name or by email
+  public async searchOrganizationMembers(criteria: {
+    name?: string;
+    email?: string;
+  }): Promise<any[]> {
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+
+    const { name, email } = criteria;
+
+    const query = userOrganizationRepository
+      .createQueryBuilder("userOrganization")
+      .leftJoinAndSelect("userOrganization.user", "user")
+      .leftJoinAndSelect("userOrganization.organization", "organization")
+      .where("1=1");
+
+    if (name) {
+      query.andWhere("LOWER(user.name) LIKE LOWER(:name)", {
+        name: `%${name}%`,
+      });
+    } else if (email) {
+      query.andWhere("LOWER(user.email) LIKE LOWER(:email)", {
+        email: `%${email}%`,
+      });
+    }
+
+    const userOrganizations = await query.getMany();
+
+    if (userOrganizations.length > 0) {
+      // Map organization details and group users by organization
+      const organizationsMap = new Map<string, any>();
+
+      userOrganizations.forEach((userOrg) => {
+        const org = userOrg.organization;
+        const user = userOrg.user;
+
+        if (!organizationsMap.has(org.id)) {
+          organizationsMap.set(org.id, {
+            organizationId: org.id,
+            organizationName: org.name,
+            organizationEmail: org.email,
+            members: [],
+          });
+        }
+
+        organizationsMap.get(org.id).members.push({
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+        });
+      });
+
+      return Array.from(organizationsMap.values());
+    }
+
+    return [];
   }
 }

@@ -1,5 +1,12 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+import config from "../config";
+import { verifyToken } from "../config/google.passport.config";
+import { BadRequest } from "../middleware";
+import { User } from "../models";
 import { AuthService } from "../services/auth.services";
+import { GoogleUserInfo } from "../services/google.auth.service";
+import RequestUtils from "../utils/request.utils";
 
 const authService = new AuthService();
 
@@ -12,7 +19,7 @@ const authService = new AuthService();
 
 /**
  * @swagger
- * api/v1/auth/signup:
+ * api/v1/auth/register:
  *   post:
  *     summary: Sign up a new user
  *     tags: [Auth]
@@ -23,16 +30,15 @@ const authService = new AuthService();
  *           schema:
  *             type: object
  *             properties:
- *               firstName:
+ *               first_name:
  *                 type: string
- *               lastName:
+ *               last_name:
  *                 type: string
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *               phone:
- *                 type: string
+
  *     responses:
  *       201:
  *         description: The user was successfully created
@@ -201,6 +207,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
  *       500:
  *         description: Internal server error.
  */
+
 const forgotPassword = async (
   req: Request,
   res: Response,
@@ -208,7 +215,9 @@ const forgotPassword = async (
 ) => {
   try {
     const { email } = req.body;
-    const { message } = await authService.forgotPassword(email);
+    const resetURL = `${req.protocol}://${req.get("host")}/${config["api-prefix"]}/auth/reset-password/`;
+    const { message } = await authService.forgotPassword(email, resetURL);
+
     res.status(200).json({ status: "sucess", status_code: 200, message });
   } catch (error) {
     next(error);
@@ -257,20 +266,21 @@ const forgotPassword = async (
  *       500:
  *         description: Internal server error.
  */
+
 const resetPassword = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const { token, newPassword } = req.body;
+    const { token } = req.params;
+    const { newPassword } = req.body;
     const { message } = await authService.resetPassword(token, newPassword);
-    res.status(200).json({ message });
+    res.status(200).json({ status: "success", status_code: 200, message });
   } catch (error) {
     next(error);
   }
 };
-
 /**
  * @swagger
  * /api/v1/auth/change-password:
@@ -333,11 +343,329 @@ const changePassword = async (
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/auth/google-signin:
+ *   post:
+ *     summary: Handle Google authentication and register/login a user
+ *     description: This endpoint handles Google OAuth2.0 authentication. It accepts a Google user payload and either registers a new user or logs in an existing one.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The user's email address.
+ *                 example: user@example.com
+ *               email_verified:
+ *                 type: boolean
+ *                 description: Whether the user's email is verified.
+ *                 example: true
+ *               name:
+ *                 type: string
+ *                 description: The user's full name.
+ *                 example: "John Doe"
+ *               picture:
+ *                 type: string
+ *                 format: url
+ *                 description: URL to the user's profile picture.
+ *                 example: "https://example.com/avatar.jpg"
+ *               sub:
+ *                 type: string
+ *                 description: Google user ID (subject claim).
+ *                 example: "1234567890"
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Verify if authentication is successful
+ *                   example: Authentication successful
+ *                 user:
+ *                   type: object
+ *                   description: The authenticated user object.
+ *                 access_token:
+ *                   type: string
+ *                   description: JWT access token for authentication.
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       400:
+ *         description: Bad Request - Invalid or missing data in request body
+ *       500:
+ *         description: Internal Server Error - An unexpected error occurred
+ */
+
+const googleSignIn = async () => {};
+
+/**
+ * @swagger
+ * /api/v1/auth/magic-link:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Passwordless sign-in with email
+ *     description: API endpoint to initiate passwordless sign-in by sending email to the registered user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Sign-in token sent to email
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Sign-in token sent to email
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request body
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status_code:
+ *                   type: integer
+ *                   example: 500
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+const createMagicToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const email = req.body?.email;
+    if (!email) {
+      throw new BadRequest("Email is missing in request body.");
+    }
+    const response = await authService.generateMagicLink(email);
+    if (!response.ok) {
+      throw new BadRequest("Error processing request");
+    }
+    const requestUtils = new RequestUtils(req, res);
+    requestUtils.addDataToState("localUser", response.user);
+
+    return res.status(200).json({
+      status_code: 200,
+      message: `Sign-in token sent to email` || response.message,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * @swagger
+ * /api/v1/auth/magic-link:
+ *   get:
+ *     tags:
+ *       - Auth
+ *     summary: Authenticate user with magic link
+ *     description: Validates the magic link token and authenticates the user
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Magic link token
+ *       - in: query
+ *         name: redirect
+ *         schema:
+ *           type: boolean
+ *         description: Whether to redirect after authentication (true/false)
+ *     responses:
+ *       200:
+ *         description: User authenticated successfully
+ *         headers:
+ *           Authorization:
+ *             schema:
+ *               type: string
+ *             description: Bearer token for authentication
+ *           Set-Cookie:
+ *             schema:
+ *               type: string
+ *             description: Contains the hng_token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: ok
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: user123
+ *                     email:
+ *                       type: string
+ *                       example: user@example.com
+ *                     name:
+ *                       type: string
+ *                       example: John Doe
+ *                 access_token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       302:
+ *         description: Redirect to home page (when redirect=true)
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Request
+ *       500:
+ *         description: Internal server error
+ *     security: []
+ */
+const authenticateUserMagicLink = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const token = req.query.token;
+    const response = await authService.validateMagicLinkToken(token as string);
+    if (response.status !== "ok") {
+      throw new BadRequest("Invalid Request");
+    }
+    const { access_token } = await authService.passwordlessLogin(
+      response.userId,
+    );
+
+    const requestUtils = new RequestUtils(req, res);
+    let user: User = requestUtils.getDataFromState("local_user");
+    if (!user?.email && !user?.id) {
+      user = await User.findOne({
+        where: { email: response.email },
+      });
+    }
+
+    const responseData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+    };
+
+    res.header("Authorization", access_token);
+    res.cookie("hng_token", access_token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      secure: config.NODE_ENV !== "development",
+      sameSite: config.NODE_ENV === "development" ? "lax" : "none",
+      path: "/",
+    });
+
+    if (req.query?.redirect === "true") {
+      return res.redirect("/");
+    } else {
+      return res.status(200).json({
+        status_code: 200,
+        data: responseData,
+        access_token,
+      });
+    }
+  } catch (err) {
+    if (err instanceof BadRequest) {
+      return res.status(400).json({ status: "error", message: err.message });
+    }
+    next(err);
+  }
+};
+
+const googleAuthCall = async (req: Request, res: Response) => {
+  try {
+    const { id_token } = req.body;
+
+    // Verify the ID token from google
+    const userInfo = await verifyToken(id_token);
+
+    // update user info
+    const user = await GoogleUserInfo(userInfo);
+
+    // generate access token for the user
+    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
+
+    // Return the JWT and User
+    res.json({ user, access_token: token });
+  } catch (error) {
+    res.status(400).json({ error: "Authentication failed" });
+  }
+};
+
 export {
+  authenticateUserMagicLink,
+  changePassword,
+  createMagicToken,
+  forgotPassword,
+  googleAuthCall,
+  // handleGoogleAuth,
+  login,
+  resetPassword,
   signUp,
   verifyOtp,
-  login,
-  forgotPassword,
-  resetPassword,
-  changePassword,
 };

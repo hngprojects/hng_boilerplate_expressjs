@@ -1,20 +1,23 @@
 import { Router } from "express";
-import { authMiddleware } from "../middleware";
-import { createBlogController } from "../controllers/createBlogController";
-import { BlogController } from "../controllers/BlogController";
-import { updateBlogController } from "../controllers/updateBlogController";
 import { BlogCommentController } from "../controllers/blogCommentController";
+import { BlogController } from "../controllers/BlogController";
+// import { createBlogController } from "../controllers/createBlogController"
+import { updateBlogController } from "../controllers/updateBlogController";
+import { authMiddleware } from "../middleware";
+import { requestBodyValidator } from "../middleware/request-validation";
+import { createBlogSchema } from "../utils/request-body-validator";
 
 const blogRouter = Router();
 const blogController = new BlogController();
 const blogCommentController = new BlogCommentController();
 
-blogRouter.get(
-  "/blog/",
+blogRouter.get("/blog/", blogController.listBlogs.bind(blogController));
+blogRouter.post(
+  "/blogs",
+  requestBodyValidator(createBlogSchema),
   authMiddleware,
-  blogController.listBlogs.bind(blogController),
+  blogController.createBlogController.bind(blogController),
 );
-blogRouter.post("/create", authMiddleware, createBlogController);
 
 blogRouter.get(
   "/blog/user",

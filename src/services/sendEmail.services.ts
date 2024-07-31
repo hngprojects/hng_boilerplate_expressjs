@@ -7,6 +7,7 @@ import { ServerError } from "../middleware";
 import Handlebars from "handlebars";
 import path from "path";
 import fs from "fs";
+import renderTemplate from "../views/email/renderTemplate";
 
 export class EmailService {
   async getEmailTemplates(): Promise<{}[]> {
@@ -79,11 +80,17 @@ export class EmailService {
     const template = Handlebars.compile(templateSource);
     const htmlTemplate = template(data);
 
+    const varibles = {
+      userName: payload.variables?.userName || "User",
+      title: payload.variables?.title,
+      // activationLinkUrl:"https://example.com"
+    };
+
     const emailContent = {
       from: config.SMTP_USER,
       to: payload.recipient,
       subject: data.title,
-      html: htmlTemplate,
+      html: renderTemplate(payload.templateId, varibles),
     };
 
     await addEmailToQueue(emailContent);
@@ -91,10 +98,10 @@ export class EmailService {
     return newEmail;
   }
 
-  async sendEmail(payload: EmailQueuePayload): Promise<void> {
-    try {
-    } catch (error) {
-      throw new ServerError("Internal server error");
-    }
-  }
+  // async sendEmail(payload: EmailQueuePayload): Promise<void> {
+  //   try {
+  //   } catch (error) {
+  //     throw new ServerError( "Internal server error");
+  //   }
+  // }
 }

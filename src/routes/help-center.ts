@@ -9,13 +9,11 @@ const helpController = new HelpController();
 helpRouter.post(
   "/help-center/topics",
   authMiddleware,
-  verifyAdmin,
   helpController.createTopic.bind(helpController),
 );
 helpRouter.patch(
   "/help-center/topics/:id",
   authMiddleware,
-  verifyAdmin,
   helpController.updateTopic.bind(helpController),
 );
 helpRouter.get(
@@ -31,7 +29,6 @@ helpRouter.get(
 helpRouter.delete(
   "/help-center/topics/:id",
   authMiddleware,
-  verifyAdmin,
   helpController.deleteTopic.bind(helpController),
 );
 export { helpRouter };
