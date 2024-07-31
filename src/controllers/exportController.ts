@@ -58,7 +58,7 @@ class exportController {
         res.attachment("users.csv");
         return res.send(csv);
       } else if (format === "pdf") {
-        const pdf = ExportService.generatePDF(users);
+        const pdf = await ExportService.generatePDF(users); // await here
         res.header("Content-Type", "application/pdf");
         res.attachment("users.pdf");
         return res.send(pdf);
