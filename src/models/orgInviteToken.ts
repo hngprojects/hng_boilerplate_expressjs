@@ -5,27 +5,30 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
-import { User } from "./user";
 import { Organization } from "./organization";
-import { OrgInviteToken } from "./orgInviteToken"; // Import the OrgInviteToken model
+import { Invitation } from "./invitation";
 
 @Entity()
-export class Invitation {
+export class OrgInviteToken {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ unique: false })
   token: string;
 
+  @Column()
+  expires_at: Date;
+
+  @Column({ default: true })
+  isActivated: boolean;
+
   @ManyToOne(() => Organization)
   organization: Organization;
 
-  @Column()
-  email: string;
-
-  @ManyToOne(() => OrgInviteToken)
-  orgInviteToken: OrgInviteToken;
+  @OneToMany(() => Invitation, (invitation) => invitation.orgInviteToken)
+  invitations: Invitation[];
 
   @CreateDateColumn()
   created_at: Date;

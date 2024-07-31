@@ -499,29 +499,21 @@ export class OrgController {
 
   /**
    * @swagger
-   * /organisations/join:
+   * /organizations/accept-invite:
    *   post:
-   *     summary: Join an organization
-   *     description: This endpoint allows a user to join an organization using an invite token
-   *     tags: [Organisation]
-   *     operationId: joinOrganization
-   *     security:
-   *       - bearerAuth: []
-   *     requestBody:
-   *       description: Invite token
-   *       required: true
-   *       content:
-   *         application/json:
-   *           schema:
-   *             type: object
-   *             required:
-   *               - inviteToken
-   *             properties:
-   *               inviteToken:
-   *                 type: string
+   *     summary: Accept an invitation to join an organization
+   *     description: Accept an invitation to join an organization using a token provided in the query parameters.
+   *     tags: [Organization]
+   *     parameters:
+   *       - in: query
+   *         name: token
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The invitation token
    *     responses:
    *       200:
-   *         description: User successfully added to the organization
+   *         description: You have been added to the organization.
    *         content:
    *           application/json:
    *             schema:
@@ -535,24 +527,9 @@ export class OrgController {
    *                   example: 200
    *                 message:
    *                   type: string
-   *                   example: User successfully added to the organization.
-   *       400:
-   *         description: Bad request
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: integer
-   *                   example: 400
-   *                 message:
-   *                   type: string
+   *                   example: You have been added to the organization.
    *       422:
-   *         description: Unprocessable Entity
+   *         description: Invite token is required.
    *         content:
    *           application/json:
    *             schema:
@@ -567,16 +544,28 @@ export class OrgController {
    *                 message:
    *                   type: string
    *                   example: Invite token is required!
+   *       400:
+   *         description: An error occurred while processing the request.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *                   example: Error message
    */
 
-  public async joinOrganization(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) {
+  public async acceptInvite(req: Request, res: Response, next: NextFunction) {
     try {
-      const { inviteToken } = req.body;
-      if (!inviteToken) {
+      const token = req.query.token as string;
+      if (!token) {
         res.status(422).json({
           status: "Unsuccessful",
           status_code: 422,
@@ -585,12 +574,13 @@ export class OrgController {
         return;
       }
       const userId = req.user.id;
-      await this.orgService.joinOrganizationByInvite(inviteToken, userId);
+
+      await this.orgService.joinOrganizationByInvite(token, userId);
 
       res.status(200).json({
         status: "success",
         status_code: 200,
-        message: "User successfully added to the organization.",
+        message: "You have been added to the organization.",
       });
     } catch (error) {
       res.status(400).json({
@@ -603,15 +593,85 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations/{orgId}/invite:
+   * /organizations/{org_id}/invite:
    *   post:
-   *     summary: Create an invitation to join an organization
-   *     tags: [Organisation]
-   *     security:
-   *       - bearerAuth: []
+   *     summary: Generate an invite link for an organization
+   *     description: Generate an invite link for a specified organization. Only users with ADMIN or SUPER_ADMIN roles can generate invite links.
+   *     tags: [Organization]
    *     parameters:
    *       - in: path
-   *         name: orgId
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *     responses:
+   *       200:
+   *         description: Invitation link generated successfully.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 invite_token:
+   *                   type: string
+   *                   example: 123e4567-e89b-12d3-a456-426614174000
+   *       500:
+   *         description: Failed to generate invitation link.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *
+   */
+
+  public async generateInviteLink(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const orgId = req.params.org_id;
+      const invite_token = await this.orgService.generateInviteLink(orgId);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        invite_token,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed: Invitation not sent",
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /organizations/{org_id}/send-invite:
+   *   post:
+   *     summary: Send invite links to specified email addresses
+   *     description: Send invite links to specified email addresses for a given organization. Only users with ADMIN or SUPER_ADMIN roles can send invite links.
+   *     tags: [Organization]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
    *         required: true
    *         schema:
    *           type: string
@@ -624,12 +684,18 @@ export class OrgController {
    *             type: object
    *             properties:
    *               email:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                 description: List of email addresses to send invites to
+   *                 example: ["example1@example.com", "example2@example.com"]
+   *               invite_link:
    *                 type: string
-   *                 description: The email of the invitee
-   *                 example: "invitee@example.com"
+   *                 description: The invite link to be sent
+   *                 example: "https://example.com/invite?token=123e4567-e89b-12d3-a456-426614174000"
    *     responses:
    *       200:
-   *         description: Invitation successfully sent
+   *         description: Invitations successfully sent.
    *         content:
    *           application/json:
    *             schema:
@@ -637,31 +703,15 @@ export class OrgController {
    *               properties:
    *                 status:
    *                   type: string
-   *                   example: "success"
+   *                   example: Success
    *                 status_code:
    *                   type: integer
    *                   example: 200
    *                 message:
    *                   type: string
-   *                   example: "Invitation successfully sent."
-   *       400:
-   *         description: Bad request
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: "unsuccessful"
-   *                 status_code:
-   *                   type: integer
-   *                   example: 400
-   *                 message:
-   *                   type: string
-   *                   example: "Error message describing the issue."
+   *                   example: Invitations successfully sent.
    *       422:
-   *         description: Unprocessable Entity
+   *         description: Emails or invite link is required.
    *         content:
    *           application/json:
    *             schema:
@@ -669,15 +719,15 @@ export class OrgController {
    *               properties:
    *                 status:
    *                   type: string
-   *                   example: "Unsuccessful"
+   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 422
    *                 message:
    *                   type: string
-   *                   example: "Email is required!"
+   *                   example: Emails are required! / Invite link is required!
    *       500:
-   *         description: Internal server error
+   *         description: Failed to send invitations.
    *         content:
    *           application/json:
    *             schema:
@@ -685,46 +735,54 @@ export class OrgController {
    *               properties:
    *                 status:
    *                   type: string
-   *                   example: "unsuccessful"
+   *                   example: unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 500
    *                 message:
    *                   type: string
-   *                   example: "Internal server error."
    */
 
-  public async createInvitation(
+  public async sendInviteLinks(
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
     try {
-      const { email } = req.body;
-      const orgId = req.params.orgId;
-      const inviterId = req.user.id;
+      const { email, invite_link } = req.body;
+      const orgId = req.params.org_id;
 
       if (!email) {
-        res.status(422).json({
+        return res.status(422).json({
           status: "Unsuccessful",
           status_code: 422,
-          message: "Email is required!",
+          message: "Emails are required!",
         });
-        return;
       }
 
-      await this.orgService.createInvitation(orgId, email, inviterId);
+      if (!invite_link || !orgId) {
+        return res.status(422).json({
+          status: "Unsuccessful",
+          status_code: 422,
+          message: "Invite link is required!",
+        });
+      }
+
+      const emailList = Array.isArray(email) ? email : [email];
+
+      await this.orgService.sendInviteLinks(orgId, emailList, invite_link);
 
       res.status(200).json({
-        status: "success",
+        status: "Success",
         status_code: 200,
-        message: "Invitation successfully sent.",
+        message: "Invitations successfully sent.",
       });
     } catch (error) {
-      res.status(400).json({
+      console.log(error);
+      res.status(500).json({
         status: "unsuccessful",
-        status_code: 400,
-        message: error.message,
+        status_code: 500,
+        message: "Failed: Invitation not sent",
       });
     }
   }
