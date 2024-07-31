@@ -22,16 +22,15 @@ import {
   paymentRouter,
   paymentStripeRouter,
   productRouter,
+  runTestRouter,
   sendEmailRoute,
   testimonialRoute,
   userRouter,
-  runTestRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
 import updateRouter from "./routes/updateOrg";
 import swaggerSpec from "./swaggerConfig";
-import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
 dotenv.config();
@@ -52,7 +51,6 @@ server.use(
   }),
 );
 
-server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(passport.initialize());
@@ -63,11 +61,10 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
-server.use("/api/v1", runTestRouter);
+server.use("/run-tests", runTestRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
 
-server.use("/api/v1", authRoute);
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);

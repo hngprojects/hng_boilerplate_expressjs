@@ -1,8 +1,8 @@
-import { Router, Response, Request } from "express";
+import { Router } from "express";
 import { runTestController } from "../controllers";
 
 const runTestRouter = Router();
 
-runTestRouter.get("/run-test", runTestController);
+runTestRouter.get("/", runTestController);
 
 export { runTestRouter };

@@ -5,6 +5,7 @@ from faker import Faker
 fake = Faker()
 
 BASE_URL = "https://deployment.api-expressjs.boilerplate.hng.tech/api/v1"
+# BASE_URL = "http://localhost:5000/api/v1"
 
 # Utility function to generate random data for tests
 def generate_random_user():
@@ -25,6 +26,8 @@ def login_and_get_token(email, password):
     response = requests.post(url, json=payload)
     assert response.status_code == 200
     data = response.json()
+    print(data)
+    print("hello world, this is a python script")
     return data["data"]["token"]
 
 def test_register_user():
