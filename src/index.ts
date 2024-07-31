@@ -33,6 +33,8 @@ import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
 import passport from "./config/google.passport.config";
+import "./services/facebook.auth.services";
+
 dotenv.config();
 
 const port = config.port;
@@ -62,6 +64,8 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
+
+server.use(passport.initialize());
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
 server.use("/api/v1", adminRouter);

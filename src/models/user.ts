@@ -40,6 +40,9 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: true })
   google_id: string;
 
+  @Column({ nullable: true })
+  facebook_id: string;
+
   @Column({
     default: false,
   })

@@ -81,3 +81,22 @@ export interface GoogleUser {
   picture: string;
   sub: string;
 }
+
+export interface FacebookUser {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  verified: boolean;
+  picture: string;
+}
+
+export interface IFacebookAuthService {
+  getUserByFacebookId(facebook_id: string): Promise<User | null>;
+  facebookUserAuth(
+    payload: FacebookUser,
+    authUser: User | null,
+  ): Promise<{
+    user: Partial<Profile>;
+  }>;
+}

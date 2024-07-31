@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.services";
-import { BadRequest } from "../middleware";
+import passport from "passport";
+import { generateAccessToken } from "../utils";
 import { GoogleUserInfo } from "../services/google.auth.service";
+import { User } from "../models";
 import { verifyToken } from "../config/google.passport.config";
 import jwt from "jsonwebtoken";
 import config from "../config";
@@ -422,6 +424,106 @@ const googleAuthCall = async (req: Request, res: Response) => {
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/auth/facebook:
+ *   post:
+ *     summary: Handle Facebook authentication and register/login a user
+ *     description: This endpoint handles Facebook OAuth2.0 authentication. It accepts a Facebook user payload and either registers a new user or logs in an existing one.
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 description: The user's email address.
+ *                 example: user@example.com
+ *               verified:
+ *                 type: boolean
+ *                 description: Whether the user's email is verified.
+ *                 example: true
+ *               first_name:
+ *                 type: string
+ *                 description: The user's first name.
+ *                 example: "John"
+ *               last_name:
+ *                 type: string
+ *                 description: The user's last name.
+ *                 example: "Doe"
+ *               picture:
+ *                 type: string
+ *                 format: url
+ *                 description: URL to the user's profile picture.
+ *                 example: "https://example.com/avatar.jpg"
+ *               id:
+ *                 type: string
+ *                 description: facebook user ID (subject claim).
+ *                 example: "1234567890"
+ *     responses:
+ *       200:
+ *         description: User successfully authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: Verify if authentication is successful
+ *                   example: Authentication successful
+ *                 data:
+ *                   type: object
+ *                   description: The authenticated user object.
+ *                 access_token:
+ *                   type: string
+ *                   description: JWT access token for authentication.
+ *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *       400:
+ *         description: Bad Request - Invalid email. Email is required
+ *       401:
+ *         description: Unauthorized - Authentication failed
+ *       500:
+ *         description: Internal Server Error - An unexpected error occurred
+ */
+
+const facebookAuth = passport.authenticate("facebook", { scope: ["email"] });
+
+const facebookAuthCallback = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  passport.authenticate(
+    "facebook",
+    { session: false },
+    async (error: any, user: User, info: any) => {
+      if (error) {
+        return next(error);
+      }
+      if (!user) {
+        return res.status(401).json({
+          status_code: 401,
+          message: "Authentication failed",
+        });
+      }
+
+      const access_token = await generateAccessToken(user.facebook_id);
+      res.status(200).json({
+        status: "success",
+        message: "User successfully authenticated",
+        data: user,
+        access_token: access_token,
+      });
+    },
+  )(req, res, next);
+};
+
 export {
   signUp,
   verifyOtp,
@@ -430,4 +532,6 @@ export {
   // resetPassword,
   changePassword,
   googleAuthCall,
+  facebookAuth,
+  facebookAuthCallback,
 };
