@@ -251,6 +251,13 @@ export class AuthService implements IAuthService {
         throw new HttpError(401, "Old password is incorrect");
       }
 
+      if (oldPassword === newPassword) {
+        throw new HttpError(
+          400,
+          "New password cannot be the same as old password",
+        );
+      }
+
       if (newPassword !== confirmPassword) {
         throw new HttpError(400, "New password and confirmation do not match");
       }
