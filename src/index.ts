@@ -1,10 +1,12 @@
 // src/index.ts
 import cors from "cors";
-
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
 import "reflect-metadata";
-
+import swaggerUi from "swagger-ui-express";
+import config from "./config";
+import passport from "./config/google.passport.config";
+import AppDataSource from "./data-source";
 import { errorHandler, routeNotFound } from "./middleware";
 import {
   adminRouter,
@@ -26,12 +28,6 @@ import {
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
-
-import swaggerUi from "swagger-ui-express";
-import config from "./config";
-import passport from "./config/google.passport.config";
-import AppDataSource from "./data-source";
-
 import updateRouter from "./routes/updateOrg";
 import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
