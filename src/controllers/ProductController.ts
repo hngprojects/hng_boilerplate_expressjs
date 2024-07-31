@@ -128,9 +128,19 @@ export class ProductController {
    */
   async getProductPagination(req: Request, res: Response) {
     try {
+      const { orgId } = req.params;
       const paginationData = await this.productService.getProductPagination(
         req.query,
       );
+
+      if (!orgId) {
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "OrgId not found",
+        });
+      }
+
       res.status(200).json({
         status: "success",
         status_code: 200,
@@ -651,6 +661,7 @@ export class ProductController {
   async createProduct(req: Request, res: Response) {
     try {
       const { user } = req;
+      const { orgId } = req.params;
       const sanitizedData = req.body;
 
       if (!user) {
@@ -658,6 +669,14 @@ export class ProductController {
           status: "unsuccessful",
           status_code: 401,
           message: "Unauthorized User",
+        });
+      }
+
+      if (!orgId) {
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "OrgId not found",
         });
       }
 
