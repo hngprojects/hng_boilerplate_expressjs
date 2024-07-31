@@ -59,7 +59,7 @@ export const searchOrganizationMembers = async (req: Request, res: Response) => 
     };
 
     try {
-        const result: any = await searchOrganizationMembersService({ name as string, email as string });
+        const result: any = await searchOrganizationMembersService({ name: as string, email: as string });
         if (result) {
             return res.status(200).json({ result: result, status_code: 200 });
         } else {
