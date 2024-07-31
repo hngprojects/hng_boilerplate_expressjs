@@ -2,8 +2,8 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 
 @Entity()
 export class Contact {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Column({ type: "varchar", length: 100 })
   name!: string;
@@ -12,7 +12,7 @@ export class Contact {
   email!: string;
 
   @Column({ type: "varchar", length: 20 })
-  phoneNumber!: number;
+  phoneNumber!: string;
 
   @Column({ type: "text" })
   message!: string;
