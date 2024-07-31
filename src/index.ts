@@ -33,6 +33,7 @@ import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
+import { roleRouter } from "./routes/roles";
 dotenv.config();
 
 const port = config.port;
@@ -86,6 +87,7 @@ server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
 server.use("/api/v1", faqRouter);
+server.use("/api/v1", roleRouter);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
