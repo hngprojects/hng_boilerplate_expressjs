@@ -51,6 +51,7 @@ export class AuthService implements IAuthService {
       user.profile.avatarUrl = "";
       user.otp = parseInt(otp);
       user.otp_expires_at = otpExpires;
+      user.isverified = true;
 
       const createdUser = await AppDataSource.manager.save(user);
       const access_token = jwt.sign(
@@ -61,7 +62,7 @@ export class AuthService implements IAuthService {
         },
       );
 
-      const mailSent = await Sendmail({
+     const mailSent = await Sendmail({
         from: `Boilerplate <support@boilerplate.com>`,
         to: email,
         subject: "OTP VERIFICATION",
