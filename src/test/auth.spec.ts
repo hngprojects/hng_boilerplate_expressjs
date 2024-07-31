@@ -288,7 +288,7 @@ describe("AuthService", () => {
     });
   });
 
-  describe("passwordless login with magic link", () => {
+  describe("magicLink Auth", () => {
     it("should throw ResourceNotFound for non-existent user", async () => {
       const payload = {
         email: "nonexistent@example.com",
