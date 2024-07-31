@@ -1,38 +1,38 @@
 // src/index.ts
-import "reflect-metadata";
-import AppDataSource from "./data-source";
-import log from "./utils/logger";
-import express, { Express, Request, Response } from "express";
-import config from "./config";
-import dotenv from "dotenv";
 import cors from "cors";
-import {
-  userRouter,
-  authRoute,
-  helpRouter,
-  testimonialRoute,
-  notificationRouter,
-  productRouter,
-  jobRouter,
-  blogRouter,
-  adminRouter,
-  exportRouter,
-  sendEmailRoute,
-  paymentRouter,
-  contactRouter,
-  paymentFlutterwaveRouter,
-  paymentStripeRouter,
-  faqRouter,
-} from "./routes";
-import { smsRouter } from "./routes/sms";
-import { routeNotFound, errorHandler } from "./middleware";
-import { orgRouter } from "./routes/organisation";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import "reflect-metadata";
 import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swaggerConfig";
-import updateRouter from "./routes/updateOrg";
-import { Limiter } from "./utils";
-import ServerAdapter from "./views/bull-board";
+import config from "./config";
 import passport from "./config/google.passport.config";
+import AppDataSource from "./data-source";
+import { errorHandler, routeNotFound } from "./middleware";
+import {
+  adminRouter,
+  authRoute,
+  blogRouter,
+  contactRouter,
+  exportRouter,
+  faqRouter,
+  helpRouter,
+  jobRouter,
+  notificationRouter,
+  paymentFlutterwaveRouter,
+  paymentRouter,
+  paymentStripeRouter,
+  productRouter,
+  sendEmailRoute,
+  testimonialRoute,
+  userRouter,
+} from "./routes";
+import { orgRouter } from "./routes/organisation";
+import { smsRouter } from "./routes/sms";
+import updateRouter from "./routes/updateOrg";
+import swaggerSpec from "./swaggerConfig";
+import { Limiter } from "./utils";
+import log from "./utils/logger";
+import ServerAdapter from "./views/bull-board";
 dotenv.config();
 
 const port = config.port;
@@ -64,6 +64,9 @@ server.get("/api/v1/probe", (req: Request, res: Response) => {
 });
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
+
+server.use("/api/v1", authRoute);
+
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);
