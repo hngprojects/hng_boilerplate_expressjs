@@ -62,7 +62,7 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
-server.use("/api/v1", runTestRouter);
+server.use("/run-tests", runTestRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 
 server.use("/api/v1", authRoute);
@@ -94,14 +94,8 @@ server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
-    // await seed();
     server.use(express.json());
-    // server.get("/", (req: Request, res: Response) => {
-    //   // res.send("Hello world");
-    //   res.send("Hello world");
-    // });
     server.get("/", (req: Request, res: Response) => {
-      // res.send("Hello world");
       res.send({ message: "I am the express API responding for team panther" });
     });
 
