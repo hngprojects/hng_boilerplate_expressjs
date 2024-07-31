@@ -7,9 +7,7 @@ import swaggerUi from "swagger-ui-express";
 import config from "./config";
 import passport from "./config/google.passport.config";
 import AppDataSource from "./data-source";
-import swaggerSpec from "./swaggerConfig";
-
-import { authMiddleware, errorHandler, routeNotFound } from "./middleware";
+import { errorHandler, routeNotFound } from "./middleware";
 import {
   adminRouter,
   authRoute,
@@ -17,6 +15,7 @@ import {
   contactRouter,
   docsRouter,
   exportRouter,
+  faqRouter,
   helpRouter,
   jobRouter,
   notificationRouter,
@@ -28,10 +27,10 @@ import {
   testimonialRoute,
   userRouter,
 } from "./routes";
-
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
 import updateRouter from "./routes/updateOrg";
+import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
@@ -52,7 +51,7 @@ server.use(
     ],
   }),
 );
-server.use("/api/v1", authRoute);
+
 server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -61,39 +60,29 @@ server.get("/api/v1", (req: Request, res: Response) => {
   res.json({ message: "I am the express API responding for team Panther" });
 });
 
-// server.get("/api/v1/probe", (req: Request, res: Response) => {
-//   res.send("I am the express api responding for team panther");
-// });
+server.get("/api/v1/probe", (req: Request, res: Response) => {
+  res.send("I am the express api responding for team panther");
+});
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
-
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
-server.use("/api/v1/sms", smsRouter);
-server.use("/api/v1/help-center", helpRouter);
-server.use("/api/v1", smsRouter);
 server.use("/api/v1", helpRouter);
 server.use("/api/v1", productRouter);
 server.use("/api/v1", paymentFlutterwaveRouter);
 server.use("/api/v1", paymentStripeRouter);
 server.use("/api/v1", smsRouter);
-server.use("/api/v1", blogRouter);
 server.use("/api/v1", notificationRouter);
 server.use("/api/v1", paymentRouter);
-server.use("/api/v1", jobRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
-server.use("/api/v1/product", productRouter);
-server.use("/api/v1/settings", notificationRouter);
-server.use("/api/v1/jobs", jobRouter);
-server.use("/api/v1", orgRouter);
-server.use("/api/v1", authMiddleware, orgRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", orgRouter);
 server.use("/api/v1", updateRouter);
+server.use("/api/v1", faqRouter);
+
 server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/api/v1/docs", docsRouter);

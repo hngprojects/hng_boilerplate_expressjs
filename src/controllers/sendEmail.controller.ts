@@ -170,7 +170,9 @@ export const SendEmail = async (req: Request, res: Response) => {
       message: "Email sending request accepted and is being processed.",
     });
   } catch (error) {
-    return res.status(500).json({ message: "Internal server error." });
+    return res
+      .status(500)
+      .json({ message: "Internal server error.", error: error });
   }
 };
 

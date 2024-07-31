@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.services";
 import { BadRequest } from "../middleware";
-import { GoogleAuthService } from "../services/google.auth.service";
 import { GoogleUserInfo } from "../services/google.auth.service";
 import { verifyToken } from "../config/google.passport.config";
 import jwt from "jsonwebtoken";
+import config from "../config";
 
 const authService = new AuthService();
 
@@ -398,32 +398,6 @@ const changePassword = async (
  *       500:
  *         description: Internal Server Error - An unexpected error occurred
  */
-const handleGoogleAuth = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  const googleAuthService = new GoogleAuthService();
-  const userData = req.body;
-  try {
-    if (!userData) {
-      throw new BadRequest("Bad request");
-    }
-    const isDbUser = await googleAuthService.getUserByGoogleId(userData.sub);
-    const dbUser = await googleAuthService.handleGoogleAuthUser(
-      userData,
-      isDbUser,
-    );
-    res.status(200).json({
-      status: "success",
-      message: "User successfully authenticated",
-      access_token: dbUser.access_token,
-      user: dbUser.user,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 const googleAuthCall = async (req: Request, res: Response) => {
   try {
@@ -436,14 +410,12 @@ const googleAuthCall = async (req: Request, res: Response) => {
     const user = await GoogleUserInfo(userInfo);
 
     // generate access token for the user
-    const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      process.env.JWT_SECRET!,
-      { expiresIn: "5m" },
-    );
+    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
 
     // Return the JWT and User
-    res.json({ user: user, access_token: token });
+    res.json({ user, access_token: token });
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Authentication failed" });
@@ -457,6 +429,5 @@ export {
   // forgotPassword,
   // resetPassword,
   changePassword,
-  handleGoogleAuth,
   googleAuthCall,
 };
