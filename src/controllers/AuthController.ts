@@ -1,13 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { z } from "zod";
 import config from "../config";
 import { verifyToken } from "../config/google.passport.config";
 import { BadRequest } from "../middleware";
 import { User } from "../models";
 import { AuthService } from "../services/auth.services";
 import { GoogleUserInfo } from "../services/google.auth.service";
-import { emailSchema } from "../utils/request-body-validator";
 import RequestUtils from "../utils/request.utils";
 
 const authService = new AuthService();
@@ -405,8 +403,6 @@ const createMagicToken = async (
     if (!email) {
       throw new BadRequest("Email is missing in request body.");
     }
-    emailSchema.parse(email);
-
     const response = await authService.generateMagicLink(email);
     if (!response.ok) {
       throw new BadRequest("Error processing request");
@@ -419,12 +415,6 @@ const createMagicToken = async (
       message: `Sign-in token sent to email` || response.message,
     });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({
-        message: "Invalid email provided",
-        status_code: 400,
-      });
-    }
     next(error);
   }
 };

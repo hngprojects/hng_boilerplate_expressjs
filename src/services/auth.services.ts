@@ -254,17 +254,15 @@ export class AuthService implements IAuthService {
 
   public async generateMagicLink(email: string) {
     try {
-      // Check if user exists in database
       const user = await User.findOne({ where: { email } });
       if (user === null || !user) {
         throw new ResourceNotFound("User is not registered");
       }
-      // Generate Token
+
       const token = generateToken({ email: email });
       const protocol = APP_CONFIG.USE_HTTPS ? "https" : "http";
       const magicLinkUrl = `${protocol}://${config.BASE_URL}/api/v1/auth/magic-link?token=${token}`;
 
-      // Send email to the user
       const mailToBeSentToUser = await Sendmail({
         from: `Boilerplate <support@boilerplate.com>`,
         to: email,

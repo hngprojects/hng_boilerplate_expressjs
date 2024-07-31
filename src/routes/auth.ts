@@ -12,6 +12,8 @@ import {
 import { UserRole } from "../enums/userRoles";
 
 import { authMiddleware, checkPermissions } from "../middleware";
+import { requestBodyValidator } from "../middleware/request-validation";
+import { emailSchema } from "../utils/request-body-validator";
 
 const authRoute = Router();
 
@@ -29,7 +31,11 @@ authRoute.post("/auth/google", googleAuthCall);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
 
-authRoute.post("/auth/magic-link", createMagicToken);
+authRoute.post(
+  "/auth/magic-link",
+  requestBodyValidator(emailSchema),
+  createMagicToken,
+);
 authRoute.get("/auth/magic-link", authenticateUserMagicLink);
 
 export { authRoute };
