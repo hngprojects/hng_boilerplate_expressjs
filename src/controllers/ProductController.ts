@@ -128,16 +128,16 @@ export class ProductController {
    */
   async getProductPagination(req: Request, res: Response) {
     try {
-      const { orgId } = req.params;
+      const { org_id } = req.params;
       const paginationData = await this.productService.getProductPagination(
         req.query,
       );
 
-      if (!orgId) {
+      if (!org_id) {
         return res.status(401).json({
           status: "unsuccessful",
           status_code: 401,
-          message: "OrgId not found",
+          message: "org_id not found",
         });
       }
 
@@ -661,7 +661,7 @@ export class ProductController {
   async createProduct(req: Request, res: Response) {
     try {
       const { user } = req;
-      const { orgId } = req.params;
+      const { org_id } = req.params;
       const sanitizedData = req.body;
 
       if (!user) {
@@ -672,11 +672,11 @@ export class ProductController {
         });
       }
 
-      if (!orgId) {
+      if (!org_id) {
         return res.status(401).json({
           status: "unsuccessful",
           status_code: 401,
-          message: "OrgId not found",
+          message: "org_id not found",
         });
       }
 

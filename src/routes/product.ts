@@ -8,7 +8,7 @@ const productRouter = express.Router();
 const productController = new ProductController();
 // modified because the base route changed to "/api/v1"
 productRouter.get(
-  "/products:orgId",
+  "/products:org_id",
   authMiddleware,
   validateUserToOrg,
   productController.getProductPagination.bind(productController),
@@ -33,7 +33,7 @@ productRouter.get(
 );
 
 productRouter
-  .route("/products/:orgId")
+  .route("/products/:org_id")
   .post(
     validateProductDetails,
     authMiddleware,

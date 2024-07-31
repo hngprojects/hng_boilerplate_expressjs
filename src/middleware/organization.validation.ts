@@ -91,11 +91,11 @@ export const validateUserToOrg = async (
   next: NextFunction,
 ) => {
   try {
-    const { orgId } = req.params;
+    const { org_id } = req.params;
     const { user } = req;
-    console.log(orgId, user.id);
+    console.log(org_id, user.id);
 
-    if (!user || !orgId) {
+    if (!user || !org_id) {
       return res.status(400).json({
         status_code: 400,
         message: "user or organization id is missing",
@@ -103,7 +103,7 @@ export const validateUserToOrg = async (
     }
 
     const orgService = new OrgService();
-    const userOrg = await orgService.getSingleOrg(orgId, user.id);
+    const userOrg = await orgService.getSingleOrg(org_id, user.id);
 
     if (!userOrg) {
       return res.status(400).json({
@@ -112,7 +112,7 @@ export const validateUserToOrg = async (
       });
     }
 
-    console.log(orgId, user, userOrg);
+    console.log(org_id, user, userOrg);
     next();
   } catch (error) {
     console.error("Error:", error);
