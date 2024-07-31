@@ -1,8 +1,8 @@
 import Bull, { Job } from "bull";
 import config from "../config";
-import { Sendmail } from "./mail";
-import logs from "./logger";
 import smsServices from "../services/sms.services";
+import logs from "./logger";
+import { Sendmail } from "./mail";
 
 interface EmailData {
   from: string;
@@ -141,10 +141,10 @@ emailQueue.on("failed", (job: Job, error: Error) => {
 });
 
 export {
-  emailQueue,
-  smsQueue,
-  notificationQueue,
   addEmailToQueue,
   addNotificationToQueue,
   addSmsToQueue,
+  emailQueue,
+  notificationQueue,
+  smsQueue,
 };

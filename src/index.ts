@@ -1,39 +1,39 @@
 // src/index.ts
-import "reflect-metadata";
-import AppDataSource from "./data-source";
-import log from "./utils/logger";
-import express, { Express, Request, Response } from "express";
-import config from "./config";
-import dotenv from "dotenv";
 import cors from "cors";
+import dotenv from "dotenv";
+import express, { Express, Request, Response } from "express";
+import "reflect-metadata";
+import swaggerUi from "swagger-ui-express";
+import config from "./config";
+import passport from "./config/google.passport.config";
+import AppDataSource from "./data-source";
+import { errorHandler, routeNotFound } from "./middleware";
 import {
-  userRouter,
-  authRoute,
-  helpRouter,
-  testimonialRoute,
-  notificationRouter,
-  productRouter,
-  jobRouter,
-  blogRouter,
   adminRouter,
-  exportRouter,
-  sendEmailRoute,
-  paymentRouter,
+  authRoute,
+  blogRouter,
   contactRouter,
-  paymentFlutterwaveRouter,
-  paymentStripeRouter,
+  exportRouter,
   faqRouter,
+  helpRouter,
+  jobRouter,
+  notificationRouter,
+  paymentFlutterwaveRouter,
+  paymentRouter,
+  paymentStripeRouter,
+  productRouter,
+  sendEmailRoute,
+  testimonialRoute,
+  userRouter,
   searchOrganizationMembersRouter
 } from "./routes";
-import { smsRouter } from "./routes/sms";
-import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
-import swaggerUi from "swagger-ui-express";
-import swaggerSpec from "./swaggerConfig";
+import { smsRouter } from "./routes/sms";
 import updateRouter from "./routes/updateOrg";
+import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
+import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
-import passport from "./config/google.passport.config";
 dotenv.config();
 
 const port = config.port;
@@ -65,6 +65,9 @@ server.get("/api/v1/probe", (req: Request, res: Response) => {
 });
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
+
+server.use("/api/v1", authRoute);
+
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);
@@ -93,8 +96,13 @@ AppDataSource.initialize()
   .then(async () => {
     // await seed();
     server.use(express.json());
+    // server.get("/", (req: Request, res: Response) => {
+    //   // res.send("Hello world");
+    //   res.send("Hello world");
+    // });
     server.get("/", (req: Request, res: Response) => {
-      res.send("Hello world");
+      // res.send("Hello world");
+      res.send({ message: "I am the express API responding for team panther" });
     });
 
     server.get("/probe", (req: Request, res: Response) => {
