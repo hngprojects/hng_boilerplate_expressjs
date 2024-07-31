@@ -25,7 +25,7 @@ import {
   sendEmailRoute,
   testimonialRoute,
   userRouter,
-
+  runTestRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -63,11 +63,11 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
+server.use("/api/v1", runTestRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
 
 server.use("/api/v1", authRoute);
-
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);
