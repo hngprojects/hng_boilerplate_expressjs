@@ -1,4 +1,5 @@
 import { IsEmail } from "class-validator";
+import crypto from "crypto";
 import {
   Column,
   CreateDateColumn,
@@ -101,4 +102,23 @@ export class User extends ExtendedBaseEntity {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
+
+  @Column({ nullable: true })
+  passwordResetToken: string;
+
+  @Column({ nullable: true, type: "bigint" })
+  passwordResetExpires: number;
+
+  createPasswordResetToken(): string {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+  }
 }
