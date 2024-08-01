@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-const emailSchema = z.string().email();
+const emailSchema = z.object({
+  email: z.string().email(),
+});
 
 const createBlogSchema = z.object({
   title: z.string(),
