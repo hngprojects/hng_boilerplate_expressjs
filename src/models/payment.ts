@@ -39,6 +39,9 @@ export class Payment {
   @ManyToOne(() => User, (user) => user.payments, { nullable: true })
   user: User | null;
 
+  @Column({ nullable: true })
+  reference: string;
+
   @Column("uuid", { nullable: true })
   organizationId: string | null;
 
