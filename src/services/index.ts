@@ -9,3 +9,4 @@ export * from "./sendEmail.services";
 export * from "./payment/flutter.service";
 export * from "./contactService";
 export * from "./faq.services";
+export * from "./org.services";

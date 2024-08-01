@@ -10,16 +10,9 @@ import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
 import { Conflict, ResourceNotFound } from "../middleware/error";
-
+import config from "../config/index";
+const frontendBaseUrl = config.BASE_URL;
 export class OrgService implements IOrgService {
-  private invitationRepository = AppDataSource.getRepository(Invitation);
-  private organisationRepository = AppDataSource.getRepository(Organization);
-  private userRepository = AppDataSource.getRepository(User);
-  private userOrganizationRepository =
-    AppDataSource.getRepository(UserOrganization);
-  private orgInviteTokenRepository =
-    AppDataSource.getRepository(OrgInviteToken);
-
   public async createOrganisation(
     payload: ICreateOrganisation,
     userId: string,
@@ -79,7 +72,9 @@ export class OrgService implements IOrgService {
         );
         await organizationRepository.save(organization);
       }
-
+      if (!organization) {
+        return null;
+      }
       return userOrganization.user;
     } catch (error) {
       throw new Error("Failed to remove user from organization");
@@ -153,8 +148,14 @@ export class OrgService implements IOrgService {
     }
   }
 
-  public async generateInviteLink(orgId: string): Promise<string> {
-    const userOrganization = await this.organisationRepository.findOne({
+  public async generateInviteLink(orgId: string) {
+    const organisationRepository = AppDataSource.getRepository(Organization);
+    const userRepository = AppDataSource.getRepository(User);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+    const orgInviteTokenRepository =
+      AppDataSource.getRepository(OrgInviteToken);
+    const userOrganization = await organisationRepository.findOne({
       where: { id: orgId },
     });
     if (!userOrganization) {
@@ -170,13 +171,21 @@ export class OrgService implements IOrgService {
     orgInvteToken.expires_at = expiresAt;
     orgInvteToken.organization = userOrganization;
 
-    await this.orgInviteTokenRepository.save(orgInvteToken);
-    const inviteLink = `https://panther-expressjs.teams.hng.tech/accept-invite/${userOrganization.name}?token=${tokenValue}`;
+    await orgInviteTokenRepository.save(orgInvteToken);
+    const inviteLink = `${frontendBaseUrl}/accept-invite/${userOrganization.name}?token=${tokenValue}`;
     return inviteLink;
   }
 
   public async sendInviteLinks(orgId: string, emails: string[]): Promise<void> {
-    const organization = await this.organisationRepository.findOne({
+    const organisationRepository = AppDataSource.getRepository(Organization);
+    const userRepository = AppDataSource.getRepository(User);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+    const orgInviteTokenRepository =
+      AppDataSource.getRepository(OrgInviteToken);
+    const invitationRepository = AppDataSource.getRepository(Invitation);
+
+    const organization = await organisationRepository.findOne({
       where: { id: orgId },
     });
 
@@ -195,7 +204,7 @@ export class OrgService implements IOrgService {
       orgInviteToken.expires_at = expiresAt;
       orgInviteToken.organization = organization;
 
-      await this.orgInviteTokenRepository.save(orgInviteToken);
+      await orgInviteTokenRepository.save(orgInviteToken);
 
       const invitation = new Invitation();
       invitation.token = tokenValue;
@@ -203,9 +212,9 @@ export class OrgService implements IOrgService {
       invitation.email = email;
       invitation.orgInviteToken = orgInviteToken;
 
-      await this.invitationRepository.save(invitation);
+      await invitationRepository.save(invitation);
 
-      const inviteLink = `https://panther-expressjs.teams.hng.tech/accept-invite/${organization.name}?token=${tokenValue}`;
+      const inviteLink = `${frontendBaseUrl}/accept-invite/${organization.name}?token=${tokenValue}`;
 
       const emailContent = {
         userName: "",
@@ -227,13 +236,21 @@ export class OrgService implements IOrgService {
     token: string,
     userId: string,
   ): Promise<void> {
-    const user = await this.userRepository.findOneBy({ id: userId });
+    const organisationRepository = AppDataSource.getRepository(Organization);
+    const userRepository = AppDataSource.getRepository(User);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+    const orgInviteTokenRepository =
+      AppDataSource.getRepository(OrgInviteToken);
+    const invitationRepository = AppDataSource.getRepository(Invitation);
+
+    const user = await userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new ResourceNotFound("Please register to join the organization");
     }
 
     let organization;
-    const invitation = await this.invitationRepository.findOne({
+    const invitation = await invitationRepository.findOne({
       where: { token: token, email: user.email },
       relations: ["organization"],
     });
@@ -241,7 +258,7 @@ export class OrgService implements IOrgService {
     if (invitation) {
       organization = invitation.organization;
     } else {
-      const orgInviteToken = await this.orgInviteTokenRepository.findOne({
+      const orgInviteToken = await orgInviteTokenRepository.findOne({
         where: { token: token },
         relations: ["organization"],
       });
@@ -257,7 +274,7 @@ export class OrgService implements IOrgService {
       throw new ResourceNotFound("Organization not found.");
     }
 
-    const existingUserOrg = await this.userOrganizationRepository.findOne({
+    const existingUserOrg = await userOrganizationRepository.findOne({
       where: { user: { id: userId }, organization: { id: organization.id } },
     });
 
@@ -270,10 +287,10 @@ export class OrgService implements IOrgService {
     userOrganization.organization = organization;
     userOrganization.role = UserRole.USER;
 
-    await this.userOrganizationRepository.save(userOrganization);
+    await userOrganizationRepository.save(userOrganization);
 
     // if (invitation) {
-    //   await this.invitationRepository.remove(invitation);
+    //   await invitationRepository.remove(invitation);
     // }
   }
 
@@ -305,7 +322,6 @@ export class OrgService implements IOrgService {
     const userOrganizations = await query.getMany();
 
     if (userOrganizations.length > 0) {
-      // Map organization details and group users by organization
       const organizationsMap = new Map<string, any>();
 
       userOrganizations.forEach((userOrg) => {
