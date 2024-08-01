@@ -14,5 +14,5 @@ createBullBoard({
   serverAdapter: ServerAdapter,
 });
 
-ServerAdapter.setBasePath("/admin/queues");
+ServerAdapter.setBasePath("/api/v1/queues");
 export default ServerAdapter;

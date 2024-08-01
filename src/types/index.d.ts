@@ -1,6 +1,4 @@
 import { User } from "../models";
-import { Request } from "express";
-import { UserRole } from "../enums/userRoles";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -14,11 +12,10 @@ export interface IRole {
 }
 
 export interface IUserSignUp {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   password: string;
-  phone: string;
 }
 export interface IUserLogin {
   email: string;
@@ -42,6 +39,11 @@ export interface IAuthService {
     newPassword: string,
     confirmPassword: string,
   ): Promise<{ message: string }>;
+  generateMagicLink(email: string): Promise<{ ok: boolean; message: string }>;
+  validateMagicLinkToken(
+    token: string,
+  ): Promise<{ status: string; email: string; userId: string }>;
+  passwordlessLogin(userId: string): Promise<{ access_token: string }>;
 }
 
 export interface ICreateOrganisation {
@@ -73,4 +75,12 @@ export interface EmailQueuePayload {
   templateId: string;
   recipient: string;
   variables?: Record<string, any>;
+}
+
+export interface GoogleUser {
+  email: string;
+  email_verified: boolean;
+  name: string;
+  picture: string;
+  sub: string;
 }

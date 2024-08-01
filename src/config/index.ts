@@ -11,6 +11,7 @@ const config = {
   DB_PORT: process.env.DB_PORT,
   DB_NAME: process.env.DB_NAME,
   TOKEN_SECRET: process.env.AUTH_SECRET,
+  TOKEN_EXPIRY: process.env.AUTH_EXPIRY,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
   SMTP_HOST: process.env.SMTP_HOST,
@@ -20,8 +21,8 @@ const config = {
   REDIS_HOST: process.env.REDIS_HOST,
   REDIS_PORT: process.env.REDIS_PORT || 6379,
   NODE_ENV: process.env.NODE_ENV,
-  TWILIO_SID: process.env.TWILIO_SID,
-  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN,
+  TWILIO_SID: process.env.TWILIO_SID || "ACXXXXXXXXXXXXXXXX",
+  TWILIO_AUTH_TOKEN: process.env.TWILIO_AUTH_TOKEN || "twilo_auth_token",
   TWILIO_PHONE_NUMBER: process.env.TWILIO_PHONE_NUMBER,
   STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
@@ -31,6 +32,7 @@ const config = {
   FLW_SECRET_KEY: process.env.FLW_SECRET_KEY,
   FLW_ENCRYPTION_KEY: process.env.FLW_ENCRYPTION_KEY,
   LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY,
+  BASE_URL: process.env.BASE_URL,
   PAYSTACK_SECRET: process.env.PAYSTACK_SECRET,
 };
 

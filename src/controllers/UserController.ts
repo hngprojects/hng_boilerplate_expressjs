@@ -37,7 +37,7 @@ class UserController {
    *              type: object
    *              properties:
    *                status_code:
-   *                  type: number
+   *                  type: integer
    *                  example: 200
    *                data:
    *                  type: object
@@ -67,7 +67,7 @@ class UserController {
   static async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
-      // const id = "953a46af-c635-4edf-a7d9-17393ab93be2";
+
       if (!id) {
         return res.status(401).json({
           status_code: 401,
@@ -108,7 +108,7 @@ class UserController {
           profile_id: user.profile?.id,
           first_name: user.profile?.first_name,
           last_name: user.profile?.last_name,
-          phone: user.profile?.phone,
+          phone_number: user.profile?.phone_number,
           avatar_url: user.profile?.avatarUrl,
         },
       });
@@ -190,7 +190,7 @@ class UserController {
    *   delete:
    *     tags:
    *       - User
-   *     summary: Delete a user
+   *     summary: Soft Delete a user
    *     security:
    *       - bearerAuth: []
    *     parameters:
@@ -198,7 +198,7 @@ class UserController {
    *         name: id
    *         required: true
    *         schema:
-   *           type: string
+   *           type: uuid
    *         description: The ID of the user
    *     responses:
    *       202:
@@ -212,7 +212,7 @@ class UserController {
    *                   type: string
    *                   example: success
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 202
    *                 message:
    *                   type: string
@@ -228,7 +228,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 400
    *                 message:
    *                   type: string
@@ -244,7 +244,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 404
    *                 message:
    *                   type: string
@@ -260,7 +260,7 @@ class UserController {
    *                   type: string
    *                   example: unsuccessful
    *                 status_code:
-   *                   type: number
+   *                   type: integer
    *                   example: 500
    *                 message:
    *                   type: string
@@ -300,121 +300,137 @@ class UserController {
 
   /**
    * @swagger
-   * /api/v1/users/{id}:
-   *   patch:
-   *     tags:
-   *       - User
-   *     summary: Update a user
-   *     description: API endpoint that allows authenticated super admins to update a single user's details. This endpoint ensures that only users with super admin privileges can modify user information, maintaining system security.
-   *     security:
-   *       - bearerAuth: []
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the user to update
-   *     requestBody:
+   * /api/v1/user/{id}:
+   *  put:
+   *   tags:
+   *     - User
+   *   summary: Update User Profile
+   *   description: Update the profile of a user
+   *   security:
+   *     - bearerAuth: []
+   *   parameters:
+   *     - in: path
+   *       name: id
    *       required: true
+   *       schema:
+   *         type: string
+   *         description: The ID of the user
+   *   requestBody:
+   *     required: true
+   *     content:
+   *       multipart/form-data:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             avatarUrl:
+   *               type: string
+   *               format: binary
+   *               description: The user's profile picture
+   *       application/json:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             first_name:
+   *               type: string
+   *               example: John
+   *             last_name:
+   *               type: string
+   *               example: Doe
+   *             phone_number:
+   *               type: string
+   *               example: 08012345678
+   *   responses:
+   *     200:
+   *       description: User profile updated successfully
    *       content:
    *         application/json:
    *           schema:
    *             type: object
    *             properties:
-   *               firstName:
+   *               id:
    *                 type: string
-   *                 example: New
-   *               lastName:
+   *                 example: 315e0834-e96d-4ddc-9974-726e8c1e9cf9
+   *               name:
    *                 type: string
+   *                 example: John Doe
    *               email:
    *                 type: string
-   *               role:
+   *                 example: johndoe@test.com
+   *               google_id:
    *                 type: string
-   *               password:
-   *                 type: string
+   *                 example: null
    *               isVerified:
    *                 type: boolean
    *                 example: true
-   *     responses:
-   *       200:
-   *         description: Successfully updated the user
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: success
-   *                 status_code:
-   *                   type: number
-   *                   example: 200
-   *                 data:
-   *                   type: object
-   *                   properties:
-   *                     id:
-   *                       type: string
-   *                     email:
-   *                       type: string
-   *                     role:
-   *                       type: string
-   *                     created_at:
-   *                       type: string
-   *                       format: date-time
-   *                     updated_at:
-   *                       type: string
-   *                       format: date-time
-   *       422:
-   *         description: Validation error
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Error
-   *                 status_code:
-   *                   type: integer
-   *                   example: 422
-   *                 message:
-   *                   type: string
-   *                   example: "Invalid user details provided."
-   *       403:
-   *         description: Access denied
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Error
-   *                 status_code:
-   *                   type: integer
-   *                   example: 403
-   *                 message:
-   *                   type: string
-   *                   example: "Access denied. Super admin privileges required."
-   *       404:
-   *         description: User not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: unsuccessful
-   *                 status_code:
-   *                   type: integer
-   *                   example: 404
-   *                 message:
-   *                   type: string
-   *                   example: "User with id '123' not found"
-   *       500:
-   *         description: Server Error
+   *               role:
+   *                 type: string
+   *                 example: user
+   *               profile:
+   *                 type: object
+   *                 properties:
+   *                   id:
+   *                     type: string
+   *                     example: 315e0834-e96d-4ddc-9974-726e8c1e9cf9
+   *                   first_name:
+   *                     type: string
+   *                     example: John
+   *                   last_name:
+   *                     type: string
+   *                     example: Doe
+   *                   phone_number:
+   *                     type: string
+   *                     example: 08012345678
+   *                   avatarUrl:
+   *                     type: string
+   *                     example: https://avatar.com/avatar.png
+   *   400:
+   *     description: Bad request
+   *     content:
+   *       application/json:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             status:
+   *               type: string
+   *               example: unsuccessful
+   *             status_code:
+   *               type: integer
+   *               example: 400
+   *             message:
+   *               type: string
+   *               example: Valid id must be provided
+   *   404:
+   *     description: Not found
+   *     content:
+   *       application/json:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             status:
+   *               type: string
+   *               example: unsuccessful
+   *             status_code:
+   *               type: integer
+   *               example: 404
+   *             message:
+   *               type: string
+   *               example: User not found
+   *   500:
+   *     description: Server Error
+   *     content:
+   *       application/json:
+   *         schema:
+   *           type: object
+   *           properties:
+   *             status:
+   *               type: string
+   *               example: unsuccessful
+   *             status_code:
+   *               type: integer
+   *               example: 500
+   *             message:
+   *               type: string
+   *               example: Internal Server Error
    */
 
   public async updateUserProfile(req: Request, res: Response) {

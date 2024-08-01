@@ -2,7 +2,6 @@ import * as bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import config from "../config";
-import { Unauthorized } from "../middleware";
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
   `${fieldLabel} is invalid`;
@@ -31,7 +30,9 @@ export const generateNumericOTP = (length: number): string => {
 };
 
 export const generateToken = (payload: Record<string, unknown>) => {
-  return jwt.sign(payload, config.TOKEN_SECRET, { expiresIn: "1h" });
+  return jwt.sign(payload, config.TOKEN_SECRET, {
+    expiresIn: config.TOKEN_EXPIRY,
+  });
 };
 
 export const verifyToken = (token: string): Record<string, unknown> | null => {

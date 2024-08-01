@@ -2,25 +2,24 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { User } from "./user";
+import ExtendedBaseEntity from "./extended-base-entity";
 
 @Entity()
-export class PasswordResetToken {
+export class FAQ extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
-  token: string;
+  title: string;
 
   @Column()
-  expiresAt: Date;
+  content: string;
 
-  @ManyToOne(() => User, (user) => user.passwordResetTokens)
-  user: User;
+  @Column()
+  author: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -7,6 +7,7 @@ import { ServerError } from "../middleware";
 import Handlebars from "handlebars";
 import path from "path";
 import fs from "fs";
+import renderTemplate from "../views/email/renderTemplate";
 
 export class EmailService {
   async getEmailTemplates(): Promise<{}[]> {
@@ -19,7 +20,10 @@ export class EmailService {
     return availableTemplate;
   }
 
-  async queueEmail(payload: EmailQueuePayload, user): Promise<EmailQueue> {
+  async queueEmail(
+    payload: EmailQueuePayload,
+    user: User,
+  ): Promise<EmailQueue> {
     const emailQueueRepository = AppDataSource.getRepository(EmailQueue);
     const newEmail = emailQueueRepository.create(payload);
     await emailQueueRepository.save(newEmail);
@@ -37,9 +41,10 @@ export class EmailService {
       imageUrl:
         payload.variables?.imageUrl ||
         "https://exampleImg.com/reset-password.png",
-      userName: payload.variables?.user_name || user?.name || "User",
+      userName: payload.variables?.userName || "User",
       activationLinkUrl: payload.variables?.activationLink,
       resetUrl: payload.variables?.resetUrl,
+      body: payload.variables?.body,
       companyName: payload.variables?.companyName || "Boilerplate",
       supportUrl:
         payload.variables?.supportUrl || "https://example.com/support",
@@ -75,11 +80,17 @@ export class EmailService {
     const template = Handlebars.compile(templateSource);
     const htmlTemplate = template(data);
 
+    const varibles = {
+      userName: payload.variables?.userName || "User",
+      title: payload.variables?.title,
+      // activationLinkUrl:"https://example.com"
+    };
+
     const emailContent = {
       from: config.SMTP_USER,
       to: payload.recipient,
       subject: data.title,
-      html: htmlTemplate,
+      html: renderTemplate(payload.templateId, varibles),
     };
 
     await addEmailToQueue(emailContent);
@@ -87,10 +98,10 @@ export class EmailService {
     return newEmail;
   }
 
-  async sendEmail(payload: EmailQueuePayload): Promise<void> {
-    try {
-    } catch (error) {
-      throw new ServerError("Internal server error");
-    }
-  }
+  // async sendEmail(payload: EmailQueuePayload): Promise<void> {
+  //   try {
+  //   } catch (error) {
+  //     throw new ServerError( "Internal server error");
+  //   }
+  // }
 }

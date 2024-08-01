@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import ExportService from "../services/export.services";
 /**
  * @swagger
- * /api/v1/export-data:
+ * /api/v1/organisation/members/export:
  *   get:
  *     summary: Export signed-in user information
  *     tags: [Export user data by csv or pdf format]
@@ -58,7 +58,7 @@ class exportController {
         res.attachment("users.csv");
         return res.send(csv);
       } else if (format === "pdf") {
-        const pdf = ExportService.generatePDF(users);
+        const pdf = await ExportService.generatePDF(users); // await here
         res.header("Content-Type", "application/pdf");
         res.attachment("users.pdf");
         return res.send(pdf);

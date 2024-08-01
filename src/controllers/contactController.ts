@@ -6,7 +6,7 @@ const contactService = new ContactService();
 
 /**
  * @swagger
- * /api/contact:
+ * /api/v1/contact-us:
  *   post:
  *     summary: Submit a contact form
  *     description: Allows users to submit their contact details and message.
@@ -118,6 +118,15 @@ export class ContactController {
         .json({ message: "Message submitted successfully", contact });
     } catch (error) {
       res.status(500).json({ error: "Internal server error" });
+    }
+  }
+
+  async getAllContact(req: Request, res: Response) {
+    try {
+      const contact = await contactService.getAllContactUs();
+      res.status(201).json({ message: "Success", contact });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   }
 }
