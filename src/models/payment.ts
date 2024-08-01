@@ -6,14 +6,16 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from "typeorm";
-import { IsEmail } from "class-validator";
-import { User } from "./user";
 import { Organization } from "./organization";
+import { BillingPlan } from "./billing-plan";
 
 @Entity()
 export class Payment {
   @PrimaryGeneratedColumn("uuid")
   id: string;
+
+  @Column("uuid")
+  billingPlanId: string;
 
   @Column("decimal", { precision: 10, scale: 2 })
   amount: number;
@@ -22,10 +24,7 @@ export class Payment {
   currency: string;
 
   @Column()
-  productId: string;
-
-  @Column()
-  paymentServiceId: string;
+  paymentServiceId: string | null;
 
   @Column({
     type: "enum",
@@ -40,18 +39,17 @@ export class Payment {
   provider: "stripe" | "flutterwave" | "lemonsqueezy" | "paystack";
 
   @Column("uuid", { nullable: true })
-  userId: string | null;
-
-  @ManyToOne(() => User, (user) => user.payments, { nullable: true })
-  user: User | null;
-
-  @Column("uuid", { nullable: true })
   organizationId: string | null;
 
   @ManyToOne(() => Organization, (organization) => organization.payments, {
     nullable: true,
   })
   organization: Organization | null;
+
+  @ManyToOne(() => BillingPlan, (billingPlan) => billingPlan.payments, {
+    onDelete: "CASCADE",
+  })
+  billingPlan: BillingPlan;
 
   @Column({ nullable: true })
   description: string;
