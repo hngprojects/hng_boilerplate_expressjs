@@ -9,4 +9,9 @@ contactRouter.post(
   contactController.createContact.bind(contactController),
 );
 
+contactRouter.get(
+  "/contact-us",
+  contactController.getAllContact.bind(contactController),
+);
+
 export { contactRouter };
