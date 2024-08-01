@@ -120,4 +120,13 @@ export class ContactController {
       res.status(500).json({ error: "Internal server error" });
     }
   }
+
+  async getAllContact(req: Request, res: Response) {
+    try {
+      const contact = await contactService.getAllContactUs();
+      res.status(201).json({ message: "Success", contact });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
