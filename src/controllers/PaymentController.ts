@@ -24,13 +24,13 @@ export class PaymentController {
       const { transactionId } = req.params;
       const verificationResponse = await verifyPayment(transactionId);
 
-      const paymentRepository = dataSource.getRepository(Payment);
-      const payment = await paymentRepository.findOneBy({ id: transactionId });
+      // const paymentRepository = dataSource.getRepository(Payment);
+      // const payment = await paymentRepository.findOneBy({ id: transactionId });
 
-      if (payment) {
-        // payment.status = verificationResponse.status === 'successful' ? 'completed' : 'failed';
-        await paymentRepository.save(payment);
-      }
+      // if (payment) {
+      //   // payment.status = verificationResponse.status === 'successful' ? 'completed' : 'failed';
+      //   await paymentRepository.save(payment);
+      // }
 
       return res.json(verificationResponse);
     } catch (error) {
