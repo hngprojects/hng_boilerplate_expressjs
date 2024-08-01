@@ -33,6 +33,7 @@ import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
+import checkBullPasskey from "./middleware/checkBullPasskey";
 dotenv.config();
 
 const port = config.port;
@@ -63,7 +64,11 @@ server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
 server.use("/run-tests", runTestRouter);
-server.use("/api/v1/queues", ServerAdapter.getRouter());
+server.use(
+  "/api/v1/queues/:bull_passkey",
+  checkBullPasskey,
+  ServerAdapter.getRouter(),
+);
 
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
