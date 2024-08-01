@@ -12,7 +12,7 @@ export class ProductController {
 
   /**
    * @swagger
-   * /api/v1/products:
+   * /api/v1/products/:org_id:
    *   get:
    *     tags:
    *       - Product
@@ -554,7 +554,7 @@ export class ProductController {
 
   /**
    * @swagger
-   * /api/v1/products:
+   * /api/v1/products/:org_id:
    *   post:
    *     tags:
    *       - Product
