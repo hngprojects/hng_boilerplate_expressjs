@@ -20,7 +20,7 @@ orgRouter.delete(
   validateOrgId,
   orgController.removeUser.bind(orgController),
 );
-orgRouter.post(
+orgRouter.get(
   "/organizations/:org_id/invite",
   authMiddleware,
   checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
@@ -52,4 +52,10 @@ orgRouter.get(
   orgController.getOrganizations.bind(orgController),
 );
 
+orgRouter.put(
+  "/organizations/:organization_id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
+  orgController.updateOrganization.bind(orgController),
+);
 export { orgRouter };

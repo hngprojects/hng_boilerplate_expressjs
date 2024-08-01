@@ -9,8 +9,7 @@ import { UserOrganization, Invitation, OrgInviteToken } from "../models";
 import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
-
-import { URL } from "url";
+import { Conflict, ResourceNotFound } from "../middleware/error";
 
 export class OrgService implements IOrgService {
   private invitationRepository = AppDataSource.getRepository(Invitation);
@@ -134,13 +133,32 @@ export class OrgService implements IOrgService {
       throw new Error("Failed to fetch organization");
     }
   }
+  public UpdateOrganizationDetails = async (
+    organizationId: string,
+    updateData: Partial<Organization>,
+  ) => {
+    const organizationRepository = AppDataSource.getRepository(Organization);
+
+    const organization = await organizationRepository.findOne({
+      where: { id: organizationId },
+    });
+
+    if (!organization) {
+      throw new Error(`Organization with ID ${organizationId} not found`);
+    }
+
+    organizationRepository.merge(organization, updateData);
+    await organizationRepository.save(organization);
+
+    return organization;
+  };
+
   public async generateInviteLink(orgId: string): Promise<string> {
     const userOrganization = await this.organisationRepository.findOne({
       where: { id: orgId },
     });
-
     if (!userOrganization) {
-      throw new Error("Organization not found.");
+      throw new ResourceNotFound("Organization not found.");
     }
 
     const tokenValue = uuidv4();
@@ -157,52 +175,51 @@ export class OrgService implements IOrgService {
     return tokenValue;
   }
 
-  public async sendInviteLinks(
-    orgId: string,
-    emails: string[],
-    invite_link: string,
-  ): Promise<void> {
+  public async sendInviteLinks(orgId: string, emails: string[]): Promise<void> {
     const organization = await this.organisationRepository.findOne({
       where: { id: orgId },
     });
 
     if (!organization) {
-      throw new Error("Organization not found.");
+      throw new ResourceNotFound("Organization not found.");
     }
-    const url = new URL(invite_link);
-    const token = url.searchParams.values().next().value; // Gets the first query param value
-    if (!token) {
-      throw new Error("Invalid invite link.");
-    }
-    const orgInviteToken = await this.orgInviteTokenRepository.findOne({
-      where: { token, organization: { id: organization.id } },
-    });
 
-    if (!orgInviteToken) {
-      throw new Error("Invite token not found.");
-    }
+    const expiresAt = new Date();
+    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+
     for (const email of emails) {
+      const tokenValue = uuidv4();
+
+      const orgInviteToken = new OrgInviteToken();
+      orgInviteToken.token = tokenValue;
+      orgInviteToken.expires_at = expiresAt;
+      orgInviteToken.organization = organization;
+
+      await this.orgInviteTokenRepository.save(orgInviteToken);
+
       const invitation = new Invitation();
-      invitation.token = token;
+      invitation.token = tokenValue;
       invitation.organization = organization;
       invitation.email = email;
       invitation.orgInviteToken = orgInviteToken;
 
       await this.invitationRepository.save(invitation);
 
-      const emailcontent = {
+      const inviteLink = `https://example.com?accept-invite?${tokenValue}`;
+
+      const emailContent = {
         userName: "",
         title: "Invitation to Join Organization",
-        body: `<p>You have been invited to join  ${invitation.organization.name} organisation. Please use the following link to accept the invitation:</p><a href="${invite_link}">Here</a>`,
+        body: `<p>You have been invited to join ${organization.name} organization. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
       };
       const mailOptions = {
         from: "your-email@gmail.com",
         to: email,
         subject: "Invitation to Join Organization",
-        html: renderTemplate("custom-email", emailcontent),
+        html: renderTemplate("custom-email", emailContent),
       };
 
-      addEmailToQueue(mailOptions);
+      // addEmailToQueue(mailOptions);
     }
   }
 
@@ -212,31 +229,40 @@ export class OrgService implements IOrgService {
   ): Promise<void> {
     const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
-      throw new Error("Please register to join the organisation");
+      throw new ResourceNotFound("Please register to join the organization");
     }
 
+    let organization;
     const invitation = await this.invitationRepository.findOne({
       where: { token: token, email: user.email },
       relations: ["organization"],
     });
-    if (!invitation) {
-      throw new Error("Invalid or expired invitation.");
+
+    if (invitation) {
+      organization = invitation.organization;
+    } else {
+      const orgInviteToken = await this.orgInviteTokenRepository.findOne({
+        where: { token: token },
+        relations: ["organization"],
+      });
+
+      if (!orgInviteToken) {
+        throw new ResourceNotFound("Invalid invitation token.");
+      }
+
+      organization = orgInviteToken.organization;
     }
 
-    const organization = await this.organisationRepository.findOne({
-      where: { id: invitation.organization.id },
-      relations: ["userOrganizations"],
-    });
     if (!organization) {
-      throw new Error("Organisation not found.");
+      throw new ResourceNotFound("Organization not found.");
     }
 
-    const existingUserOrg = organization.userOrganizations.find(
-      (userOrg) => userOrg.userId === userId,
-    );
+    const existingUserOrg = await this.userOrganizationRepository.findOne({
+      where: { user: { id: userId }, organization: { id: organization.id } },
+    });
 
     if (existingUserOrg) {
-      throw new Error("You are already a member.");
+      throw new Conflict("You are already a member.");
     }
 
     const userOrganization = new UserOrganization();
@@ -246,7 +272,8 @@ export class OrgService implements IOrgService {
 
     await this.userOrganizationRepository.save(userOrganization);
 
-    // delete invitation used
-    // await this.invitationRepository.remove(invitation);
+    // if (invitation) {
+    //   await this.invitationRepository.remove(invitation);
+    // }
   }
 }
