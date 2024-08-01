@@ -17,13 +17,12 @@ interface SmsData {
   phone_number: string;
 }
 
-const retries: number = 3;
-const delay = 1000 * 60 * 5;
+const retries: number = 2;
+const delay: number = 1000 * 30;
 
 const redisConfig = {
   host: config.REDIS_HOST,
   port: Number(config.REDIS_PORT),
-  // password: config.REDIS_PASSWORD,
 };
 
 const emailQueue = new Bull("Email", {
@@ -47,7 +46,7 @@ emailQueue.process(async (job: Job, done) => {
     logs.info("Email sent successfully");
   } catch (error) {
     logs.error("Error sending email:", error);
-    throw error;
+    await job.moveToFailed({ message: "Failed to send email" });
   } finally {
     done();
   }
@@ -75,6 +74,7 @@ notificationQueue.process(async (job: Job, done) => {
     logs.info("Notification sent successfully");
   } catch (error) {
     logs.error("Error sending notification:", error);
+    job.moveToFailed({ message: "Failed to send notification" });
     throw error;
   } finally {
     done();
@@ -104,6 +104,7 @@ smsQueue.process(async (job: Job, done) => {
     logs.info("SMS sent successfully");
   } catch (error) {
     logs.error("Error sending SMS:", error);
+    job.moveToFailed({ message: "Failed to send SMS" });
     throw error;
   } finally {
     done();
