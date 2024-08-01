@@ -21,20 +21,24 @@ export const updateBlogPost = async (
     throw new Error("Blog post not found.");
   }
 
-  blog.title = title;
-  blog.content = content;
-
+  if (title) {
+    blog.title = title;
+  }
+  if (content) {
+    blog.content = content;
+  }
   if (published_at) {
     blog.published_at = published_at;
   }
-
   if (image_url) {
     blog.image_url = image_url;
   }
 
   try {
     await blogRepository.save(blog);
-  } catch (error) {}
+  } catch (error) {
+    throw new Error("Error saving blog post.");
+  }
 
   return blog;
 };

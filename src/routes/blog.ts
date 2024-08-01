@@ -24,7 +24,9 @@ blogRouter.get(
   authMiddleware,
   blogController.listBlogsByUser.bind(blogController),
 );
-blogRouter.put("/:id", authMiddleware, updateBlogController);
+
+//Endpoint to edit a blog post by patch based on the new Unified Backend Endpoints
+blogRouter.patch("/blogs/edit/:id", authMiddleware, updateBlogController);
 
 blogRouter.delete(
   "/blog/:id",
