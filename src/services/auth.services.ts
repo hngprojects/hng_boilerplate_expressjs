@@ -30,8 +30,8 @@ import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
-    mailSent: string;
-    newUser: Partial<User>;
+    message: string;
+    user: Partial<User>;
     access_token: string;
   }> {
     const { first_name, last_name, email, password } = payload;
@@ -68,13 +68,6 @@ export class AuthService implements IAuthService {
         },
       );
 
-      const mailSent = await Sendmail({
-        from: `Boilerplate <support@boilerplate.com>`,
-        to: email,
-        subject: "OTP VERIFICATION",
-        html: compilerOtp(parseInt(otp), user.name),
-      });
-
       const {
         password: _,
         otp: __,
@@ -82,7 +75,7 @@ export class AuthService implements IAuthService {
         ...rest
       } = createdUser;
 
-      return { mailSent, newUser: rest, access_token };
+      return { user: rest, access_token, message: "user created" };
     } catch (error) {
       if (error instanceof HttpError) {
         throw error;

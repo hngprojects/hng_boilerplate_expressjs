@@ -61,10 +61,8 @@ const authService = new AuthService();
 
 const signUp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { mailSent, newUser, access_token } = await authService.signUp(
-      req.body,
-    );
-    res.status(201).json({ mailSent, newUser, access_token });
+    const { message, user, access_token } = await authService.signUp(req.body);
+    res.status(201).json({ message, user, access_token });
   } catch (error) {
     next(error);
   }
@@ -226,7 +224,7 @@ const forgotPassword = async (
 
 /**
  * @swagger
- * /api/v1/auth/resetPassword:
+ * /api/v1/auth/reset-password/:token:
  *   post:
  *     summary: Reset a user's password
  *     description: Allows a user to reset their password by providing a valid reset token and a new password.
@@ -345,70 +343,6 @@ const changePassword = async (
 
 /**
  * @swagger
- * /api/v1/auth/google-signin:
- *   post:
- *     summary: Handle Google authentication and register/login a user
- *     description: This endpoint handles Google OAuth2.0 authentication. It accepts a Google user payload and either registers a new user or logs in an existing one.
- *     tags:
- *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *                 description: The user's email address.
- *                 example: user@example.com
- *               email_verified:
- *                 type: boolean
- *                 description: Whether the user's email is verified.
- *                 example: true
- *               name:
- *                 type: string
- *                 description: The user's full name.
- *                 example: "John Doe"
- *               picture:
- *                 type: string
- *                 format: url
- *                 description: URL to the user's profile picture.
- *                 example: "https://example.com/avatar.jpg"
- *               sub:
- *                 type: string
- *                 description: Google user ID (subject claim).
- *                 example: "1234567890"
- *     responses:
- *       200:
- *         description: User authenticated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- *                   description: Verify if authentication is successful
- *                   example: Authentication successful
- *                 user:
- *                   type: object
- *                   description: The authenticated user object.
- *                 access_token:
- *                   type: string
- *                   description: JWT access token for authentication.
- *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
- *       400:
- *         description: Bad Request - Invalid or missing data in request body
- *       500:
- *         description: Internal Server Error - An unexpected error occurred
- */
-
-const googleSignIn = async () => {};
-
-/**
- * @swagger
  * /api/v1/auth/magic-link:
  *   post:
  *     tags:
@@ -499,7 +433,7 @@ const createMagicToken = async (
 
     return res.status(200).json({
       status_code: 200,
-      message: `Sign-in token sent to email` || response.message,
+      message: response.message,
     });
   } catch (error) {
     next(error);
