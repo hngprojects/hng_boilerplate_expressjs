@@ -56,7 +56,7 @@ describe("AuthService", () => {
 
       const hashedPassword = "hashedPassword";
       const otp = "123456";
-      const mailSent = "mailSent";
+      const message = "user created";
       const createdUser = {
         id: 1,
         name: "John Doe",
@@ -78,13 +78,12 @@ describe("AuthService", () => {
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
       mockManager.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
-      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.signUp(payload);
 
       expect(result).toEqual({
-        mailSent,
-        newUser: {
+        message,
+        user: {
           id: 1,
           name: "John Doe",
           email: "john.doe@example.com",
