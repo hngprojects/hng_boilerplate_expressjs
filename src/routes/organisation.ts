@@ -53,9 +53,9 @@ orgRouter.get(
 );
 
 orgRouter.put(
-  "/organizations/:organization_id",
+  "/organizations/:org_id",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
-  orgController.updateOrganization.bind(orgController),
+  orgController.updateOrganisation.bind(orgController),
 );
 export { orgRouter };

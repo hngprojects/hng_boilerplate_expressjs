@@ -133,25 +133,29 @@ export class OrgService implements IOrgService {
       throw new Error("Failed to fetch organization");
     }
   }
-  public UpdateOrganizationDetails = async (
-    organizationId: string,
-    updateData: Partial<Organization>,
-  ) => {
+  public async updateOrganizationDetails(
+    org_id: string,
+    update_data: Partial<Organization>,
+  ): Promise<Organization> {
     const organizationRepository = AppDataSource.getRepository(Organization);
 
     const organization = await organizationRepository.findOne({
-      where: { id: organizationId },
+      where: { id: org_id },
     });
 
     if (!organization) {
-      throw new Error(`Organization with ID ${organizationId} not found`);
+      throw new Error("Organization not found");
     }
 
-    organizationRepository.merge(organization, updateData);
-    await organizationRepository.save(organization);
+    Object.assign(organization, update_data);
 
-    return organization;
-  };
+    try {
+      await organizationRepository.update(organization.id, update_data);
+      return organization;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   public async generateInviteLink(orgId: string): Promise<string> {
     const userOrganization = await this.organisationRepository.findOne({
@@ -171,8 +175,8 @@ export class OrgService implements IOrgService {
     orgInvteToken.organization = userOrganization;
 
     await this.orgInviteTokenRepository.save(orgInvteToken);
-
-    return tokenValue;
+    const inviteLink = `https://panther-expressjs.teams.hng.tech/accept-invite/${userOrganization.name}?token=${tokenValue}`;
+    return inviteLink;
   }
 
   public async sendInviteLinks(orgId: string, emails: string[]): Promise<void> {
@@ -205,7 +209,7 @@ export class OrgService implements IOrgService {
 
       await this.invitationRepository.save(invitation);
 
-      const inviteLink = `https://example.com?accept-invite?${tokenValue}`;
+      const inviteLink = `https://panther-expressjs.teams.hng.tech/accept-invite/${organization.name}?token=${tokenValue}`;
 
       const emailContent = {
         userName: "",
@@ -219,7 +223,7 @@ export class OrgService implements IOrgService {
         html: renderTemplate("custom-email", emailContent),
       };
 
-      // addEmailToQueue(mailOptions);
+      addEmailToQueue(mailOptions);
     }
   }
 

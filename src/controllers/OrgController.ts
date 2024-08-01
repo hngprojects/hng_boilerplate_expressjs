@@ -578,36 +578,32 @@ export class OrgController {
    *                 message:
    *                   type: string
    */
-  async updateOrganization(req: Request, res: Response) {
-    const { organization_id } = req.params;
-    const updateData = req.body;
-
+  async updateOrganisation(req: Request, res: Response, next: NextFunction) {
     try {
-      const organization = await this.orgService.UpdateOrganizationDetails(
-        organization_id,
-        updateData,
-      );
-      return res.status(200).json({
-        message: "Organization details updated successfully",
-        status_code: 200,
-        data: organization,
-      });
-    } catch (error) {
-      console.log(error);
-      if (error.message.includes("not found")) {
+      const orgId = req.params.org_id;
+      const payload = req.body;
+
+      const updatedOrganisation =
+        await this.orgService.updateOrganizationDetails(orgId, payload);
+
+      if (!updatedOrganisation) {
         return res.status(404).json({
-          status: "unsuccessful",
+          status: "error",
+          message: "Organisation not found",
           status_code: 404,
-          message: error.message,
-        });
-      } else {
-        return res.status(500).json({
-          status: "failed",
-          status_code: 500,
-          message:
-            "Failed to update organization details. Please try again later.",
         });
       }
+
+      const respObj = {
+        status: "success",
+        message: "Organisation updated successfully",
+        data: updatedOrganisation,
+        status_code: 200,
+      };
+
+      return res.status(200).json(respObj);
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -806,11 +802,11 @@ export class OrgController {
     try {
       const orgId = req.params.org_id;
 
-      const invite_token = await this.orgService.generateInviteLink(orgId);
+      const invite_link = await this.orgService.generateInviteLink(orgId);
       res.status(200).json({
         status: "success",
         status_code: 200,
-        invite_token,
+        invite_link,
       });
     } catch (error) {
       next(error);

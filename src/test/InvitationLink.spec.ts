@@ -84,7 +84,10 @@ describe("OrgController", () => {
     it("should generate an invite link", async () => {
       const { organisationRepositoryMock, orgInviteTokenRepositoryMock } =
         repositories;
-      const mockOrganization = { id: "org-id" } as Organization;
+      const mockOrganization = {
+        id: "org-id",
+        name: "orgname",
+      } as Organization;
       organisationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
 
       await orgController.generateInviteLink(req, res as Response, next);
@@ -102,7 +105,8 @@ describe("OrgController", () => {
       expect(res.json).toHaveBeenCalledWith({
         status: "success",
         status_code: 200,
-        invite_token: "generated-token",
+        invite_link:
+          "https://panther-expressjs.teams.hng.tech/accept-invite/orgname?token=generated-token",
       });
     });
 

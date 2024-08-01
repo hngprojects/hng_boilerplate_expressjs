@@ -29,7 +29,6 @@ import { routeNotFound, errorHandler } from "./middleware";
 import { orgRouter } from "./routes/organisation";
 import swaggerUi from "swagger-ui-express";
 import swaggerSpec from "./swaggerConfig";
-import updateRouter from "./routes/updateOrg";
 import { Limiter } from "./utils";
 import ServerAdapter from "./views/bull-board";
 import passport from "./config/google.passport.config";
@@ -79,7 +78,6 @@ server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", updateRouter);
 server.use("/api/v1", faqRouter);
 
 server.use("/api/v1/queues", ServerAdapter.getRouter());
