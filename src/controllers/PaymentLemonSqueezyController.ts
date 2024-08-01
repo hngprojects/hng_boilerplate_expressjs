@@ -117,7 +117,6 @@ export const LemonSqueezyWebhook = async (req: Request, res: Response) => {
       currency,
       status: mappedStatus,
       provider: "lemonsqueezy",
-      payer_email,
       created_at,
       updated_at,
     });
