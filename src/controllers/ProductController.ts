@@ -12,7 +12,7 @@ export class ProductController {
 
   /**
    * @swagger
-   * /api/v1/products:
+   * /api/v1/products/:org_id:
    *   get:
    *     tags:
    *       - Product
@@ -128,9 +128,19 @@ export class ProductController {
    */
   async getProductPagination(req: Request, res: Response) {
     try {
+      const { org_id } = req.params;
       const paginationData = await this.productService.getProductPagination(
         req.query,
       );
+
+      if (!org_id) {
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "org_id not found",
+        });
+      }
+
       res.status(200).json({
         status: "success",
         status_code: 200,
@@ -544,7 +554,7 @@ export class ProductController {
 
   /**
    * @swagger
-   * /api/v1/products:
+   * /api/v1/products/:org_id:
    *   post:
    *     tags:
    *       - Product
@@ -651,6 +661,7 @@ export class ProductController {
   async createProduct(req: Request, res: Response) {
     try {
       const { user } = req;
+      const { org_id } = req.params;
       const sanitizedData = req.body;
 
       if (!user) {
@@ -658,6 +669,14 @@ export class ProductController {
           status: "unsuccessful",
           status_code: 401,
           message: "Unauthorized User",
+        });
+      }
+
+      if (!org_id) {
+        return res.status(401).json({
+          status: "unsuccessful",
+          status_code: 401,
+          message: "org_id not found",
         });
       }
 

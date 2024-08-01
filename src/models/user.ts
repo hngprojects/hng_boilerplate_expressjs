@@ -1,25 +1,26 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  OneToMany,
-  ManyToMany,
-  Unique,
-  JoinTable,
-  JoinColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from "typeorm";
-import { Profile, Product, Organization, Sms, Blog } from ".";
-import { UserOrganization } from "./user-organisation";
 import { IsEmail } from "class-validator";
-import ExtendedBaseEntity from "./extended-base-entity";
-import { getIsInvalidMessage } from "../utils";
+import crypto from "crypto";
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from "typeorm";
+import { Blog, Organization, Product, Profile, Sms } from ".";
 import { UserRole } from "../enums/userRoles";
+import { getIsInvalidMessage } from "../utils";
+import ExtendedBaseEntity from "./extended-base-entity";
 import { Like } from "./like";
 import { Payment } from "./payment";
+import { UserOrganization } from "./user-organisation";
 
 @Entity()
 @Unique(["email"])
@@ -101,4 +102,23 @@ export class User extends ExtendedBaseEntity {
 
   @DeleteDateColumn({ nullable: true })
   deletedAt: Date;
+
+  @Column({ nullable: true })
+  passwordResetToken: string;
+
+  @Column({ nullable: true, type: "bigint" })
+  passwordResetExpires: number;
+
+  createPasswordResetToken(): string {
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    this.passwordResetToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+    return resetToken;
+  }
 }

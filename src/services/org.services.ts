@@ -1,10 +1,10 @@
-import { Organization } from "../models/organization";
 import AppDataSource from "../data-source";
+import { UserRole } from "../enums/userRoles";
+import { BadRequest } from "../middleware";
+import { Organization } from "../models/organization";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
 import log from "../utils/logger";
-import { BadRequest } from "../middleware";
-import { UserRole } from "../enums/userRoles";
 import { UserOrganization, Invitation, OrgInviteToken } from "../models";
 import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
@@ -42,7 +42,7 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      console.log(error);
+      log.error(error);
       throw new BadRequest("Client error");
     }
   }
@@ -57,7 +57,6 @@ export class OrgService implements IOrgService {
     const userRepository = AppDataSource.getRepository(User);
 
     try {
-      // Find the UserOrganization entry
       const userOrganization = await userOrganizationRepository.findOne({
         where: { userId: user_id, organizationId: org_id },
         relations: ["user", "organization"],
@@ -67,10 +66,8 @@ export class OrgService implements IOrgService {
         return null;
       }
 
-      // Remove the UserOrganization entry
       await userOrganizationRepository.remove(userOrganization);
 
-      // Update the organization's users list
       const organization = await organizationRepository.findOne({
         where: { id: org_id, owner_id: user_id },
         relations: ["users"],
@@ -83,7 +80,6 @@ export class OrgService implements IOrgService {
         await organizationRepository.save(organization);
       }
 
-      // Return the removed user
       return userOrganization.user;
     } catch (error) {
       throw new Error("Failed to remove user from organization");
@@ -126,7 +122,7 @@ export class OrgService implements IOrgService {
         relations: ["organization"],
       });
 
-      console.log(userOrganization);
+      log.error(userOrganization);
 
       return userOrganization?.organization || null;
     } catch (error) {
@@ -279,5 +275,62 @@ export class OrgService implements IOrgService {
     // if (invitation) {
     //   await this.invitationRepository.remove(invitation);
     // }
+  }
+
+  public async searchOrganizationMembers(criteria: {
+    name?: string;
+    email?: string;
+  }): Promise<any[]> {
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
+
+    const { name, email } = criteria;
+
+    const query = userOrganizationRepository
+      .createQueryBuilder("userOrganization")
+      .leftJoinAndSelect("userOrganization.user", "user")
+      .leftJoinAndSelect("userOrganization.organization", "organization")
+      .where("1=1");
+
+    if (name) {
+      query.andWhere("LOWER(user.name) LIKE LOWER(:name)", {
+        name: `%${name}%`,
+      });
+    } else if (email) {
+      query.andWhere("LOWER(user.email) LIKE LOWER(:email)", {
+        email: `%${email}%`,
+      });
+    }
+
+    const userOrganizations = await query.getMany();
+
+    if (userOrganizations.length > 0) {
+      // Map organization details and group users by organization
+      const organizationsMap = new Map<string, any>();
+
+      userOrganizations.forEach((userOrg) => {
+        const org = userOrg.organization;
+        const user = userOrg.user;
+
+        if (!organizationsMap.has(org.id)) {
+          organizationsMap.set(org.id, {
+            organizationId: org.id,
+            organizationName: org.name,
+            organizationEmail: org.email,
+            members: [],
+          });
+        }
+
+        organizationsMap.get(org.id).members.push({
+          userId: user.id,
+          userName: user.name,
+          userEmail: user.email,
+        });
+      });
+
+      return Array.from(organizationsMap.values());
+    }
+
+    return [];
   }
 }

@@ -16,3 +16,4 @@ export * from "./sms";
 export * from "./testimonial";
 export * from "./user";
 export * from "./faq";
+export * from "./run-test";

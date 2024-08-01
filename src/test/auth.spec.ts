@@ -1,12 +1,20 @@
 // @ts-nocheck
 
-import AppDataSource from "../data-source";
-import { User } from "../models";
-import { hashPassword, generateNumericOTP, comparePassword } from "../utils";
-import { Sendmail } from "../utils/mail";
 import jwt from "jsonwebtoken";
-import { Conflict, HttpError } from "../middleware";
+import AppDataSource from "../data-source";
+import { Conflict, HttpError, ResourceNotFound } from "../middleware";
+import { User } from "../models";
 import { AuthService } from "../services";
+import {} from "../services/auth.services";
+import {
+  comparePassword,
+  generateAccessToken,
+  generateNumericOTP,
+  generateToken,
+  hashPassword,
+  verifyToken,
+} from "../utils";
+import { Sendmail } from "../utils/mail";
 
 jest.mock("../data-source", () => {
   return {
@@ -48,7 +56,7 @@ describe("AuthService", () => {
 
       const hashedPassword = "hashedPassword";
       const otp = "123456";
-      const mailSent = "mailSent";
+      const message = "user created";
       const createdUser = {
         id: 1,
         name: "John Doe",
@@ -70,13 +78,12 @@ describe("AuthService", () => {
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
       mockManager.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
-      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.signUp(payload);
 
       expect(result).toEqual({
-        mailSent,
-        newUser: {
+        message,
+        user: {
           id: 1,
           name: "John Doe",
           email: "john.doe@example.com",
@@ -277,6 +284,94 @@ describe("AuthService", () => {
           confirmPassword,
         ),
       ).rejects.toThrow(HttpError);
+    });
+  });
+
+  describe("magicLink Auth", () => {
+    it("should throw ResourceNotFound for non-existent user", async () => {
+      const payload = {
+        email: "nonexistent@example.com",
+      };
+
+      (User.findOne as jest.Mock).mockResolvedValue(null);
+
+      await expect(
+        authService.generateMagicLink(payload.email),
+      ).rejects.toThrow(ResourceNotFound);
+
+      await expect(
+        authService.generateMagicLink(payload.email),
+      ).rejects.toThrow("User is not registered");
+
+      expect(User.findOne).toHaveBeenCalledWith({
+        where: { email: payload.email },
+      });
+    });
+
+    it("should generate magic link for existing user", async () => {
+      const payload = {
+        email: "existing@example.com",
+      };
+
+      const mockUser = { id: "1", email: payload.email };
+      const token = "a-authtoken";
+      const mailSent = "Email sent successfully.";
+
+      // Mock successful responses
+      (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+      (generateToken as jest.Mock).mockReturnValue(token);
+      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
+
+      const result = await authService.generateMagicLink(payload.email);
+
+      expect(result).toEqual({
+        ok: true,
+        message: "Email sent successfully.",
+        user: mockUser,
+      });
+
+      expect(User.findOne).toHaveBeenCalledWith({
+        where: { email: payload.email },
+      });
+      expect(generateToken).toHaveBeenCalledWith({ email: payload.email });
+      expect(Sendmail).toHaveBeenCalled();
+    });
+
+    it("should validate the token and return user information", async () => {
+      const token = "valid-token";
+      const email = "test@example.com";
+      const mockUser = { id: "1", email };
+
+      (verifyToken as jest.Mock).mockReturnValue({ email });
+      (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+
+      const result = await authService.validateMagicLinkToken(token);
+
+      expect(result).toEqual({
+        status: "ok",
+        email: mockUser.email,
+        userId: mockUser.id,
+      });
+    });
+
+    it("should throw an error for invalid token", async () => {
+      const token = "invalid-token";
+      (verifyToken as jest.Mock).mockReturnValue({});
+
+      await expect(authService.validateMagicLinkToken(token)).rejects.toThrow(
+        "Invalid JWT",
+      );
+    });
+
+    it("should generate an access token for a valid user ID", async () => {
+      const userId = "1";
+      const mockAccessToken = "mock-access-token";
+
+      (generateAccessToken as jest.Mock).mockResolvedValue(mockAccessToken);
+
+      const result = await authService.passwordlessLogin(userId);
+
+      expect(result).toEqual({ access_token: mockAccessToken });
     });
   });
 });
