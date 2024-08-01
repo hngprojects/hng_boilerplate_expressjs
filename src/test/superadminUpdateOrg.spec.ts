@@ -46,7 +46,7 @@ describe("Organisation", () => {
         country: "nigeria",
         state: "nigeria",
         createdAt: new Date(),
-        updatedAt: new Date(),
+        // updatedAt: new Date(),
       } as Organization;
 
       const updatedOrg = {
@@ -63,7 +63,7 @@ describe("Organisation", () => {
         description: undefined,
         industry: undefined,
         type: undefined,
-        updatedAt: new Date(),
+        // updatedAt: new Date(),
       };
 
       const orgRepository = {

@@ -71,6 +71,7 @@ export class BlogService {
       const author = await this.userRepository.findOne({
         where: { id: authorId },
       });
+      newBlog.author = author;
 
       const tagsContent = tags.split(",");
       const categoriesContent = categories.split(",");

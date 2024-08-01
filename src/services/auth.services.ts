@@ -1,4 +1,8 @@
+// auth service
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import jwt from "jsonwebtoken";
+import { MoreThan } from "typeorm";
 import config from "../config";
 import APP_CONFIG from "../config/app.config";
 import AppDataSource from "../data-source";
@@ -19,13 +23,15 @@ import {
   verifyToken,
 } from "../utils";
 import { Sendmail } from "../utils/mail";
+import { addEmailToQueue } from "../utils/queue";
+import renderTemplate from "../views/email/renderTemplate";
 import { generateMagicLinkEmail } from "../views/magic-link.email";
 import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
   public async signUp(payload: IUserSignUp): Promise<{
-    mailSent: string;
-    newUser: Partial<User>;
+    message: string;
+    user: Partial<User>;
     access_token: string;
   }> {
     const { first_name, last_name, email, password } = payload;
@@ -62,13 +68,6 @@ export class AuthService implements IAuthService {
         },
       );
 
-     const mailSent = await Sendmail({
-        from: `Boilerplate <support@boilerplate.com>`,
-        to: email,
-        subject: "OTP VERIFICATION",
-        html: compilerOtp(parseInt(otp), user.name),
-      });
-
       const {
         password: _,
         otp: __,
@@ -76,7 +75,7 @@ export class AuthService implements IAuthService {
         ...rest
       } = createdUser;
 
-      return { mailSent, newUser: rest, access_token };
+      return { user: rest, access_token, message: "user created" };
     } catch (error) {
       if (error instanceof HttpError) {
         throw error;
@@ -154,71 +153,76 @@ export class AuthService implements IAuthService {
     }
   }
 
-  // public async forgotPassword(email: string): Promise<{ message: string }> {
-  //   try {
-  //     const user = await User.findOne({ where: { email } });
+  resetPassword = async (
+    token: string,
+    newPassword: string,
+  ): Promise<{ message: string }> => {
+    try {
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-  //     if (!user) {
-  //       throw new HttpError(404, "User not found");
-  //     }
+      const user = await User.findOne({
+        where: {
+          passwordResetToken: hashedToken,
+          passwordResetExpires: MoreThan(Date.now()),
+        },
+      });
 
-  //     const { resetToken, hashedToken, expiresAt } = generateResetToken();
+      if (!user) {
+        throw new HttpError(404, "Token is invalid or has expired");
+      }
 
-  //     const passwordResetToken = new PasswordResetToken();
-  //     passwordResetToken.token = hashedToken;
-  //     passwordResetToken.expiresAt = expiresAt;
-  //     passwordResetToken.user = user;
+      user.password = hashedPassword;
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
 
-  //     await AppDataSource.manager.save(passwordResetToken);
+      await AppDataSource.manager.save(user);
 
-  //     // Send email
-  //     const emailContent = {
-  //       from: `Boilerplate <${config.SMTP_USER}>`,
-  //       to: email,
-  //       subject: "Password Reset",
-  //       text: `You requested for a password reset. Use this token to reset your password: ${resetToken}`,
-  //     };
+      return { message: "Password reset successfully." };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  };
 
-  //     await Sendmail(emailContent);
+  public async forgotPassword(
+    email: string,
+    resetURL: string,
+  ): Promise<{ message: string }> {
+    try {
+      const user = await User.findOne({ where: { email } });
 
-  //     return { message: "Password reset link sent successfully." };
-  //   } catch (error) {
-  //     throw new HttpError(error.status || 500, error.message || error);
-  //   }
-  // }
+      if (!user) {
+        throw new HttpError(404, "User not found");
+      }
 
-  // public async resetPassword(
-  //   token: string,
-  //   newPassword: string
-  // ): Promise<{ message: string }> {
-  //   try {
-  //     const passwordResetTokenRepository =
-  //       AppDataSource.getRepository(PasswordResetToken);
-  //     const passwordResetToken = await passwordResetTokenRepository.findOne({
-  //       where: { token },
-  //       relations: ["user"],
-  //     });
+      const resetToken = user.createPasswordResetToken();
+      await AppDataSource.manager.save(user);
 
-  //     if (!passwordResetToken) {
-  //       throw new HttpError(404, "Invalid or expired token");
-  //     }
+      const htmlTemplate = renderTemplate("password-reset", {
+        title: "Reset Password",
+        userName: user.name,
+        resetUrl: resetURL + `${resetToken}`,
+      });
 
-  //     if (passwordResetToken.expiresAt < new Date()) {
-  //       throw new HttpError(400, "Token expired");
-  //     }
+      const emailContent = {
+        from: `Boilerplate <${config.SMTP_USER}>`,
+        to: email,
+        subject: "Password Reset",
+        html: htmlTemplate,
+      };
 
-  //     const user = passwordResetToken.user;
-  //     const hashedPassword = await bcrypt.hash(newPassword, 10);
-  //     user.password = hashedPassword;
+      await addEmailToQueue(emailContent);
 
-  //     await AppDataSource.manager.save(user);
-  //     await passwordResetTokenRepository.remove(passwordResetToken);
+      return { message: "Password reset link sent successfully." };
+    } catch (error) {
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
 
-  //     return { message: "Password reset successfully." };
-  //   } catch (error) {
-  //     throw new HttpError(error.status || 500, error.message || error);
-  //   }
-  // }
   public async changePassword(
     userId: string,
     oldPassword: string,
@@ -238,6 +242,13 @@ export class AuthService implements IAuthService {
       );
       if (!isOldPasswordValid) {
         throw new HttpError(401, "Old password is incorrect");
+      }
+
+      if (oldPassword === newPassword) {
+        throw new HttpError(
+          400,
+          "You used this password recently. Please choose a different one.",
+        );
       }
 
       if (newPassword !== confirmPassword) {

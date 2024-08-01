@@ -1,12 +1,12 @@
-import { Organization } from "../models/organization";
+import { v4 as uuidv4 } from "uuid";
 import AppDataSource from "../data-source";
+import { UserRole } from "../enums/userRoles";
+import { BadRequest } from "../middleware";
+import { Invitation, UserOrganization } from "../models";
+import { Organization } from "../models/organization";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
 import log from "../utils/logger";
-import { BadRequest } from "../middleware";
-import { UserRole } from "../enums/userRoles";
-import { UserOrganization, Invitation } from "../models";
-import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
 
@@ -33,7 +33,7 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      console.log(error);
+      log.error(error);
       throw new BadRequest("Client error");
     }
   }
@@ -117,7 +117,7 @@ export class OrgService implements IOrgService {
         relations: ["organization"],
       });
 
-      console.log(userOrganization);
+      log.error(userOrganization);
 
       return userOrganization?.organization || null;
     } catch (error) {
@@ -238,7 +238,8 @@ export class OrgService implements IOrgService {
     name?: string;
     email?: string;
   }): Promise<any[]> {
-    const userOrganizationRepository = AppDataSource.getRepository(UserOrganization);
+    const userOrganizationRepository =
+      AppDataSource.getRepository(UserOrganization);
 
     const { name, email } = criteria;
 
@@ -249,9 +250,13 @@ export class OrgService implements IOrgService {
       .where("1=1");
 
     if (name) {
-      query.andWhere("LOWER(user.name) LIKE LOWER(:name)", { name: `%${name}%` });
+      query.andWhere("LOWER(user.name) LIKE LOWER(:name)", {
+        name: `%${name}%`,
+      });
     } else if (email) {
-      query.andWhere("LOWER(user.email) LIKE LOWER(:email)", { email: `%${email}%` });
+      query.andWhere("LOWER(user.email) LIKE LOWER(:email)", {
+        email: `%${email}%`,
+      });
     }
 
     const userOrganizations = await query.getMany();
@@ -260,7 +265,7 @@ export class OrgService implements IOrgService {
       // Map organization details and group users by organization
       const organizationsMap = new Map<string, any>();
 
-      userOrganizations.forEach(userOrg => {
+      userOrganizations.forEach((userOrg) => {
         const org = userOrg.organization;
         const user = userOrg.user;
 
@@ -269,14 +274,14 @@ export class OrgService implements IOrgService {
             organizationId: org.id,
             organizationName: org.name,
             organizationEmail: org.email,
-            members: []
+            members: [],
           });
         }
 
         organizationsMap.get(org.id).members.push({
           userId: user.id,
           userName: user.name,
-          userEmail: user.email
+          userEmail: user.email,
         });
       });
 

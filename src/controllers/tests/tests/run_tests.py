@@ -3,7 +3,7 @@ import sys
 
 def run_tests():
     python_executable = sys.executable
-    test_command = [python_executable, "-m", "pytest", "-v"]
+    test_command = [python_executable, "-m", "pytest", "--html=report.html", "--self-contained-html", "tests/test_api.py"]
     result = subprocess.run(test_command, capture_output=True, text=True)
     return result.stdout, result.returncode
 

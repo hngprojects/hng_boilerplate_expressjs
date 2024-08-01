@@ -4,8 +4,10 @@ import {
   changePassword,
   changeUserRole,
   createMagicToken,
+  forgotPassword,
   googleAuthCall,
   login,
+  resetPassword,
   signUp,
   verifyOtp,
 } from "../controllers";
@@ -26,6 +28,9 @@ authRoute.put(
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
   changeUserRole,
 );
+
+authRoute.post("/auth/forgot-password", forgotPassword);
+authRoute.post("/auth/reset-password/:token", resetPassword);
 
 authRoute.post("/auth/google", googleAuthCall);
 

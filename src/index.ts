@@ -1,4 +1,3 @@
-// src/index.ts
 import cors from "cors";
 import dotenv from "dotenv";
 import express, { Express, Request, Response } from "express";
@@ -22,10 +21,10 @@ import {
   paymentRouter,
   paymentStripeRouter,
   productRouter,
+  runTestRouter,
   sendEmailRoute,
   testimonialRoute,
   userRouter,
-  runTestRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -34,6 +33,7 @@ import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
+import { roleRouter } from "./routes/roles";
 dotenv.config();
 
 const port = config.port;
@@ -56,6 +56,10 @@ server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(passport.initialize());
+
+server.get("/", (req: Request, res: Response) => {
+  res.send({ message: "I am the express API responding for team panther" });
+});
 server.get("/api/v1", (req: Request, res: Response) => {
   res.json({ message: "I am the express API responding for team Panther" });
 });
@@ -63,11 +67,11 @@ server.get("/api/v1", (req: Request, res: Response) => {
 server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
-server.use("/api/v1", runTestRouter);
-server.use("/api/v1", authRoute);
-server.use("/api/v1", userRouter);
+server.use("/run-tests", runTestRouter);
 
 server.use("/api/v1", authRoute);
+server.use("/api/v1", userRouter);
+server.use("/api/v1/queues", ServerAdapter.getRouter());
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);
@@ -85,7 +89,8 @@ server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", updateRouter);
 server.use("/api/v1", faqRouter);
-server.use("/api/v1/queues", ServerAdapter.getRouter());
+server.use("/api/v1", roleRouter);
+
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 server.use(routeNotFound);
@@ -93,25 +98,6 @@ server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
-    // await seed();
-    server.use(express.json());
-    // server.get("/", (req: Request, res: Response) => {
-    //   // res.send("Hello world");
-    //   res.send("Hello world");
-    // });
-    server.get("/", (req: Request, res: Response) => {
-      // res.send("Hello world");
-      res.send({ message: "I am the express API responding for team panther" });
-    });
-
-    server.get("/probe", (req: Request, res: Response) => {
-      try {
-        res.send("I am the express api responding for team panther");
-      } catch (error) {
-        res.status(500).json({ error: "Internal Server Error" });
-      }
-    });
-
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
     });
