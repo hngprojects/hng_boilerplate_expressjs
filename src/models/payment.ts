@@ -14,7 +14,7 @@ export class Payment {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column("uuid")
+  @Column("uuid", { nullable: true })
   billingPlanId: string;
 
   @Column("decimal", { precision: 10, scale: 2 })
@@ -23,7 +23,7 @@ export class Payment {
   @Column()
   currency: string;
 
-  @Column()
+  @Column({ nullable: true })
   paymentServiceId: string | null;
 
   @Column({
