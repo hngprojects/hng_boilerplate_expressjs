@@ -55,6 +55,10 @@ server.use(Limiter);
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 server.use(passport.initialize());
+
+server.get("/", (req: Request, res: Response) => {
+  res.send({ message: "I am the express API responding for team panther" });
+});
 server.get("/api/v1", (req: Request, res: Response) => {
   res.json({ message: "I am the express API responding for team Panther" });
 });
@@ -94,19 +98,6 @@ server.use(errorHandler);
 
 AppDataSource.initialize()
   .then(async () => {
-    server.use(express.json());
-    server.get("/", (req: Request, res: Response) => {
-      res.send({ message: "I am the express API responding for team panther" });
-    });
-
-    server.get("/probe", (req: Request, res: Response) => {
-      try {
-        res.send("I am the express api responding for team panther");
-      } catch (error) {
-        res.status(500).json({ error: "Internal Server Error" });
-      }
-    });
-
     server.listen(port, () => {
       log.info(`Server is listening on port ${port}`);
     });
