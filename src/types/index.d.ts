@@ -1,5 +1,11 @@
 import { User } from "../models";
 
+export enum UserType {
+  SUPER_ADMIN = "super-admin",
+  ADMIN = "admin",
+  USER = "vendor",
+}
+
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
   getAllUsers(): Promise<User[]>;

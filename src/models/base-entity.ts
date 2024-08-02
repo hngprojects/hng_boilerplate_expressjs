@@ -1,5 +1,5 @@
-import { BaseEntity, BeforeInsert, BeforeUpdate } from 'typeorm';
-import { validateOrReject } from 'class-validator';
+import { BaseEntity, BeforeInsert, BeforeUpdate } from "typeorm";
+import { validateOrReject } from "class-validator";
 
 class ExtendedBaseEntity extends BaseEntity {
   @BeforeInsert()

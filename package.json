@@ -24,7 +24,6 @@
     "check-lint": "eslint . --ext ts --ext tsx --ext js"
   },
   "repository": "https://github.com/hngprojects/hng_boilerplate_expressjs",
-  "author": "StarmannRassy <boronicle@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/hngprojects/hng_boilerplate_expressjs/issues"
