@@ -1,8 +1,13 @@
 import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
-import { UserType } from "../types";
 import { getIsInvalidMessage } from "../utils";
+
+enum UserType {
+  SUPER_ADMIN = "super-admin",
+  ADMIN = "admin",
+  USER = "vendor",
+}
 
 @Entity()
 @Unique(["email"])
