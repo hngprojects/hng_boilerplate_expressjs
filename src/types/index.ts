@@ -65,10 +65,7 @@ export interface ICreateOrganisation {
 }
 
 export interface IOrganisationService {
-  createOrganisation(
-    payload: ICreateOrganisation,
-    userId: string,
-  ): Promise<unknown>;
+  createOrganisation(payload: ICreateOrganisation, userId: string): Promise<unknown>;
   removeUser(org_id: string, user_id: string): Promise<User | null>;
 }
 
@@ -90,4 +87,20 @@ export interface GoogleUser {
   name: string;
   picture: string;
   sub: string;
+}
+
+export interface IUserProfileUpdate {
+  first_name: string;
+  last_name: string;
+  phone: string;
+  username: string;
+  jobTitle: string;
+  pronouns: string;
+  department: string;
+  bio: string;
+  social_links: string[];
+  language: string;
+  region: string;
+  timezones: string;
+  profile_pic_url: string;
 }
