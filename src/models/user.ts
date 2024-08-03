@@ -20,6 +20,7 @@ import { getIsInvalidMessage } from "../utils";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { Like } from "./like";
 import { UserOrganization } from "./user-organisation";
+import { Job } from "./job";
 
 @Entity()
 @Unique(["email"])
@@ -86,6 +87,9 @@ export class User extends ExtendedBaseEntity {
   })
   @JoinTable()
   organizations: Organization[];
+
+  @OneToMany(() => Job, (job) => job.user)
+  jobs: Job[];
 
   @CreateDateColumn()
   createdAt: Date;
