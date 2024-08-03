@@ -91,3 +91,19 @@ export interface GoogleUser {
   picture: string;
   sub: string;
 }
+
+export interface IUserProfileUpdate {
+  first_name: string;
+  last_name: string;
+  phone: string;
+  username: string;
+  jobTitle: string;
+  pronouns: string;
+  department: string;
+  bio: string;
+  social_links: string[];
+  language: string;
+  region: string;
+  timezones: string;
+  profile_pic_url: string;
+}
