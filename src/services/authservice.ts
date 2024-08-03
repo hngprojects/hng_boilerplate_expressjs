@@ -7,10 +7,8 @@ import {
   HttpError,
   ResourceNotFound,
 } from "../middleware";
-import { User, Profile, Otp } from "../models";
 import { IAuthService, IUserLogin, IUserSignUp, UserType } from "../types";
 import { User, Profile, Otp, NotificationSettings } from "../models";
-import { IAuthService, IUserSignUp, UserType } from "../types";
 import {
   comparePassword,
   generateAccessToken,
@@ -84,12 +82,12 @@ export class AuthService implements IAuthService {
 
       const otp = await this.otpService.createOtp(user.id);
 
-      // await Sendmail({
-      //   from: `Boilerplate <support@boilerplate.com>`,
-      //   to: email,
-      //   subject: "OTP VERIFICATION",
-      //   html: compilerOtp(parseInt(otp.token), user.first_name),
-      // });
+      await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "OTP VERIFICATION",
+        html: compilerOtp(parseInt(otp.token), user.first_name),
+      });
 
       await this.notificationRepository.save({
         user_id: user.id,

@@ -5,8 +5,13 @@ import swaggerUi from "swagger-ui-express";
 import { errorHandler, routeNotFound } from "./middleware";
 import swaggerSpec from "./config/swaggerConfig";
 import { Limiter } from "./utils";
-import { authRoute, adminRoute, squeezeRoute, userRoute } from "./routes";
-import { authRoute, notificationsRoute } from "./routes";
+import {
+  authRoute,
+  adminRoute,
+  squeezeRoute,
+  userRoute,
+  notificationsRoute,
+} from "./routes";
 
 const app: Express = express();
 app.options("*", cors());
