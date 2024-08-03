@@ -2,11 +2,10 @@ import "reflect-metadata";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
-import config from "./config";
 import { errorHandler, routeNotFound } from "./middleware";
 import swaggerSpec from "./config/swaggerConfig";
 import { Limiter } from "./utils";
-import router from "./routes";
+import { authRoute } from "./routes";
 
 const app: Express = express();
 app.options("*", cors());
@@ -34,7 +33,7 @@ app.get("/api/v1", (req: Request, res: Response) => {
   res.json({ message: "I am the express API responding for team Panther" });
 });
 
-app.use("/api/v1", router);
+app.use("/api/v1", authRoute);
 
 app.use(routeNotFound);
 app.use(errorHandler);

@@ -22,6 +22,7 @@ export interface IUserSignUp {
   last_name: string;
   email: string;
   password: string;
+  admin_secret?: string;
 }
 export interface IUserLogin {
   email: string;
@@ -36,20 +37,20 @@ export interface IProduct {
 }
 
 export interface IAuthService {
-  login(payload: IUserLogin): Promise<unknown>;
+  // login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
-  verifyEmail(token: string, otp: number): Promise<{ message: string }>;
-  changePassword(
-    userId: string,
-    oldPassword: string,
-    newPassword: string,
-    confirmPassword: string,
-  ): Promise<{ message: string }>;
-  generateMagicLink(email: string): Promise<{ ok: boolean; message: string }>;
-  validateMagicLinkToken(
-    token: string,
-  ): Promise<{ status: string; email: string; userId: string }>;
-  passwordlessLogin(userId: string): Promise<{ access_token: string }>;
+  // verifyEmail(token: string, otp: number): Promise<{ message: string }>;
+  // changePassword(
+  //   userId: string,
+  //   oldPassword: string,
+  //   newPassword: string,
+  //   confirmPassword: string,
+  // ): Promise<{ message: string }>;
+  // generateMagicLink(email: string): Promise<{ ok: boolean; message: string }>;
+  // validateMagicLinkToken(
+  //   token: string,
+  // ): Promise<{ status: string; email: string; userId: string }>;
+  // passwordlessLogin(userId: string): Promise<{ access_token: string }>;
 }
 
 export interface ICreateOrganisation {

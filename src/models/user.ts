@@ -1,7 +1,15 @@
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from "typeorm";
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from "typeorm";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
+import { Otp, Profile } from ".";
 
 enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -9,12 +17,8 @@ enum UserType {
   USER = "vendor",
 }
 
-@Entity()
-@Unique(["email"])
+@Entity({ name: "users" })
 export class User extends ExtendedBaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
   @Column({ nullable: false })
   first_name: string;
 
@@ -34,6 +38,14 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: true })
   is_active: boolean;
 
+  @Column({ nullable: true })
+  google_id: string;
+
+  @Column({
+    default: false,
+  })
+  isverified: boolean;
+
   @Column("simple-array", { nullable: true })
   backup_codes: string[];
 
@@ -49,10 +61,20 @@ export class User extends ExtendedBaseEntity {
   @Column({ default: false })
   is_2fa_enabled: boolean;
 
+  @Column({ type: "boolean", default: false })
+  is_deleted: boolean;
+
   @Column({
     type: "enum",
     enum: UserType,
     default: UserType.USER,
   })
   user_type: UserType;
+
+  @OneToOne(() => Profile, (profile) => profile.id)
+  @JoinColumn({ name: "profile_id" })
+  profile: Profile;
+
+  @OneToMany(() => Otp, (otp) => otp.user)
+  otps: Otp[];
 }

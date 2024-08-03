@@ -20,6 +20,16 @@ const swaggerDefinition: SwaggerDefinition = {
       description: "Live server",
     },
   ],
+  tags: [
+    {
+      name: "default",
+      description: "A lsit of all default routes",
+    },
+    {
+      name: "Authentication",
+      description: "A list of routes for authentucation",
+    },
+  ],
   components: {
     securitySchemes: {
       bearerAuth: {
