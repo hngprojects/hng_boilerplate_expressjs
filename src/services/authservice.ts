@@ -7,6 +7,8 @@ import {
   HttpError,
   ResourceNotFound,
 } from "../middleware";
+import { User, Profile, Otp } from "../models";
+import { IAuthService, IUserLogin, IUserSignUp, UserType } from "../types";
 import { User, Profile, Otp, NotificationSettings } from "../models";
 import { IAuthService, IUserSignUp, UserType } from "../types";
 import {
@@ -148,6 +150,53 @@ export class AuthService implements IAuthService {
       return {
         access_token,
         message: "Email verified successfully",
+      };
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async login(payload: IUserLogin): Promise<{
+    message: string;
+    user: Partial<User>;
+    access_token: string;
+  }> {
+    const { email, password } = payload;
+
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new ResourceNotFound("User not found");
+      }
+
+      const isPasswordValid = await comparePassword(password, user.password);
+
+      if (!isPasswordValid) {
+        throw new BadRequest("Invalid email or password");
+      }
+
+      const access_token = await generateAccessToken(user.id);
+
+      const userResponse = {
+        id: user.id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        role: user.user_type,
+        avatar_url: user.profile.profile_pic_url,
+        user_name: user.profile.username,
+      };
+
+      return {
+        user: userResponse,
+        access_token,
+        message: "Login successful",
       };
     } catch (error) {
       if (error instanceof HttpError) {
