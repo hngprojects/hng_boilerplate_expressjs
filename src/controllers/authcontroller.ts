@@ -233,8 +233,4 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default {
-  signUp,
-  verifyOtp,
-  login,
-};
+export { signUp, verifyOtp, login };
