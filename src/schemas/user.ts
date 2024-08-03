@@ -8,4 +8,12 @@ const signUpSchema = z.object({
   admin_secret: z.string().optional(),
 });
 
-export { signUpSchema };
+const otpSchema = z.object({
+  token: z
+    .string()
+    .min(1, "Token is required")
+    .min(6, "Token must be at least 6 characters long"),
+  email: z.string().email("Invalid email format").min(1, "Email is required"),
+});
+
+export { signUpSchema, otpSchema };

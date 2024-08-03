@@ -44,7 +44,7 @@ export class User extends ExtendedBaseEntity {
   @Column({
     default: false,
   })
-  isverified: boolean;
+  is_verified: boolean;
 
   @Column("simple-array", { nullable: true })
   backup_codes: string[];

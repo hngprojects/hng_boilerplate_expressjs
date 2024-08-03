@@ -33,7 +33,7 @@ export class AuthService implements IAuthService {
     this.otpService = new OtpService(
       AppDataSource.getRepository(Otp),
       this.usersRepository,
-    ); // Initialize OtpService with correct repository types
+    );
   }
 
   public async signUp(payload: IUserSignUp): Promise<{
@@ -101,6 +101,46 @@ export class AuthService implements IAuthService {
         access_token,
         message:
           "User Created Successfully. Kindly check your mail for your verification token",
+      };
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async verifyEmail(
+    token: string,
+    email: string,
+  ): Promise<{
+    message: string;
+    access_token: string;
+  }> {
+    try {
+      const user = await this.usersRepository.findOne({
+        where: { email },
+      });
+
+      if (!user) {
+        throw new ResourceNotFound("User not found");
+      }
+      const otp = await this.otpService.verifyOtp(user.id, token);
+      if (!otp) {
+        throw new BadRequest("Invalid OTP");
+      }
+
+      if (!user) {
+        throw new ResourceNotFound("User not found");
+      }
+      user.is_verified = true;
+      await this.usersRepository.save(user);
+
+      const access_token = await generateAccessToken(user.id);
+
+      return {
+        access_token,
+        message: "Email verified successfully",
       };
     } catch (error) {
       if (error instanceof HttpError) {

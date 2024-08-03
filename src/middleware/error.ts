@@ -49,6 +49,12 @@ class InvalidInput extends HttpError {
   }
 }
 
+class Expired extends HttpError {
+  constructor(message: string) {
+    super(410, message);
+  }
+}
+
 class ServerError extends HttpError {
   constructor(message: string) {
     super(500, message);
@@ -90,4 +96,5 @@ export {
   routeNotFound,
   ServerError,
   Unauthorized,
+  Expired,
 };

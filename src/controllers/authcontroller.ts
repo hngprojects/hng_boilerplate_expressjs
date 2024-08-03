@@ -86,4 +86,80 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp };
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: Authentication related routes
+ */
+
+/**
+ * @swagger
+ * /api/v1/auth/verify-otp:
+ *   post:
+ *     summary: Verify email using OTP
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *             required:
+ *               - token
+ *               - email
+ *     responses:
+ *       200:
+ *         description: Email verified successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *                     avatar_url:
+ *                       type: string
+ *                     user_name:
+ *                       type: string
+ *                 access_token:
+ *                   type: string
+ *       400:
+ *         description: Bad request, invalid OTP or email
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+
+const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { message, access_token } = await authService.verifyEmail(
+      req.body.token,
+      req.body.email,
+    );
+    sendJsonResponse(res, 200, message, { access_token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signUp, verifyOtp };

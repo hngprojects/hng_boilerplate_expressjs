@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { Otp, User } from "../models";
 import { generateNumericOTP } from "../utils";
-import { ResourceNotFound } from "../middleware";
+import { Expired, ResourceNotFound } from "../middleware";
 
 export class OtpService {
   constructor(
@@ -31,6 +31,26 @@ export class OtpService {
       return otp;
     } catch (error) {
       return;
+    }
+  }
+
+  async verifyOtp(user_id: string, token: string): Promise<boolean> {
+    try {
+      const otp = await this.otpRepository.findOne({
+        where: { token, user: { id: user_id } },
+      });
+
+      if (!otp) {
+        throw new ResourceNotFound("Invalid OTP");
+      }
+
+      if (otp.expiry < new Date()) {
+        throw new Expired("OTP has expired");
+      }
+
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 }

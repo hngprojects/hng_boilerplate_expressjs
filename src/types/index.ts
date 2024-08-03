@@ -39,7 +39,7 @@ export interface IProduct {
 export interface IAuthService {
   // login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
-  // verifyEmail(token: string, otp: number): Promise<{ message: string }>;
+  verifyEmail(token: string, email: string): Promise<unknown>;
   // changePassword(
   //   userId: string,
   //   oldPassword: string,
