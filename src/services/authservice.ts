@@ -8,7 +8,13 @@ import {
   ResourceNotFound,
 } from "../middleware";
 import { User, Profile, Otp } from "../models";
-import { IAuthService, IUserLogin, IUserSignUp, UserType } from "../types";
+import {
+  GoogleVerificationPayloadInterface,
+  IAuthService,
+  IUserLogin,
+  IUserSignUp,
+  UserType,
+} from "../types";
 import {
   comparePassword,
   generateAccessToken,
@@ -21,6 +27,7 @@ import AppDataSource from "../data-source";
 import { OtpService } from ".";
 import { Sendmail } from "../utils/mail";
 import { compilerOtp } from "../views/welcome";
+import { authRoute } from "../routes";
 
 export class AuthService implements IAuthService {
   private usersRepository: Repository<User>;
@@ -195,5 +202,39 @@ export class AuthService implements IAuthService {
       }
       throw new HttpError(error.status || 500, error.message || error);
     }
+  }
+
+  public async googleSignin(
+    payload: Partial<GoogleVerificationPayloadInterface>,
+  ): Promise<Partial<User>> {
+    const {
+      sub: google_id,
+      email,
+      given_name,
+      family_name,
+      picture,
+      email_verified,
+    } = payload;
+    let user = await AppDataSource.getRepository(User).findOne({
+      where: { email },
+      relations: ["profile"],
+    });
+    let authUser: User;
+    if (!user) {
+      authUser = new User();
+      authUser.google_id = google_id;
+      authUser.email = email;
+      authUser.first_name = given_name;
+      authUser.last_name = family_name;
+      authUser.is_verified = email_verified;
+      authUser.profile = new Profile();
+      authUser.profile.email = email;
+      authUser.profile.profile_pic_url = picture;
+    } else {
+      authUser = user;
+    }
+    await AppDataSource.manager.save(authUser);
+    const { password: _, deletedAt, ...rest } = authUser;
+    return rest;
   }
 }

@@ -21,4 +21,17 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
-export { signUpSchema, otpSchema, loginSchema };
+const GoogleUserPayloadSchema = z.object({
+  access_token: z.string(),
+  expires_in: z.number(),
+  refresh_token: z.string(),
+  scope: z.string(),
+  token_type: z.string(),
+  id_token: z.string(),
+  expires_at: z.number(),
+  provider: z.string(),
+  type: z.string(),
+  providerAccountId: z.string(),
+});
+
+export { signUpSchema, otpSchema, loginSchema, GoogleUserPayloadSchema };

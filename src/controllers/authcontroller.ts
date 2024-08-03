@@ -1,6 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthService } from "../services";
 import { sendJsonResponse } from "../helpers";
+import { verifyToken } from "../utils/verifyGoogleToken";
+import jwt from "jsonwebtoken";
+import config from "../config";
 
 const authService = new AuthService();
 
@@ -233,4 +236,27 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp, verifyOtp, login };
+const googleAuthCall = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id_token } = req.body;
+    const userInfo = await verifyToken(id_token);
+    const user = await authService.googleSignin(userInfo);
+    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
+    res.json({
+      status: "success",
+      message: "User authenticated successfully",
+      access_token: token,
+      user,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signUp, verifyOtp, login, googleAuthCall };
