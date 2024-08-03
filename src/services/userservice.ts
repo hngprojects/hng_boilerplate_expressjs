@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
 import { User, Profile } from "../models";
 import AppDataSource from "../data-source";
-import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
+import { HttpError, ResourceNotFound } from "../middleware";
 import { cloudinary } from "../config/multer";
 import { IUserProfileUpdate } from "../types";
 
@@ -24,13 +24,11 @@ export class UserService {
         throw new ResourceNotFound("User not found");
       }
 
-      // update user fields if present in the payload
       const userUpdates: Partial<User> = {};
       if (payload.first_name) userUpdates.first_name = payload.first_name;
       if (payload.last_name) userUpdates.last_name = payload.last_name;
       if (payload.phone) userUpdates.phone = payload.phone;
 
-      // update profile fields if present in the payload
       const profileUpdates: Partial<Profile> = {};
       if (payload.username) profileUpdates.username = payload.username;
       if (payload.jobTitle) profileUpdates.jobTitle = payload.jobTitle;
@@ -42,7 +40,6 @@ export class UserService {
       if (payload.region) profileUpdates.region = payload.region;
       if (payload.timezones) profileUpdates.timezones = payload.timezones;
 
-      // Handle profile picture update
       if (file) {
         const oldImageUrl = user.profile.profile_pic_url;
         if (oldImageUrl) {
@@ -54,7 +51,6 @@ export class UserService {
         profileUpdates.profile_pic_url = secure_url;
       }
 
-      // update user and profile
       await this.userRepository.update(user.id, userUpdates);
       await this.profileRepository.update(user.profile.id, profileUpdates);
 
