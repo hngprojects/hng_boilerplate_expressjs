@@ -29,7 +29,7 @@ jobs:
         run: yarn build
 
       - name: migrate
-        run: yarn reset-db
+        run: yarn migrate-db
 
       - name: setup service file
         run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
