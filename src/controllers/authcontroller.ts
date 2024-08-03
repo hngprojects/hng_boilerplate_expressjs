@@ -162,4 +162,79 @@ const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { signUp, verifyOtp };
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     first_name:
+ *                       type: string
+ *                     last_name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                     role:
+ *                       type: string
+ *                     avatar_url:
+ *                       type: string
+ *                     user_name:
+ *                       type: string
+ *                 access_token:
+ *                   type: string
+ *       400:
+ *         description: Invalid email or password
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Some server error
+ */
+
+const login = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, password } = req.body;
+    const { user, access_token, message } = await authService.login({
+      email,
+      password,
+    });
+    sendJsonResponse(res, 200, message, { user, access_token });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default {
+  signUp,
+  verifyOtp,
+  login,
+};
