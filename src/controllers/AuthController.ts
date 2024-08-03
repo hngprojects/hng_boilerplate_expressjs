@@ -14,7 +14,7 @@ const authService = new AuthService();
 
 /**
  * @swagger
- * api/v1/auth/register:
+ * /api/v1/auth/register:
  *   post:
  *     summary: Sign up a new user
  *     tags: [Auth]
