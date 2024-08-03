@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import { HelpService } from "../services";
 import { sendJsonResponse } from "../helpers";
+import { BadRequest } from "../middleware";
 
 const helpService = new HelpService();
 
@@ -14,7 +15,7 @@ const helpService = new HelpService();
 
 /**
  * @swagger
- * /api/v1/help-center/:
+ * /api/v1/help-center/topics:
  *   post:
  *     summary: SuperAdmin- Create a new help center topic
  *     tags: [HelpCenter]
@@ -320,6 +321,10 @@ const getTopicById = async (
   try {
     const id = req.params.id;
 
+    if (!id) {
+      throw new BadRequest("No ID provided");
+    }
+
     const { article, message } = await helpService.getTopicById(id);
     sendJsonResponse(res, 201, message, { article });
   } catch (error) {
@@ -334,6 +339,10 @@ const deleteTopic = async (
 ): Promise<void> => {
   try {
     const id = req.params.id;
+
+    if (!id) {
+      throw new BadRequest("No ID provided");
+    }
 
     const { article, message } = await helpService.delete(id);
     sendJsonResponse(res, 202, message, { article });
@@ -350,6 +359,10 @@ const updateTopic = async (
   try {
     const { title, content, author } = req.body;
     const id = req.params.id;
+
+    if (!id) {
+      throw new BadRequest("No ID provided");
+    }
 
     const { article, message } = await helpService.update(
       id,

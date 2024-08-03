@@ -1,9 +1,4 @@
-import {
-  createTopicSchema,
-  updateTopicSchema,
-  deleteTopicSchema,
-  getTopicSchema,
-} from "../schemas/help-center";
+import { createTopicSchema, updateTopicSchema } from "../schemas/help-center";
 import { validateData } from "../middleware/validationMiddleware";
 import {
   createTopic,
@@ -19,20 +14,22 @@ const helpRoute = Router();
 
 helpRoute.post(
   "/help-center/topics",
+  authMiddleware,
   validateData(createTopicSchema),
   createTopic,
 );
 
 helpRoute.patch(
   "/help-center/topics/:id",
+  authMiddleware,
   validateData(updateTopicSchema),
   updateTopic,
 );
 
-helpRoute.get("/help-center/topics", getAllTopics);
+helpRoute.get("/help-center/topics", authMiddleware, getAllTopics);
 
-helpRoute.get("/help-center/topics/:id", getTopicById);
+helpRoute.get("/help-center/topics/:id", authMiddleware, getTopicById);
 
-helpRoute.delete("/help-center/topics/:id", deleteTopic);
+helpRoute.delete("/help-center/topics/:id", authMiddleware, deleteTopic);
 
 export { helpRoute };
