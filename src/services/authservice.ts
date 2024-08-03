@@ -7,7 +7,7 @@ import {
   HttpError,
   ResourceNotFound,
 } from "../middleware";
-import { User, Profile, Otp } from "../models";
+import { User, Profile, Otp, NotificationSettings } from "../models";
 import { IAuthService, IUserSignUp, UserType } from "../types";
 import {
   comparePassword,
@@ -26,6 +26,7 @@ export class AuthService implements IAuthService {
   private usersRepository: Repository<User>;
   private profilesRepository: Repository<Profile>;
   private otpService: OtpService;
+  private notificationRepository: Repository<NotificationSettings>;
 
   constructor() {
     this.usersRepository = AppDataSource.getRepository(User);
@@ -34,6 +35,8 @@ export class AuthService implements IAuthService {
       AppDataSource.getRepository(Otp),
       this.usersRepository,
     );
+    this.notificationRepository =
+      AppDataSource.getRepository(NotificationSettings);
   }
 
   public async signUp(payload: IUserSignUp): Promise<{
@@ -79,11 +82,15 @@ export class AuthService implements IAuthService {
 
       const otp = await this.otpService.createOtp(user.id);
 
-      await Sendmail({
-        from: `Boilerplate <support@boilerplate.com>`,
-        to: email,
-        subject: "OTP VERIFICATION",
-        html: compilerOtp(parseInt(otp.token), user.first_name),
+      // await Sendmail({
+      //   from: `Boilerplate <support@boilerplate.com>`,
+      //   to: email,
+      //   subject: "OTP VERIFICATION",
+      //   html: compilerOtp(parseInt(otp.token), user.first_name),
+      // });
+
+      await this.notificationRepository.save({
+        user_id: user.id,
       });
 
       const userResponse = {

@@ -10,6 +10,7 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { Otp, Profile } from ".";
+import { NotificationSettings } from "./notificationSetting";
 
 enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -77,4 +78,10 @@ export class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Otp, (otp) => otp.user)
   otps: Otp[];
+
+  @OneToOne(
+    () => NotificationSettings,
+    (notificationSettings) => notificationSettings.user,
+  )
+  notificationSettings: NotificationSettings[];
 }

@@ -1,4 +1,5 @@
 import { User } from "../models";
+import { NotificationSettings } from "../models";
 
 export enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -70,6 +71,37 @@ export interface IOrganisationService {
     userId: string,
   ): Promise<unknown>;
   removeUser(org_id: string, user_id: string): Promise<User | null>;
+}
+
+export interface INotificationSettingsPayload {
+  user_id?: string;
+  mobile_notifications?: boolean;
+  email_notifications_activity_workspace?: boolean;
+  email_notifications_always_send_email?: boolean;
+  email_notifications_email_digests?: boolean;
+  email_notifications_announcement__and_update_emails?: boolean;
+  slack_notifications_activity_workspace?: boolean;
+  slack_notifications_always_send_email?: boolean;
+  slack_notifications_email_digests?: boolean;
+  slack_notifications_announcement__and_update_emails?: boolean;
+}
+
+// export interface createNotification {
+//   notificationSetting(
+//     mobile_notifications: boolean,
+//     email_notifications_activity_workspace: boolean,
+//     email_notifications_always_send_email: boolean,
+//     email_notifications_email_digests: boolean,
+//     email_notifications_announcement__and_update_emails: boolean,
+
+//   )
+// }
+
+export interface INotificationSettingService {
+  createNotification(
+    payload: INotificationSettingsPayload,
+    userId: string,
+  ): Promise<unknown>;
 }
 
 declare module "express-serve-static-core" {
