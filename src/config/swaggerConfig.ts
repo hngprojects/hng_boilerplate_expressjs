@@ -27,7 +27,15 @@ const swaggerDefinition: SwaggerDefinition = {
     },
     {
       name: "Authentication",
-      description: "A list of routes for authentucation",
+      description: "A list of routes for Authentication",
+    },
+    {
+      name: "Squeeze API",
+      description: "A list of routes for Squeeze",
+    },
+    {
+      name: "User",
+      description: "A list of routes for User",
     },
   ],
   components: {

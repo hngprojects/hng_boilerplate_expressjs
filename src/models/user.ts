@@ -1,11 +1,4 @@
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";

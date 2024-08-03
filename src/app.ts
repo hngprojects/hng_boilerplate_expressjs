@@ -5,7 +5,7 @@ import swaggerUi from "swagger-ui-express";
 import { errorHandler, routeNotFound } from "./middleware";
 import swaggerSpec from "./config/swaggerConfig";
 import { Limiter } from "./utils";
-import { authRoute, adminRoute } from "./routes";
+import { authRoute, adminRoute, squeezeRoute, userRoute } from "./routes";
 
 const app: Express = express();
 app.options("*", cors());
@@ -35,6 +35,8 @@ app.get("/api/v1", (req: Request, res: Response) => {
 
 app.use("/api/v1", authRoute);
 app.use("/api/v1", adminRoute);
+app.use("/api/v1", squeezeRoute);
+app.use("/api/v1", userRoute);
 
 app.use(routeNotFound);
 app.use(errorHandler);
