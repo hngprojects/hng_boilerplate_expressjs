@@ -1,14 +1,21 @@
+import { Router } from "express";
 import {
+  authenticateUserMagicLink,
+  changePassword,
+  changeUserRole,
+  createMagicToken,
+  forgotPassword,
+  googleAuthCall,
+  login,
+  resetPassword,
   signUp,
   verifyOtp,
-  login,
-  changeUserRole,
-  changePassword,
-  handleGoogleAuth,
 } from "../controllers";
-import { Router } from "express";
-import { authMiddleware, checkPermissions } from "../middleware";
 import { UserRole } from "../enums/userRoles";
+
+import { authMiddleware, checkPermissions } from "../middleware";
+import { requestBodyValidator } from "../middleware/request-validation";
+import { emailSchema } from "../utils/request-body-validator";
 
 const authRoute = Router();
 
@@ -22,8 +29,18 @@ authRoute.put(
   changeUserRole,
 );
 
-authRoute.post("/auth/google", handleGoogleAuth);
+authRoute.post("/auth/forgot-password", forgotPassword);
+authRoute.post("/auth/reset-password/:token", resetPassword);
+
+authRoute.post("/auth/google", googleAuthCall);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
+
+authRoute.post(
+  "/auth/magic-link",
+  requestBodyValidator(emailSchema),
+  createMagicToken,
+);
+authRoute.get("/auth/magic-link", authenticateUserMagicLink);
 
 export { authRoute };

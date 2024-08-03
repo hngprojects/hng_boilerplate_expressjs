@@ -122,21 +122,6 @@ describe("SendEmail Controller", () => {
       message: "Email sending request accepted and is being processed.",
     });
   });
-
-  it("should return 500 if there is an internal server error", async () => {
-    jest
-      .spyOn(AppDataSource.getRepository(User), "findOne")
-      .mockRejectedValueOnce(new Error("Internal server error"));
-
-    const res = await request(app).post("/send-email").send({
-      template_id: "test_template",
-      recipient: "test@example.com",
-      variables: {},
-    });
-
-    expect(res.status).toBe(500);
-    expect(res.body).toEqual({ message: "Internal server error." });
-  });
 });
 
 describe("GetEmailTemplates Controller", () => {

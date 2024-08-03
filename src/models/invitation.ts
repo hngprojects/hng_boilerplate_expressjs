@@ -8,26 +8,24 @@ import {
 } from "typeorm";
 import { User } from "./user";
 import { Organization } from "./organization";
+import { OrgInviteToken } from "./orgInviteToken"; // Import the OrgInviteToken model
 
 @Entity()
 export class Invitation {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ unique: true })
+  @Column({ unique: false })
   token: string;
-
-  @Column()
-  expires_at: Date;
-
-  @ManyToOne(() => User)
-  user: User;
 
   @ManyToOne(() => Organization)
   organization: Organization;
 
   @Column()
   email: string;
+
+  @ManyToOne(() => OrgInviteToken)
+  orgInviteToken: OrgInviteToken;
 
   @CreateDateColumn()
   created_at: Date;

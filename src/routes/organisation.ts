@@ -20,23 +20,31 @@ orgRouter.delete(
   validateOrgId,
   orgController.removeUser.bind(orgController),
 );
+orgRouter.get(
+  "/organizations/:org_id/invite",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
 
+  orgController.generateInviteLink.bind(orgController),
+);
 orgRouter.post(
   "/organisations",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController),
 );
+
 orgRouter.post(
-  "/organisations/join",
+  "/organizations/accept-invite",
   authMiddleware,
-  orgController.joinOrganization.bind(orgController),
+  orgController.acceptInvite.bind(orgController),
 );
+
 orgRouter.post(
-  "/organisations/:orgId/invite",
+  "/organizations/:org_id/send-invite",
   authMiddleware,
   checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
-  orgController.createInvitation.bind(orgController),
+  orgController.sendInviteLinks.bind(orgController),
 );
 orgRouter.get(
   "/users/:id/organisations",
@@ -44,4 +52,15 @@ orgRouter.get(
   orgController.getOrganizations.bind(orgController),
 );
 
+orgRouter.get(
+  "/members/search",
+  authMiddleware,
+  orgController.searchOrganizationMembers.bind(orgController),
+);
+orgRouter.put(
+  "/organizations/:org_id",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
+  orgController.updateOrganisation.bind(orgController),
+);
 export { orgRouter };

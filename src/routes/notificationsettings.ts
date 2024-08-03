@@ -1,13 +1,13 @@
-import { CreateNotification, GetNotification } from "../controllers";
+import { CreateOrUpdateNotification, GetNotification } from "../controllers";
 import { Router } from "express";
 import { authMiddleware } from "../middleware";
 
 const notificationRouter = Router();
 
-notificationRouter.post(
+notificationRouter.put(
   "/settings/notification-settings",
   authMiddleware,
-  CreateNotification,
+  CreateOrUpdateNotification,
 );
 notificationRouter.get(
   "/settings/notification-settings/:user_id",

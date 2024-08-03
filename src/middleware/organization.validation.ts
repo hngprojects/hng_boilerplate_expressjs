@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import { User } from "../models";
-import log from "../utils/logger";
-import { z } from "zod";
 import { param, validationResult } from "express-validator";
+import { z } from "zod";
+import { User } from "../models";
+import { OrgService } from "../services/org.services";
+import log from "../utils/logger";
 import { InvalidInput } from "./error";
 
 export const organizationValidation = async (
@@ -83,3 +84,41 @@ export const validateOrgId = [
     next();
   },
 ];
+
+export const validateUserToOrg = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { org_id } = req.params;
+    const { user } = req;
+    log.error(org_id, user.id);
+
+    if (!user || !org_id) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "user or organization id is missing",
+      });
+    }
+
+    const orgService = new OrgService();
+    const userOrg = await orgService.getSingleOrg(org_id, user.id);
+
+    if (!userOrg) {
+      return res.status(400).json({
+        status_code: 400,
+        message: "user not a member of organization",
+      });
+    }
+
+    log.error(org_id, user, userOrg);
+    next();
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({
+      status_code: 500,
+      message: "Internal server error",
+    });
+  }
+};

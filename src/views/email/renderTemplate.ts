@@ -1,25 +1,16 @@
-import Handlebars from "handlebars";
-import fs from "fs";
 import path from "path";
-import { custom } from "zod";
+import fs from "fs"
+import Handlebars from "handlebars";
 
-interface EmailVariable {
-  title: string;
-  userName: string;
-  body: string;
-}
 
-const customEmail = (emailVariable: EmailVariable) => {
-  const templatePath = path.resolve(
-    "src/views/email/templates/custom-email.hbs",
-  );
+const baseTemplateSource = fs.readFileSync(path.join(__dirname, 'templates', 'base_template.hbs'), 'utf8');
+Handlebars.registerPartial('base_template', baseTemplateSource);
 
+
+function renderTemplate(templateName:string, variables:{}) {
   const data = {
     logoUrl: "https://example.com/logo.png",
     imageUrl: "https://example.com/reset-password.png",
-    resetUrl: "https://example.com/reset-password",
-    userName: "John Doe",
-    activationLinkUrl: "https://example.com/activate-account",
     companyName: "Boilerplate",
     supportUrl: "https://example.com/support",
     socialIcons: [
@@ -46,13 +37,10 @@ const customEmail = (emailVariable: EmailVariable) => {
     preferencesUrl: "https://example.com/preferences",
     unsubscribeUrl: "https://example.com/unsubscribe",
   };
-
-  const newEmailVariable = { ...data, ...emailVariable };
-
-  const templateSource = fs.readFileSync(templatePath, "utf8");
+ const newData = {...data, ...variables}
+  const templateSource = fs.readFileSync(path.join(__dirname, 'templates', `${templateName}.hbs`), 'utf8');
   const template = Handlebars.compile(templateSource);
-  const html = template(newEmailVariable);
-  return html;
-};
+  return template(newData);
+}
 
-export default customEmail;
+export default renderTemplate

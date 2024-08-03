@@ -8,4 +8,9 @@ export class ContactService {
     const contact = this.contactRepository.create(contactData);
     return this.contactRepository.save(contact);
   }
+
+  async getAllContactUs(): Promise<Contact[]> {
+    const contacts = await this.contactRepository.find();
+    return contacts;
+  }
 }

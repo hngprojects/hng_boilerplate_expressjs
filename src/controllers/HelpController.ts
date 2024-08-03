@@ -325,11 +325,11 @@ class HelpController {
   async getAllTopics(req: Request, res: Response): Promise<void> {
     try {
       const topics = await this.helpService.getAll();
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Fetch Successful",
         data: topics,
-        status_code: 201,
+        status_code: 200,
       });
     } catch (error) {
       if (error instanceof HttpError) {
@@ -377,7 +377,7 @@ class HelpController {
         throw new HttpError(422, "Validation failed: Valid ID required");
       }
       await this.helpService.delete(id);
-      res.status(201).json({
+      res.status(202).json({
         success: true,
         message: "Delete Successful",
         status_code: 202,
