@@ -5,7 +5,13 @@ import swaggerUi from "swagger-ui-express";
 import { errorHandler, routeNotFound } from "./middleware";
 import swaggerSpec from "./config/swaggerConfig";
 import { Limiter } from "./utils";
-import { authRoute, adminRoute, squeezeRoute, userRoute } from "./routes";
+import {
+  authRoute,
+  adminRoute,
+  squeezeRoute,
+  userRoute,
+  helpRoute,
+} from "./routes";
 
 const app: Express = express();
 app.options("*", cors());
@@ -37,6 +43,7 @@ app.use("/api/v1", authRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", squeezeRoute);
 app.use("/api/v1", userRoute);
+app.use("/api/v1", helpRoute);
 
 app.use(routeNotFound);
 app.use(errorHandler);
