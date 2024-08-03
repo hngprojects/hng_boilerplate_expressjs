@@ -28,7 +28,6 @@ import {
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
-import updateRouter from "./routes/updateOrg";
 import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
@@ -87,7 +86,6 @@ server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", updateRouter);
 server.use("/api/v1", faqRouter);
 server.use("/api/v1", roleRouter);
 
