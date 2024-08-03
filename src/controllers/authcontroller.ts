@@ -147,15 +147,14 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
  *       404:
  *         description: User not found
  *       500:
- *         description: Some server error
+ *         description: Server error
  */
 
-const verifyEmail = async (req: Request, res: Response, next: NextFunction) => {
+const verifyOtp = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { token, email } = req.body;
-    const { access_token, message } = await authService.verifyEmail(
-      token,
-      email,
+    const { message, access_token } = await authService.verifyEmail(
+      req.body.token,
+      req.body.email,
     );
     sendJsonResponse(res, 200, message, { access_token });
   } catch (error) {
@@ -236,6 +235,6 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 
 export default {
   signUp,
-  verifyEmail,
+  verifyOtp,
   login,
 };
