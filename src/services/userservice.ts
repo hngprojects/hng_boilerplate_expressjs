@@ -1,16 +1,32 @@
 import { Repository } from "typeorm";
 import { User, Profile } from "../models";
 import AppDataSource from "../data-source";
-import { HttpError, ResourceNotFound } from "../middleware";
+import { ResourceNotFound, HttpError } from "../middleware";
 import { cloudinary } from "../config/multer";
 import { IUserProfileUpdate } from "../types";
 
 export class UserService {
   private userRepository: Repository<User>;
   private profileRepository: Repository<Profile>;
+
   constructor() {
     this.userRepository = AppDataSource.getRepository(User);
     this.profileRepository = AppDataSource.getRepository(Profile);
+  }
+
+  static async getUserById(id: string): Promise<User | null> {
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: { id },
+      relations: ["profile"],
+      withDeleted: true,
+    });
+
+    if (!user) {
+      throw new ResourceNotFound("User Not Found!");
+    }
+
+    return user;
   }
 
   public async updateUserProfile(id: string, payload: IUserProfileUpdate, file: Express.Multer.File): Promise<User> {
