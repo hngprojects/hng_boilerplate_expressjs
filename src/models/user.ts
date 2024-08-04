@@ -3,6 +3,7 @@ import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { Otp, Profile } from ".";
+import { UserOrganization } from "./user-organization";
 import { NotificationSettings } from "./notificationSetting";
 import { Notifications } from "./notifications";
 
@@ -72,6 +73,12 @@ export class User extends ExtendedBaseEntity {
 
   @OneToMany(() => Otp, (otp) => otp.user)
   otps: Otp[];
+
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.user,
+  )
+  userOrganizations: UserOrganization[];
 
   @OneToOne(
     () => NotificationSettings,

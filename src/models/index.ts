@@ -5,3 +5,8 @@ export * from "./base-entity";
 export * from "./squeeze";
 export * from "./notificationSetting";
 export * from "./notifications";
+export * from "./testimonial";
+export * from "./user-organization";
+export * from "./organization";
+export * from "./emailQueue";
+export * from "./help-center";

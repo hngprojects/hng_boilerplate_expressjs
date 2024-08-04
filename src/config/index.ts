@@ -34,6 +34,7 @@ const config = {
   BASE_URL: process.env.BASE_URL,
   ADMIN_SECRET_KEY: process.env.ADMIN_SECRET_KEY,
   SUPER_SECRET_KEY: process.env.SUPER_SECRET_KEY,
+  BULL_PASSKEY: process.env.BULL_PASSKEY,
 };
 
 export default config;

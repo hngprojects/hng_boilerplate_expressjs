@@ -133,3 +133,15 @@ export interface GoogleUser {
   picture: string;
   sub: string;
 }
+
+export interface EmailData {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+}
+
+export interface SmsData {
+  message: string;
+  phone_number: string;
+}
