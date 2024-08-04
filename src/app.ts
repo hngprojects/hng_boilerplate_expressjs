@@ -11,6 +11,7 @@ import {
   squeezeRoute,
   userRoute,
   helpRoute,
+  testimonialRoute,
 } from "./routes";
 
 const app: Express = express();
@@ -44,6 +45,7 @@ app.use("/api/v1", adminRoute);
 app.use("/api/v1", squeezeRoute);
 app.use("/api/v1", userRoute);
 app.use("/api/v1", helpRoute);
+app.use("/api/v1", testimonialRoute);
 
 app.use(routeNotFound);
 app.use(errorHandler);
