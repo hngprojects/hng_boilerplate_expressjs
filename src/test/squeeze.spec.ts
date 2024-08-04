@@ -1,4 +1,3 @@
-// // @ts-nocheck
 // import { Request, Response } from "express";
 // import { SqueezeController } from "../controllers/squeezecontroller";
 // import { SqueezeService } from "../services";

@@ -1,4 +1,3 @@
-// // @ts-nocheck
 // import { Request, Response, NextFunction } from "express";
 // import { UserController } from "../controllers/UserController";
 // import { UserService } from "../services";
