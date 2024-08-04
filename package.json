@@ -8,8 +8,6 @@
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest --forceExit",
     "test:email": "jest views/email/tests",
-    "test:squeeze": "jest test/squeeze.spec.ts",
-    "test:user": "jest test/user.spec.ts",
     "test:organisation": "jest organisation.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
