@@ -10,6 +10,8 @@ import {
   adminRoute,
   squeezeRoute,
   userRoute,
+  helpRoute,
+  testimonialRoute,
   emailRoute,
 } from "./routes";
 import ServerAdapter from "./views/bull-board";
@@ -45,6 +47,8 @@ app.use("/api/v1", authRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", squeezeRoute);
 app.use("/api/v1", userRoute);
+app.use("/api/v1", helpRoute);
+app.use("/api/v1", testimonialRoute);
 app.use("/api/v1", emailRoute);
 
 app.use(routeNotFound);
