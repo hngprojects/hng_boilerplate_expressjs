@@ -6,14 +6,13 @@ import {
   ManyToOne,
   OneToOne,
 } from "typeorm";
-import { IsBoolean } from "class-validator";
+import { IsBoolean, isString } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { User } from "./user";
 
 @Entity()
 export class Notifications extends ExtendedBaseEntity {
   @Column({ nullable: false })
-  @IsBoolean()
   message: string;
 
   @IsBoolean()

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { NotificationSettingService } from "../services";
 import { sendJsonResponse } from "../helpers";
 import log from "../utils/logger";
@@ -7,7 +7,7 @@ import asyncHandler from "../middleware/asyncHandler";
 const notificationSettingService = new NotificationSettingService();
 
 const updateNotificationSettings = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const notification =
       await notificationSettingService.updateNotificationSetting(
         req.body,
@@ -24,7 +24,7 @@ const updateNotificationSettings = asyncHandler(
 );
 
 const getNotificationSettings = asyncHandler(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, res: Response) => {
     const notification =
       await notificationSettingService.getNotificationSetting(
         req.params.user_id,

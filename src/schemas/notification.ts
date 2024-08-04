@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const notificationSchema = z
+const notificationSettingSchema = z
   .object({
     mobile_notifications: z.boolean().optional(),
     email_notifications_activity_workspace: z.boolean().optional(),
@@ -16,4 +16,13 @@ const notificationSchema = z
     message: "Please provide at least one field to update",
   });
 
-export { notificationSchema };
+const notificationSchema = z.object({
+  message: z.string().min(20, "Message is 20 characters long"),
+  is_read: z.boolean(),
+});
+
+const markAsRead = z.object({
+  is_read: z.boolean(),
+});
+
+export { notificationSettingSchema, notificationSchema, markAsRead };

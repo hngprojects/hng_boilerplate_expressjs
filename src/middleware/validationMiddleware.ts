@@ -1,10 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema, ZodError } from "zod";
 
-export const validateData = (schema: ZodSchema) => {
+export const validateData = (schemas: {
+  body?: ZodSchema;
+  params?: ZodSchema;
+}) => {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
-      schema.parse(req.body);
+      if (schemas.params) {
+        schemas.params.parse(req.params);
+      }
+      if (schemas.body) {
+        schemas.body.parse(req.body);
+      }
       next();
     } catch (e) {
       if (e instanceof ZodError) {

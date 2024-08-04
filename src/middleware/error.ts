@@ -78,7 +78,7 @@ const errorHandler = (
   if (config.NODE_ENV === "development") {
     log.error("Error", err);
   }
-  res.status(status_code || 500).json({
+  res.status(status_code).json({
     success,
     status_code,
     message: cleanedMessage,

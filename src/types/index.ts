@@ -1,5 +1,5 @@
 import { User } from "../models";
-import { NotificationSettings } from "../models";
+import { NotificationSettings, Notifications } from "../models";
 
 export enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -94,8 +94,24 @@ export interface INotificationSettingService {
   ): Promise<NotificationSettings>;
 }
 
+export interface INotification {
+  message: string;
+  is_read: boolean;
+  user: User;
+}
 export interface INotificationService {
-  getUserNotification(user_id: string, auth_userId: string): Promise<unknown>;
+  getUserNotification(user_id: string, auth_userId: string): Promise<any>;
+  createNotification(
+    payload: INotification,
+    userId: string,
+  ): Promise<Notifications>;
+  isReadUserNotification(
+    notificationId: string,
+    userId: string,
+    payload: {
+      is_read: boolean;
+    },
+  ): Promise<any>;
 }
 
 declare module "express-serve-static-core" {

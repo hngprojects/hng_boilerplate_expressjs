@@ -5,8 +5,12 @@ import { Router } from "express";
 
 const authRoute = Router();
 
-authRoute.post("/auth/register", validateData(signUpSchema), signUp);
-authRoute.post("/auth/verify-otp", validateData(otpSchema), verifyOtp);
-authRoute.post("/auth/login", validateData(loginSchema), login);
+authRoute.post("/auth/register", validateData({ body: signUpSchema }), signUp);
+authRoute.post(
+  "/auth/verify-otp",
+  validateData({ body: otpSchema }),
+  verifyOtp,
+);
+authRoute.post("/auth/login", validateData({ body: loginSchema }), login);
 
 export { authRoute };

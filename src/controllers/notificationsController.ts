@@ -1,14 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { NotificationService } from "../services/notification_service";
 import { sendJsonResponse } from "../helpers";
+import asyncHandler from "../middleware/asyncHandler";
 
 const notificationService = new NotificationService();
 
-const getNotifications = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+const getNotifications = asyncHandler(async (req: Request, res: Response) => {
   const notifications = await notificationService.getUserNotification(
     req.params.user_id,
   );
@@ -18,6 +15,56 @@ const getNotifications = async (
     "Notifications fetched successfully",
     notifications,
   );
-};
+});
 
-export { getNotifications };
+const createNotifications = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notifications = await notificationService.createNotification(
+      req.body,
+      req.user.id,
+    );
+    sendJsonResponse(
+      res,
+      201,
+      "Notifications created successfully",
+      notifications,
+    );
+  },
+);
+
+const markNotificationAsRead = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notification = await notificationService.isReadUserNotification(
+      req.params.notification_id,
+      req.user.id,
+      req.body,
+    );
+    sendJsonResponse(
+      res,
+      200,
+      "Notification updated successfully",
+      notification,
+    );
+  },
+);
+
+const markAllNotificationAsRead = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notification = await notificationService.readAllUserNotification(
+      req.user.id,
+    );
+    sendJsonResponse(
+      res,
+      200,
+      "Notification updated successfully",
+      notification,
+    );
+  },
+);
+
+export {
+  getNotifications,
+  createNotifications,
+  markNotificationAsRead,
+  markAllNotificationAsRead,
+};
