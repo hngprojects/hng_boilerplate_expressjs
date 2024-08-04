@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { validate } from "uuid";
-import { UserService } from "../services";
-import { BadRequest, ResourceNotFound } from "../middleware";
 import { sendJsonResponse } from "../helpers";
+import { BadRequest, ResourceNotFound } from "../middleware";
 import asyncHandler from "../middleware/asyncHandler";
+import { UserService } from "../services";
 
 class UserController {
   /**

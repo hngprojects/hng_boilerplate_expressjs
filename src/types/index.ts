@@ -103,3 +103,24 @@ export interface GoogleVerificationPayloadInterface {
   iat: number;
   exp: number;
 }
+
+export type UserResponsePayload = Pick<
+  User,
+  "id" | "first_name" | "last_name" | "email"
+> & {
+  role: string;
+  avatar_url: string;
+  user_name: string;
+};
+
+export interface EmailData {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+}
+
+export interface SmsData {
+  message: string;
+  phone_number: string;
+}
