@@ -18,6 +18,30 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: false })
   last_name: string;
 
+  @Column({ nullable: false })
+  username: string;
+
+  @Column({ nullable: false })
+  bio: string;
+
+  @Column({ nullable: false })
+  job_title: string;
+
+  @Column({ nullable: false })
+  language: string;
+
+  @Column({ nullable: false })
+  pronouns: string;
+
+  @Column({ nullable: false })
+  department: string;
+
+  @Column({ nullable: false })
+  social_links: string;
+
+  @Column({ nullable: false })
+  timezones: string;
+
   @Column({ unique: true, nullable: false })
   @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
   email: string;
