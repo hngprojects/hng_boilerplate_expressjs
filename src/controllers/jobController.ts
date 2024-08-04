@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { ICreateJobs, IJobs } from "../types";
-// import { validateCreateJob } from "../utils/request-body-validator";
 import { JobService } from "../services/jobservice";
+import { validateCreateJob } from "../validationschema/job";
 
 export class JobController {
   private jobService: JobService;
@@ -190,14 +189,14 @@ export class JobController {
    */
   async createJob(req: Request, res: Response) {
     try {
-      // const validationResult = validateCreateJob(req.body);
-      // if (!validationResult.success) {
-      //   return res.status(400).json({
-      //     status: "error",
-      //     status_code: 400,
-      //     message: `Invalid request, ${validationResult.error.errors[0].path[0]} is required`,
-      //   });
-      // }
+      const validationResult = validateCreateJob(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({
+          status: "error",
+          status_code: 400,
+          message: `Invalid request, ${validationResult.error.errors[0].path[0]} is required`,
+        });
+      }
 
       const job = await this.jobService.createJob(req.body, req.user?.id);
       res.json({

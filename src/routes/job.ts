@@ -2,14 +2,14 @@ import { Router } from "express";
 import { JobController } from "../controllers/jobController";
 import { authMiddleware } from "../middleware";
 
-const jobRouter = Router();
+const jobRoute = Router();
 
 const jobController = new JobController();
 
-jobRouter.post(
+jobRoute.post(
   "/jobs",
   authMiddleware,
   jobController.createJob.bind(jobController),
 );
 
-export { jobRouter };
+export { jobRoute };
