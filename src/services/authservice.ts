@@ -27,7 +27,6 @@ import AppDataSource from "../data-source";
 import { OtpService } from ".";
 import { Sendmail } from "../utils/mail";
 import { compilerOtp } from "../views/welcome";
-import { authRoute } from "../routes";
 
 export class AuthService implements IAuthService {
   private usersRepository: Repository<User>;
@@ -206,7 +205,10 @@ export class AuthService implements IAuthService {
 
   public async googleSignin(
     payload: Partial<GoogleVerificationPayloadInterface>,
-  ): Promise<Partial<User>> {
+  ): Promise<{
+    userInfo: Partial<User>;
+    is_new_user: boolean;
+  }> {
     const {
       sub: google_id,
       email,
@@ -215,26 +217,44 @@ export class AuthService implements IAuthService {
       picture,
       email_verified,
     } = payload;
+
+    let authUser: User;
+    let is_new_user = false;
+
     let user = await AppDataSource.getRepository(User).findOne({
       where: { email },
       relations: ["profile"],
     });
-    let authUser: User;
+
     if (!user) {
+      is_new_user = true;
       authUser = new User();
       authUser.google_id = google_id;
       authUser.email = email;
+      authUser.password = "";
       authUser.first_name = given_name;
       authUser.last_name = family_name;
       authUser.is_verified = email_verified;
-      authUser.profile = new Profile();
-      authUser.profile.email = email;
-      authUser.profile.profile_pic_url = picture;
+
+      const profile = await this.profilesRepository.save({
+        email,
+        username: "",
+        profile_pic_url: picture,
+      });
+
+      authUser.profile = profile;
     } else {
       authUser = user;
     }
-    await AppDataSource.manager.save(authUser);
-    const { password: _, deletedAt, ...rest } = authUser;
-    return rest;
+    await this.usersRepository.save(authUser);
+    const userInfo = {
+      id: authUser.id,
+      email: email,
+      first_name: authUser.first_name,
+      last_name: authUser.last_name,
+      fullname: authUser.first_name + " " + authUser.last_name,
+      role: "",
+    };
+    return { userInfo, is_new_user };
   }
 }

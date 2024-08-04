@@ -4,6 +4,7 @@ import { sendJsonResponse } from "../helpers";
 import { verifyToken } from "../utils/verifyGoogleToken";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import { generateAccessToken } from "../utils";
 
 const authService = new AuthService();
 
@@ -245,14 +246,13 @@ const googleAuthCall = async (
     const { id_token } = req.body;
     const userInfo = await verifyToken(id_token);
     const user = await authService.googleSignin(userInfo);
-    const token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
-      expiresIn: "1d",
-    });
-    res.json({
+    const token = await generateAccessToken(user.userInfo.id);
+
+    res.status(user.is_new_user ? 201 : 200).json({
       status: "success",
       message: "User authenticated successfully",
       access_token: token,
-      user,
+      user: user.userInfo,
     });
   } catch (error) {
     next(error);

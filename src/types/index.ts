@@ -40,9 +40,10 @@ export interface IAuthService {
   // login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, email: string): Promise<unknown>;
-  googleSignin(
-    payload: GoogleVerificationPayloadInterface,
-  ): Promise<Partial<User>>;
+  googleSignin(payload: GoogleVerificationPayloadInterface): Promise<{
+    userInfo: Partial<User>;
+    is_new_user: boolean;
+  }>;
   // changePassword(
   //   userId: string,
   //   oldPassword: string,

@@ -22,16 +22,16 @@ const loginSchema = z.object({
 });
 
 const GoogleUserPayloadSchema = z.object({
-  access_token: z.string(),
-  expires_in: z.number(),
-  refresh_token: z.string(),
-  scope: z.string(),
-  token_type: z.string(),
-  id_token: z.string(),
-  expires_at: z.number(),
-  provider: z.string(),
-  type: z.string(),
-  providerAccountId: z.string(),
+  access_token: z.string().min(1, "Access token is required."),
+  expires_in: z.number().optional(),
+  refresh_token: z.string().optional(),
+  scope: z.string().min(1, "Scope is required."),
+  token_type: z.string().optional(),
+  id_token: z.string().min(1, "ID token is required."),
+  expires_at: z.number().optional(),
+  provider: z.string().optional(),
+  type: z.string().optional(),
+  providerAccountId: z.string().optional(),
 });
 
 export { signUpSchema, otpSchema, loginSchema, GoogleUserPayloadSchema };

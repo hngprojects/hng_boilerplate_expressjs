@@ -14,7 +14,7 @@ authRoute.post("/auth/register", validateData(signUpSchema), signUp);
 authRoute.post("/auth/verify-otp", validateData(otpSchema), verifyOtp);
 authRoute.post("/auth/login", validateData(loginSchema), signUp);
 authRoute.post(
-  "auth/google",
+  "/auth/google",
   validateData(GoogleUserPayloadSchema),
   googleAuthCall,
 );
