@@ -18,8 +18,9 @@ import {
   verifyToken,
 } from "../utils";
 import { Sendmail } from "../utils/mail";
+import { addEmailToQueue } from "../utils/queue";
 import { userLoginResponseDto } from "../utils/response-handler";
-import { generateMagicLinkEmail } from "../views/magic-link.email";
+import renderTemplate from "../views/email/renderTemplate";
 import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
@@ -200,15 +201,26 @@ export class AuthService implements IAuthService {
       const protocol = APP_CONFIG.USE_HTTPS ? "https" : "http";
       const magicLinkUrl = `${protocol}://${config.BASE_URL}/auth/magic-link?token=${token}`;
 
-      const mailToBeSentToUser = await Sendmail({
-        from: `Boilerplate <support@boilerplate.com>`,
-        to: email,
-        subject: "MAGIC LINK LOGIN",
-        html: generateMagicLinkEmail(magicLinkUrl, email),
+      const emailTemplate = renderTemplate("magic-link", {
+        title: "MAGIC LINK LOGIN",
+        email: email,
+        magicLinkUrl,
+        expirationTime: new Date(
+          Date.now() + 24 * 60 * 60 * 1000,
+        ).toLocaleString(),
       });
 
+      const emailContent = {
+        from: `Boilerplate <${config.SMTP_USER}>`,
+        to: email,
+        subject: "Magic Link Login",
+        html: emailTemplate,
+      };
+
+      const emailResponse = await addEmailToQueue(emailContent);
+
       return {
-        ok: mailToBeSentToUser === "Email sent successfully.",
+        ok: emailResponse === "Email sent.",
         message: "Sign-in token sent to email.",
         user,
       };

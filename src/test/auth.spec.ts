@@ -4,7 +4,7 @@ import { ResourceNotFound } from "../middleware";
 import { User } from "../models";
 import { AuthService } from "../services/authservice";
 import { generateToken, verifyToken } from "../utils";
-import { Sendmail } from "../utils/mail";
+import { addEmailToQueue } from "../utils/queue";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -18,6 +18,7 @@ jest.mock("../data-source", () => ({
 jest.mock("../models");
 jest.mock("../utils");
 jest.mock("../utils/mail");
+jest.mock("../utils/queue");
 jest.mock("jsonwebtoken");
 
 describe("AuthService", () => {
@@ -67,12 +68,12 @@ describe("AuthService", () => {
 
       const mockUser = { id: "1", email: payload.email };
       const token = "a-authtoken";
-      const mailSent = "Email sent successfully.";
+      const mailSent = "Email sent.";
 
       // Mock successful responses
       (User.findOne as jest.Mock).mockResolvedValue(mockUser);
       (generateToken as unknown as jest.Mock).mockReturnValue(token);
-      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
+      (addEmailToQueue as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.generateMagicLink(payload.email);
 
@@ -86,7 +87,7 @@ describe("AuthService", () => {
         where: { email: payload.email },
       });
       expect(generateToken).toHaveBeenCalledWith({ email: payload.email });
-      expect(Sendmail).toHaveBeenCalled();
+      expect(addEmailToQueue).toHaveBeenCalled();
     });
 
     it("should validate the token and return user information", async () => {

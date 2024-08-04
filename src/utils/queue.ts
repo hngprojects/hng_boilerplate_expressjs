@@ -1,9 +1,9 @@
 import Bull, { Job } from "bull";
 import config from "../config";
-import sendSms from "./sms";
+import { EmailData, SmsData } from "../types/index";
 import logs from "./logger";
 import { Sendmail } from "./mail";
-import { EmailData, SmsData } from "../types/index";
+import sendSms from "./sms";
 
 const retries: number = 2;
 const delay: number = 1000 * 30;
@@ -23,14 +23,19 @@ function asyncHandler(fn: (job: Job) => Promise<void>) {
 
 const emailQueue = new Bull("Email", { redis: redisConfig });
 
-const addEmailToQueue = async (data: EmailData) => {
-  await emailQueue.add(data, {
-    attempts: retries,
-    backoff: {
-      type: "fixed",
-      delay,
-    },
-  });
+const addEmailToQueue = async (data: EmailData): Promise<string> => {
+  try {
+    await emailQueue.add(data, {
+      attempts: retries,
+      backoff: {
+        type: "fixed",
+        delay,
+      },
+    });
+    return "Email sent.";
+  } catch (error) {
+    return "Error sending email!";
+  }
 };
 
 emailQueue.process(
