@@ -8,8 +8,8 @@ const userLoginResponseDto = (user: User): UserResponsePayload => {
     last_name: user.last_name,
     email: user.email,
     role: user.user_type,
-    avatar_url: user.profile.profile_pic_url,
-    user_name: user.profile.username,
+    avatar_url: user.profile?.profile_pic_url,
+    user_name: user.profile?.username,
   };
 };
 

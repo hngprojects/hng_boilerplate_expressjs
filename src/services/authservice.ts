@@ -209,7 +209,7 @@ export class AuthService implements IAuthService {
 
       return {
         ok: mailToBeSentToUser === "Email sent successfully.",
-        message: "Email sent successfully.",
+        message: "Sign-in token sent to email.",
         user,
       };
     } catch (err) {

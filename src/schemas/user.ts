@@ -21,8 +21,4 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters long"),
 });
 
-const emailSchema = z.object({
-  email: loginSchema.shape.email,
-});
-
-export { emailSchema, loginSchema, otpSchema, signUpSchema };
+export { loginSchema, otpSchema, signUpSchema };

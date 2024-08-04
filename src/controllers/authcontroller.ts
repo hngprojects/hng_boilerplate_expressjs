@@ -315,18 +315,12 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
 const createMagicLink = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const email = req.body?.email;
-    if (!email) {
-      return next(new BadRequest("Email is missing in request body."));
-    }
     const response = await authService.generateMagicLink(email);
     if (!response.ok) {
-      return next(new BadRequest("Error processing request"));
+      return next(new BadRequest("Bad request"));
     }
 
-    return res.status(200).json({
-      status_code: 200,
-      message: response.message,
-    });
+    return sendJsonResponse(res, 200, response.message, {});
   },
 );
 
@@ -407,7 +401,10 @@ const createMagicLink = asyncHandler(
 
 const authenticateUserMagicLink = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.query.token;
+    const token = req.query?.token;
+    if (!token) {
+      return next(new BadRequest("Bad request"));
+    }
     const response = await authService.validateMagicLinkToken(token as string);
     if (response.status !== "ok") {
       return next(new BadRequest("Invalid Request"));
@@ -436,7 +433,7 @@ const authenticateUserMagicLink = asyncHandler(
       return sendJsonResponse(
         res,
         200,
-        "",
+        "Sign-in successful",
         { user: responseData },
         access_token,
       );

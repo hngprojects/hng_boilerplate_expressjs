@@ -9,6 +9,7 @@ const config = {
   DB_PASSWORD: process.env.DB_PASSWORD,
   DB_PORT: process.env.DB_PORT,
   DB_NAME: process.env.DB_NAME,
+  DB_URL: process.env.DB_URL,
   TOKEN_SECRET: process.env.AUTH_SECRET,
   TOKEN_EXPIRY: process.env.AUTH_EXPIRY,
   SMTP_USER: process.env.SMTP_USER,
