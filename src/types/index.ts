@@ -91,3 +91,12 @@ export interface GoogleUser {
   picture: string;
   sub: string;
 }
+
+export type UserResponsePayload = Pick<
+  User,
+  "id" | "first_name" | "last_name" | "email"
+> & {
+  role: string;
+  avatar_url: string;
+  user_name: string;
+};
