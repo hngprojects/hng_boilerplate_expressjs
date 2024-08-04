@@ -100,3 +100,15 @@ export type UserResponsePayload = Pick<
   avatar_url: string;
   user_name: string;
 };
+
+export interface EmailData {
+  from: string;
+  to: string;
+  subject: string;
+  html: string;
+}
+
+export interface SmsData {
+  message: string;
+  phone_number: string;
+}
