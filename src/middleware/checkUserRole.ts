@@ -64,12 +64,10 @@ export const checkOrgPermission = (roles: OrgRole[], userRoles: UserType[]) => {
       const user_type = userOrg.user.user_type;
 
       if (!userOrg) {
-        return res
-          .status(404)
-          .json({
-            status: "error",
-            message: "User is not a member of the orgnization",
-          });
+        return res.status(404).json({
+          status: "error",
+          message: "User is not a member of the orgnization",
+        });
       }
 
       if (userRoles.includes(user_type)) {
@@ -77,12 +75,10 @@ export const checkOrgPermission = (roles: OrgRole[], userRoles: UserType[]) => {
       }
 
       if (!roles.includes(userOrg.user_role)) {
-        return res
-          .status(401)
-          .json({
-            status: "error",
-            message: "Access denied. User is not an admin in the organization",
-          });
+        return res.status(401).json({
+          status: "error",
+          message: "Access denied. User is not an admin in the organization",
+        });
       }
       next();
     } catch (error) {
