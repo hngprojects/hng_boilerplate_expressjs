@@ -2143,18 +2143,6 @@ dedent@^1.0.0:
   resolved "https://registry.yarnpkg.com/dedent/-/dedent-1.5.3.tgz#99aee19eb9bae55a67327717b6e848d0bf777e5a"
   integrity sha512-NHQtfOOW68WD8lgypbLA5oT+Bt0xXJhiYvoR6SmmNXZfpzOGXwdKWmcwG8N7PwVVWV3eF/68nmD9BaJSsTBhyQ==
 
-deep-equal@^1.0.1:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.1.2.tgz#78a561b7830eef3134c7f6f3a3d6af272a678761"
-  integrity sha512-5tdhKF6DbU7iIzrIOa1AOUt39ZRm13cmL1cGEh//aqR8x9+tNfbywRf0n5FD/18OKMdo7DNEtrX2t22ZAkI+eg==
-  dependencies:
-    is-arguments "^1.1.1"
-    is-date-object "^1.0.5"
-    is-regex "^1.1.4"
-    object-is "^1.1.5"
-    object-keys "^1.1.1"
-    regexp.prototype.flags "^1.5.1"
-
 deep-equal@^2.0.5:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-2.2.3.tgz#af89dafb23a396c7da3e862abc0be27cf51d56e1"
@@ -2661,13 +2649,6 @@ find-up@^7.0.0:
     path-exists "^5.0.0"
     unicorn-magic "^0.1.0"
 
-flat@^2.0.1:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/flat/-/flat-2.0.2.tgz#d631430678b023a2f9bc10a23ac4ffad7e16b0f2"
-  integrity sha512-b/cdFAr468cVs8XoG62dbGf9YegchdgEPX6sP7rppE0a4+RZF19kseTiDKGA1rIr3hOvOD0QIlSmaFlOlT0gfA==
-  dependencies:
-    is-buffer "~1.1.2"
-
 flutterwave-node-v3@^1.1.10:
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/flutterwave-node-v3/-/flutterwave-node-v3-1.1.10.tgz#b861feafdadc0e437d15fd35ec9123bc2c30d9cd"
@@ -3162,11 +3143,6 @@ ini@4.1.1:
   resolved "https://registry.yarnpkg.com/ini/-/ini-4.1.1.tgz#d95b3d843b1e906e56d6747d5447904ff50ce7a1"
   integrity sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==
 
-install@^0.10.0:
-  version "0.10.4"
-  resolved "https://registry.yarnpkg.com/install/-/install-0.10.4.tgz#9cb09115768b93a582d1450a6ba3f275975b49aa"
-  integrity sha512-+IRyOastuPmLVx9zlVXJoKErSqz1Ma5at9A7S8yfsj3W+Kg95faPoh3bPDtMrZ/grz4PRmXzrswmlzfLlYyLOw==
-
 internal-slot@^1.0.4:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/internal-slot/-/internal-slot-1.0.7.tgz#c06dcca3ed874249881007b0a5523b172a190802"
@@ -3244,7 +3220,7 @@ is-boolean-object@^1.1.0:
     call-bind "^1.0.2"
     has-tostringtag "^1.0.0"
 
-is-buffer@~1.1.2, is-buffer@~1.1.6:
+is-buffer@~1.1.6:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
@@ -3894,10 +3870,6 @@ jpeg-exif@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/jpeg-exif/-/jpeg-exif-1.1.4.tgz#781a65b6cd74f62cb1c493511020f8d3577a1c2b"
   integrity sha512-a+bKEcCjtuW5WTdgeXFzswSrdqi0jk4XlEtZlx5A94wCoBpFjfFTbo/Tra5SpNCl/YFZPvcV1dJc+TAYeg6ROQ==
-
-"js-function-reflector@git+https://github.com/leonardiwagner/js-function-reflector.git":
-  version "1.3.0"
-  resolved "git+https://github.com/leonardiwagner/js-function-reflector.git#f3a1295909cf870bbb7bb136ca53796fc3e87c17"
 
 js-tokens@^4.0.0:
   version "4.0.0"
@@ -6347,16 +6319,6 @@ z-schema@^5.0.1:
     validator "^13.7.0"
   optionalDependencies:
     commander "^10.0.0"
-
-z@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/z/-/z-1.0.9.tgz#392e0603b42d6b2d6e6a23cfea05e34b3ee4111f"
-  integrity sha512-Vocq47YR4WoT+4wu80VsJwKi0Y92R20Vqq7AxghN9KFIa4J4CUae1uKnwtv4w33QvjnKjb/7rWHRC93TFQc0jA==
-  dependencies:
-    deep-equal "^1.0.1"
-    flat "^2.0.1"
-    install "^0.10.0"
-    js-function-reflector "git+https://github.com/leonardiwagner/js-function-reflector.git"
 
 zod@^3.23.8:
   version "3.23.8"
