@@ -73,7 +73,7 @@ export interface IOrganisationService {
   removeUser(org_id: string, user_id: string): Promise<User | null>;
 }
 
-export interface INotificationSettingsPayload {
+export interface INotificationSettings {
   user_id?: string;
   mobile_notifications?: boolean;
   email_notifications_activity_workspace?: boolean;
@@ -86,22 +86,16 @@ export interface INotificationSettingsPayload {
   slack_notifications_announcement__and_update_emails?: boolean;
 }
 
-// export interface createNotification {
-//   notificationSetting(
-//     mobile_notifications: boolean,
-//     email_notifications_activity_workspace: boolean,
-//     email_notifications_always_send_email: boolean,
-//     email_notifications_email_digests: boolean,
-//     email_notifications_announcement__and_update_emails: boolean,
-
-//   )
-// }
-
 export interface INotificationSettingService {
-  createNotification(
-    payload: INotificationSettingsPayload,
+  updateNotificationSetting(
+    payload: INotificationSettings,
     userId: string,
-  ): Promise<unknown>;
+    auth_userId: string,
+  ): Promise<NotificationSettings>;
+}
+
+export interface INotificationService {
+  getUserNotification(user_id: string, auth_userId: string): Promise<unknown>;
 }
 
 declare module "express-serve-static-core" {

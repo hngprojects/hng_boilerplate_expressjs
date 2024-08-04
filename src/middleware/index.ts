@@ -1,4 +1,4 @@
 export * from "./error";
 export * from "./auth";
 export * from "./checkUserRole";
-export * from "./notification";
+export * from "./validationMiddleware";

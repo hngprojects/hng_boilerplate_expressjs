@@ -78,6 +78,10 @@ export class AuthService implements IAuthService {
 
       await this.usersRepository.save(user);
 
+      await this.notificationRepository.save({
+        user_id: user.id,
+      });
+
       const access_token = await generateAccessToken(user.id);
 
       const otp = await this.otpService.createOtp(user.id);
@@ -87,10 +91,6 @@ export class AuthService implements IAuthService {
         to: email,
         subject: "OTP VERIFICATION",
         html: compilerOtp(parseInt(otp.token), user.first_name),
-      });
-
-      await this.notificationRepository.save({
-        user_id: user.id,
       });
 
       const userResponse = {

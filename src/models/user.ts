@@ -4,6 +4,7 @@ import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { Otp, Profile } from ".";
 import { NotificationSettings } from "./notificationSetting";
+import { Notifications } from "./notifications";
 
 enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -77,4 +78,7 @@ export class User extends ExtendedBaseEntity {
     (notificationSettings) => notificationSettings.user,
   )
   notificationSettings: NotificationSettings[];
+
+  @OneToMany(() => Notifications, (notifications) => notifications.user)
+  notifications: Notifications[];
 }

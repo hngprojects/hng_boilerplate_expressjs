@@ -11,6 +11,7 @@ import {
   squeezeRoute,
   userRoute,
   notificationsRoute,
+  notificationSettingRoute,
 } from "./routes";
 
 const app: Express = express();
@@ -43,6 +44,7 @@ app.use("/api/v1", authRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", squeezeRoute);
 app.use("/api/v1", userRoute);
+app.use("/api/v1", notificationSettingRoute);
 app.use("/api/v1", notificationsRoute);
 
 app.use(routeNotFound);
