@@ -8,6 +8,8 @@
     "start": "ts-node --transpile-only src/index.ts",
     "test": "jest --forceExit",
     "test:email": "jest views/email/tests",
+    "test:squeeze": "jest test/squeeze.spec.ts",
+    "test:user": "jest test/user.spec.ts",
     "test:organisation": "jest organisation.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
     "build": "tsc",
@@ -101,6 +103,7 @@
     "uuid": "^10.0.0",
     "uuid-validate": "^0.0.3",
     "validator": "^13.12.0",
+    "z": "^1.0.9",
     "zod": "^3.23.8"
   },
   "lint-staged": {
