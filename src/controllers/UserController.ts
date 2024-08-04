@@ -89,7 +89,7 @@ class UserController {
           profile_id: user?.profile?.id,
           username: user?.profile?.username,
           bio: user?.profile?.bio,
-          job_title: user?.profile?.jobTitle,
+          jobTitle: user?.profile?.jobTitle,
           language: user?.profile?.language,
           pronouns: user?.profile?.pronouns,
           department: user?.profile?.department,
@@ -129,7 +129,7 @@ class UserController {
    *              bio:
    *                type: string
    *                example: Samurai from Africa
-   *              job_title:
+   *              jobTitle:
    *                type: string
    *                example: Warrior
    *              language:
@@ -193,7 +193,7 @@ class UserController {
         last_name,
         username,
         bio,
-        job_title,
+        jobTitle,
         language,
         pronouns,
         department,
@@ -223,7 +223,7 @@ class UserController {
         last_name,
         username,
         bio,
-        job_title,
+        jobTitle,
         language,
         pronouns,
         department,
@@ -238,7 +238,7 @@ class UserController {
         profile_id: updatedUser?.profile?.id,
         username: updatedUser?.profile?.username,
         bio: updatedUser?.profile?.bio,
-        job_title: updatedUser?.profile?.jobTitle,
+        jobTitle: updatedUser?.profile?.jobTitle,
         language: updatedUser?.profile?.language,
         pronouns: updatedUser?.profile?.pronouns,
         department: updatedUser?.profile?.department,

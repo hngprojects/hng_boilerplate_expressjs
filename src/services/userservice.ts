@@ -1,4 +1,5 @@
-import { User, Profile } from "../models/user";
+import { User } from "../models/user";
+import { Profile } from "../models/profile";
 import AppDataSource from "../data-source";
 import { ResourceNotFound } from "../middleware";
 
@@ -20,8 +21,8 @@ export class UserService {
 
   static async updateUserById(
     id: string,
-    updateData: Partial<Profile>,
-  ): Promise<Profile> {
+    updateData: Partial<User & Profile>,
+  ): Promise<User> {
     const userRepository = AppDataSource.getRepository(User);
     let user = await userRepository.findOne({
       where: { id },
