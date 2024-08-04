@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import config from "../config";
+import log from "../utils/logger";
 
 class HttpError extends Error {
   status_code: number;
@@ -47,6 +49,12 @@ class InvalidInput extends HttpError {
   }
 }
 
+class Expired extends HttpError {
+  constructor(message: string) {
+    super(410, message);
+  }
+}
+
 class ServerError extends HttpError {
   constructor(message: string) {
     super(500, message);
@@ -66,6 +74,10 @@ const errorHandler = (
 ) => {
   const { success, status_code, message } = err;
   const cleanedMessage = message.replace(/"/g, "");
+
+  if (config.NODE_ENV === "development") {
+    log.error("Error", err);
+  }
   res.status(status_code).json({
     success,
     status_code,
@@ -84,4 +96,5 @@ export {
   routeNotFound,
   ServerError,
   Unauthorized,
+  Expired,
 };

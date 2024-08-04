@@ -1,41 +1,35 @@
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { IsEmail } from "class-validator";
-import crypto from "crypto";
-import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-} from "typeorm";
-import { Blog, Organization, Product, Profile, Sms } from ".";
-import { UserRole } from "../enums/userRoles";
+import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
-import ExtendedBaseEntity from "./extended-base-entity";
-import { Like } from "./like";
-import { UserOrganization } from "./user-organisation";
+import { Otp, Profile } from ".";
 
-@Entity()
-@Unique(["email"])
+enum UserType {
+  SUPER_ADMIN = "super-admin",
+  ADMIN = "admin",
+  USER = "vendor",
+}
+
+@Entity({ name: "users" })
 export class User extends ExtendedBaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
+  @Column({ nullable: false })
+  first_name: string;
 
-  @Column()
-  name: string;
+  @Column({ nullable: false })
+  last_name: string;
 
-  @Column()
+  @Column({ unique: true, nullable: false })
   @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
   email: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   password: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  is_active: boolean;
 
   @Column({ nullable: true })
   google_id: string;
@@ -43,78 +37,37 @@ export class User extends ExtendedBaseEntity {
   @Column({
     default: false,
   })
-  isverified: boolean;
+  is_verified: boolean;
 
-  @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
-  @JoinColumn()
-  profile: Profile;
-
-  @Column({
-    type: "enum",
-    enum: UserRole,
-    default: UserRole.USER,
-  })
-  role: UserRole;
+  @Column("simple-array", { nullable: true })
+  backup_codes: string[];
 
   @Column({ nullable: true })
-  otp: number;
+  attempts_left: number;
 
   @Column({ nullable: true })
-  otp_expires_at: Date;
+  time_left: number;
 
-  @OneToMany(() => Product, (product) => product.user, { cascade: true })
-  @JoinTable()
-  products: Product[];
+  @Column({ nullable: true })
+  secret: string;
 
-  @OneToMany(() => Blog, (blog) => blog.author)
-  blogs: Blog[];
-
-  @OneToMany(() => Like, (like) => like.user)
-  likes: Like[];
-
-  @OneToMany(
-    () => UserOrganization,
-    (userOrganization) => userOrganization.user,
-  )
-  userOrganizations: UserOrganization[];
-
-  @OneToMany(() => Sms, (sms) => sms.sender, { cascade: true })
-  sms: Sms[];
-
-  @ManyToMany(() => Organization, (organization) => organization.users, {
-    cascade: true,
-  })
-  @JoinTable()
-  organizations: Organization[];
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ default: false })
+  is_2fa_enabled: boolean;
 
   @Column({ type: "boolean", default: false })
   is_deleted: boolean;
 
-  @DeleteDateColumn({ nullable: true })
-  deletedAt: Date;
+  @Column({
+    type: "enum",
+    enum: UserType,
+    default: UserType.USER,
+  })
+  user_type: UserType;
 
-  @Column({ nullable: true })
-  passwordResetToken: string;
+  @OneToOne(() => Profile, (profile) => profile.id)
+  @JoinColumn({ name: "profile_id" })
+  profile: Profile;
 
-  @Column({ nullable: true, type: "bigint" })
-  passwordResetExpires: number;
-
-  createPasswordResetToken(): string {
-    const resetToken = crypto.randomBytes(32).toString("hex");
-
-    this.passwordResetToken = crypto
-      .createHash("sha256")
-      .update(resetToken)
-      .digest("hex");
-
-    this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
-
-    return resetToken;
-  }
+  @OneToMany(() => Otp, (otp) => otp.user)
+  otps: Otp[];
 }

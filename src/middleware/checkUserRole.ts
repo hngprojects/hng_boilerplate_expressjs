@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { UserRole } from "../enums/userRoles";
-import { Unauthorized } from "./error";
-import { User } from "../models";
+import { UserType } from "../types";
 import AppDataSource from "../data-source";
 import jwt from "jsonwebtoken";
+import { User } from "../models";
 
-export const checkPermissions = (roles: UserRole[]) => {
+export const checkPermissions = (roles: UserType[]) => {
   return async (
     req: Request & { user?: User },
     res: Response,
@@ -25,7 +24,7 @@ export const checkPermissions = (roles: UserRole[]) => {
         where: { id: decodedToken.userId },
       });
 
-      if (!user || !roles.includes(user.role)) {
+      if (!user || !roles.includes(user.user_type)) {
         return res
           .status(403)
           .json({ status: "error", message: "Access denied. Not an admin" });

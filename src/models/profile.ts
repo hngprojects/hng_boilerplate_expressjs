@@ -1,24 +1,41 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from "typeorm";
-import { User } from "./user";
-import ExtendedBaseEntity from "./extended-base-entity";
+import { Column, Entity } from "typeorm";
+import ExtendedBaseEntity from "./base-entity";
+import { IsEmail } from "class-validator";
+import { getIsInvalidMessage } from "../utils";
 
 @Entity()
 export class Profile extends ExtendedBaseEntity {
-  @PrimaryGeneratedColumn("uuid")
-  id: string;
-
   @Column()
-  first_name: string;
+  username: string;
 
-  @Column()
-  last_name: string;
+  @Column({ unique: true, nullable: false })
+  @IsEmail(undefined, { message: getIsInvalidMessage("Email") })
+  email: string;
 
   @Column({ nullable: true })
-  phone_number: string;
+  jobTitle: string;
 
-  @Column()
-  avatarUrl: string;
+  @Column({ nullable: true })
+  pronouns: string;
 
-  @OneToOne(() => User, (user) => user.profile)
-  user: User;
+  @Column({ nullable: true })
+  department: string;
+
+  @Column({ type: "text", nullable: true })
+  bio: string;
+
+  @Column({ type: "simple-array", nullable: true })
+  social_links: string[];
+
+  @Column({ nullable: true })
+  language: string;
+
+  @Column({ nullable: true })
+  region: string;
+
+  @Column({ nullable: true })
+  timezones: string;
+
+  @Column({ nullable: true })
+  profile_pic_url: string;
 }
