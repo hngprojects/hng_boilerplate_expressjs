@@ -17,10 +17,6 @@ export async function comparePassword(
   return await bcrypt.compare(password, hashedPassword);
 }
 
-export async function generateAccessToken(user_id: string) {
-  return jwt.sign({ user_id }, config.TOKEN_SECRET, { expiresIn: "1d" });
-}
-
 export const generateNumericOTP = (length: number): string => {
   let otp = "";
   for (let i = 0; i < length; i++) {

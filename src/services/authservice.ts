@@ -1,25 +1,26 @@
 import { Repository } from "typeorm";
-import jwt from "jsonwebtoken";
+import { OtpService } from ".";
 import config from "../config";
+import APP_CONFIG from "../config/app.config";
+import AppDataSource from "../data-source";
 import {
   BadRequest,
   Conflict,
   HttpError,
   ResourceNotFound,
 } from "../middleware";
+import { Otp, Profile, User, NotificationSettings } from "../models";
 import { IAuthService, IUserLogin, IUserSignUp, UserType } from "../types";
-import { User, Profile, Otp, NotificationSettings } from "../models";
 import {
   comparePassword,
-  generateAccessToken,
-  generateNumericOTP,
   generateToken,
   hashPassword,
   verifyToken,
 } from "../utils";
-import AppDataSource from "../data-source";
-import { OtpService } from ".";
 import { Sendmail } from "../utils/mail";
+import { addEmailToQueue } from "../utils/queue";
+import { userLoginResponseDto } from "../utils/response-handler";
+import renderTemplate from "../views/email/renderTemplate";
 import { compilerOtp } from "../views/welcome";
 
 export class AuthService implements IAuthService {
@@ -82,7 +83,7 @@ export class AuthService implements IAuthService {
         user_id: user.id,
       });
 
-      const access_token = await generateAccessToken(user.id);
+      const access_token = await generateToken({ user_id: user.id });
 
       const otp = await this.otpService.createOtp(user.id);
 
@@ -93,15 +94,7 @@ export class AuthService implements IAuthService {
         html: compilerOtp(parseInt(otp.token), user.first_name),
       });
 
-      const userResponse = {
-        id: user.id,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        email: user.email,
-        role: user.user_type,
-        avatar_url: user.profile.profile_pic_url,
-        user_name: user.profile.username,
-      };
+      const userResponse = userLoginResponseDto(user);
 
       return {
         user: userResponse,
@@ -143,7 +136,7 @@ export class AuthService implements IAuthService {
       user.is_verified = true;
       await this.usersRepository.save(user);
 
-      const access_token = await generateAccessToken(user.id);
+      const access_token = await generateToken({ user_id: user.id });
 
       return {
         access_token,
@@ -179,7 +172,7 @@ export class AuthService implements IAuthService {
         throw new BadRequest("Invalid email or password");
       }
 
-      const access_token = await generateAccessToken(user.id);
+      const access_token = await generateToken({ user_id: user.id });
 
       const userResponse = {
         id: user.id,
@@ -201,6 +194,82 @@ export class AuthService implements IAuthService {
         throw error;
       }
       throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
+
+  public async generateMagicLink(email: string) {
+    try {
+      const user = await User.findOne({ where: { email } });
+      if (user === null || !user) {
+        throw new ResourceNotFound("User is not registered");
+      }
+
+      const token = generateToken({ email: email });
+      const protocol = APP_CONFIG.USE_HTTPS ? "https" : "http";
+      const magicLinkUrl = `${protocol}://${config.BASE_URL}/auth/magic-link?token=${token}`;
+
+      const emailTemplate = renderTemplate("magic-link", {
+        title: "MAGIC LINK LOGIN",
+        email: email,
+        magicLinkUrl,
+        expirationTime: new Date(
+          Date.now() + 24 * 60 * 60 * 1000,
+        ).toLocaleString(),
+      });
+
+      const emailContent = {
+        from: `Boilerplate <${config.SMTP_USER}>`,
+        to: email,
+        subject: "Magic Link Login",
+        html: emailTemplate,
+      };
+
+      const emailResponse = await addEmailToQueue(emailContent);
+
+      return {
+        ok: emailResponse === "Email sent.",
+        message: "Sign-in token sent to email.",
+        user,
+      };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  public async validateMagicLinkToken(token: string) {
+    try {
+      const { email } = verifyToken(token as string);
+      if (!email) {
+        throw new BadRequest("Invalid JWT");
+      }
+
+      const user = await User.findOne({
+        where: { email: String(email) },
+      });
+
+      if (user === null || !user) {
+        throw new ResourceNotFound("User not found");
+      }
+
+      return {
+        status: "ok",
+        email: user.email,
+        userId: user.id,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async passwordlessLogin(userId: string) {
+    try {
+      const access_token = await generateToken({ user_id: userId });
+
+      return {
+        access_token,
+      };
+    } catch (error) {
+      throw error;
     }
   }
 }

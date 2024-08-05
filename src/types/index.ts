@@ -1,4 +1,5 @@
 import { User } from "../models";
+import { JobMode, JobType, SalaryRange } from "../models/job";
 import { NotificationSettings, Notifications } from "../models";
 
 export enum UserType {
@@ -133,6 +134,15 @@ export interface GoogleUser {
   sub: string;
 }
 
+export type UserResponsePayload = Pick<
+  User,
+  "id" | "first_name" | "last_name" | "email"
+> & {
+  role: string;
+  avatar_url: string;
+  user_name: string;
+};
+
 export interface EmailData {
   from: string;
   to: string;
@@ -143,4 +153,35 @@ export interface EmailData {
 export interface SmsData {
   message: string;
   phone_number: string;
+}
+
+export interface IJobs {
+  title: string;
+  description: string;
+  location: string;
+  deadline: Date;
+  salary_range: SalaryRange;
+  job_type: JobType;
+  job_mode: JobMode;
+  company_name: string;
+  is_deleted?: boolean;
+}
+
+export interface ICreateJobs extends Omit<IJobs, "id" | "is_deleted"> {
+  user_id: string;
+}
+
+export interface IUpdateJobs {
+  title?: string;
+  description?: string;
+  location?: string;
+  deadline?: Date;
+  salary_range?: SalaryRange;
+  job_type?: JobType;
+  job_mode?: JobMode;
+  company_name?: string;
+}
+
+export interface IDeleteJobs {
+  id: string;
 }

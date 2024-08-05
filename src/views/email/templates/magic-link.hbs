@@ -1,0 +1,24 @@
+<!-- prettier-ignore -->
+{{#> base_template}}
+  {{#*inline "content"}}
+      <h1>{{title}}</h1>
+      <p class="greeting">
+        <strong>Welcome, {{email}}</strong>
+      </p>
+      <p>
+        Click the link below to log in to your account:
+      </p>
+      <div class="button-container">
+        <a href="{{magicLinkUrl}}" target="_blank">Log in with this link</a>
+      </div>
+      <div style="">
+        <p> or copy this link and paste it in your browser. </p>
+        <p> {{magicLinkUrl}} </p>
+      </div>
+      <p>This link will expire on {{expirationTime}}.</p>
+      <p>
+        If you did not request this link, you can safely ignore this
+        email.
+      </p>
+{{/inline}}
+{{/base_template}}
