@@ -7,7 +7,7 @@ const notificationService = new NotificationService();
 
 /**
  * @swagger
- * /notifications/{user_id}:
+ * /api/v1/notifications/{user_id}:
  *   get:
  *     summary: Get user notifications
  *     description: Retrieve notifications for a specific user
@@ -36,9 +36,21 @@ const notificationService = new NotificationService();
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Notification'
- *       500:
- *         description: Server error
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "1234567890"
+ *                       message:
+ *                         type: string
+ *                         example: "You have a new message"
+ *                       is_read:
+ *                         type: boolean
+ *                         example: false
+ *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: "2023-06-01T12:00:00Z"
  */
 
 const getNotifications = asyncHandler(async (req: Request, res: Response) => {
@@ -55,10 +67,9 @@ const getNotifications = asyncHandler(async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /notifications:
+ * /api/v1/notifications/create:
  *   post:
- *     summary: Create notifications
- *     description: Create new notifications for a user
+ *     summary: Create a new notification
  *     tags: [Notifications]
  *     security:
  *       - bearerAuth: []
@@ -68,16 +79,18 @@ const getNotifications = asyncHandler(async (req: Request, res: Response) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - message
  *             properties:
- *               content:
+ *               message:
  *                 type: string
  *                 description: The content of the notification
- *               type:
- *                 type: string
- *                 description: The type of the notification
+ *               is_read:
+ *                 type: boolean
+ *                 description: The read status of the notification
  *     responses:
  *       201:
- *         description: Notifications created successfully
+ *         description: Notification created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -90,15 +103,28 @@ const getNotifications = asyncHandler(async (req: Request, res: Response) => {
  *                   type: string
  *                   example: Notifications created successfully
  *                 data:
- *                   $ref: '#/components/schemas/Notification'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: "1234567890"
+ *                     message:
+ *                       type: string
+ *                       example: "create user notification message"
+ *                     is_read:
+ *                       type: boolean
+ *                       example: false
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: "2023-06-01T12:00:00Z"
  *       400:
  *         description: Bad request
  *       401:
  *         description: Unauthorized
  *       500:
- *         description: Server error
+ *         description: Internal server error
  */
-
 const createNotifications = asyncHandler(
   async (req: Request, res: Response) => {
     const notifications = await notificationService.createNotification(
@@ -116,9 +142,9 @@ const createNotifications = asyncHandler(
 
 /**
  * @swagger
- * /notifications/{notification_id}/read:
+ * /api/v1/notifications/{notification_id}/read:
  *   patch:
- *     summary: Mark a notification as read
+ *     summary: Mark a notification as read or unread
  *     tags: [Notifications]
  *     security:
  *       - bearerAuth: []
@@ -128,7 +154,7 @@ const createNotifications = asyncHandler(
  *         required: true
  *         schema:
  *           type: string
- *         description: The ID of the notification to mark as read
+ *         description: The ID of the notification to update
  *     requestBody:
  *       required: true
  *       content:
@@ -138,7 +164,7 @@ const createNotifications = asyncHandler(
  *             properties:
  *               is_read:
  *                 type: boolean
- *                 description: The read status of the notification
+ *                 description: Set to true to mark as read, false to mark as unread
  *     responses:
  *       200:
  *         description: Notification updated successfully
@@ -148,23 +174,39 @@ const createNotifications = asyncHandler(
  *               type: object
  *               properties:
  *                 status:
- *                   type: string
- *                   example: success
+ *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
  *                   example: Notification updated successfully
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
  *                 data:
- *                   $ref: '#/components/schemas/Notification'
- *       400:
- *         description: Bad request
- *       401:
- *         description: Unauthorized
- *       404:
- *         description: Notification not found
- *       500:
- *         description: Server error
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: f2d9edeb-290e-4e5e-a67c-a1316736f455
+ *                     created_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2024-08-05T12:45:14.797Z
+ *                     updated_at:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2024-08-05T12:47:19.701Z
+ *                     deletedAt:
+ *                       type: string
+ *                       nullable: true
+ *                       example: null
+ *                     message:
+ *                       type: string
+ *                       example: timor maiores demulceo
+ *                     is_read:
+ *                       type: boolean
+ *                       example: true
  */
-
 const markNotificationAsRead = asyncHandler(
   async (req: Request, res: Response) => {
     const notification = await notificationService.isReadUserNotification(
@@ -183,8 +225,8 @@ const markNotificationAsRead = asyncHandler(
 
 /**
  * @swagger
- * /notifications/read:
- *   put:
+ * /api/v1/notifications/read:
+ *   patch:
  *     summary: Mark all notifications as read for the authenticated user
  *     tags: [Notifications]
  *     security:
@@ -198,21 +240,46 @@ const markNotificationAsRead = asyncHandler(
  *               type: object
  *               properties:
  *                 status:
- *                   type: string
- *                   example: success
+ *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
- *                   example: All notifications marked as read successfully
+ *                   example: Notification updated successfully
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Notification'
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                         example: f2d9edeb-290e-4e5e-a67c-a1316736f455
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2024-08-05T12:45:14.797Z
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2024-08-05T12:47:19.701Z
+ *                       deletedAt:
+ *                         type: string
+ *                         nullable: true
+ *                         example: null
+ *                       message:
+ *                         type: string
+ *                         example: timor maiores demulceo
+ *                       is_read:
+ *                         type: boolean
+ *                         example: true
  *       401:
  *         description: Unauthorized
  *       500:
  *         description: Server error
  */
-
 const markAllNotificationAsRead = asyncHandler(
   async (req: Request, res: Response) => {
     const notification = await notificationService.readAllUserNotification(
@@ -229,7 +296,7 @@ const markAllNotificationAsRead = asyncHandler(
 
 /**
  * @swagger
- * /notifications/unread:
+ * /api/v1/notifications/unread:
  *   get:
  *     summary: Get all unread notifications for the authenticated user
  *     tags: [Notifications]
@@ -244,21 +311,43 @@ const markAllNotificationAsRead = asyncHandler(
  *               type: object
  *               properties:
  *                 status:
- *                   type: string
- *                   example: success
+ *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
  *                   example: Unread notifications retrieved successfully
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Notification'
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         format: uuid
+ *                       created_at:
+ *                         type: string
+ *                         format: date-time
+ *                       updated_at:
+ *                         type: string
+ *                         format: date-time
+ *                       deletedAt:
+ *                         type: string
+ *                         format: date-time
+ *                         nullable: true
+ *                       message:
+ *                         type: string
+ *                         example: "conscendo contego turbo"
+ *                       is_read:
+ *                         type: boolean
+ *                         example: false
  *       401:
  *         description: Unauthorized
  *       500:
  *         description: Server error
  */
-
 const getAllUnreadNotifications = asyncHandler(
   async (req: Request, res: Response) => {
     const notification = await notificationService.allUnreadNotification(
@@ -275,7 +364,7 @@ const getAllUnreadNotifications = asyncHandler(
 
 /**
  * @swagger
- * /notifications/clear:
+ * /api/v1/notifications/clear:
  *   delete:
  *     summary: Delete all notifications for the authenticated user
  *     tags: [Notifications]
@@ -290,13 +379,14 @@ const getAllUnreadNotifications = asyncHandler(
  *               type: object
  *               properties:
  *                 status:
- *                   type: string
- *                   example: success
+ *                   type: integer
+ *                   example: 200
  *                 message:
  *                   type: string
  *                   example: All Notification deleted successfully
- *                 data:
- *                   type: object
+ *                 status_code:
+ *                   type: integer
+ *                   example: 200
  *       401:
  *         description: Unauthorized
  *       500:
