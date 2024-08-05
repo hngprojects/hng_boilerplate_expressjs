@@ -26,11 +26,4 @@ export class UserOrganization extends ExtendedBaseEntity {
   )
   @JoinColumn({ name: "organizationId" })
   organization: Organization;
-
-  @Column({
-    type: "enum",
-    enum: OrgRole,
-    default: OrgRole.USER,
-  })
-  user_role: OrgRole;
 }
