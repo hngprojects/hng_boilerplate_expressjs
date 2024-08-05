@@ -10,3 +10,4 @@ export * from "./user-organization";
 export * from "./organization";
 export * from "./emailQueue";
 export * from "./help-center";
+export * from "./contact";
