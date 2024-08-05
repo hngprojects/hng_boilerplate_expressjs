@@ -16,6 +16,7 @@ import {
   jobRoute,
   notificationsRoute,
   notificationSettingRoute,
+  contactRouter,
   orgRouter,
 } from "./routes";
 import ServerAdapter from "./views/bull-board";
@@ -57,6 +58,7 @@ app.use("/api/v1", emailRoute);
 app.use("/api/v1", jobRoute);
 app.use("/api/v1", notificationSettingRoute);
 app.use("/api/v1", notificationsRoute);
+app.use("/api/v1", contactRouter);
 app.use("/api/v1", orgRouter);
 
 app.use(routeNotFound);
