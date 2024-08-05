@@ -4,6 +4,7 @@ import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { Otp, Profile } from ".";
 import { UserOrganization } from "./user-organization";
+import { Job } from "./job";
 
 enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -42,6 +43,9 @@ export class User extends ExtendedBaseEntity {
 
   @Column("simple-array", { nullable: true })
   backup_codes: string[];
+
+  @OneToMany(() => Job, (job) => job.user)
+  jobs: Job[];
 
   @Column({ nullable: true })
   attempts_left: number;

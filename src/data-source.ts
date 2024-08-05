@@ -11,7 +11,7 @@ const AppDataSource = new DataSource({
   username: config.DB_USER,
   password: config.DB_PASSWORD,
   database: config.DB_NAME,
-  url: config.DB_URL + "?sslmode=disable",
+//  url: config.DB_URL + "?sslmode=disable",
   synchronize: isDevelopment,
   logging: false,
   entities: ["src/models/**/*.ts"],
