@@ -16,18 +16,17 @@ import { loginSchema, otpSchema, signUpSchema } from "../schemas/user";
 
 const authRoute = Router();
 
-authRoute.post("/auth/register", validateData(signUpSchema), signUp);
-authRoute.post("/auth/verify-otp", validateData(otpSchema), verifyOtp);
-authRoute.post("/auth/login", validateData(loginSchema), login);
+authRoute.post("/auth/register", validateData({ body: signUpSchema }), signUp);
 authRoute.post(
-  "/auth/magic-link",
-  validateData(magiclinkSchema),
-  createMagicLink,
+  "/auth/verify-otp",
+  validateData({ body: otpSchema }),
+  verifyOtp,
 );
 authRoute.get("/auth/magic-link/verify", authenticateUserMagicLink);
+authRoute.post("/auth/login", validateData({ body: loginSchema }), login);
 authRoute.post(
   "/auth/google",
-  validateData(GoogleUserPayloadSchema),
+  validateData({ body: GoogleUserPayloadSchema }),
   googleAuthCall,
 );
 

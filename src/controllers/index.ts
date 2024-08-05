@@ -5,3 +5,7 @@ export * from "./UserController";
 export * from "./helpcontroller";
 export * from "./testimonialcontroller";
 export * from "./emailcontroller";
+export * from "./notificationSettingController";
+export * from "./notificationsController";
+export * from "./contactcontroller";
+export * from "./organizationcontroller";

@@ -10,7 +10,7 @@ const testimonial = new TestimonialsController();
 testimonialRoute.post(
   "/testimonials",
   authMiddleware,
-  validateData(createTestimonialSchema),
+  validateData({ body: createTestimonialSchema }),
   testimonial.createTestimonial,
 );
 

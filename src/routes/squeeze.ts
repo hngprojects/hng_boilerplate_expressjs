@@ -8,13 +8,13 @@ const updateSchema = squeezeSchema.partial();
 
 squeezeRoute.post(
   "/squeeze",
-  validateData(squeezeSchema),
+  validateData({ body: squeezeSchema }),
   SqueezeController.createSqueeze,
 );
 
 squeezeRoute.put(
   "/squeeze/:email",
-  validateData(updateSchema),
+  validateData({ body: updateSchema }),
   SqueezeController.updateSqueeze,
 );
 

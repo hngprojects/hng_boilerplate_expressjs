@@ -9,7 +9,7 @@ import {
   HttpError,
   ResourceNotFound,
 } from "../middleware";
-import { Otp, Profile, User } from "../models";
+import { Otp, Profile, User, NotificationSettings } from "../models";
 import {
   GoogleVerificationPayloadInterface,
   IAuthService,
@@ -34,6 +34,7 @@ export class AuthService implements IAuthService {
   private usersRepository: Repository<User>;
   private profilesRepository: Repository<Profile>;
   private otpService: OtpService;
+  private notificationRepository: Repository<NotificationSettings>;
 
   constructor() {
     this.usersRepository = AppDataSource.getRepository(User);
@@ -42,6 +43,8 @@ export class AuthService implements IAuthService {
       AppDataSource.getRepository(Otp),
       this.usersRepository,
     );
+    this.notificationRepository =
+      AppDataSource.getRepository(NotificationSettings);
   }
 
   public async signUp(payload: IUserSignUp): Promise<{
@@ -82,6 +85,10 @@ export class AuthService implements IAuthService {
       user.profile = profile;
 
       await this.usersRepository.save(user);
+
+      await this.notificationRepository.save({
+        user_id: user.id,
+      });
 
       const access_token = await generateToken({ user_id: user.id });
 

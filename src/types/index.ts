@@ -1,5 +1,6 @@
 import { User } from "../models";
 import { JobMode, JobType, SalaryRange } from "../models/job";
+import { NotificationSettings, Notifications } from "../models";
 
 export enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -75,6 +76,46 @@ export interface IOrganisationService {
     userId: string,
   ): Promise<unknown>;
   removeUser(org_id: string, user_id: string): Promise<User | null>;
+}
+
+export interface INotificationSettings {
+  user_id?: string;
+  mobile_notifications?: boolean;
+  email_notifications_activity_workspace?: boolean;
+  email_notifications_always_send_email?: boolean;
+  email_notifications_email_digests?: boolean;
+  email_notifications_announcement__and_update_emails?: boolean;
+  slack_notifications_activity_workspace?: boolean;
+  slack_notifications_always_send_email?: boolean;
+  slack_notifications_email_digests?: boolean;
+  slack_notifications_announcement__and_update_emails?: boolean;
+}
+
+export interface INotificationSettingService {
+  updateNotificationSetting(
+    payload: INotificationSettings,
+    userId: string,
+    auth_userId: string,
+  ): Promise<NotificationSettings>;
+}
+
+export interface INotification {
+  message: string;
+  is_read: boolean;
+}
+export interface INotificationService {
+  getUserNotification(user_id: string, auth_userId: string): Promise<any>;
+  createNotification(
+    payload: INotification,
+    userId: string,
+  ): Promise<Notifications>;
+  isReadUserNotification(
+    notificationId: string,
+    userId: string,
+    payload: {
+      is_read: boolean;
+    },
+  ): Promise<any>;
 }
 
 declare module "express-serve-static-core" {
