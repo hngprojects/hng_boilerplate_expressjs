@@ -7,4 +7,5 @@ export * from "./helpservice";
 export * from "./emailservice";
 export * from "./notificationSettingService";
 export * from "./notificationService";
+export * from "./contactservice";
 export * from "./organizationservice";
