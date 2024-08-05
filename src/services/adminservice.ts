@@ -62,7 +62,7 @@ export class AdminOrganisationService {
     } catch (error) {
       throw new HttpError(500, "Deletion failed");
     }
-    return organization; // deleted org
+    return organization;
   }
 }
 
