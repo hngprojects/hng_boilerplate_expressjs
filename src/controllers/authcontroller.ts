@@ -6,8 +6,7 @@ import asyncHandler from "../middleware/asyncHandler";
 import { User } from "../models";
 import { AuthService } from "../services";
 import { userLoginResponseDto } from "../utils/response-handler";
-import { verifyToken } from "../utils/verifyGoogleToken";
-import { generateToken } from "../utils";
+import { generateToken, verifyGoogleToken } from "../utils";
 
 const authService = new AuthService();
 
@@ -559,7 +558,7 @@ const authenticateUserMagicLink = asyncHandler(
 const googleAuthCall = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id_token } = req.body;
-    const userInfo = await verifyToken(id_token);
+    const userInfo = await verifyGoogleToken(id_token);
     const user = await authService.googleSignin(userInfo);
     const token = await generateToken({ user_id: user.userInfo.id });
 

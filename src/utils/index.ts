@@ -2,6 +2,9 @@ import * as bcrypt from "bcryptjs";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import { OAuth2Client } from "google-auth-library";
+import { BadRequest } from "../middleware";
+const client = new OAuth2Client();
 
 export const getIsInvalidMessage = (fieldLabel: string) =>
   `${fieldLabel} is invalid`;
@@ -47,3 +50,19 @@ export const Limiter = rateLimit({
   max: 100,
   message: "Too many requests from this IP, please try again after 15 minutes",
 });
+
+export async function verifyGoogleToken(idToken: string): Promise<any> {
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    if (!payload) {
+      throw new Error("Unable to verify token");
+    }
+    return payload;
+  } catch (error) {
+    throw new BadRequest("Invalid token");
+  }
+}
