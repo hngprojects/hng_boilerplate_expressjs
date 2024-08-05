@@ -312,12 +312,11 @@ export class AuthService implements IAuthService {
           username: "",
           profile_pic_url: picture,
         });
-
         authUser.profile = profile;
+        await this.usersRepository.save(authUser);
       } else {
         authUser = user;
       }
-      await this.usersRepository.save(authUser);
       const userInfo = {
         id: authUser.id,
         email: email,
