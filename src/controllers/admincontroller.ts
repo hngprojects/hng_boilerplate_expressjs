@@ -20,9 +20,9 @@ class AdminOrganisationController {
 
   /**
    * @swagger
-   * /api/v1/orgs/:{id}
+   * /api/v1/orgs/{id}:
    *   patch:
-   *     summary: Admin-Update an existing organisation
+   *     summary: Admin-Update an existing organization
    *     tags: [Admin]
    *     parameters:
    *       - name: id
@@ -55,8 +55,8 @@ class AdminOrganisationController {
    *               address:
    *                 type: string
    *     responses:
-   *       200:
-   *         description: Organisation updated successfully
+   *       '200':
+   *         description: Organization updated successfully
    *         content:
    *           application/json:
    *             schema:
@@ -96,9 +96,9 @@ class AdminOrganisationController {
    *                 status_code:
    *                   type: integer
    *                   example: 200
-   *       400:
+   *       '400':
    *         description: Bad Request
-   *       500:
+   *       '500':
    *         description: Internal Server Error
    */
 
@@ -115,7 +115,7 @@ class AdminOrganisationController {
 
   /**
    * @swagger
-   * /api/v1/orgs/{org_id}/:delete
+   * /api/v1/admin/organizations/{org_id}:
    *   delete:
    *     summary: Admin-Delete an existing organization
    *     tags: [Admin]
@@ -199,7 +199,6 @@ class AdminOrganisationController {
    *                 message:
    *                   type: string
    */
-
   public deleteOrganization = asyncHandler(
     async (req: Request, res: Response) => {
       const { org_id } = req.params;
