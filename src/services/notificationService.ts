@@ -8,8 +8,6 @@ import {
 import { User, NotificationSettings, Notifications } from "../models";
 import { INotification, INotificationService } from "../types";
 import AppDataSource from "../data-source";
-import log from "../utils/logger";
-import { sendJsonResponse } from "../helpers";
 
 export class NotificationService implements INotificationService {
   private usersRepository: Repository<User>;
@@ -38,7 +36,11 @@ export class NotificationService implements INotificationService {
     payload: INotification,
     userId: string,
   ): Promise<Notifications> {
-    const user_notification = await this.getUserNotification(userId);
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new ResourceNotFound("User not found");
+    }
+
     const notification = await this.notificationRepository.save({
       ...payload,
       user: { id: userId },

@@ -20,12 +20,10 @@ export class NotificationSettings extends ExtendedBaseEntity {
   @IsUUID()
   user_id: string;
 
-  // mobile notifications
   @Column({ default: true })
   @IsBoolean()
   mobile_notifications: boolean;
 
-  // email notifications
   @Column({ default: false })
   @IsBoolean()
   email_notifications_activity_workspace: boolean;
@@ -42,7 +40,6 @@ export class NotificationSettings extends ExtendedBaseEntity {
   @IsBoolean()
   email_notifications_announcement__and_update_emails: boolean;
 
-  // slack notifications
   @Column({ default: true })
   @IsBoolean()
   slack_notifications_activity_workspace: boolean;

@@ -28,7 +28,6 @@ notificationsRoute.get(
 notificationsRoute.post(
   "/notifications/create",
   authMiddleware,
-  // TODO: update all routes to follow the new validateData
   validateData({ body: notificationSchema }),
   createNotifications,
 );

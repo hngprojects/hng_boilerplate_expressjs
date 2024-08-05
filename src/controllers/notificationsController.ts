@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { NotificationService } from "../services/notification_service";
+import { NotificationService } from "../services/notificationService";
 import { sendJsonResponse } from "../helpers";
 import asyncHandler from "../middleware/asyncHandler";
 

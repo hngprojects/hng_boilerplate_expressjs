@@ -97,7 +97,6 @@ export interface INotificationSettingService {
 export interface INotification {
   message: string;
   is_read: boolean;
-  user: User;
 }
 export interface INotificationService {
   getUserNotification(user_id: string, auth_userId: string): Promise<any>;

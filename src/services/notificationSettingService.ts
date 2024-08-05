@@ -7,11 +7,7 @@ import {
   ResourceNotFound,
 } from "../middleware";
 import { User, NotificationSettings } from "../models";
-import {
-  // todo: I don't think i need to import 2 types check later
-  INotificationSettingService,
-  INotificationSettings,
-} from "../types";
+import { INotificationSettingService, INotificationSettings } from "../types";
 import AppDataSource from "../data-source";
 import log from "../utils/logger";
 
@@ -23,6 +19,20 @@ export class NotificationSettingService implements INotificationSettingService {
     this.usersRepository = AppDataSource.getRepository(User);
     this.notificationSettingRepository =
       AppDataSource.getRepository(NotificationSettings);
+  }
+
+  public async createNotificationSetting(
+    payload: INotificationSettings,
+    userId: string,
+  ): Promise<NotificationSettings> {
+    const newNotificationSetting = this.notificationSettingRepository.create({
+      ...payload,
+      user_id: userId,
+    });
+
+    return await this.notificationSettingRepository.save(
+      newNotificationSetting,
+    );
   }
 
   public async updateNotificationSetting(
@@ -40,8 +50,9 @@ export class NotificationSettingService implements INotificationSettingService {
       });
 
     if (!userNotificationSetting) {
-      throw new ResourceNotFound("Notification setting not found");
+      await this.createNotificationSetting(payload, userId);
     }
+
     if (userNotificationSetting) {
       Object.keys(payload).forEach((key) => {
         if (payload[key] !== undefined) {
