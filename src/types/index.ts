@@ -42,6 +42,10 @@ export interface IAuthService {
   // login(payload: IUserLogin): Promise<unknown>;
   signUp(payload: IUserSignUp, res: unknown): Promise<unknown>;
   verifyEmail(token: string, email: string): Promise<unknown>;
+  googleSignin(payload: GoogleVerificationPayloadInterface): Promise<{
+    userInfo: Partial<User>;
+    is_new_user: boolean;
+  }>;
   // changePassword(
   //   userId: string,
   //   oldPassword: string,
@@ -126,12 +130,20 @@ export interface EmailQueuePayload {
   variables?: Record<string, any>;
 }
 
-export interface GoogleUser {
+export interface GoogleVerificationPayloadInterface {
+  iss: string;
+  azp: string;
+  aud: string;
+  sub: string;
   email: string;
   email_verified: boolean;
+  at_hash: string;
   name: string;
   picture: string;
-  sub: string;
+  given_name: string;
+  family_name: string;
+  iat: number;
+  exp: number;
 }
 
 export type UserResponsePayload = Pick<

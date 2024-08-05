@@ -6,6 +6,13 @@ import { AdminOrganisationService } from "../services/adminservice";
 jest.mock("../data-source");
 jest.mock("../utils/index");
 
+jest.mock("../utils", () => ({
+  ...jest.requireActual("../utils"),
+  getIsInvalidMessage: jest.fn(() => "Mocked invalid message"),
+  generateToken: jest.fn(),
+  verifyToken: jest.fn(),
+}));
+
 describe("AdminOrganisationService", () => {
   let consoleErrorMock: jest.SpyInstance;
   let adminOrganisationService: AdminOrganisationService;
