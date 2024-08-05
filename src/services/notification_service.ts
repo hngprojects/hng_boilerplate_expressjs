@@ -66,11 +66,38 @@ export class NotificationService implements INotificationService {
   }
 
   async readAllUserNotification(userId: string): Promise<Notifications[]> {
-    const user_notifications = await this.getUserNotification(userId);
-    user_notifications.forEach((notifications) => {
-      notifications.is_read = true;
+    const userNotifications = await this.getUserNotification(userId);
+    if (!userNotifications || userNotifications.length === 0) {
+      throw new ResourceNotFound("Notifications are empty");
+    }
+
+    const updatedNotifications = userNotifications.map((notification) => {
+      notification.is_read = true;
+      return notification;
     });
 
-    return await this.notificationRepository.save(user_notifications);
+    const savedNotifications =
+      await this.notificationRepository.save(updatedNotifications);
+
+    return savedNotifications;
+  }
+
+  async allUnreadNotification(userId: string): Promise<Notifications[]> {
+    const userNotifications = await this.getUserNotification(userId);
+    if (!userNotifications || userNotifications.length === 0) {
+      throw new ResourceNotFound("Notifications are empty");
+    }
+
+    return userNotifications.filter(
+      (notification) => notification.is_read === false,
+    );
+  }
+
+  async deleteAllUserNotification(userId: string): Promise<any> {
+    const userNotifications = await this.getUserNotification(userId);
+    if (!userNotifications || userNotifications.length === 0) {
+      throw new ResourceNotFound("Notifications are empty");
+    }
+    await this.notificationRepository.remove(userNotifications);
   }
 }

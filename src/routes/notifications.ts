@@ -1,5 +1,7 @@
 import {
   createNotifications,
+  deleteAllUserNotification,
+  getAllUnreadNotifications,
   getNotifications,
   markAllNotificationAsRead,
   markNotificationAsRead,
@@ -12,10 +14,15 @@ import { markAsRead, notificationSchema } from "../schemas/notification";
 const notificationsRoute = Router();
 
 notificationsRoute.get(
-  "/notifications/:user_id",
+  "/notifications/read",
   authMiddleware,
-  validateData({ params: paramsSchema }),
-  getNotifications,
+  markAllNotificationAsRead,
+);
+
+notificationsRoute.get(
+  "/notifications/unread",
+  authMiddleware,
+  getAllUnreadNotifications,
 );
 
 notificationsRoute.post(
@@ -26,17 +33,30 @@ notificationsRoute.post(
   createNotifications,
 );
 
-notificationsRoute.patch(
-  "/notifications/read/:notification_id",
+notificationsRoute.delete(
+  "/notifications/clear",
   authMiddleware,
-  validateData({ params: notificationParamsSchema, body: markAsRead }),
-  markNotificationAsRead,
+  deleteAllUserNotification,
 );
 
 notificationsRoute.patch(
   "/notifications/read",
   authMiddleware,
   markAllNotificationAsRead,
+);
+
+notificationsRoute.get(
+  "/notifications/:user_id",
+  authMiddleware,
+  validateData({ params: paramsSchema }),
+  getNotifications,
+);
+
+notificationsRoute.patch(
+  "/notifications/read/:notification_id",
+  authMiddleware,
+  validateData({ params: notificationParamsSchema, body: markAsRead }),
+  markNotificationAsRead,
 );
 
 export { notificationsRoute };

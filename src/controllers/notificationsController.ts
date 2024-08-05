@@ -62,9 +62,39 @@ const markAllNotificationAsRead = asyncHandler(
   },
 );
 
+const getAllUnreadNotifications = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notification = await notificationService.allUnreadNotification(
+      req.user.id,
+    );
+    sendJsonResponse(
+      res,
+      200,
+      "Notification updated successfully",
+      notification,
+    );
+  },
+);
+
+const deleteAllUserNotification = asyncHandler(
+  async (req: Request, res: Response) => {
+    const notification = await notificationService.deleteAllUserNotification(
+      req.user.id,
+    );
+    sendJsonResponse(
+      res,
+      200,
+      "All Notification deleted successfully",
+      notification,
+    );
+  },
+);
+
 export {
   getNotifications,
   createNotifications,
   markNotificationAsRead,
   markAllNotificationAsRead,
+  getAllUnreadNotifications,
+  deleteAllUserNotification,
 };
