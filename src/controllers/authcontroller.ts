@@ -560,14 +560,14 @@ const googleAuthCall = asyncHandler(
     const { id_token } = req.body;
     const userInfo = await verifyGoogleToken(id_token);
     const user = await authService.googleSignin(userInfo);
-    const token = await generateToken({ user_id: user.userInfo.id });
-
-    res.status(user.is_new_user ? 201 : 200).json({
-      status: "success",
-      message: "User authenticated successfully",
-      access_token: token,
-      user: user.userInfo,
-    });
+    const access_token = await generateToken({ user_id: user.userInfo.id });
+    return sendJsonResponse(
+      res,
+      user.is_new_user ? 201 : 200,
+      "User authenticated successfully",
+      { user: user.userInfo },
+      access_token,
+    );
   },
 );
 
