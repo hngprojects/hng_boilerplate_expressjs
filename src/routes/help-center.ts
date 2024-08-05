@@ -15,14 +15,14 @@ const helpRoute = Router();
 helpRoute.post(
   "/help-center/topics",
   authMiddleware,
-  validateData(createTopicSchema),
+  validateData({ body: createTopicSchema }),
   createTopic,
 );
 
 helpRoute.patch(
   "/help-center/topics/:id",
   authMiddleware,
-  validateData(updateTopicSchema),
+  validateData({ body: updateTopicSchema }),
   updateTopic,
 );
 

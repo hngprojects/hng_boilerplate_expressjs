@@ -9,7 +9,7 @@ const emailRoute = Router();
 emailRoute.post(
   "/send-email",
   authMiddleware,
-  validateData(emailSchema),
+  validateData({ body: emailSchema }),
   SendEmail,
 );
 

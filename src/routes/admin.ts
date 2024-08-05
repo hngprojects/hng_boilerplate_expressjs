@@ -14,7 +14,7 @@ const admin = new admincontroller.AdminOrganisationController();
 
 adminRoute.patch(
   "/orgs/:id",
-  validateData(orgUpdateSchema),
+  validateData({ body: orgUpdateSchema }),
   authMiddleware,
   checkOrgPermission([OrgRole.ADMIN], [UserType.SUPER_ADMIN]),
   asyncHandler(admin.updateOrg),
@@ -22,7 +22,7 @@ adminRoute.patch(
 
 adminRoute.delete(
   "/orgs/:org_id/delete",
-  validateData(orgUpdateSchema),
+  validateData({ body: orgUpdateSchema }),
   authMiddleware,
   checkOrgPermission([OrgRole.ADMIN], [UserType.SUPER_ADMIN]),
   asyncHandler(admin.deleteOrganization),
