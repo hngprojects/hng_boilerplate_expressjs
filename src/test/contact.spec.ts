@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { createContact } from "../controllers";
 import { ContactService } from "../services";
 
-jest.mock("../services/contactService");
+jest.mock("../services/contactservice");
 const mockCreateContact = ContactService.prototype.createContact as jest.Mock;
 
 const mockRequest = (body = {}, params = {}, query = {}): Request =>
