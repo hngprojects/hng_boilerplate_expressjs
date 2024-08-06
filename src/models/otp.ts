@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, OneToOne } from "typeorm";
 import ExtendedBaseEntity from "./base-entity";
 import { User } from "./user";
 
@@ -10,7 +10,7 @@ export class Otp extends ExtendedBaseEntity {
   @Column()
   expiry: Date;
 
-  @ManyToOne(() => User, (user) => user.otps)
+  @OneToOne(() => User, (user) => user.otp)
   @JoinColumn({ name: "user_id" })
   user: User;
 }

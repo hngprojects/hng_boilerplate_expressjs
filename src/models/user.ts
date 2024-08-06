@@ -75,8 +75,9 @@ export class User extends ExtendedBaseEntity {
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
 
-  @OneToMany(() => Otp, (otp) => otp.user)
-  otps: Otp[];
+  @OneToOne(() => Otp, (otp) => otp.user)
+  @JoinColumn({ name: "otp_id" })
+  otp: Otp[];
 
   @OneToMany(
     () => UserOrganization,
