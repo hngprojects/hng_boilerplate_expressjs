@@ -4,7 +4,7 @@ import { UserService } from "../services";
 import { sendJsonResponse } from "../helpers/responsehelper";
 import { BadRequest, ResourceNotFound } from "../middleware";
 
-jest.mock("../services/UserService");
+jest.mock("../services");
 jest.mock("../helpers/responsehelper", () => ({
   sendJsonResponse: jest.fn(),
 }));
