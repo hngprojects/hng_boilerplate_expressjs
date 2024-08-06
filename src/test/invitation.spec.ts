@@ -101,4 +101,63 @@ describe("InviteService", () => {
       ).rejects.toThrow(ResourceNotFound);
     });
   });
+
+  describe("generateAndSendInviteLinks", () => {
+    it("should generate and send invite links", async () => {
+      const organizationId = "org-123";
+      const emails = ["test1@example.com", "test2@example.com"];
+      const organization = {
+        id: organizationId,
+        name: "Test Organization",
+      } as Organization;
+
+      organizationRepository.findOne.mockResolvedValue(organization);
+      inviteRepository.create.mockImplementation(
+        (invite) =>
+          ({
+            ...invite,
+            token: "some-uuid-token",
+            email: invite.email,
+            isGeneric: false,
+            organization: invite.organization,
+          }) as Invitation,
+      );
+      inviteRepository.save.mockResolvedValue([
+        {
+          token: "some-uuid-token",
+          email: emails[0],
+          isGeneric: false,
+          organization,
+          id: "invite-id",
+          isAccepted: false,
+        },
+        {
+          token: "some-uuid-token-2",
+          email: emails[1],
+          isGeneric: false,
+          organization,
+          id: "invite-id-2",
+          isAccepted: false,
+        },
+      ] as unknown as Invitation);
+      await inviteService.generateAndSendInviteLinks(emails, organizationId);
+
+      expect(organizationRepository.findOne).toHaveBeenCalledWith({
+        where: { id: organizationId },
+      });
+      expect(inviteRepository.save).toHaveBeenCalledWith(expect.any(Array));
+      expect(addEmailToQueue).toHaveBeenCalledTimes(emails.length);
+    });
+
+    it("should throw ResourceNotFound if organization does not exist", async () => {
+      const organizationId = "org-123";
+      const emails = ["test1@example.com", "test2@example.com"];
+
+      organizationRepository.findOne.mockResolvedValue(null);
+
+      await expect(
+        inviteService.generateAndSendInviteLinks(emails, organizationId),
+      ).rejects.toThrow(ResourceNotFound);
+    });
+  });
 });
