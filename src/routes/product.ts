@@ -13,4 +13,11 @@ productRouter.post(
   authMiddleware,
   productController.createProduct,
 );
+
+productRouter.get(
+  "/organizations/:id/products/search",
+  authMiddleware,
+  productController.getProduct,
+);
+
 export { productRouter };
