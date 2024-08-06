@@ -571,6 +571,49 @@ const googleAuthCall = asyncHandler(
   },
 );
 
+/**
+ * @swagger
+ * /api/v1/auth/request/token:
+ *   post:
+ *     summary: Request a new OTP
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john.doe@example.com
+ *     responses:
+ *       200:
+ *         description: OTP resent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request, invalid email
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Some server error
+ */
+
+const requestToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = req.body;
+    const message = await authService.resendOtp(email);
+    sendJsonResponse(res, 200, message.toString(), {});
+  } catch (error) {
+    next(error);
+  }
+};
 export {
   authenticateUserMagicLink,
   createMagicLink,
@@ -578,4 +621,5 @@ export {
   signUp,
   verifyOtp,
   googleAuthCall,
-};
+  requestToken,
+}

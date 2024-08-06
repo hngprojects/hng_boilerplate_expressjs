@@ -338,4 +338,36 @@ export class AuthService implements IAuthService {
       throw error;
     }
   }
+  public async resendOtp(email: string): Promise<{
+    message: string;
+    otp: Otp;
+  }> {
+    try {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new ResourceNotFound("User not found");
+      }
+      const existingOtp = await this.otpService.findOtp(user.id);
+      if (existingOtp) {
+        await this.otpService.deleteOtp(user.id);
+      }
+      const otp = await this.otpService.createOtp(user.id);
+      await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "OTP RESEND",
+        html: compilerOtp(parseInt(otp.token), user.first_name),
+      });
+
+      return {
+        otp,
+        message: "OTP resent successfully",
+      };
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw new HttpError(error.status || 500, error.message || error);
+    }
+  }
 }

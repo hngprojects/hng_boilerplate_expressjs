@@ -11,9 +11,7 @@ export class OtpService {
 
   async createOtp(user_id: string): Promise<Otp | undefined> {
     try {
-      const user = await this.userRepository.findOne({
-        where: { id: user_id },
-      });
+      const user = await this.userRepository.findOne({ where: { id: user_id } });
       if (!user) {
         throw new ResourceNotFound("User not found");
       }
@@ -34,11 +32,29 @@ export class OtpService {
     }
   }
 
+  async findOtp(user_id: string): Promise<Otp | undefined> {
+    try {
+      const otp = await this.otpRepository.findOne({ where: { user: { id: user_id } } });
+      return otp;
+    } catch (error) {
+      return;
+    }
+  }
+
+  async deleteOtp(user_id: string): Promise<void> {
+    try {
+      const otp = await this.findOtp(user_id);
+      if (otp) {
+        await this.otpRepository.remove(otp);
+      }
+    } catch (error) {
+      return;
+    }
+  }
+
   async verifyOtp(user_id: string, token: string): Promise<boolean> {
     try {
-      const otp = await this.otpRepository.findOne({
-        where: { token, user: { id: user_id } },
-      });
+      const otp = await this.otpRepository.findOne({ where: { token, user: { id: user_id } } });
 
       if (!otp) {
         throw new ResourceNotFound("Invalid OTP");
