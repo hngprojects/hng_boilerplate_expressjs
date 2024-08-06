@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { generateGenericInviteLink } from "../controllers";
+import {
+  generateGenericInviteLink,
+  generateAndSendInviteLinks,
+} from "../controllers";
 import { checkPermissions, authMiddleware } from "../middleware";
 import { UserType } from "../enums/UserType";
 
@@ -10,6 +13,12 @@ inviteRoute.get(
   authMiddleware,
   checkPermissions([UserType.ADMIN, UserType.SUPER_ADMIN]),
   generateGenericInviteLink,
+);
+inviteRoute.post(
+  "/organizations/:org_id/send-invite",
+  authMiddleware,
+  checkPermissions([UserType.SUPER_ADMIN, UserType.ADMIN]),
+  generateAndSendInviteLinks,
 );
 
 export { inviteRoute };

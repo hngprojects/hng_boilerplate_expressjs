@@ -18,6 +18,7 @@ import {
   notificationSettingRoute,
   contactRouter,
   orgRouter,
+  inviteRoute,
 } from "./routes";
 import { productRouter } from "./routes/product";
 import ServerAdapter from "./views/bull-board";
@@ -62,6 +63,7 @@ app.use("/api/v1", notificationsRoute);
 app.use("/api/v1", contactRouter);
 app.use("/api/v1", orgRouter);
 app.use("/api/v1", productRouter);
+app.use("/api/v1", inviteRoute);
 
 app.use(routeNotFound);
 app.use(errorHandler);
