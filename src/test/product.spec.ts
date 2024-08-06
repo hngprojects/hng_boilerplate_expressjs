@@ -133,4 +133,73 @@ describe("ProductService", () => {
       ).rejects.toThrow(ServerError);
     });
   });
+
+  describe("updateProduct", () => {
+    const orgId = "org123";
+    const productId = "prod456";
+    const updateDetails: ProductSchema = {
+      name: "Updated Product",
+      description: "Updated description",
+      price: 19.99,
+      quantity: 10,
+    };
+
+    it("should successfully update a product", async () => {
+      const mockOrganization = { id: orgId };
+      const mockProduct = {
+        id: productId,
+        name: "Old Name",
+        description: "Old description",
+        price: 9.99,
+        quantity: 5,
+        stock_status: StockStatusType.LOW_STOCK,
+      };
+
+      productService["checkEntities"] = jest.fn().mockResolvedValue({
+        organization: mockOrganization,
+        product: mockProduct,
+      });
+
+      const updatedProduct = {
+        ...mockProduct,
+        ...updateDetails,
+        stock_status: StockStatusType.IN_STOCK,
+      };
+
+      productRepository.save = jest.fn().mockResolvedValue(updatedProduct);
+
+      await productService.updateProduct(orgId, productId, updateDetails);
+
+      expect(productRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining(updateDetails),
+      );
+    });
+
+    it("should throw ResourceNotFound if organization or product doesn't exist", async () => {
+      productService["checkEntities"] = jest
+        .fn()
+        .mockRejectedValue(new ResourceNotFound("Entity not found"));
+
+      await expect(
+        productService.updateProduct(orgId, productId, updateDetails),
+      ).rejects.toThrow(ResourceNotFound);
+    });
+
+    it("should throw ServerError if update fails", async () => {
+      productService["checkEntities"] = jest.fn().mockResolvedValue({
+        organization: { id: orgId },
+        product: { id: productId },
+      });
+
+      // Mock save to return null, which should trigger the ServerError
+      productRepository.save = jest.fn().mockResolvedValue(null);
+
+      await expect(
+        productService.updateProduct(orgId, productId, updateDetails),
+      ).rejects.toThrow(ServerError);
+      await expect(
+        productService.updateProduct(orgId, productId, updateDetails),
+      ).rejects.toThrow("Internal server Error");
+    });
+  });
 });
