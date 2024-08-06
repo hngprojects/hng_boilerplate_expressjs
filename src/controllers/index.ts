@@ -9,3 +9,4 @@ export * from "./notificationSettingController";
 export * from "./notificationsController";
 export * from "./contactcontroller";
 export * from "./organizationcontroller";
+export * from "./inviteController";
