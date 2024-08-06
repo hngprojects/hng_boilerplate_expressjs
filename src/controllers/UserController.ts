@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import { validate } from "uuid";
+import { validate as isUUID } from "uuid";
 import { sendJsonResponse } from "../helpers";
 import { BadRequest, ResourceNotFound } from "../middleware";
 import asyncHandler from "../middleware/asyncHandler";
 import { UserService } from "../services";
 
+const userservice = new UserService();
 class UserController {
   /**
    * @swagger
@@ -18,64 +19,133 @@ class UserController {
    *  get:
    *    tags:
    *      - User
-   *    summary: Get User profile
+   *    summary: Get Authenticated User profile
    *    security:
    *      - bearerAuth: []
    *    description: Api endpoint to retrieve the profile data of the currently authenticated user. This will allow users to access their own profile information.
    *    responses:
    *      200:
-   *        description: Fetched User profile Successfully
+   *        description: Fetched User profile successfully
    *        content:
    *          application/json:
    *            schema:
    *              type: object
    *              properties:
+   *                success:
+   *                  type: boolean
+   *                  example: true
    *                status_code:
    *                  type: integer
    *                  example: 200
+   *                message:
+   *                  type: string
+   *                  example: User profile details retrieved successfully
    *                data:
    *                  type: object
    *                  properties:
    *                    id:
    *                      type: string
-   *                      example: 58b6
-   *                    user_name:
+   *                      example: 550e8400-e29b-41d4-a716-446655440000
+   *                    first_name:
    *                      type: string
-   *                      example: yasuke
-   *                    email:
+   *                      example: John
+   *                    last_name:
    *                      type: string
-   *                      example: sam@gmail.com
-   *                    profile_picture:
+   *                      example: Doe
+   *                    type:
    *                      type: string
-   *                      example: https://avatar.com
-   *
+   *                      example: vendor
+   *                    profile:
+   *                      type: object
+   *                      properties:
+   *                        profile_id:
+   *                          type: string
+   *                          example: profile1
+   *                        username:
+   *                          type: string
+   *                          example: johndoe
+   *                        bio:
+   *                          type: string
+   *                          example: This is a bio
+   *                        job_title:
+   *                          type: string
+   *                          example: Developer
+   *                        language:
+   *                          type: string
+   *                          example: English
+   *                        pronouns:
+   *                          type: string
+   *                          example: he/him
+   *                        department:
+   *                          type: string
+   *                          example: Engineering
+   *                        social_links:
+   *                          type: array
+   *                        profile_pic_url:
+   *                          type: string
+   *                          example: https://avatar.com
+   *                        timezones:
+   *                          type: string
+   *                          example: UTC
    *      401:
    *        description: Unauthorized access
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                success:
+   *                  type: boolean
+   *                  example: false
+   *                status_code:
+   *                  type: integer
+   *                  example: 401
+   *                message:
+   *                  type: string
+   *                  example: Unauthorized access
    *      404:
    *        description: Not found
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                success:
+   *                  type: boolean
+   *                  example: false
+   *                status_code:
+   *                  type: integer
+   *                  example: 404
+   *                message:
+   *                  type: string
+   *                  example: User not found!
    *      500:
    *        description: Internal Server Error
-   *
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                success:
+   *                  type: boolean
+   *                  example: false
+   *                status_code:
+   *                  type: integer
+   *                  example: 500
+   *                message:
+   *                  type: string
+   *                  example: Internal Server Error
    */
-  static getProfile = asyncHandler(
+  public getUserProfile = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.user;
-
-      if (!id) {
-        throw new BadRequest("Unauthorized! No ID provided");
+      if (!id || !isUUID(id)) {
+        return next(new BadRequest("Invalid or missing user ID!"));
       }
 
-      if (!validate(id)) {
-        throw new BadRequest("Unauthorized! Invalid User Id Format");
-      }
-
-      const user = await UserService.getUserById(id);
-      if (!user) {
-        throw new ResourceNotFound("User Not Found!");
-      }
-
-      if (user?.deletedAt || user?.is_deleted) {
-        throw new ResourceNotFound("User not found!");
+      const user = await userservice.getUserById(id);
+      if (!user || user.deletedAt || user.is_deleted) {
+        return next(new ResourceNotFound("User not found!"));
       }
 
       sendJsonResponse(
@@ -83,18 +153,22 @@ class UserController {
         200,
         "User profile details retrieved successfully",
         {
-          id: user.id,
+          id: user?.id,
           first_name: user?.first_name,
           last_name: user?.last_name,
-          profile_id: user?.profile?.id,
-          username: user?.profile?.username,
-          bio: user?.profile?.bio,
-          job_title: user?.profile?.jobTitle,
-          language: user?.profile?.language,
-          pronouns: user?.profile?.pronouns,
-          department: user?.profile?.department,
-          social_links: user?.profile?.social_links,
-          timezones: user?.profile?.timezones,
+          type: user?.user_type,
+          profile: {
+            profile_id: user?.profile?.id,
+            username: user?.profile?.username,
+            bio: user.profile?.bio,
+            job_title: user?.profile?.jobTitle,
+            language: user?.profile?.language,
+            pronouns: user?.profile?.pronouns,
+            department: user?.profile?.department,
+            social_links: user?.profile?.social_links,
+            profile_pic_url: user?.profile?.profile_pic_url,
+            timezones: user?.profile?.timezones,
+          },
         },
       );
     },

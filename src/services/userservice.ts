@@ -1,10 +1,11 @@
-import { User } from "../models/user";
 import AppDataSource from "../data-source";
 import { ResourceNotFound } from "../middleware";
+import { User } from "../models/user";
+
+const userRepository = AppDataSource.getRepository(User);
 
 export class UserService {
-  static async getUserById(id: string): Promise<User | null> {
-    const userRepository = AppDataSource.getRepository(User);
+  public async getUserById(id: string): Promise<User | null> {
     const user = await userRepository.findOne({
       where: { id },
       relations: ["profile"],
