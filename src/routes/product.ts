@@ -11,7 +11,12 @@ const productController = new ProductController();
 productRouter.post(
   "/organizations/:id/products",
   authMiddleware,
-  (req, res, next) => productController.createProduct(req, res, next),
+  productController.createProduct,
+);
+productRouter.get(
+  "/organizations/:id/products/search",
+  authMiddleware,
+  productController.searchProduct,
 );
 
 export { productRouter };
