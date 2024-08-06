@@ -25,5 +25,5 @@ jobs:
         run: yarn test
         env:
           CI: true
-      - name: buld the dist
+      - name: build the dist
         run: yarn build
