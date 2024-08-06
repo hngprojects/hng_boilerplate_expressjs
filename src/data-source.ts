@@ -18,17 +18,17 @@ const AppDataSource = new DataSource({
   migrations: ["src/migrations/**/*.ts"],
   migrationsTableName: "migrations",
   ...(isDevelopment
-    ? {
-        ssl: {
-          rejectUnauthorized: false,
-        },
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
-      }
-    : {}),
+  ? {
+  ssl: {
+  rejectUnauthorized: false,
+  },
+  extra: {
+  ssl: {
+  rejectUnauthorized: false,
+  },
+  },
+  }
+  : {}),
 });
 
 export async function initializeDataSource() {
