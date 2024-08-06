@@ -1,11 +1,17 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/productController";
+import { authMiddleware } from "../middleware";
 
-const router = Router();
+console.log("ProductController:", ProductController);
+console.log("authMiddleware:", authMiddleware);
 
+const productRouter = Router();
 const productController = new ProductController();
 
-// Define routes for products
-router.post("/organizations/:id/products", productController.createProduct);
+productRouter.post(
+  "/organizations/:id/products",
+  authMiddleware,
+  (req, res, next) => productController.createProduct(req, res, next),
+);
 
-export default router;
+export { productRouter };
