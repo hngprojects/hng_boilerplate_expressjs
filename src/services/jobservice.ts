@@ -47,4 +47,14 @@ export class JobService {
       throw new Error(error);
     }
   }
+
+  async getJobById(jobId: string): Promise<Job> {
+    try {
+      return await this.jobRepository.findOne({
+        where: { id: jobId },
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 }
