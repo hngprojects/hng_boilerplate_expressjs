@@ -1,15 +1,12 @@
-import {
-  Column,
-  DeleteDateColumn,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-} from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { IsEmail } from "class-validator";
 import ExtendedBaseEntity from "./base-entity";
 import { getIsInvalidMessage } from "../utils";
 import { Otp, Profile } from ".";
+import { UserOrganization } from "./user-organization";
+import { Job } from "./job";
+import { NotificationSettings } from "./notificationSetting";
+import { Notifications } from "./notifications";
 
 enum UserType {
   SUPER_ADMIN = "super-admin",
@@ -49,6 +46,9 @@ export class User extends ExtendedBaseEntity {
   @Column("simple-array", { nullable: true })
   backup_codes: string[];
 
+  @OneToMany(() => Job, (job) => job.user)
+  jobs: Job[];
+
   @Column({ nullable: true })
   attempts_left: number;
 
@@ -71,10 +71,29 @@ export class User extends ExtendedBaseEntity {
   })
   user_type: UserType;
 
-  @OneToOne(() => Profile, (profile) => profile.id)
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
 
-  @OneToMany(() => Otp, (otp) => otp.user)
-  otps: Otp[];
+  @OneToOne(() => Otp, (otp) => otp.user)
+  @JoinColumn({ name: "otp_id" })
+  otp: Otp[];
+
+  @OneToMany(
+    () => UserOrganization,
+    (userOrganization) => userOrganization.user,
+  )
+  userOrganizations: UserOrganization[];
+
+  @OneToOne(
+    () => NotificationSettings,
+    (notificationSettings) => notificationSettings.user,
+  )
+  notificationSettings: NotificationSettings[];
+
+  @OneToMany(() => Notifications, (notifications) => notifications.user)
+  notifications: Notifications[];
 }

@@ -1,4 +1,5 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToOne } from "typeorm";
+import { User } from ".";
 import ExtendedBaseEntity from "./base-entity";
 import { IsEmail } from "class-validator";
 import { getIsInvalidMessage } from "../utils";
@@ -38,4 +39,7 @@ export class Profile extends ExtendedBaseEntity {
 
   @Column({ nullable: true })
   profile_pic_url: string;
+
+  @OneToOne(() => User, (user) => user.profile)
+  user: User;
 }

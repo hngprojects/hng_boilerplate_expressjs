@@ -34,6 +34,28 @@ export class OtpService {
     }
   }
 
+  async findOtp(user_id: string): Promise<Otp | undefined> {
+    try {
+      const otp = await this.otpRepository.findOne({
+        where: { user: { id: user_id } },
+      });
+      return otp;
+    } catch (error) {
+      return;
+    }
+  }
+
+  async deleteOtp(user_id: string): Promise<void> {
+    try {
+      const otp = await this.findOtp(user_id);
+      if (otp) {
+        await this.otpRepository.remove(otp);
+      }
+    } catch (error) {
+      return;
+    }
+  }
+
   async verifyOtp(user_id: string, token: string): Promise<boolean> {
     try {
       const otp = await this.otpRepository.findOne({

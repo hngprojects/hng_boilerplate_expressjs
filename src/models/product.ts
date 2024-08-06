@@ -1,13 +1,6 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  // JoinColumn,
-  // DeleteDateColumn,
-  // OneToMany,
-  // OneToOne,
-} from "typeorm";
-import ExtendedBaseEntity from "./base-entity";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { Organization } from "./organization";
+import ExtendedBaseEntity from "../models/base-entity";
 
 export enum StockStatusType {
   IN_STOCK = "in stock",
@@ -58,6 +51,6 @@ export class Product extends ExtendedBaseEntity {
   })
   stock_status: StockStatusType;
 
-  // @ManyToOne(() => Organisation, org => org.products)
-  // org: Organisation;
+  @ManyToOne(() => Organization, (org) => org.products)
+  org: Organization;
 }

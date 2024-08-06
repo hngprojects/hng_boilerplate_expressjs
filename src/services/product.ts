@@ -1,12 +1,13 @@
 import { Repository } from "typeorm";
-import { Product } from "../models";
+import { Product, StockStatusType } from "../models/product";
 import AppDataSource from "../data-source";
 import { ProductSchema } from "../schemas/product";
-import { InvalidInput, ResourceNotFound } from "../middleware";
+import { InvalidInput, ResourceNotFound, ServerError } from "../middleware";
+import { Organization } from "../models/organization";
 
 export class ProductService {
   private productRepository: Repository<Product>;
-  // private organisationRepository: Repository<organisation>
+  private organizationRepository: Repository<Organization>;
 
   private entities: {
     [key: string]: {
@@ -17,17 +18,17 @@ export class ProductService {
 
   constructor() {
     this.productRepository = AppDataSource.getRepository(Product);
-    // this.organisationRepository = AppDataSource.getRepository(Organisation)
+    this.organizationRepository = AppDataSource.getRepository(Organization);
 
     this.entities = {
       product: {
         repo: this.productRepository,
         name: "Product",
       },
-      // organisation: {
-      //   repo: this.organisationRepository,
-      //   name: 'Organisation'
-      // }
+      organization: {
+        repo: this.organizationRepository,
+        name: "Organization",
+      },
     };
   }
 
@@ -59,30 +60,69 @@ export class ProductService {
     return foundEntities;
   }
 
+  private async calculateProductStatus(
+    quantity: number,
+  ): Promise<StockStatusType> {
+    if (quantity === 0) {
+      return StockStatusType.OUT_STOCK;
+    }
+    return quantity >= 5 ? StockStatusType.IN_STOCK : StockStatusType.LOW_STOCK;
+  }
+
+  public async createProduct(orgId: string, new_Product: ProductSchema) {
+    const { organization } = await this.checkEntities({ organization: orgId });
+    if (!organization) {
+      throw new ServerError("Invalid organisation credentials");
+    }
+
+    const newProduct = this.productRepository.create(new_Product);
+    newProduct.org = organization;
+    newProduct.stock_status = await this.calculateProductStatus(
+      new_Product.quantity ?? 0,
+    );
+
+    const product = await this.productRepository.save(newProduct);
+    if (!product) {
+      throw new ServerError(
+        "An unexpected error occurred. Please try again later.",
+      );
+    }
+
+    return {
+      status_code: 201,
+      status: "success",
+      message: "Product created successfully",
+      data: {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        status: product.stock_status,
+        is_deleted: product.is_deleted,
+        quantity: product.quantity,
+        created_at: product.created_at,
+        updated_at: product.updated_at,
+      },
+    };
+  }
+
   public async updateProduct(
     org_id: string,
     product_id: string,
     updateDetails: ProductSchema,
   ) {
+    console.log(typeof org_id, typeof product_id);
     const entities = await this.checkEntities({
-      organisation: org_id,
+      organization: org_id,
       product: product_id,
     });
 
-    return entities.product.update(updateDetails);
-  }
-
-  public async deleteProduct(org_id: string, product_id: string) {
-    const entities = await this.checkEntities({
-      organisation: org_id,
-      product: product_id,
+    const updatedProduct = await this.productRepository.save({
+      ...entities.product,
+      ...updateDetails,
     });
-
-    return this.productRepository.remove(entities.product);
-  }
-
-  public async getProduct(product_id: string) {
-    const { product } = await this.checkEntities({ product: product_id });
-    return product;
+    if (!updatedProduct) {
+      throw new ServerError("Internal server Error");
+    }
   }
 }
