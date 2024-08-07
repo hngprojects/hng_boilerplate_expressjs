@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
 import { User } from "../models";
 import AppDataSource from "../data-source";
-import { ICreateJobs } from "../types";
-import { Job, JobMode } from "../models/job";
+import { ICreateJobs, JobMode } from "../types";
+import { Job } from "../models/job";
 
 export class JobService {
   private userRepository: Repository<User>;

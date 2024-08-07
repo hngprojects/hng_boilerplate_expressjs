@@ -19,7 +19,3 @@ export const createJobSchema = z.object({
   job_mode: z.enum(["remote", "onsite"]),
   company_name: z.string().min(1, "Company name is required"),
 });
-
-export const validateCreateJob = (data: any) => {
-  return createJobSchema.safeParse(data);
-};

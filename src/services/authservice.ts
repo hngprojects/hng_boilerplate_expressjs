@@ -160,6 +160,7 @@ export class AuthService implements IAuthService {
     try {
       const user = await this.usersRepository.findOne({
         where: { email },
+        relations: { profile: true },
       });
 
       if (!user) {
