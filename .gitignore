@@ -12,8 +12,6 @@ build
 issueformat.md
 requests.rest
 package-lock.json
-docker-compose.yml
-package-lock.json
 
 .mail.ts.bk
 src/bk
