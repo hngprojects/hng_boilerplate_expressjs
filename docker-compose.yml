@@ -4,7 +4,6 @@ services:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
-        - DATABASE_URL=${DATABASE_URL}
     ports:
       - 8000:8000
     env_file:
@@ -15,24 +14,32 @@ services:
       backend_db:
         condition: service_healthy
     restart: always
-    command: sh -c "sleep 10 && yarn start" 
+    command: sh -c "
+      while ! nc -z backend_db 5432; do
+        echo 'Waiting for database to be ready...'
+        sleep 2
+      done
+      echo 'Database is ready!'
+      yarn start"
+    
 
   backend_db:
-    image: postgres
+    image: postgres:13
     container_name: backend_db
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
