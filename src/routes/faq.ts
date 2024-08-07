@@ -1,13 +1,10 @@
-// src/routes/help-center.ts
 import { Router } from "express";
-import FaqController from "../controllers/FaqController";
-// import { authMiddleware } from "../middleware/auth";
+import { FAQController } from "../controllers/FaqController";
+import { authMiddleware } from "../middleware";
 
 const faqRouter = Router();
-const faqController = new FaqController();
+const faqController = new FAQController();
 
-faqRouter.get("/faqs", faqController.getAllFaq.bind(faqController));
-
-faqRouter.post("/faq", faqController.createFaq.bind(faqController));
+faqRouter.post("/faq", authMiddleware, faqController.createFAQ);
 
 export { faqRouter };

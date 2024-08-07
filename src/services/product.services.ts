@@ -146,8 +146,6 @@ export class ProductService {
 
     const [products, total] = await queryBuilder.getManyAndCount();
 
-    console.log("Query results:", products);
-
     if (products.length === 0) {
       throw new ResourceNotFound("No products found");
     }
