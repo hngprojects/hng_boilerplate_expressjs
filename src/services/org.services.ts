@@ -18,23 +18,23 @@ export class OrgService implements IOrgService {
     payload: ICreateOrganisation,
     userId: string,
   ): Promise<{
-    newOrganisation: Partial<Organization>;
+    new_organisation: Partial<Organization>;
   }> {
     try {
       const organisation = new Organization();
       organisation.owner_id = userId;
       Object.assign(organisation, payload);
 
-      const newOrganisation = await AppDataSource.manager.save(organisation);
+      const new_organisation = await AppDataSource.manager.save(organisation);
 
       const userOrganization = new UserOrganization();
       userOrganization.userId = userId;
-      userOrganization.organizationId = newOrganisation.id;
+      userOrganization.organizationId = new_organisation.id;
       userOrganization.role = UserRole.ADMIN;
 
       await AppDataSource.manager.save(userOrganization);
 
-      return { newOrganisation };
+      return { new_organisation };
     } catch (error) {
       throw new BadRequest("Client error");
     }

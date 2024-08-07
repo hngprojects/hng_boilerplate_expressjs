@@ -165,7 +165,7 @@ export class OrgController {
       const userId = user.id;
 
       const organisationService = new OrgService();
-      const newOrganisation = await organisationService.createOrganisation(
+      const new_organisation = await organisationService.createOrganisation(
         payload,
         userId,
       );
@@ -173,7 +173,7 @@ export class OrgController {
       const respObj = {
         status: "success",
         message: "organisation created successfully",
-        data: newOrganisation,
+        data: new_organisation,
         status_code: 201,
       };
 
