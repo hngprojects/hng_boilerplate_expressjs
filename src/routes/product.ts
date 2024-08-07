@@ -3,9 +3,6 @@ import { ProductController } from "../controllers/productController";
 import { authMiddleware, validateData } from "../middleware";
 import { productSchema } from "../schemas/product";
 
-console.log("ProductController:", ProductController);
-console.log("authMiddleware:", authMiddleware);
-
 const productRouter = Router();
 const productController = new ProductController();
 
@@ -23,4 +20,11 @@ productRouter
     validateData({ body: productSchema }),
     productController.updateProduct,
   );
+
+productRouter.get(
+  "/organizations/:id/products/search",
+  authMiddleware,
+  productController.getProduct,
+);
+
 export { productRouter };

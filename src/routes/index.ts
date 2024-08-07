@@ -10,3 +10,4 @@ export * from "./notificationSetting";
 export * from "./notifications";
 export * from "./contact";
 export * from "./organization";
+export * from "./invite";
