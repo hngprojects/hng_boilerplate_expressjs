@@ -27,7 +27,6 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     ports:
       - 5432:5432
     healthcheck:
