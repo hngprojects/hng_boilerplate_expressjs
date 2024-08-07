@@ -1,90 +1,174 @@
+import { Repository } from "typeorm";
 import { Product } from "../models/product";
-import { IProduct } from "../types";
 import AppDataSource from "../data-source";
-import { ProductDTO } from "../models/product";
+import { ProductSize, StockStatus } from "../enums/product";
+import { ProductSchema } from "../schema/product.schema";
+import { InvalidInput, ResourceNotFound, ServerError } from "../middleware";
+import { Organization } from "../models/organization";
+import { UserRole } from "../enums/userRoles";
 
 export class ProductService {
-  getPaginatedProducts(
-    page: number,
-    limit: number,
-  ):
-    | { products: any; totalItems: any }
-    | PromiseLike<{ products: any; totalItems: any }> {
-    throw new Error("Method not implemented.");
+  private productRepository: Repository<Product>;
+  private organizationRepository: Repository<Organization>;
+
+  private entities: {
+    [key: string]: {
+      repo: Repository<any>;
+      name: string;
+    };
+  };
+
+  constructor() {
+    this.productRepository = AppDataSource.getRepository(Product);
+    this.organizationRepository = AppDataSource.getRepository(Organization);
+
+    this.entities = {
+      product: {
+        repo: this.productRepository,
+        name: "Product",
+      },
+      organization: {
+        repo: this.organizationRepository,
+        name: "Organization",
+      },
+    };
   }
-  private productRepository = AppDataSource.getRepository(Product);
 
-  public async getProductPagination(query: any): Promise<{
-    page: number;
-    limit: number;
-    totalProducts: number;
-    products: IProduct[];
-  }> {
-    try {
-      const page: number = parseInt(query.page as string, 10);
-      const limit: number = parseInt(query.limit as string, 10);
+  private async checkEntities(
+    entitiesToCheck: {
+      [key: string]: string;
+    } = { product: "" },
+  ): Promise<{ [key: string]: any }> {
+    const foundEntities: { [key: string]: any } = {};
 
-      if (isNaN(page) || page <= 0 || isNaN(limit) || limit <= 0) {
-        throw new Error("Page and limit must be positive integers.");
+    for (const [entityKey, id] of Object.entries(entitiesToCheck)) {
+      const entity = this.entities[entityKey];
+      if (!entity) {
+        throw new InvalidInput(`Invalid entity type: ${entityKey}`);
       }
 
-      const offset: number = (page - 1) * limit;
-
-      const [products, totalProducts] = await Promise.all([
-        this.productRepository.find({ skip: offset, take: limit }),
-        this.productRepository.count(),
-      ]);
-
-      if (!products) {
-        throw new Error("Error retrieving products.");
+      if (!id) {
+        throw new InvalidInput(`${entity.name} ID not provided`);
       }
 
-      if (products.length === 0 && offset > 0) {
-        throw new Error(
-          "The requested page is out of range. Please adjust the page number.",
-        );
+      const found = await entity.repo.findOne({ where: { id } });
+      if (!found) {
+        throw new ResourceNotFound(`${entity.name} with id ${id} not found`);
       }
 
-      return {
-        page,
-        limit,
-        totalProducts,
-        products,
-      };
-    } catch (err) {
-      // Log error details for debugging
-      throw new Error(err.message);
+      foundEntities[entityKey] = found;
     }
-  }
-  async getOneProduct(id: string): Promise<Product> {
-    const product = await this.productRepository.findOneBy({ id });
 
-    return product;
+    return foundEntities;
   }
 
-  async deleteProductById(id: string): Promise<boolean> {
-    const deleteResult = await this.productRepository.delete(id);
-    return deleteResult.affected !== 0;
+  private async calculateProductStatus(quantity: number): Promise<StockStatus> {
+    if (quantity === 0) {
+      return StockStatus.OUT_STOCK;
+    }
+    return quantity >= 5 ? StockStatus.IN_STOCK : StockStatus.LOW_STOCK;
   }
-  async updateProductById(
-    productId: string,
-    productData: Partial<Product>,
-  ): Promise<Product | null> {
-    const product = await this.productRepository.findOne({
-      where: { id: productId },
-    });
+
+  public async createProduct(orgId: string, new_Product: ProductSchema) {
+    const { organization } = await this.checkEntities({ organization: orgId });
+    if (!organization) {
+      throw new ServerError("Invalid organisation credentials");
+    }
+
+    const newProduct = this.productRepository.create(new_Product);
+    newProduct.org = organization;
+    newProduct.stock_status = await this.calculateProductStatus(
+      new_Product.quantity ?? 0,
+    );
+
+    const product = await this.productRepository.save(newProduct);
     if (!product) {
-      return null;
+      throw new ServerError(
+        "An unexpected error occurred. Please try again later.",
+      );
     }
-    this.productRepository.merge(product, productData);
-    return this.productRepository.save(product);
+
+    return {
+      status_code: 201,
+      status: "success",
+      message: "Product created successfully",
+      data: {
+        id: product.id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        image: product.image,
+        status: product.stock_status,
+        quantity: product.quantity,
+        created_at: product.created_at,
+        updated_at: product.updated_at,
+      },
+    };
   }
 
-  public async createProduct(
-    productDetails: Partial<ProductDTO>,
-  ): Promise<Product> {
-    let product = this.productRepository.create(productDetails);
-    product = await this.productRepository.save(product);
-    return product;
+  public async getProducts(
+    orgId: string,
+    query: {
+      name?: string;
+      category?: string;
+      minPrice?: number;
+      maxPrice?: number;
+    },
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const org = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!org) {
+      throw new ServerError(
+        "Unprocessable entity exception: Invalid organization credentials",
+      );
+    }
+
+    const { name, category, minPrice, maxPrice } = query;
+    const queryBuilder = this.productRepository
+      .createQueryBuilder("product")
+      .where("product.orgId = :orgId", { orgId });
+
+    if (name) {
+      queryBuilder.andWhere("product.name ILIKE :name", { name: `%${name}%` });
+    }
+    if (minPrice !== undefined) {
+      queryBuilder.andWhere("product.price >= :minPrice", { minPrice });
+    }
+    if (maxPrice !== undefined) {
+      queryBuilder.andWhere("product.price <= :maxPrice", { maxPrice });
+    }
+
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [products, total] = await queryBuilder.getManyAndCount();
+
+    if (products.length === 0) {
+      throw new ResourceNotFound("No products found");
+    }
+
+    return {
+      success: true,
+      statusCode: 200,
+      data: {
+        products,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+    };
+  }
+  public async deleteProduct(org_id: string, product_id: string) {
+    const entities = await this.checkEntities({
+      organisation: org_id,
+      product: product_id,
+    });
+    return this.productRepository.remove(entities.product);
   }
 }

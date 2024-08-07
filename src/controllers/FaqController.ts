@@ -1,78 +1,197 @@
-// src/controllers/UserController.ts
 import { NextFunction, Request, Response } from "express";
-import { FaqService } from "../services/faq.services";
-import { HttpError } from "../middleware";
+import { FAQService } from "../services";
+import { UserRole } from "../enums/userRoles";
+import isSuperAdmin from "../utils/isSuperAdmin";
+import { Category } from "../models";
 
-class FaqController {
-  private faqService: FaqService;
+const faqService = new FAQService();
 
-  constructor() {
-    this.faqService = new FaqService();
-  }
-
-  async createFaq(req: Request, res: Response): Promise<void> {
+class FAQController {
+  /**
+   * @swagger
+   * tags:
+   *   name: FAQ
+   *   description: FAQ management
+   *
+   * /faqs:
+   *   post:
+   *     summary: Create a new FAQ
+   *     tags: [FAQ]
+   *     requestBody:
+   *       description: Data required to create a new FAQ
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               question:
+   *                 type: string
+   *                 example: "What is organization?"
+   *               answer:
+   *                 type: string
+   *                 example: "It's a group of people."
+   *               category:
+   *                 type: string
+   *                 example: "general"
+   *     responses:
+   *       '201':
+   *         description: FAQ created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 201
+   *                 success:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: "FAQ Created successfully"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "d3c9c6a1-8f1e-4e89-bb7a-087d8b6f68e5"
+   *                     question:
+   *                       type: string
+   *                       example: "What is organization?"
+   *                     answer:
+   *                       type: string
+   *                       example: "It's a group of people."
+   *                     category:
+   *                       type: string
+   *                       example: "general"
+   *                     createdBy:
+   *                       type: string
+   *                       example: "SUPER_ADMIN"
+   *       '400':
+   *         description: Bad Request if input data is invalid
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Invalid request data"
+   *       '401':
+   *         description: Unauthorized if user is not authenticated
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "User not authenticated"
+   *       '403':
+   *         description: Forbidden if user is not a super admin
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 403
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "User is not authorized to create FAQ"
+   *       '500':
+   *         description: Internal Server Error if an unexpected error occurs
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "An unexpected error occurred"
+   */
+  public async createFAQ(req: Request, res: Response, next: NextFunction) {
     try {
-      const { title, content, author } = req.body;
+      const { question, answer, category } = req.body;
+      const userId = req.user?.id;
 
-      //Validate Input
-      if (!title || !content || !author) {
-        throw new HttpError(
-          422,
-          "Validation failed: Title, content, and author are required",
-        );
+      if (!userId) {
+        return res.status(401).json({
+          status_code: 401,
+          success: false,
+          message: "User not authenticated",
+        });
       }
 
-      const faq = await this.faqService.create_Faq(title, content, author);
+      if (!question || !answer || !category) {
+        return res.status(400).json({
+          status_code: 400,
+          success: false,
+          message: "Invalid request data",
+        });
+      }
+
+      const isAdmin = await isSuperAdmin(userId);
+      if (!isAdmin) {
+        return res.status(403).json({
+          status_code: 403,
+          success: false,
+          message: "User is not authorized to create FAQ",
+        });
+      }
+
+      const faq = await faqService.createFaq({
+        question,
+        answer,
+        category,
+        createdBy: UserRole.SUPER_ADMIN,
+      });
+
       res.status(201).json({
-        success: true,
-        message: "Faq Created Successfully",
-        data: {
-          id: faq.id,
-          content: faq.content,
-          author: faq.author,
-          title: faq.title,
-          createdAt: faq.createdAt,
-          updatedAt: faq.updatedAt,
-        },
         status_code: 201,
+        success: true,
+        message: "The FAQ has been successfully created.",
+        data: faq,
       });
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status_code).json({ message: error.message });
-      } else {
-        res
-          .status(error.status_code || 500)
-          .json({ message: error.message || "Internal Server Error" });
-      }
-    }
-  }
-
-  async getAllFaq(req: Request, res: Response): Promise<void> {
-    try {
-      const faqs = await this.faqService.getAll_Faq();
-      res.status(201).json({
-        success: true,
-        message: "Fetch Successful",
-        data: faqs,
-        status_code: 201,
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: error.message || "An unexpected error occurred",
       });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status_code).json({ message: error.message });
-      } else {
-        res
-          .status(error.status_code || 500)
-          .json({ message: error.message || "Internal Server Error" });
-      }
     }
   }
 
   /**
    * @swagger
-   * /faqs/{faq_id}:
+   * /faqs/{id}:
    *   put:
-   *     summary: Update an FAQ entry
-   *     description: Update an existing FAQ entry using the FAQ ID provided in the URL parameters and the update data in the request body.
+   *     summary: Update an FAQ
+   *     description: Update an existing FAQ entry using the FAQ ID provided in the URL parameters and the update data in the request body. The request requires admin authorization.
    *     tags: [FAQ]
    *     parameters:
    *       - in: path
@@ -94,9 +213,13 @@ class FaqController {
    *               answer:
    *                 type: string
    *                 description: The updated answer text
+   *               category:
+   *                 type: string
+   *                 description: The updated category
    *             example:
    *               question: "Updated question?"
    *               answer: "Updated answer."
+   *               category: "General"
    *     responses:
    *       200:
    *         description: The FAQ has been successfully updated.
@@ -123,6 +246,9 @@ class FaqController {
    *                     answer:
    *                       type: string
    *                       example: "Updated answer."
+   *                     category:
+   *                       type: string
+   *                       example: "General"
    *                     createdAt:
    *                       type: string
    *                       format: date-time
@@ -134,6 +260,38 @@ class FaqController {
    *                 status_code:
    *                   type: integer
    *                   example: 200
+   *       400:
+   *         description: Invalid request data or an error occurred while processing the request.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Invalid request data
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       403:
+   *         description: Unauthorized access.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Unauthorized access
+   *                 status_code:
+   *                   type: integer
+   *                   example: 403
    *       404:
    *         description: FAQ entry not found.
    *         content:
@@ -150,33 +308,29 @@ class FaqController {
    *                 status_code:
    *                   type: integer
    *                   example: 404
-   *       400:
-   *         description: An error occurred while processing the request.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: false
-   *                 message:
-   *                   type: string
-   *                   example: Error message
-   *                 status_code:
-   *                   type: integer
-   *                   example: 400
    */
 
-  public async updateFaq(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  public async updateFaq(req: Request, res: Response, next: NextFunction) {
     try {
       const faqId = req.params.id;
-      const payload = req.body;
-      const faq = await this.faqService.updateFaq(payload, faqId);
+      const { question, answer, category } = req.body;
+
+      if (!question || !answer || !category) {
+        return res.status(400).json({
+          status_code: 400,
+          success: false,
+          message: "Invalid request data",
+        });
+      }
+      const isAdmin = await isSuperAdmin(req.user.id);
+      if (!isAdmin) {
+        return res.status(403).json({
+          status_code: 403,
+          success: false,
+          message: "Unauthorized access",
+        });
+      }
+      const faq = await faqService.updateFaq(req.body, faqId);
       res.status(200).json({
         success: true,
         message: "The FAQ has been successfully updated.",
@@ -189,4 +343,4 @@ class FaqController {
   }
 }
 
-export default FaqController;
+export { FAQController };
