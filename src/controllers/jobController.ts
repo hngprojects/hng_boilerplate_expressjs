@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { JobService } from "../services/jobservice";
-import { validateCreateJob } from "../validationschema/job";
 
 export class JobController {
   private jobService: JobService;
@@ -187,17 +186,9 @@ export class JobController {
    *                   type: integer
    *                   example: 500
    */
+  
   async createJob(req: Request, res: Response) {
     try {
-      const validationResult = validateCreateJob(req.body);
-      if (!validationResult.success) {
-        return res.status(400).json({
-          status: "error",
-          status_code: 400,
-          message: `Invalid request, ${validationResult.error.errors[0].path[0]} is required`,
-        });
-      }
-
       const job = await this.jobService.createJob(req.body, req.user?.id);
       res.json({
         status: "success",
@@ -210,7 +201,6 @@ export class JobController {
     }
   }
 
-  
   /**
    * @swagger
    * /api/v1/jobs/{jobId}:
@@ -307,6 +297,7 @@ export class JobController {
    *                   type: integer
    *                   example: 500
    */
+  
   async getJobById(req: Request, res: Response) {
     try {
       const { jobId } = req.params;
@@ -329,4 +320,96 @@ export class JobController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/jobs:
+   *   get:
+   *     summary: Retrieve all job listings
+   *     description: Retrieve a list of all job listings
+   *     tags: [Jobs]
+   *     responses:
+   *       200:
+   *         description: Successfully retrieved job listings
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: Job listings retrieved successfully
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: string
+   *                         example: 123e4567-e89b-12d3-a456-426614174000
+   *                       title:
+   *                         type: string
+   *                         example: Software Engineer
+   *                       description:
+   *                         type: string
+   *                         example: This is a job description
+   *                       location:
+   *                         type: string
+   *                         example: Remote
+   *                       deadline:
+   *                         type: string
+   *                         format: date-time
+   *                         example: 2023-07-21T19:58:00.000Z
+   *                       salary_range:
+   *                         type: string
+   *                         example: 50k_to_70k
+   *                       job_type:
+   *                         type: string
+   *                         example: full-time
+   *                       job_mode:
+   *                         type: string
+   *                         example: remote
+   *                       company_name:
+   *                         type: string
+   *                         example: ABC Company
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+  
+  async getAllJobs(req: Request, res: Response) {
+    try {
+      const jobs = await this.jobService.getAllJobs();
+      res.json({
+        status: "success",
+        status_code: 200,
+        message: "Job listings retrieved successfully",
+        data: jobs,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Internal server error",
+        status_code: 500,
+      });
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { JobController } from "../controllers/jobController";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, validateData } from "../middleware";
+import { createJobSchema } from "../schemas/job";
 
 const jobRoute = Router();
 
@@ -8,9 +9,11 @@ const jobController = new JobController();
 
 jobRoute.post(
   "/jobs",
+  validateData({ body: createJobSchema }),
   authMiddleware,
   jobController.createJob.bind(jobController),
 );
+
 
 // Add a route to get a job by id
 jobRoute.get(
@@ -18,5 +21,7 @@ jobRoute.get(
   authMiddleware,
   jobController.getJobById.bind(jobController),
 )
+
+jobRoute.get("/jobs", jobController.getAllJobs.bind(jobController));
 
 export { jobRoute };

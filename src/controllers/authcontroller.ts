@@ -605,7 +605,11 @@ const googleAuthCall = asyncHandler(
  *         description: Some server error
  */
 
-const requestToken = async (req: Request, res: Response, next: NextFunction) => {
+const requestToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const { email } = req.body;
     const message = await authService.resendOtp(email);
@@ -622,4 +626,4 @@ export {
   verifyOtp,
   googleAuthCall,
   requestToken,
-}
+};
