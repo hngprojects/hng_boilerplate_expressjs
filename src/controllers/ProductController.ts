@@ -105,6 +105,89 @@ class ProductController {
       .status(201)
       .json({ message: "Product created successfully", data: newProduct });
   };
+
+  /**
+   * @openapi
+   * /api/v1/products/{product_id}:
+   *   delete:
+   *     summary: Delete a product by its ID
+   *     tags: [Product]
+   *     parameters:
+   *       - in: path
+   *         name: product_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the product to delete
+   *     responses:
+   *       200:
+   *         description: Product deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Product deleted successfully
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *       400:
+   *         description: Bad request due to invalid product ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: Bad Request
+   *                 message:
+   *                   type: string
+   *                   example: Invalid Product Id
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       404:
+   *         description: Product not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: Not Found
+   *                 message:
+   *                   type: string
+   *                   example: Product not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: An unexpected error occurred
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  public deleteProduct = async (req: Request, res: Response) => {
+    const { org_id, product_id } = req.params;
+    await this.productService.deleteProduct(org_id, product_id);
+    res.status(200).json({ message: "Product deleted successfully" });
+  };
 }
 
 export { ProductController };

@@ -17,4 +17,12 @@ productRouter.post(
   productController.createProduct,
 );
 
+productRouter.delete(
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
+  adminOnly,
+  validateUserToOrg,
+  productController.deleteProduct,
+);
+
 export { productRouter };

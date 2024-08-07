@@ -105,4 +105,21 @@ export class ProductService {
       },
     };
   }
+  public async deleteProduct(org_id: string, product_id: string) {
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        throw new Error("Product not found");
+      }
+
+      await this.productRepository.remove(entities.product);
+      return { message: "Product deleted successfully" };
+    } catch (error) {
+      throw new Error(`Failed to delete product: ${error.message}`);
+    }
+  }
 }
