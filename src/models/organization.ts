@@ -13,6 +13,7 @@ import { UserOrganization } from "./user-organisation";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { BillingPlan } from "./billing-plan";
 import { Payment } from "./payment";
+import { Product } from "./product";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -69,6 +70,9 @@ export class Organization extends ExtendedBaseEntity {
 
   @OneToMany(() => BillingPlan, (billingPlan) => billingPlan.organization)
   billingPlans: BillingPlan[];
+
+  @OneToMany(() => Product, (product) => product.org, { cascade: true })
+  products: Product[];
 
   @BeforeInsert()
   generateSlug() {

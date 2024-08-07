@@ -1,15 +1,15 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
-import { User } from "./user";
-import ExtendedBaseEntity from "./extended-base-entity";
 import {
-  IsString,
-  IsNumber,
-  IsPositive,
-  MinLength,
-  validateOrReject,
-  IsNotEmpty,
-} from "class-validator";
-
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from "typeorm";
+import { Organization } from "./organization";
+import ExtendedBaseEntity from "./extended-base-entity";
+import { ProductSize, StockStatus } from "../enums/product";
+import { User } from "./user";
 @Entity()
 export class Product extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -30,42 +30,32 @@ export class Product extends ExtendedBaseEntity {
   @Column()
   category: string;
 
+  @Column()
+  image: string;
+
+  @UpdateDateColumn()
+  updated_at: Date;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @Column({
+    type: "enum",
+    enum: ProductSize,
+    default: ProductSize.STANDARD,
+  })
+  size: ProductSize;
+
+  @Column({
+    type: "enum",
+    enum: StockStatus,
+    default: StockStatus.OUT_STOCK,
+  })
+  stock_status: StockStatus;
+
+  @ManyToOne(() => Organization, (org) => org.products)
+  org: Organization;
+
   @ManyToOne(() => User, (user) => user.products)
   user: User;
-}
-
-export class ProductDTO {
-  @IsString({ message: "Name must be a string" })
-  @IsNotEmpty({ message: "Name must not be empty" })
-  @MinLength(1, { message: "Name must not be empty" })
-  name: string;
-
-  @IsString({ message: "Description must be a string" })
-  @IsNotEmpty({ message: "Description must not be empty" })
-  @MinLength(1, { message: "Description must not be empty" })
-  description: string;
-
-  @IsNumber({}, { message: "Price must be a number" })
-  @IsPositive({ message: "Price must be positive" })
-  price: number;
-
-  @IsNumber({}, { message: "Price must be a number" })
-  @IsPositive({ message: "Price must be positive" })
-  quantity: number = 1;
-
-  @IsString({ message: "Category must be a string" })
-  @IsNotEmpty({ message: "Category must not be empty" })
-  @MinLength(1, { message: "Category must not be empty" })
-  category: string;
-
-  async validate() {
-    await validateOrReject(this, {
-      validationError: { target: false, value: true },
-      skipMissingProperties: false,
-    });
-  }
-
-  constructor(data: Partial<ProductDTO>) {
-    Object.assign(this, data);
-  }
 }
