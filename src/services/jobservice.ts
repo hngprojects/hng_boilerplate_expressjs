@@ -56,4 +56,15 @@ export class JobService {
       throw new Error("Failed to retrieve jobs");
     }
   }
+  
+  async getJobById(jobId: string): Promise<Job> {
+    try {
+      return await this.jobRepository.findOne({
+        where: { id: jobId },
+      });
+    } catch (error) {
+      console.error("Error retrieving jobs:", error.message);
+      throw new Error(error);
+    }
+  }
 }

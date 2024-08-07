@@ -16,4 +16,11 @@ jobRoute.post(
 
 jobRoute.get("/jobs", jobController.getAllJobs.bind(jobController));
 
+// Add a route to get a job by id
+jobRoute.get(
+  "/jobs/:jobId",
+  authMiddleware,
+  jobController.getJobById.bind(jobController),
+)
+
 export { jobRoute };
