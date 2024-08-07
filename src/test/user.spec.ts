@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { UserController } from "../controllers/UserController";
 import { UserService } from "../services";
 import { sendJsonResponse } from "../helpers/responsehelper";
-import { BadRequest, ResourceNotFound } from "../middleware";
+import { BadRequest, ResourceNotFound, Forbidden } from "../middleware";
 
 jest.mock("../services");
 jest.mock("../helpers/responsehelper", () => ({
@@ -37,6 +37,9 @@ describe("UserController", () => {
           timezones: "WAT",
         },
       } as any,
+      params: {
+        user_id: "550e8400-e29b-41d4-a716-446655440000",
+      },
     };
     res = {
       status: jest.fn().mockReturnThis(),
@@ -87,6 +90,8 @@ describe("UserController", () => {
         next,
       );
 
+      const { password, ...userData } = mockUser;
+
       expect(UserService.prototype.getUserById).toHaveBeenCalledWith(
         "550e8400-e29b-41d4-a716-446655440000",
       );
@@ -94,28 +99,12 @@ describe("UserController", () => {
         res,
         200,
         "User profile details retrieved successfully",
-        {
-          id: mockUser.id,
-          first_name: mockUser.first_name,
-          last_name: mockUser.last_name,
-          type: mockUser.user_type,
-          profile: {
-            profile_id: mockUser.profile.id,
-            username: mockUser.profile.username,
-            bio: mockUser.profile.bio,
-            job_title: mockUser.profile.jobTitle,
-            language: mockUser.profile.language,
-            pronouns: mockUser.profile.pronouns,
-            department: mockUser.profile.department,
-            social_links: mockUser.profile.social_links,
-            timezones: mockUser.profile.timezones,
-          },
-        },
+        userData,
       );
     });
 
-    it("should call next with BadRequest if user ID is invalid or missing", async () => {
-      req.user = { id: "" } as any;
+    it("should call next with BadRequest if user ID is invalid or missing in params", async () => {
+      req.params = { user_id: "" } as any;
 
       const userController = new UserController();
 
@@ -126,7 +115,7 @@ describe("UserController", () => {
       );
 
       expect(next).toHaveBeenCalledWith(
-        new BadRequest("Invalid or missing user ID!"),
+        new BadRequest("Invalid or missing user ID in params!"),
       );
     });
 
