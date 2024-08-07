@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/productController";
-import { authMiddleware } from "../middleware";
-
-console.log("ProductController:", ProductController);
-console.log("authMiddleware:", authMiddleware);
+import { authMiddleware, validateData } from "../middleware";
+import { productSchema } from "../schemas/product";
 
 const productRouter = Router();
 const productController = new ProductController();
@@ -13,6 +11,15 @@ productRouter.post(
   authMiddleware,
   productController.createProduct,
 );
+
+const updateRoute = "/organizations/:org_id/products/:product_id";
+productRouter
+  .route(updateRoute)
+  .patch(
+    authMiddleware,
+    validateData({ body: productSchema }),
+    productController.updateProduct,
+  );
 
 productRouter.get(
   "/organizations/:id/products/search",

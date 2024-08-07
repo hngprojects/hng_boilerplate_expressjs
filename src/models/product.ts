@@ -51,7 +51,6 @@ export class Product extends ExtendedBaseEntity {
   })
   stock_status: StockStatusType;
 
-  // To be implemented when organization is created.
   @ManyToOne(() => Organization, (org) => org.products)
   org: Organization;
 }

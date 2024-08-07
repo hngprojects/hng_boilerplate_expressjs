@@ -166,4 +166,24 @@ export class ProductService {
       },
     };
   }
+
+  public async updateProduct(
+    org_id: string,
+    product_id: string,
+    updateDetails: ProductSchema,
+  ) {
+    console.log(typeof org_id, typeof product_id);
+    const entities = await this.checkEntities({
+      organization: org_id,
+      product: product_id,
+    });
+
+    const updatedProduct = await this.productRepository.save({
+      ...entities.product,
+      ...updateDetails,
+    });
+    if (!updatedProduct) {
+      throw new ServerError("Internal server Error");
+    }
+  }
 }
