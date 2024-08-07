@@ -1,6 +1,7 @@
 import AppDataSource from "../data-source";
 import { FAQ } from "../models/faq";
 import { Repository } from "typeorm";
+import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
 
 type FAQType = {
   question: string;
@@ -21,6 +22,26 @@ class FAQService {
       return createdFAQ;
     } catch (error) {
       throw new Error("Failed to create FAQ");
+    }
+  }
+
+  public async updateFaq(payload: Partial<FAQ>, faqId: string) {
+    const faq = await this.faqRepository.findOne({ where: { id: faqId } });
+
+    if (!faq) {
+      throw new BadRequest(`Invalid request data`);
+    }
+
+    Object.assign(faq, payload);
+
+    try {
+      await this.faqRepository.update(faqId, payload);
+      const updatedFaq = await this.faqRepository.findOne({
+        where: { id: faqId },
+      });
+      return updatedFaq;
+    } catch (error) {
+      throw error;
     }
   }
 }
