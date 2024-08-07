@@ -4,6 +4,7 @@ services:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
+        - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     ports:
       - 8000:8000
     env_file:
@@ -14,17 +15,10 @@ services:
       backend_db:
         condition: service_healthy
     restart: always
-    command: sh -c "
-      while ! nc -z backend_db 5432; do
-        echo 'Waiting for database to be ready...'
-        sleep 2
-      done
-      echo 'Database is ready!'
-      yarn start"
-    
+    command: sh -c "sleep 10 && yarn start" 
 
   backend_db:
-    image: postgres:13
+    image: postgres
     container_name: backend_db
     restart: unless-stopped
     env_file:
@@ -39,7 +33,7 @@ services:
     ports:
       - 5432:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -69,6 +63,6 @@ services:
 networks:
   app:
     driver: bridge
-    
+
 volumes:
   postgres-data:
