@@ -10,6 +10,7 @@ import {
 import { User } from ".";
 import { v4 as uuidv4 } from "uuid";
 import { UserOrganization } from "./user-organization";
+import { Product } from "./product";
 import ExtendedBaseEntity from "./base-entity";
 
 @Entity()
@@ -58,6 +59,9 @@ export class Organization extends ExtendedBaseEntity {
     (userOrganization) => userOrganization.organization,
   )
   userOrganizations: UserOrganization[];
+
+  @OneToMany(() => Product, (product) => product.org, { cascade: true })
+  products: Product[];
 
   @BeforeInsert()
   generateSlug() {
