@@ -1,5 +1,4 @@
 import { User } from "../models";
-import { JobMode, JobType, SalaryRange } from "../models/job";
 import { NotificationSettings, Notifications } from "../models";
 
 export enum UserType {
@@ -196,4 +195,25 @@ export interface IUpdateJobs {
 
 export interface IDeleteJobs {
   id: string;
+}
+
+export enum SalaryRange {
+  below_30k = "below_30k",
+  k_30k_to_50k = "30k_to_50k",
+  k_50k_to_70k = "50k_to_70k",
+  k_70k_to_100k = "70k_to_100k",
+  k_100k_to_150k = "100k_to_150k",
+  above_150k = "above_150k",
+}
+
+export enum JobType {
+  full_time = "full-time",
+  part_time = "part-time",
+  internship = "internship",
+  contract = "contract",
+}
+
+export enum JobMode {
+  remote = "remote",
+  onsite = "onsite",
 }

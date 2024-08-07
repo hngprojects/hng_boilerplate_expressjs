@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
 import { User } from "../models";
 import AppDataSource from "../data-source";
-import { ICreateJobs } from "../types";
-import { Job, JobMode } from "../models/job";
+import { ICreateJobs, JobMode } from "../types";
+import { Job } from "../models/job";
 
 export class JobService {
   private userRepository: Repository<User>;
@@ -45,6 +45,15 @@ export class JobService {
       );
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  async getAllJobs(): Promise<Job[]> {
+    try {
+      return await this.jobRepository.find();
+    } catch (error) {
+      console.error("Error retrieving jobs:", error.message);
+      throw new Error("Failed to retrieve jobs");
     }
   }
 }
