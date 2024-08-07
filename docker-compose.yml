@@ -4,6 +4,7 @@ services:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
+        - DATABASE_URL=postgres://postgres:postgres@db:5432/postgres
     ports:
       - 8000:8000
     env_file:
@@ -22,9 +23,9 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
