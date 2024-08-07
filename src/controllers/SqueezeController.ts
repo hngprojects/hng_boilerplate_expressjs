@@ -68,10 +68,10 @@ class SqueezeController {
    *       409:
    *         description: Conflict
    */
-  static createSqueeze = asyncHandler(async (req: Request, res: Response) => {
+  public createSqueeze = asyncHandler(async (req: Request, res: Response) => {
     const squeezeData = req.body;
     const squeeze = await SqueezeService.createSqueeze(squeezeData);
-    sendJsonResponse(res, 201, "Squeeze created successfully", squeeze);
+    sendJsonResponse(res, 201, "Squeeze record created successfully.", squeeze);
   });
 
   /**
@@ -132,11 +132,16 @@ class SqueezeController {
    *       404:
    *         description: Resource not found
    */
-  static updateSqueeze = asyncHandler(async (req: Request, res: Response) => {
+  public updateSqueeze = asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.params;
     const updateData = req.body;
     const squeeze = await SqueezeService.updateSqueeze(email, updateData);
-    sendJsonResponse(res, 200, "Squeeze updated successfully", squeeze);
+    sendJsonResponse(
+      res,
+      200,
+      "Your record has been successfully updated. You cannot update it again.",
+      squeeze,
+    );
   });
 }
 

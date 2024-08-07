@@ -5,17 +5,18 @@ import { validateData } from "../middleware/validationMiddleware";
 
 const squeezeRoute = Router();
 const updateSchema = squeezeSchema.partial();
+const squeezecontroller = new SqueezeController();
 
 squeezeRoute.post(
   "/squeeze",
   validateData({ body: squeezeSchema }),
-  SqueezeController.createSqueeze,
+  squeezecontroller.createSqueeze,
 );
 
 squeezeRoute.put(
   "/squeeze/:email",
   validateData({ body: updateSchema }),
-  SqueezeController.updateSqueeze,
+  squeezecontroller.updateSqueeze,
 );
 
 export { squeezeRoute };
