@@ -71,12 +71,16 @@ export class User extends ExtendedBaseEntity {
   })
   user_type: UserType;
 
-  @OneToOne(() => Profile, (profile) => profile.id)
+  @OneToOne(() => Profile, (profile) => profile.user, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn({ name: "profile_id" })
   profile: Profile;
 
-  @OneToMany(() => Otp, (otp) => otp.user)
-  otps: Otp[];
+  @OneToOne(() => Otp, (otp) => otp.user)
+  @JoinColumn({ name: "otp_id" })
+  otp: Otp[];
 
   @OneToMany(
     () => UserOrganization,

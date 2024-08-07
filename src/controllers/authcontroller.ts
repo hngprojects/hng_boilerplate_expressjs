@@ -6,6 +6,7 @@ import asyncHandler from "../middleware/asyncHandler";
 import { User } from "../models";
 import { AuthService } from "../services";
 import { userLoginResponseDto } from "../utils/response-handler";
+import { generateToken, verifyGoogleToken } from "../utils";
 
 const authService = new AuthService();
 
@@ -441,4 +442,188 @@ const authenticateUserMagicLink = asyncHandler(
   },
 );
 
-export { authenticateUserMagicLink, createMagicLink, login, signUp, verifyOtp };
+/**
+ * @swagger
+ * /google-auth:
+ *   post:
+ *     tags:
+ *       - Auth
+ *     summary: Google OAuth Authentication
+ *     description: Authenticates a user via Google OAuth and returns an access token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id_token:
+ *                 type: string
+ *                 description: Google ID token obtained after Google OAuth sign-in
+ *             required:
+ *               - id_token
+ *     responses:
+ *       '200':
+ *         description: User authenticated successfully (existing user)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: User authenticated successfully
+ *                 access_token:
+ *                   type: string
+ *                   description: JWT access token
+ *                 user:
+ *                   type: object
+ *                   description: Authenticated user information
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: 123
+ *                     email:
+ *                       type: string
+ *                       example: test@example.com
+ *       '201':
+ *         description: User authenticated successfully (new user)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: User authenticated successfully
+ *                 access_token:
+ *                   type: string
+ *                   description: JWT access token
+ *                 user:
+ *                   type: object
+ *                   description: Authenticated user information
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: 123
+ *                     email:
+ *                       type: string
+ *                       example: test@example.com
+ *       '400':
+ *         description: Bad Request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid request parameters
+ *       '401':
+ *         description: Unauthorized
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: Invalid Google ID token
+ *       '500':
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: error
+ *                 message:
+ *                   type: string
+ *                   example: An unexpected error occurred
+ */
+const googleAuthCall = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id_token } = req.body;
+    const userInfo = await verifyGoogleToken(id_token);
+    const user = await authService.googleSignin(userInfo);
+    const access_token = await generateToken({ user_id: user.userInfo.id });
+    return sendJsonResponse(
+      res,
+      user.is_new_user ? 201 : 200,
+      "User authenticated successfully",
+      { user: user.userInfo },
+      access_token,
+    );
+  },
+);
+
+/**
+ * @swagger
+ * /api/v1/auth/request/token:
+ *   post:
+ *     summary: Request a new OTP
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: john.doe@example.com
+ *     responses:
+ *       200:
+ *         description: OTP resent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Bad request, invalid email
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Some server error
+ */
+
+const requestToken = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.body;
+    const message = await authService.resendOtp(email);
+    sendJsonResponse(res, 200, message.toString(), {});
+  } catch (error) {
+    next(error);
+  }
+};
+export {
+  authenticateUserMagicLink,
+  createMagicLink,
+  login,
+  signUp,
+  verifyOtp,
+  googleAuthCall,
+  requestToken,
+};

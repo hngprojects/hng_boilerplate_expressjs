@@ -46,6 +46,19 @@ const createMagicLinkSchema = object({ ...createMagicLinkPayload });
 type validateMagicLinkInput = TypeOf<typeof validateMagicLinkSchema>;
 type CreateMagicLinkInput = TypeOf<typeof createMagicLinkSchema>;
 
+const GoogleUserPayloadSchema = z.object({
+  access_token: z.string().min(1, "Access token is required."),
+  expires_in: z.number().optional(),
+  refresh_token: z.string().optional(),
+  scope: z.string().min(1, "Scope is required."),
+  token_type: z.string().optional(),
+  id_token: z.string().min(1, "ID token is required."),
+  expires_at: z.number().optional(),
+  provider: z.string().optional(),
+  type: z.string().optional(),
+  providerAccountId: z.string().optional(),
+});
+
 export {
   CreateMagicLinkInput,
   createMagicLinkPayload,
@@ -53,4 +66,5 @@ export {
   magiclinkSchema,
   validateMagicLinkInput,
   validateMagicLinkSchema,
+  GoogleUserPayloadSchema,
 };

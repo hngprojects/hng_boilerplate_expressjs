@@ -10,7 +10,14 @@ import {
   ResourceNotFound,
 } from "../middleware";
 import { Otp, Profile, User, NotificationSettings } from "../models";
-import { IAuthService, IUserLogin, IUserSignUp, UserType } from "../types";
+import {
+  GoogleVerificationPayloadInterface,
+  IAuthService,
+  IUserLogin,
+  IUserSignUp,
+  UserType,
+} from "../types";
+
 import {
   comparePassword,
   generateToken,
@@ -160,7 +167,7 @@ export class AuthService implements IAuthService {
     try {
       const user = await this.usersRepository.findOne({
         where: { email },
-        relations: { profile: true },
+        relations: ["profile"],
       });
 
       if (!user) {
@@ -271,6 +278,96 @@ export class AuthService implements IAuthService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async googleSignin(
+    payload: Partial<GoogleVerificationPayloadInterface>,
+  ): Promise<{
+    userInfo: Partial<User>;
+    is_new_user: boolean;
+  }> {
+    try {
+      const {
+        sub: google_id,
+        email,
+        given_name,
+        family_name,
+        picture,
+        email_verified,
+      } = payload;
+
+      let authUser: User;
+      let is_new_user = false;
+
+      let user = await AppDataSource.getRepository(User).findOne({
+        where: { email },
+        relations: ["profile"],
+      });
+
+      if (!user) {
+        is_new_user = true;
+        authUser = new User();
+        authUser.google_id = google_id;
+        authUser.email = email;
+        authUser.password = "";
+        authUser.first_name = given_name;
+        authUser.last_name = family_name;
+        authUser.is_verified = email_verified;
+
+        const profile = await this.profilesRepository.save({
+          email,
+          username: "",
+          profile_pic_url: picture,
+        });
+        authUser.profile = profile;
+        await this.usersRepository.save(authUser);
+      } else {
+        authUser = user;
+      }
+      const userInfo = {
+        id: authUser.id,
+        email: email,
+        first_name: authUser.first_name,
+        last_name: authUser.last_name,
+        fullname: authUser.first_name + " " + authUser.last_name,
+        role: "",
+      };
+      return { userInfo, is_new_user };
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async resendOtp(email: string): Promise<{
+    message: string;
+    otp: Otp;
+  }> {
+    try {
+      const user = await this.usersRepository.findOne({ where: { email } });
+      if (!user) {
+        throw new ResourceNotFound("User not found");
+      }
+      const existingOtp = await this.otpService.findOtp(user.id);
+      if (existingOtp) {
+        await this.otpService.deleteOtp(user.id);
+      }
+      const otp = await this.otpService.createOtp(user.id);
+      await Sendmail({
+        from: `Boilerplate <support@boilerplate.com>`,
+        to: email,
+        subject: "OTP RESEND",
+        html: compilerOtp(parseInt(otp.token), user.first_name),
+      });
+
+      return {
+        otp,
+        message: "OTP resent successfully",
+      };
+    } catch (error) {
+      if (error instanceof HttpError) {
+        throw error;
+      }
+      throw new HttpError(error.status || 500, error.message || error);
     }
   }
 }
