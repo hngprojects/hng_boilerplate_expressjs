@@ -10,7 +10,7 @@ import { AuthService } from "../services/index.ts";
 import { authMiddleware } from "../middleware/auth.ts";
 import { OrgService } from "../services/org.services.ts";
 import { OrgController } from "../controllers/OrgController.ts";
-import { validateOrgId } from "../middleware/organization.validation.ts";
+import { validateOrgId } from "../middleware/organizationValidation.ts";
 import { InvalidInput } from "../middleware/error.ts";
 import { authMiddleware } from "../middleware";
 import { OrgService } from "../services/organisation.service";

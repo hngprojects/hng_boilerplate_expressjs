@@ -12,6 +12,7 @@ import renderTemplate from "../views/email/renderTemplate";
 import { Conflict, ResourceNotFound } from "../middleware/error";
 import config from "../config/index";
 const frontendBaseUrl = config.BASE_URL;
+
 export class OrgService implements IOrgService {
   public async createOrganisation(
     payload: ICreateOrganisation,
@@ -282,10 +283,6 @@ export class OrgService implements IOrgService {
     userOrganization.role = UserRole.USER;
 
     await userOrganizationRepository.save(userOrganization);
-
-    // if (invitation) {
-    //   await invitationRepository.remove(invitation);
-    // }
   }
 
   public async searchOrganizationMembers(criteria: {

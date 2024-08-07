@@ -10,7 +10,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations:
+   * /api/v1/organizations:
    *   post:
    *     summary: Create a new organisation
    *     description: This endpoint allows a user to create a new organisation
@@ -44,6 +44,9 @@ export class OrgController {
    *               country:
    *                 type: string
    *                 example: Nigeria
+   *               address:
+   *                 type: string
+   *                 example: 121 ikeja
    *               state:
    *                 type: string
    *                 example: Oyo
@@ -54,6 +57,7 @@ export class OrgController {
    *               - industry
    *               - type
    *               - country
+   *               - address
    *               - state
    *     responses:
    *       '201':
@@ -93,6 +97,9 @@ export class OrgController {
    *                     country:
    *                       type: string
    *                       example: Nigeria
+   *                     address:
+   *                       type: string
+   *                       example: 121 ikeja
    *                     state:
    *                       type: string
    *                       example: Oyo
@@ -149,8 +156,6 @@ export class OrgController {
    *       type: http
    *       scheme: bearer
    *       bearerFormat: JWT
-   *
-   *
    */
 
   async createOrganisation(req: Request, res: Response, next: NextFunction) {
@@ -180,7 +185,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/users/{userId}/organisations:
+   * /api/v1/users/{userId}/organizations:
    *   get:
    *     summary: Get user organizations
    *     description: Retrieve all organizations associated with a specific user
@@ -295,7 +300,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations/{org_id}:
+   * /api/v1/organizations/{org_id}:
    *   get:
    *     summary: Get a single organization
    *     description: Retrieve details of a specific organization by its ID
@@ -401,7 +406,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations/{org_id}/user/{user_id}:
+   * /api/v1/organizations/{org_id}/user/{user_id}:
    *   delete:
    *     summary: Remove a user from an organization
    *     description: Delete a user from a specific organization by user ID and organization ID
