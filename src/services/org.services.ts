@@ -35,7 +35,6 @@ export class OrgService implements IOrgService {
 
       return { newOrganisation };
     } catch (error) {
-      log.error(error);
       throw new BadRequest("Client error");
     }
   }
@@ -84,7 +83,6 @@ export class OrgService implements IOrgService {
   public async getOrganizationsByUserId(
     user_id: string,
   ): Promise<Organization[]> {
-    log.info(`Fetching organizations for user_id: ${user_id}`);
     try {
       const userOrganizationRepository =
         AppDataSource.getRepository(UserOrganization);
@@ -96,10 +94,8 @@ export class OrgService implements IOrgService {
 
       const organization = userOrganizations.map((org) => org.organization);
 
-      log.info(`Organizations found: ${userOrganizations.length}`);
       return organization;
     } catch (error) {
-      log.error(`Error fetching organizations for user_id: ${user_id}`, error);
       throw new Error("Failed to fetch organizations");
     }
   }
@@ -116,8 +112,6 @@ export class OrgService implements IOrgService {
         where: { userId: user_id, organizationId: org_id },
         relations: ["organization"],
       });
-
-      log.error(userOrganization);
 
       return userOrganization?.organization || null;
     } catch (error) {
