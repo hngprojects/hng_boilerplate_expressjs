@@ -2,7 +2,7 @@ import { Router } from "express";
 import { ProductController } from "../controllers/ProductController";
 import { authMiddleware } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
-import { validateUserToOrg } from "../middleware/organization.validation";
+import { validateUserToOrg } from "../middleware/organizationValidation";
 import { adminOnly } from "../middleware";
 
 const productRouter = Router();
