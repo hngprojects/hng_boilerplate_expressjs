@@ -1,13 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { SqueezeController } from "../controllers/SqueezeController";
 import { SqueezeService } from "../services";
-import { Conflict, ResourceNotFound, BadRequest } from "../middleware";
+import { sendJsonResponse } from "../helpers/responsehelper";
 
-jest.mock("../services", () => ({
-  SqueezeService: {
-    createSqueeze: jest.fn(),
-    updateSqueeze: jest.fn(),
-  },
+jest.mock("../services");
+jest.mock("../helpers/responsehelper", () => ({
+  sendJsonResponse: jest.fn(),
 }));
 
 describe("SqueezeController", () => {
@@ -41,51 +39,53 @@ describe("SqueezeController", () => {
 
       req.body = squeezeData;
 
-      await SqueezeController.createSqueeze(
+      const squeezeController = new SqueezeController();
+
+      await squeezeController.createSqueeze(
         req as Request,
         res as Response,
         next as NextFunction,
       );
 
       expect(SqueezeService.createSqueeze).toHaveBeenCalledWith(squeezeData);
-      expect(res.status).toHaveBeenCalledWith(201);
-      expect(res.json).toHaveBeenCalledWith({
-        status: 201,
-        status_code: 201,
-        message: "Squeeze created successfully",
-        data: squeeze,
-      });
+      expect(sendJsonResponse).toHaveBeenCalledWith(
+        res,
+        201,
+        "Squeeze record created successfully.",
+        squeeze,
+      );
     });
+  });
 
-    describe("updateSqueeze", () => {
-      it("should successfully update a squeeze", async () => {
-        const email = "test@example.com";
-        const updateData = { phone: "1234567890" };
-        const squeeze = { email, ...updateData };
+  describe("updateSqueeze", () => {
+    it("should successfully update a squeeze", async () => {
+      const email = "test@example.com";
+      const updateData = { phone: "1234567890" };
+      const squeeze = { email, ...updateData };
 
-        (SqueezeService.updateSqueeze as jest.Mock).mockResolvedValue(squeeze);
+      (SqueezeService.updateSqueeze as jest.Mock).mockResolvedValue(squeeze);
 
-        req.params = { email };
-        req.body = updateData;
+      req.params = { email };
+      req.body = updateData;
 
-        await SqueezeController.updateSqueeze(
-          req as Request,
-          res as Response,
-          next as NextFunction,
-        );
+      const squeezeController = new SqueezeController();
 
-        expect(SqueezeService.updateSqueeze).toHaveBeenCalledWith(
-          email,
-          updateData,
-        );
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith({
-          status: 200,
-          status_code: 200,
-          message: "Squeeze updated successfully",
-          data: squeeze,
-        });
-      });
+      await squeezeController.updateSqueeze(
+        req as Request,
+        res as Response,
+        next as NextFunction,
+      );
+
+      expect(SqueezeService.updateSqueeze).toHaveBeenCalledWith(
+        email,
+        updateData,
+      );
+      expect(sendJsonResponse).toHaveBeenCalledWith(
+        res,
+        200,
+        "Your record has been successfully updated. You cannot update it again.",
+        squeeze,
+      );
     });
   });
 });

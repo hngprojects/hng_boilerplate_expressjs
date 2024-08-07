@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { validate as isUUID } from "uuid";
 import { sendJsonResponse } from "../helpers";
-import { BadRequest, ResourceNotFound } from "../middleware";
+import { BadRequest, ResourceNotFound, Forbidden } from "../middleware";
 import asyncHandler from "../middleware/asyncHandler";
 import { UserService } from "../services";
 
@@ -139,8 +139,19 @@ class UserController {
   public getUserProfile = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = req.user;
+      const { user_id } = req.params;
       if (!id || !isUUID(id)) {
-        return next(new BadRequest("Invalid or missing user ID!"));
+        return next(
+          new BadRequest("Invalid or missing user ID! in request header"),
+        );
+      }
+
+      if (!user_id || !isUUID(user_id)) {
+        return next(new BadRequest("Invalid or missing user ID in params!"));
+      }
+
+      if (id !== user_id) {
+        return next(new Forbidden("Not authorized to get user information"));
       }
 
       const user = await userservice.getUserById(id);
@@ -148,28 +159,14 @@ class UserController {
         return next(new ResourceNotFound("User not found!"));
       }
 
+      const { password, ...userData } = user;
+      console.log(userData);
+
       sendJsonResponse(
         res,
         200,
         "User profile details retrieved successfully",
-        {
-          id: user?.id,
-          first_name: user?.first_name,
-          last_name: user?.last_name,
-          type: user?.user_type,
-          profile: {
-            profile_id: user?.profile?.id,
-            username: user?.profile?.username,
-            bio: user.profile?.bio,
-            job_title: user?.profile?.jobTitle,
-            language: user?.profile?.language,
-            pronouns: user?.profile?.pronouns,
-            department: user?.profile?.department,
-            social_links: user?.profile?.social_links,
-            profile_pic_url: user?.profile?.profile_pic_url,
-            timezones: user?.profile?.timezones,
-          },
-        },
+        userData,
       );
     },
   );
