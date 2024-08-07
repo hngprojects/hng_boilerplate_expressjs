@@ -1,43 +1,37 @@
-import express from "express";
-import ProductController from "../controllers/ProductController";
+import { Router } from "express";
+import { ProductController } from "../controllers/ProductController";
 import { authMiddleware } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
 import { validateUserToOrg } from "../middleware/organization.validation";
+import { adminOnly } from "../middleware";
 
-const productRouter = express.Router();
+console.log("ProductController:", ProductController);
+console.log("authMiddleware:", authMiddleware);
+
+const productRouter = Router();
 const productController = new ProductController();
-// modified because the base route changed to "/api/v1"
+
+productRouter.post(
+  "/organizations/:id/products",
+  validateProductDetails,
+  authMiddleware,
+  adminOnly,
+  validateUserToOrg,
+  productController.createProduct,
+);
+
 productRouter.get(
-  "/products/:org_id",
+  "/organizations/:id/products/search",
   authMiddleware,
   validateUserToOrg,
-  productController.getProductPagination.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.put(
-  "/products/:product_id",
-  authMiddleware,
-  productController.updateProductById.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.delete(
-  "/products/:product_id",
-  authMiddleware,
-  productController.deleteProduct.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.get(
-  "/products/:product_id",
-  authMiddleware,
-  productController.fetchProductById.bind(productController),
+  productController.getProduct,
 );
 
-productRouter
-  .route("/products/:org_id")
-  .post(
-    validateProductDetails,
-    authMiddleware,
-    validateUserToOrg,
-    productController.createProduct.bind(productController),
-  );
+productRouter.delete(
+  "/organizations/:org_id/products/product_id",
+  adminOnly,
+  validateUserToOrg,
+  authMiddleware,
+);
+
 export { productRouter };
