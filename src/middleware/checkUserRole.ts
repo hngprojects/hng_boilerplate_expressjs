@@ -42,8 +42,12 @@ export const checkPermissions = (roles: UserRole[]) => {
 export function adminOnly(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
 
-  if (!user || user.role !== UserRole.ADMIN) {
-    return next(new Unauthorized("Access denied. Admins only."));
+  if (!["super_admin", "admin"].includes(user.role.toLowerCase())) {
+    return res.status(403).json({
+      status_code: 403,
+      message: "Access denied: user not an admin",
+    });
   }
+
   next();
 }

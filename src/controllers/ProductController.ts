@@ -243,12 +243,18 @@ class ProductController {
   };
 
   /**
-   * @openapi
-   * /api/v1/products/{product_id}:
+   * @swagger
+   * /api/v1/organizations/{org_id}/products/{product_id}:
    *   delete:
    *     summary: Delete a product by its ID
    *     tags: [Product]
    *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
    *       - in: path
    *         name: product_id
    *         required: true
