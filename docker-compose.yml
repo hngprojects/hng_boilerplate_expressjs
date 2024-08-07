@@ -18,7 +18,7 @@ services:
     command: sh -c "sleep 10 && yarn start" 
 
   backend_db:
-    image: postgres:latest
+    image: postgres:13
     container_name: backend_db
     restart: unless-stopped
     env_file:
