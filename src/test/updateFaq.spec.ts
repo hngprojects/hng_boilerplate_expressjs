@@ -21,7 +21,6 @@ describe("FaqService", () => {
       if (model === FAQ) {
         return faqRepository;
       }
-      throw new Error("Unknown model");
     });
 
     faqService = new FaqService();
