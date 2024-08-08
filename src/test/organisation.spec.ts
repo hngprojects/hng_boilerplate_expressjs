@@ -5,8 +5,6 @@ import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
 import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
-//import { AuthService } from "../services/index.ts";
-//import { authMiddleware } from "../middleware/auth.ts";
 import { OrgController } from "../controllers";
 import { validateOrgId } from "../middleware/organizationValidation.ts";
 import {
@@ -50,39 +48,6 @@ describe("Organization Controller and Middleware", () => {
     AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
   });
 
- /* it("check if user is authenticated", async () => {
-    const req = {
-      headers: {
-        authorization: "Bearer validToken",
-      },
-      user: undefined,
-    } as unknown as Request;
-
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    } as unknown as Response;
-
-    const next = jest.fn();
-
-    jwt.verify = jest.fn().mockImplementation((token, secret, callback) => {
-      callback(null, { userId: "user123" });
-    });
-
-    User.findOne = jest.fn().mockResolvedValue({
-      id: "donalTrump123",
-      email: "americaPresident@newyork.com",
-    });
-
-    await authMiddleware(req, res, next);
-
-    expect(jwt.verify).toHaveBeenCalled();
-    expect(User.findOne).toHaveBeenCalled();
-    expect(req.user).toBeDefined();
-    expect(req.user.id).toBe("donalTrump123");
-    expect(next).toHaveBeenCalled();
-  });
-*/
   it("should get a single user org", async () => {
     const orgId = "1";
     const orgRes = {
