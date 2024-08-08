@@ -8,6 +8,7 @@ services:
       - .env
     environment:
       NODE_ENV: development
+      DB_HOST: backend_db
       DATABASE_URL: postgres:// ${DB_USER}:${DB_PASSWORD}@backend_db:5432/${DB_NAME}
     networks:
       - app
