@@ -83,6 +83,81 @@ class SqueezeController {
       });
     }
   };
+  /**
+   * @openapi
+   * /api/v1/squeeze/{id}:
+   *   get:
+   *     tags:
+   *       - Squeeze
+   *     summary: Get a squeeze record by ID
+   *     description: Retrieve a single squeeze entry from the database by its ID.
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the squeeze record to retrieve
+   *     responses:
+   *       200:
+   *         description: Squeeze record found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 id:
+   *                   type: string
+   *                 email:
+   *                   type: string
+   *                 first_name:
+   *                   type: string
+   *                 last_name:
+   *                   type: string
+   *                 phone:
+   *                   type: string
+   *                 location:
+   *                   type: string
+   *                 job_title:
+   *                   type: string
+   *                 company:
+   *                   type: string
+   *                 interests:
+   *                   type: array
+   *                   items:
+   *                     type: string
+   *                 referral_source:
+   *                   type: string
+   *       404:
+   *         description: Squeeze record not found
+   *       500:
+   *         description: Server error
+   */
+
+  public getSqueezeById = async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const squeeze = await this.squeezeService.getSqueezeById(id);
+
+      if (!squeeze) {
+        return res.status(404).json({
+          status: "error",
+          message: "Squeeze record not found.",
+        });
+      }
+
+      res.status(200).json({
+        status: "success",
+        data: squeeze,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred while retrieving the squeeze record.",
+        error: error.message,
+      });
+    }
+  };
 }
 
 export { SqueezeController };

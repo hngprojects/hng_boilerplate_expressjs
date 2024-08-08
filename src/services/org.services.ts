@@ -3,11 +3,16 @@ import { v4 as uuidv4 } from "uuid";
 import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
-import { BadRequest, ResourceNotFound, Conflict } from "../middleware";
+import {
+  BadRequest,
+  ResourceNotFound,
+  HttpError,
+  Conflict,
+} from "../middleware";
 import { Organization, Invitation, UserOrganization } from "../models";
 import { OrganizationRole } from "../models/organization-role.entity";
 import { User } from "../models/user";
-import { ICreateOrganisation, IOrgService } from "../types";
+import { ICreateOrganisation, ICreateOrgRole, IOrgService } from "../types";
 import log from "../utils/logger";
 
 import { addEmailToQueue } from "../utils/queue";
@@ -374,6 +379,51 @@ export class OrgService implements IOrgService {
     return [];
   }
 
+  public async createOrganizationRole(
+    payload: ICreateOrgRole,
+    organizationid: string,
+  ) {
+    try {
+      const organization = await this.organizationRepository.findOne({
+        where: { id: organizationid },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      const existingRole = await this.organizationRoleRepository.findOne({
+        where: { name: payload.name, organization: { id: organizationid } },
+      });
+
+      if (existingRole) {
+        throw new Conflict("Role already exists");
+      }
+
+      const role = new OrganizationRole();
+      Object.assign(role, {
+        name: payload.name,
+        description: payload.description,
+        organization: organization,
+      });
+      const newRole = await this.organizationRoleRepository.save(role);
+
+      const defaultPermissions = await this.permissionRepository.find();
+
+      const rolePermissions = defaultPermissions.map((defaultPerm) => {
+        const permission = new Permissions();
+        permission.category = defaultPerm.category;
+        permission.permission_list = defaultPerm.permission_list;
+        permission.role = newRole;
+        return permission;
+      });
+
+      await this.permissionRepository.save(rolePermissions);
+      return newRole;
+    } catch (err) {
+      throw err;
+    }
+  }
   public async fetchSingleRole(
     organizationId: string,
     roleId: string,

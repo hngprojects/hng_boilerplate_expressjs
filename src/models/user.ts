@@ -14,7 +14,15 @@ import {
   Unique,
   UpdateDateColumn,
 } from "typeorm";
-import { Blog, Comment, Organization, Product, Profile, Sms } from ".";
+import {
+  Blog,
+  Comment,
+  Organization,
+  Product,
+  Profile,
+  Sms,
+  Notification,
+} from ".";
 import { UserRole } from "../enums/userRoles";
 import { getIsInvalidMessage } from "../utils";
 import ExtendedBaseEntity from "./extended-base-entity";
@@ -106,14 +114,33 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: true, type: "bigint" })
   passwordResetExpires: number;
 
+  @Column("jsonb", { nullable: true })
+  timezone: {
+    timezone: string;
+    gmtOffset: string;
+    description: string;
+  };
+
   @OneToMany(
     () => OrganizationMember,
     (organizationMember) => organizationMember.organization_id,
   )
   organizationMembers: OrganizationMember[];
 
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
+
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
+
+  @Column({ nullable: true })
+  secret: string;
+
+  @Column({ default: false })
+  is_2fa_enabled: boolean;
+
+  @Column("simple-array", { nullable: true })
+  backup_codes: string[];
 
   createPasswordResetToken(): string {
     const resetToken = crypto.randomBytes(32).toString("hex");

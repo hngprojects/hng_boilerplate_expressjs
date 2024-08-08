@@ -3,6 +3,7 @@ import { FAQService } from "../services";
 import { UserRole } from "../enums/userRoles";
 import isSuperAdmin from "../utils/isSuperAdmin";
 import { Category } from "../models";
+import { HttpError } from "../middleware";
 
 const faqService = new FAQService();
 
@@ -389,6 +390,123 @@ class FAQController {
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  /**
+   * @swagger
+   * /faqs/{faqId}:
+   *   delete:
+   *     summary: Delete an FAQ
+   *     description: Deletes an existing FAQ entry by its ID. This endpoint requires the user to have super admin permissions.
+   *     tags: [FAQ]
+   *     parameters:
+   *       - in: path
+   *         name: faqId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the FAQ entry to delete
+   *     responses:
+   *       '200':
+   *         description: The FAQ has been successfully deleted.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: true
+   *                 message:
+   *                   type: string
+   *                   example: The FAQ has been successfully deleted.
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *       '400':
+   *         description: Invalid request data.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Invalid request data
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       '403':
+   *         description: Unauthorized access.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Unauthorized access
+   *                 status_code:
+   *                   type: integer
+   *                   example: 403
+   *       '404':
+   *         description: FAQ entry not found.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: FAQ entry with ID {faqId} not found.
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       '500':
+   *         description: Internal server error.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: Deletion failed
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+  public async deleteFaq(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { faqId } = req.params;
+      if (!faqId) {
+        throw new HttpError(422, "Validation failed: Valid ID required");
+      }
+      const deletionSuccess = await faqService.deleteFaq(faqId);
+
+      if (!deletionSuccess) {
+        throw new HttpError(404, "FAQ not found or could not be deleted");
+      }
+      res.status(200).json({
+        success: true,
+        message: "The FAQ has been successfully deleted.",
+        status_code: 200,
+      });
+    } catch (err) {
+      next(err);
     }
   }
 }

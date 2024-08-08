@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { ProductService } from "../services/product.services";
 import { Repository } from "typeorm";
 import { Product } from "../models/product";
@@ -314,7 +315,67 @@ describe("ProductService", () => {
       expect(productRepository.remove).not.toHaveBeenCalled();
     });
   });
+  describe("get single Product", () => {
+    it("should get the product from the organization", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+      // Mock data
+      const mockProduct = { id: product_id, name: "Test Product" } as Product;
 
+      jest
+        .spyOn(productService, "checkEntities")
+        .mockResolvedValue({ product: mockProduct });
+
+      const product = await productService.getProduct(org_id, product_id);
+
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(product).toEqual(mockProduct);
+    });
+    it("should throw an error if the product is not found", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+
+      // Mock the checkEntities method to return undefined for product
+      productService["checkEntities"] = jest
+        .fn()
+        .mockResolvedValue({ product: undefined });
+
+      await expect(
+        productService.deleteProduct(org_id, product_id),
+      ).rejects.toThrow("Product not found");
+
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.findOne).not.toHaveBeenCalled();
+    });
+
+    it("should throw an error if checkEntities fails", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+
+      // Mock the checkEntities method to throw an error
+      productService["checkEntities"] = jest
+        .fn()
+        .mockRejectedValue(new Error("Check entities failed"));
+
+      await expect(
+        productService.getProduct(org_id, product_id),
+      ).rejects.toThrow("Check entities failed");
+
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.findOne).not.toHaveBeenCalled();
+    });
+  });
   describe("updateProduct", () => {
     it("should successfully update a product", async () => {
       const org_id = "org123";
@@ -364,5 +425,5 @@ describe("ProductService", () => {
         ...updateDetails,
       });
     });
-  });
+  })
 });
