@@ -115,3 +115,11 @@ export interface IUpdateJobs {
 export interface IDeleteJobs {
   id: string;
 }
+
+export interface INewsLetterSubscriptionService {
+  subscribeUser(email: string): Promise<any>;
+}
+
+export interface INewsLetterSubscription {
+  email: string;
+}

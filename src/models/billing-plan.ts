@@ -7,31 +7,35 @@ import {
 } from "typeorm";
 import { Organization } from "./organization";
 import { Payment } from "./payment";
+import { IsString, IsInt, Min, Max } from "class-validator";
 
 @Entity()
 export class BillingPlan {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column("uuid")
+  @Column("uuid", { nullable: true })
   organizationId: string;
 
-  @Column()
+  @Column({ type: "text", nullable: false })
+  @IsString({ message: "Name must be a string" })
   name: string;
 
-  @Column("decimal", { precision: 10, scale: 2 })
+  @Column({ type: "int", nullable: false, default: 0 })
+  @IsInt({ message: "Price must be an integer" })
+  @Min(0, { message: "Price must be a positive number" })
   price: number;
 
-  @Column()
+  @Column({ nullable: true })
   currency: string;
 
-  @Column()
+  @Column({ nullable: true })
   duration: string;
 
   @Column({ nullable: true })
   description: string;
 
-  @Column("simple-array")
+  @Column("simple-array", { nullable: true })
   features: string[];
 
   @ManyToOne(() => Organization, (organization) => organization.billingPlans, {
@@ -39,6 +43,8 @@ export class BillingPlan {
   })
   organization: Organization;
 
-  @OneToMany(() => Payment, (payment) => payment.billingPlan)
+  @OneToMany(() => Payment, (payment) => payment.billingPlan, {
+    nullable: true,
+  })
   payments: Payment[];
 }

@@ -36,4 +36,26 @@ export const validateCreateJob = (data: any) => {
   return createJobSchema.safeParse(data);
 };
 
+// export const BillingPlanSchema = z.object({
+//   id: z.string().uuid(),
+//   name: z.string().min(1),
+//   price: z.number().int().nonnegative(),
+// });
+
+// export type BillingPlanSchemaType = z.infer<typeof BillingPlanSchema>;
+
+// export const CreateBillingPlanSchema = z.object({
+//   name: z.string().min(1),
+//   price: z.number().int().nonnegative(),
+// });
+
+// export type CreateBillingPlanDtoType = z.infer<typeof CreateBillingPlanSchema>;
+
+export const billingPlanSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  price: z.number().positive("Price must be a positive number"),
+});
+
+export type BillingPlanInput = z.infer<typeof billingPlanSchema>;
+
 export { createBlogSchema, emailSchema };
