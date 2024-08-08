@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ResourceNotFound, ServerError } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -1080,6 +1081,11 @@ export class OrgController {
         organizationId,
         roleId,
       );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
     } catch (error) {
       next(error);
     }
@@ -1094,8 +1100,16 @@ export class OrgController {
       const organizationId = req.params.org_id;
       const response =
         await this.orgService.fetchAllRolesInOrganization(organizationId);
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
     } catch (error) {
-      next(error);
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(new ServerError("Error fetching all roles in organization"));
     }
   }
 }
