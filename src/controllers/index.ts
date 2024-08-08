@@ -18,3 +18,4 @@ export * from "./FaqController";
 export * from "./OrgController";
 export * from "./runTestController";
 export * from "./SqueezeController";
+export * from "./billingplanController";

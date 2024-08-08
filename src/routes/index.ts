@@ -19,3 +19,4 @@ export * from "./faq";
 export * from "./run-test";
 export * from "./squeeze";
 export * from "./newsLetterSubscription";
+export * from "./billingplan";

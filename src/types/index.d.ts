@@ -92,3 +92,7 @@ export interface INewsLetterSubscriptionService {
 export interface INewsLetterSubscription {
   email: string;
 }
+
+export interface IBillingPlanService {
+  createBillingPlan(planData: Partial<BillingPlan>): Promise<BillingPlan[]>;
+}
