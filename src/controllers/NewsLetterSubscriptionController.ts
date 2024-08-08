@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express";
-import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
+import { NextFunction, Request, Response } from "express";
 import { BadRequest } from "../middleware";
+import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
 
 const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
 
@@ -91,4 +91,28 @@ const subscribeToNewsletter = async (
   }
 };
 
-export { subscribeToNewsletter };
+const getAllNewsletter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { page, limit } = req.query;
+    const { data, meta } =
+      await newsLetterSubscriptionService.fetchAllNewsletter({
+        page: Number(page),
+        limit: Number(limit),
+      });
+
+    return res.status(200).json({
+      status: "",
+      message: "",
+      data: data,
+      meta,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { getAllNewsletter, subscribeToNewsletter };
