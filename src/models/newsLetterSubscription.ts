@@ -15,4 +15,7 @@ export class NewsLetterSubscriber {
 
   @Column({ default: true })
   isActive: boolean;
+  
+  @Column()
+  isSubscribe: boolean;
 }

@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { subscribeToNewsletter, restoreNewsletterSubscription, getAllNewsletter } from "../controllers/NewsLetterSubscriptionController";
-import { authMiddleware, adminOnly, checkPermissions } from "../middleware";
+import {
+  getAllNewsletter,
+  restoreNewsletterSubscription,
+  subscribeToNewsletter,
+} from "../controllers/NewsLetterSubscriptionController";
 import { UserRole } from "../enums/userRoles";
 
 const newsLetterSubscriptionRoute = Router();
@@ -17,6 +20,12 @@ newsLetterSubscriptionRoute.post(
   authMiddleware,
   adminOnly,
   restoreNewsletterSubscription,
+);
+
+newsLetterSubscriptionRoute.post(
+  "/newsletter-subscription/unsubscribe",
+  authMiddleware,
+  unSubscribeToNewsletter,
 );
 
 newsLetterSubscriptionRoute.get(
