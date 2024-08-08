@@ -1,5 +1,11 @@
-import { Request, Response } from "express";
-import { editComment, createComment } from "../services/blogComment.services";
+import { NextFunction, Request, Response } from "express";
+import {
+  editComment,
+  createComment,
+  getAllComments,
+} from "../services/blogComment.services";
+import log from "../utils/logger";
+import { HttpError, ResourceNotFound } from "../middleware";
 
 export class BlogCommentController {
   /**
@@ -108,7 +114,7 @@ export class BlogCommentController {
     const { content } = req.body;
 
     try {
-      const comment = await createComment(blogId, content);
+      const comment = await createComment(blogId, content, req.user.id);
       res.status(201).json({
         status: "success",
         status_code: 201,
@@ -302,6 +308,81 @@ export class BlogCommentController {
           message: "Failed to edit comment. Please try again later.",
           status_code: 500,
         });
+      }
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/blog/{blogId}/comments:
+   *   get:
+   *     summary: Get all comments for a specific blog post
+   *     description: Retrieves all comments associated with the specified blog post
+   *     tags: [BlogComment]
+   *     parameters:
+   *       - in: path
+   *         name: blogId
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the blog post
+   *     responses:
+   *       200:
+   *         description: Comments retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: Comments retrieved successfully.
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: integer
+   *                         example: 1
+   *                       author:
+   *                         type: string
+   *                         example: Anonymous
+   *                       text:
+   *                         type: string
+   *                         example: Concrete Bedfordshire Streamlined withdrawal stable
+   *                       timestamp:
+   *                         type: string
+   *                         format: date-time
+   *                         example: 2024-08-08T08:59:13.633Z
+   *       404:
+   *         description: Blog post not found
+   *       500:
+   *         description: Internal server error
+   */
+
+  async getAllComments(req: Request, res: Response, next: NextFunction) {
+    const blogId = req.params.blogId;
+
+    try {
+      const comments = await getAllComments(blogId);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Comments retrieved successfully.",
+        data: comments,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      } else {
+        next(new HttpError(500, "Internal server error"));
       }
     }
   }

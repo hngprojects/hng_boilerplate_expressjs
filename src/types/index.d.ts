@@ -1,4 +1,5 @@
 import { User } from "../models";
+import { Permissions } from "../models/permissions.entity";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -57,12 +58,22 @@ export interface ICreateOrganisation {
   state: string;
 }
 
+export interface ICreateOrgRole {
+  name: string;
+  description: string;
+}
+
 export interface IOrganisationService {
   createOrganisation(
     payload: ICreateOrganisation,
     userId: string,
   ): Promise<unknown>;
   removeUser(org_id: string, user_id: string): Promise<User | null>;
+
+  createOrganisationRole(
+    payload: ICreateOrgRole,
+    org_id: string,
+  ): Promise<unknown>;
 }
 
 declare module "express-serve-static-core" {
@@ -87,8 +98,28 @@ export interface GoogleUser {
 
 export interface INewsLetterSubscriptionService {
   subscribeUser(email: string): Promise<any>;
+  unSubcribeUser(email: string): Promise<any>;
 }
 
 export interface INewsLetterSubscription {
   email: string;
+}
+
+export type UserIdentifierOptionsType =
+  | {
+      identifierType: "id";
+      identifier: string;
+    }
+  | {
+      identifierType: "email";
+      identifier: string;
+    };
+
+export type UpdateUserRecordOption = {
+  updatePayload: Partial<User>;
+  identifierOption: UserIdentifierOptionsType;
+};
+
+export interface IBillingPlanService {
+  createBillingPlan(planData: Partial<BillingPlan>): Promise<BillingPlan[]>;
 }

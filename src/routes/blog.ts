@@ -46,4 +46,10 @@ blogRouter.patch(
   blogCommentController.editComment.bind(blogCommentController),
 );
 
+blogRouter.get(
+  "/blog/:blogId/comments",
+  authMiddleware,
+  blogCommentController.getAllComments.bind(blogCommentController),
+);
+
 export { blogRouter };

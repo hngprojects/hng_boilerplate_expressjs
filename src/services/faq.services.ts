@@ -1,7 +1,12 @@
 import AppDataSource from "../data-source";
 import { FAQ } from "../models/faq";
 import { Repository } from "typeorm";
-import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
+import {
+  BadRequest,
+  HttpError,
+  ResourceNotFound,
+  Unauthorized,
+} from "../middleware";
 
 type FAQType = {
   question: string;
@@ -42,6 +47,30 @@ class FAQService {
       return updatedFaq;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async getAllFaqs(): Promise<FAQ[]> {
+    try {
+      const faqs = await this.faqRepository.find();
+      return faqs;
+    } catch (error) {
+      throw new Error("Failed to fetch FAQs");
+    }
+  }
+
+  public async deleteFaq(faqId: string) {
+    const faq = await this.faqRepository.findOne({ where: { id: faqId } });
+
+    if (!faq) {
+      throw new BadRequest(`Invalid request data`);
+    }
+
+    try {
+      const result = await this.faqRepository.delete(faqId);
+      return result.affected !== 0;
+    } catch (error) {
+      throw new HttpError(500, "Deletion failed");
     }
   }
 }

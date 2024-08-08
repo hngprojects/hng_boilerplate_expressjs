@@ -3,7 +3,7 @@ import { Product } from "../models/product";
 import AppDataSource from "../data-source";
 import { ProductSize, StockStatus } from "../enums/product";
 import { ProductSchema } from "../schema/product.schema";
-import { InvalidInput, ResourceNotFound, ServerError } from "../middleware";
+import { InvalidInput, ResourceNotFound, ServerError, HttpError } from "../middleware";
 import { Organization } from "../models/organization";
 import { UserRole } from "../enums/userRoles";
 
@@ -105,6 +105,62 @@ export class ProductService {
       },
     };
   }
+
+  public async getProducts(
+    orgId: string,
+    query: {
+      name?: string;
+      category?: string;
+      minPrice?: number;
+      maxPrice?: number;
+    },
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const org = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!org) {
+      throw new ServerError(
+        "Unprocessable entity exception: Invalid organization credentials",
+      );
+    }
+
+    const { name, category, minPrice, maxPrice } = query;
+    const queryBuilder = this.productRepository
+      .createQueryBuilder("product")
+      .where("product.orgId = :orgId", { orgId });
+
+    if (name) {
+      queryBuilder.andWhere("product.name ILIKE :name", { name: `%${name}%` });
+    }
+    if (minPrice) {
+      queryBuilder.andWhere("product.price >= :minPrice", { minPrice });
+    }
+    if (maxPrice) {
+      queryBuilder.andWhere("product.price <= :maxPrice", { maxPrice });
+    }
+
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [products, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      success: true,
+      statusCode: 200,
+      data: {
+        products,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+    };
+  }
+
   public async deleteProduct(org_id: string, product_id: string) {
     try {
       const entities = await this.checkEntities({
@@ -122,7 +178,7 @@ export class ProductService {
       throw new Error(`Failed to delete product: ${error.message}`);
     }
   }
-
+  
   public async updateProduct(
     org_id: string,
     product_id: string,
@@ -142,4 +198,21 @@ export class ProductService {
     }
     return updatedProduct;
   }
+  
+  async getProduct(org_id: string, product_id: string) {
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        return new HttpError(404, "Product not found");
+      }
+      return entities.product;
+    } catch (error) {
+      throw new ResourceNotFound(error.message);
+    }
+  }
+
 }

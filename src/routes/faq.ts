@@ -8,5 +8,12 @@ const faqController = new FAQController();
 
 faqRouter.post("/faqs", authMiddleware, faqController.createFAQ);
 faqRouter.patch("/faqs/:id", authMiddleware, faqController.updateFaq);
+faqRouter.get("/faqs", faqController.getFaq);
+faqRouter.delete(
+  "/faqs/:faqId",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  faqController.deleteFaq,
+);
 
 export { faqRouter };

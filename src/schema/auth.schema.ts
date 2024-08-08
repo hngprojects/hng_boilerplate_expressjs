@@ -1,4 +1,4 @@
-import { object, string, TypeOf } from "zod";
+import { object, string, TypeOf, z } from "zod";
 import { emailSchema } from "../utils/request-body-validator";
 
 /**
@@ -39,6 +39,9 @@ export const validateMagicLinkSchema = object({
 });
 
 export const createMagicLinkSchema = object({ ...createMagicLinkPayload });
+export const enable2FASchema = z.object({
+  password: z.string(),
+});
 
 export type validateMagicLinkInput = TypeOf<typeof validateMagicLinkSchema>;
 export type CreateMagicLinkInput = TypeOf<typeof createMagicLinkSchema>;
