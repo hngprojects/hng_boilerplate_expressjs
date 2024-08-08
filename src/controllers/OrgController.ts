@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import { ResourceNotFound, ServerError } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -1069,6 +1070,46 @@ export class OrgController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getSingleRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const organizationId = req.params.org_id;
+      const roleId = req.params.role_id;
+      const response = await this.orgService.fetchSingleRole(
+        organizationId,
+        roleId,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllOrganizationRoles(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const response =
+        await this.orgService.fetchAllRolesInOrganization(organizationId);
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(new ServerError("Error fetching all roles in organization"));
     }
   }
 }
