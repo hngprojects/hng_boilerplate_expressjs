@@ -29,6 +29,15 @@ export class JobService {
     return job;
   }
 
+  public async getAllJobs(req: Request): Promise<Job[] | null> {
+    try {
+      return await Job.find();
+    } catch (error) {
+      console.error("Failed to fetch jobs", error);
+      throw new Error("Could not fetch jobs ");
+    }
+  }
+  
   public async delete(jobId: string): Promise<Job | null> {
     try {
       const existingJob = await this.jobRepository.findOne({
