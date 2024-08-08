@@ -36,6 +36,7 @@ import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
 import { roleRouter } from "./routes/roles";
+import checkBullPasskey from "./middleware/checkBullPasskey";
 dotenv.config();
 
 const port = config.port;
@@ -73,7 +74,11 @@ server.use("/run-tests", runTestRouter);
 server.use("/api/v1", faqRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
-server.use("/api/v1/queues", ServerAdapter.getRouter());
+server.use(
+  "/api/v1/queues/:passkey",
+  checkBullPasskey,
+  ServerAdapter.getRouter(),
+);
 server.use("/api/v1", adminRouter);
 server.use("/api/v1", sendEmailRoute);
 server.use("/api/v1", helpRouter);
