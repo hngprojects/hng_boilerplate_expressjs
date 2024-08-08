@@ -4,7 +4,7 @@ import {
   Profile,
   VerifyCallback,
 } from "passport-google-oauth2";
-import config from "./index";
+import config from ".";
 
 import { OAuth2Client } from "google-auth-library";
 const client = new OAuth2Client();

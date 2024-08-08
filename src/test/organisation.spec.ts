@@ -32,6 +32,19 @@ jest.mock("../data-source", () => ({
   },
 }));
 
+// jest.mock("../data-source", () => {
+//   return {
+//     AppDataSource: {
+//       manager: {
+//         save: jest.fn(),
+//         findOne: jest.fn(),
+//       },
+//       getRepository: jest.fn(),
+//       initialize: jest.fn().mockResolvedValue(true),
+//     },
+//   };
+// });
+
 jest.mock("../models");
 jest.mock("jsonwebtoken");
 
