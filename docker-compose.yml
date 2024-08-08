@@ -5,7 +5,7 @@ services:
     ports:
       - 2222:8000
     env_file:
-      - .env
+      - /var/www/aihomework/dev/.env
     environment:
       NODE_ENV: development
       DB_HOST: backend_db
@@ -23,7 +23,7 @@ services:
     container_name: backend_db
     restart: unless-stopped
     env_file:
-      - .env
+      - /var/www/aihomework/dev/.env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
