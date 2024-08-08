@@ -1,47 +1,52 @@
 // @ts-nocheck
-import { OrgService } from "../services";
-import { Organization, User, UserOrganization } from "../models";
-import AppDataSource from "../data-source";
-import { UserRole } from "../enums/userRoles";
-import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
-import { AuthService } from "../services/index.ts";
+import AppDataSource from "../data-source";
+import { Organization, User, OrganizationRole } from "../models";
+import { OrgService } from "../services";
+import { Repository } from "typeorm";
+import { OrgController } from "../controllers";
+import { authMiddleware } from "../middleware/auth";
+import { validateOrgId } from "../middleware/organizationValidation";
+import { InvalidInput, HttpError, ResourceNotFound } from "../middleware/error";
 
-import { authMiddleware } from "../middleware/auth.ts";
-import { OrgService } from "../services/org.services.ts";
-import { OrgController } from "../controllers/OrgController.ts";
-import { validateOrgId } from "../middleware/organization.validation.ts";
-import { InvalidInput } from "../middleware/error.ts";
-import { authMiddleware } from "../middleware";
-import { OrgService } from "../services/organisation.service";
-
-jest.mock("../data-source", () => {
-  return {
-    AppDataSource: {
-      manager: {
-        save: jest.fn(),
-        findOne: jest.fn(),
-      },
-      getRepository: jest.fn(),
-      initialize: jest.fn().mockResolvedValue(true),
+// Mock necessary modules
+jest.mock("../data-source", () => ({
+  __esModule: true,
+  default: {
+    manager: {
+      save: jest.fn(),
+      findOne: jest.fn(),
     },
-  };
-});
+    getRepository: jest.fn(),
+    initialize: jest.fn().mockResolvedValue(true),
+  },
+}));
 jest.mock("../models");
 jest.mock("jsonwebtoken");
+jest.mock("passport", () => ({
+  use: jest.fn(),
+}));
+jest.mock("passport-google-oauth2", () => ({
+  Strategy: jest.fn(),
+}));
 
 describe("Organization Controller and Middleware", () => {
-  let orgService: OrgService;
+  let organizationService: OrgService;
   let orgController: OrgController;
   let mockManager;
+  let organizationRepositoryMock: jest.Mocked<Repository<Organization>>;
+  let organizationRoleRepositoryMock: jest.Mocked<Repository<OrganizationRole>>;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     orgController = new OrgController();
+
     mockManager = {
       findOne: jest.fn(),
+      save: jest.fn(),
     };
     AppDataSource.manager = mockManager;
-    AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
+    AppDataSource.getRepository.mockReturnValue(mockManager);
   });
 
   it("check if user is authenticated", async () => {
@@ -130,5 +135,82 @@ describe("Organization Controller and Middleware", () => {
     expect(() => validateOrgId[1](req, res, next)).toThrow(
       "Valid org_id must be provided",
     );
+  });
+});
+
+describe("Update User Organization", () => {
+  let orgService: OrgService;
+  let mockRepository;
+
+  beforeEach(() => {
+    mockRepository = {
+      findOne: jest.fn(),
+      update: jest.fn(),
+    };
+    AppDataSource.getRepository.mockReturnValue(mockRepository);
+    orgService = new OrgService();
+  });
+
+  it("should successfully update organization details", async () => {
+    const mockOrgId = "123e4567-e89b-12d3-a456-426614174000";
+    const userId = "user123";
+    const updateData = {
+      name: "New Organization Name",
+      email: "newemail@example.com",
+      industry: "Tech",
+      type: "Private",
+      country: "NGA",
+      address: "1234 New HNG",
+      state: "Lagos",
+      description: "A new description of the organization.",
+    };
+
+    const mockOrg = {
+      id: mockOrgId,
+      ...updateData,
+    };
+
+    mockRepository.findOne.mockResolvedValue(mockOrg);
+    mockRepository.update.mockResolvedValue(mockOrg);
+
+    const result = await orgService.updateOrganizationDetails(
+      mockOrgId,
+      userId,
+      updateData,
+    );
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: mockOrgId, userOrganizations: { user: { id: userId } } },
+    });
+
+    expect(mockRepository.update).toHaveBeenCalledWith(mockOrgId, updateData);
+    expect(result).toEqual(mockOrg);
+  });
+
+  it("should throw ResourceNotFound if organization does not exist", async () => {
+    const mockOrgId = "123e4567-e89b-12d3-a456-426614174000";
+    const userId = "user123";
+    const updateData = {
+      name: "New Organization Name",
+      email: "newemail@example.com",
+      industry: "Tech",
+      type: "Private",
+      country: "NGA",
+      address: "1234 New HNG",
+      state: "Lagos",
+      description: "A new description of the organization.",
+    };
+
+    mockRepository.findOne.mockResolvedValue(null);
+
+    await expect(
+      orgService.updateOrganizationDetails(mockOrgId, userId, updateData),
+    ).rejects.toThrow(ResourceNotFound);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: mockOrgId, userOrganizations: { user: { id: userId } } },
+    });
+
+    expect(mockRepository.update).not.toHaveBeenCalled();
   });
 });
