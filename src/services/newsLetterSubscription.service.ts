@@ -14,19 +14,27 @@ export class NewsLetterSubscriptionService
       AppDataSource.getRepository(NewsLetterSubscriber);
   }
 
-  public async subscribeUser(email: string): Promise<any> {
+  public async subscribeUser(email: string): Promise<{
+    isSubscribe: boolean;
+    subscriber: NewsLetterSubscriber;
+  }> {
+    let isSubscribe = false;
     const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
       where: { email },
     });
     if (isExistingSubscriber) {
-      throw new BadRequest("This email already subscribed");
+      isSubscribe = true;
+      return { isSubscribe, subscriber: isExistingSubscriber };
     }
     const newSubscriber = new NewsLetterSubscriber();
     newSubscriber.email = email;
     const subscriber = await this.newsLetterSubscriber.save(newSubscriber);
     if (!subscriber) {
-      throw new HttpError(500, "Internal server error");
+      throw new HttpError(
+        500,
+        "An error occurred while processing your request",
+      );
     }
-    return newSubscriber;
+    return { isSubscribe, subscriber };
   }
 }
