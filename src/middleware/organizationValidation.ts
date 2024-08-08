@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { param, validationResult } from "express-validator";
+import { param, validationResult, body } from "express-validator";
 import { z } from "zod";
 import { User } from "../models";
 import { OrgService } from "../services/org.services";
@@ -87,6 +87,86 @@ export const validateOrgId = [
   },
 ];
 
+export const validateUpdateOrg = [
+  param("organization_id")
+    .notEmpty()
+    .withMessage("Organisation id is required")
+    .isString()
+    .withMessage("Organisation id must be a string")
+    .isUUID()
+    .withMessage("Valid organization ID must be provided")
+    .trim()
+    .escape(),
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isString()
+    .withMessage("Name must be a string")
+    .trim()
+    .escape(),
+  body("email")
+    .notEmpty()
+    .withMessage("Email is required")
+    .isEmail()
+    .withMessage("Valid email must be provided")
+    .trim()
+    .escape(),
+  body("industry")
+    .notEmpty()
+    .withMessage("Industry is required")
+    .isString()
+    .withMessage("Industry must be a string")
+    .trim()
+    .escape(),
+  body("type")
+    .notEmpty()
+    .withMessage("Type is required")
+    .isString()
+    .withMessage("Type must be a string")
+    .trim()
+    .escape(),
+  body("country")
+    .notEmpty()
+    .withMessage("Country is required")
+    .isString()
+    .withMessage("Country must be a string")
+    .trim()
+    .escape(),
+  body("address")
+    .notEmpty()
+    .withMessage("Address is required")
+    .isString()
+    .withMessage("Address must be a string")
+    .trim()
+    .escape(),
+  body("state")
+    .notEmpty()
+    .withMessage("State is required")
+    .isString()
+    .withMessage("State must be a string")
+    .trim()
+    .escape(),
+  body("description")
+    .notEmpty()
+    .withMessage("Description is required")
+    .isString()
+    .withMessage("Description must be a string")
+    .trim()
+    .escape(),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        status: "Error",
+        status_code: 422,
+        message:
+          "Valid organization ID, name, email, industry, type, country, address, state, and description must be provided.",
+      });
+    }
+    next();
+  },
+];
+
 export const validateUserToOrg = async (
   req: Request,
   res: Response,
@@ -133,3 +213,5 @@ export const validateUserToOrg = async (
     });
   }
 };
+
+//TODO: Add validation for update organization

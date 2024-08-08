@@ -129,26 +129,24 @@ export class OrgService implements IOrgService {
   }
   public async updateOrganizationDetails(
     org_id: string,
+    userId: string,
     update_data: Partial<Organization>,
   ): Promise<Organization> {
     const organizationRepository = AppDataSource.getRepository(Organization);
 
     const organization = await organizationRepository.findOne({
-      where: { id: org_id },
+      where: { id: org_id, userOrganizations: { user: { id: userId } } },
     });
 
     if (!organization) {
-      throw new Error("Organization not found");
+      throw new ResourceNotFound(`Organization with id '${org_id}' not found`);
     }
 
     Object.assign(organization, update_data);
 
-    try {
-      await organizationRepository.update(organization.id, update_data);
-      return organization;
-    } catch (error) {
-      throw error;
-    }
+    await organizationRepository.update(organization.id, update_data);
+
+    return organization;
   }
 
   public async generateInviteLink(orgId: string) {
