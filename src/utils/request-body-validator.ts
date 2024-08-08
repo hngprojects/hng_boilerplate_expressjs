@@ -10,6 +10,7 @@ const createBlogSchema = z.object({
   image_url: z.string(),
   tags: z.string().optional(),
   categories: z.string().optional(),
+  publish_date: z.string().optional(),
 });
 
 export { createBlogSchema, emailSchema };
