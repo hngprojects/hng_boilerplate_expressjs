@@ -16,14 +16,14 @@ import {
 } from "../utils";
 import { Sendmail } from "../utils/mail";
 
-jest.mock("../data-source", () => {
-  return {
-    AppDataSource: {
-      manager: {},
-      initialize: jest.fn().mockResolvedValue(true),
-    },
-  };
-});
+jest.mock("../data-source", () => ({
+  __esModule: true,
+  default: {
+    getRepository: jest.fn(),
+    initialize: jest.fn(),
+    isInitialized: false,
+  },
+}));
 jest.mock("../models");
 jest.mock("../utils");
 jest.mock("../utils/mail");
@@ -31,17 +31,28 @@ jest.mock("jsonwebtoken");
 
 describe("AuthService", () => {
   let authService: AuthService;
-  let mockManager;
+  // let userRepositoryMock;
+  let userRepositoryMock: jest.Mocked<Repository<User>>;
 
   beforeEach(() => {
+    userRepositoryMock = {
+      findOne: jest.fn(),
+    } as any;
+    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
+      if (entity === User) return userRepositoryMock;
+    });
     authService = new AuthService();
 
-    mockManager = {
-      save: jest.fn(),
-    };
+    // userRepositoryMock = {
+    //   save: jest.fn(),
+    // };
 
     // Assign the mock manager to the AppDataSource.manager
-    AppDataSource.manager = mockManager;
+    // AppDataSource.manager = userRepositoryMock;
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe("signUp", () => {
@@ -76,7 +87,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(null);
       (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
-      mockManager.save.mockResolvedValue(createdUser);
+      userRepositoryMock.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
 
       const result = await authService.signUp(payload);
@@ -127,7 +138,7 @@ describe("AuthService", () => {
 
       (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
       (User.findOne as jest.Mock).mockResolvedValue(user);
-      mockManager.save.mockResolvedValue(user);
+      userRepositoryMock.save.mockResolvedValue(user);
 
       const result = await authService.verifyEmail(token, otp);
 
@@ -223,7 +234,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(user);
       (comparePassword as jest.Mock).mockResolvedValue(true);
       (hashPassword as jest.Mock).mockResolvedValue(hashedNewPassword);
-      mockManager.save.mockResolvedValue({
+      userRepositoryMock.save.mockResolvedValue({
         ...user,
         password: hashedNewPassword,
       });
