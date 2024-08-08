@@ -4,7 +4,7 @@ import log from "../utils/logger";
 
 /**
  * @swagger
- * /payments/paystack/initiate:
+ * api/v1/payments/paystack/initiate:
  *   post:
  *     summary: Initiate a payment using Paystack
  *     tags: [Payments]
@@ -15,15 +15,18 @@ import log from "../utils/logger";
  *           schema:
  *             type: object
  *             properties:
- *               email:
+ *               organization_id:
  *                 type: string
- *                 example: test@example.com
- *               amount:
- *                 type: number
- *                 example: 1000
- *               currency:
+ *               plan_id:
  *                 type: string
- *                 example: NGN
+ *               full_name:
+ *                 type: string
+ *               billing_option:
+ *                 type: string
+ *                 enum: [monthly, yearly]
+ *               redirect_url:
+ *                 type: string
+ *                 example: http://boilerplate.com/setting
  *     responses:
  *       200:
  *         description: Payment initiated successfully
@@ -35,6 +38,19 @@ import log from "../utils/logger";
  *                 redirect:
  *                   type: string
  *                   example: https://paystack.com/redirect-url
+ *       400:
+ *         description: Billing plan or organization not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: integer
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: Billing plan or organization not found
  *       500:
  *         description: Error initiating payment
  *         content:
@@ -52,8 +68,9 @@ export const initializePaymentPaystack = async (
 ) => {
   try {
     const response = await initializePayment(req.body);
-    res.json({ redirect: response });
+    res.json(response);
   } catch (error) {
+    console.log(error);
     log.error("Error initiating payment:", error);
     res.status(500).json({ error: "Error initiating payment" });
   }
