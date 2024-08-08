@@ -1,52 +1,49 @@
-// src/services/HelpService.ts
-import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
-import { FAQ } from "../models";
-import { User } from "../models";
 import AppDataSource from "../data-source";
-import { HttpError } from "../middleware";
-import config from "../config";
-import { DeleteResult, Repository } from "typeorm";
+import { FAQ } from "../models/faq";
+import { Repository } from "typeorm";
+import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
 
-export class FaqService {
+type FAQType = {
+  question: string;
+  answer: string;
+  category: string;
+  createdBy: string;
+};
+
+class FAQService {
   private faqRepository: Repository<FAQ>;
-
   constructor() {
     this.faqRepository = AppDataSource.getRepository(FAQ);
   }
-
-  public async create_Faq(
-    title: string,
-    content: string,
-    author: string,
-  ): Promise<FAQ> {
+  public async createFaq(data: FAQType): Promise<FAQ> {
     try {
-      //Check for Existing Faq title
-      const title_exists = await this.faqRepository.findOne({
-        where: { title },
-      });
-      if (title_exists) {
-        throw new HttpError(422, "Article already exists");
-      }
-
-      const faq = this.faqRepository.create({
-        title,
-        content,
-        author,
-      });
-      const newFaq = await this.faqRepository.save(faq);
-      return newFaq;
+      const faq = this.faqRepository.create(data);
+      const createdFAQ = await this.faqRepository.save(faq);
+      return createdFAQ;
     } catch (error) {
-      throw new HttpError(error.status_code, error.message || error);
+      throw new Error("Failed to create FAQ");
     }
   }
 
-  public async getAll_Faq(): Promise<FAQ[]> {
+  public async updateFaq(payload: Partial<FAQ>, faqId: string) {
+    const faq = await this.faqRepository.findOne({ where: { id: faqId } });
+
+    if (!faq) {
+      throw new BadRequest(`Invalid request data`);
+    }
+
+    Object.assign(faq, payload);
+
     try {
-      const faq = await this.faqRepository.find();
-      return faq;
+      await this.faqRepository.update(faqId, payload);
+      const updatedFaq = await this.faqRepository.findOne({
+        where: { id: faqId },
+      });
+      return updatedFaq;
     } catch (error) {
-      throw new HttpError(error.status || 500, error.message || error);
+      throw error;
     }
   }
 }
+
+export { FAQService };

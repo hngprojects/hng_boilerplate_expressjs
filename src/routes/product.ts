@@ -1,43 +1,28 @@
-import express from "express";
-import ProductController from "../controllers/ProductController";
+import { Router } from "express";
+import { ProductController } from "../controllers/ProductController";
 import { authMiddleware } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
-import { validateUserToOrg } from "../middleware/organization.validation";
+import { validateUserToOrg } from "../middleware/organizationValidation";
+import { adminOnly } from "../middleware";
 
-const productRouter = express.Router();
+const productRouter = Router();
 const productController = new ProductController();
-// modified because the base route changed to "/api/v1"
-productRouter.get(
-  "/products/:org_id",
+
+productRouter.post(
+  "/organizations/:org_id/products",
+  validateProductDetails,
   authMiddleware,
+  adminOnly,
   validateUserToOrg,
-  productController.getProductPagination.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.put(
-  "/products/:product_id",
-  authMiddleware,
-  productController.updateProductById.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.delete(
-  "/products/:product_id",
-  authMiddleware,
-  productController.deleteProduct.bind(productController),
-);
-// modified because the base route changed to "/api/v1"
-productRouter.get(
-  "/products/:product_id",
-  authMiddleware,
-  productController.fetchProductById.bind(productController),
+  productController.createProduct,
 );
 
-productRouter
-  .route("/products/:org_id")
-  .post(
-    validateProductDetails,
-    authMiddleware,
-    validateUserToOrg,
-    productController.createProduct.bind(productController),
-  );
+productRouter.delete(
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
+  adminOnly,
+  validateUserToOrg,
+  productController.deleteProduct,
+);
+
 export { productRouter };
