@@ -316,16 +316,16 @@ export class BlogCommentController {
    * @swagger
    * /api/v1/blog/{blogId}/comments:
    *   get:
-   *     summary: Get all comments for a blog post
-   *     description: Retrieve all comments associated with a specific blog post
+   *     summary: Get all comments for a specific blog post
+   *     description: Retrieves all comments associated with the specified blog post
    *     tags: [BlogComment]
    *     parameters:
    *       - in: path
    *         name: blogId
+   *         required: true
    *         schema:
    *           type: string
-   *         required: true
-   *         description: ID of the blog post
+   *         description: The ID of the blog post
    *     responses:
    *       200:
    *         description: Comments retrieved successfully
@@ -350,14 +350,17 @@ export class BlogCommentController {
    *                     properties:
    *                       id:
    *                         type: integer
-   *                       content:
+   *                         example: 1
+   *                       author:
    *                         type: string
-   *                       createdAt:
+   *                         example: Anonymous
+   *                       text:
+   *                         type: string
+   *                         example: Concrete Bedfordshire Streamlined withdrawal stable
+   *                       timestamp:
    *                         type: string
    *                         format: date-time
-   *                       updatedAt:
-   *                         type: string
-   *                         format: date-time
+   *                         example: 2024-08-08T08:59:13.633Z
    *       404:
    *         description: Blog post not found
    *       500:
@@ -384,7 +387,3 @@ export class BlogCommentController {
     }
   }
 }
-// TODO: check main codebase to remove it or not
-// function next(error: ResourceNotFound) {
-//   throw new Error("Function not implemented.");
-// }
