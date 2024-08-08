@@ -1,71 +1,62 @@
-// src/controllers/UserController.ts
-import { Request, Response } from "express";
-import { FaqService } from "../services/faq.services";
-import { HttpError } from "../middleware";
+import { Request, Response, NextFunction } from "express";
+import { FAQService } from "../services";
+import { UserRole } from "../enums/userRoles";
+import isSuperAdmin from "../utils/isSuperAdmin";
 
-class FaqController {
-  private faqService: FaqService;
+const faqService = new FAQService();
 
-  constructor() {
-    this.faqService = new FaqService();
-  }
-
-  async createFaq(req: Request, res: Response): Promise<void> {
+class FAQController {
+  public async createFAQ(req: Request, res: Response, next: NextFunction) {
     try {
-      const { title, content, author } = req.body;
+      const { question, answer, category } = req.body;
+      const userId = req.user?.id;
 
-      //Validate Input
-      if (!title || !content || !author) {
-        throw new HttpError(
-          422,
-          "Validation failed: Title, content, and author are required",
-        );
+      if (!userId) {
+        return res.status(401).json({
+          status_code: 401,
+          success: false,
+          message: "User not authenticated",
+        });
       }
 
-      const faq = await this.faqService.create_Faq(title, content, author);
+      if (!question || answer || category) {
+        return res.status(401).json({
+          status_code: 400,
+          success: false,
+          message: "Invalid request data",
+        });
+      }
+
+      const isAdmin = await isSuperAdmin(userId);
+      if (!isAdmin) {
+        return res.status(403).json({
+          status_code: 403,
+          success: false,
+          message: "User is not authorized to create FAQ",
+        });
+      }
+
+      const faq = await faqService.createFaq({
+        question,
+        answer,
+        category,
+        createdBy: UserRole.SUPER_ADMIN,
+      });
+
       res.status(201).json({
-        success: true,
-        message: "Faq Created Successfully",
-        data: {
-          id: faq.id,
-          content: faq.content,
-          author: faq.author,
-          title: faq.title,
-          createdAt: faq.createdAt,
-          updatedAt: faq.updatedAt,
-        },
         status_code: 201,
+        success: true,
+        message: "FAQ Created successfully",
+        data: faq,
       });
     } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status_code).json({ message: error.message });
-      } else {
-        res
-          .status(error.status_code || 500)
-          .json({ message: error.message || "Internal Server Error" });
-      }
-    }
-  }
-
-  async getAllFaq(req: Request, res: Response): Promise<void> {
-    try {
-      const faqs = await this.faqService.getAll_Faq();
-      res.status(201).json({
-        success: true,
-        message: "Fetch Successful",
-        data: faqs,
-        status_code: 201,
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: "An unexpected error occured",
       });
-    } catch (error) {
-      if (error instanceof HttpError) {
-        res.status(error.status_code).json({ message: error.message });
-      } else {
-        res
-          .status(error.status_code || 500)
-          .json({ message: error.message || "Internal Server Error" });
-      }
     }
   }
 }
 
-export default FaqController;
+export { FAQController };
