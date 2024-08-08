@@ -2,7 +2,8 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
-import { adminOnly, Unauthorized } from "../middleware";
+import { ResourceNotFound, Unauthorized } from "../middleware";
+import { adminOnly } from "../middleware/checkUserRole";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -105,8 +106,8 @@ describe("NewsLetterSubscriptionService", () => {
     });
   });
 
-jest.mock("../middleware", () => ({
-  ...jest.requireActual("../middleware"),
+jest.mock("../middleware/checkUserRole.ts", () => ({
+  ...jest.requireActual("../middleware/checkUserRole.ts"),
   adminOnly: jest.fn(),
 }));
 
@@ -172,13 +173,13 @@ describe("RestoreNewsLetterSubscription", () => {
   });
 
   it("should deny access to non-admin users", async () => {
-    const mockReq = {} as any;
-    const mockRes = {} as any;
+    const mockReq = {} as Request;
+    const mockRes = {} as Response;
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "USER" };
-      next();
+      req.user = { role: "USER" }; // Mock non-admin user
+      next(new Unauthorized("Access denied. Admins only.")); // Call next with error
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
@@ -187,18 +188,17 @@ describe("RestoreNewsLetterSubscription", () => {
   });
 
   it("should allow access to admin users", async () => {
-    const mockReq = {} as any;
-    const mockRes = {} as any;
+    const mockReq = {} as Request;
+    const mockRes = {} as Response;
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "ADMIN" };
-      next();
+      req.user = { role: "ADMIN" }; // Mock admin user
+      next(); // Call next without error
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
 
     expect(mockNext).toHaveBeenCalled();
   });
-});
 });
