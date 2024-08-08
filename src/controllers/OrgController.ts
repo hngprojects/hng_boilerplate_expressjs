@@ -184,6 +184,27 @@ export class OrgController {
     }
   }
 
+  async deleteOrganization(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { org_id } = req.params;
+      const user = req.user;
+      const userId = user.id;
+
+      const organizationService = new OrgService();
+      await organizationService.deleteOrganization(org_id);
+
+      const respObj = {
+        status: "success",
+        message: "Organization deleted successfully",
+        status_code: 200,
+      };
+
+      return res.status(200).json(respObj);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   /**
    * @swagger
    * /api/v1/users/{userId}/organizations:

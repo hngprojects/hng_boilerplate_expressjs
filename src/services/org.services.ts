@@ -4,7 +4,7 @@ import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
 import { BadRequest } from "../middleware";
-import { Conflict, ResourceNotFound } from "../middleware/error";
+import { Conflict, ResourceNotFound, ServerError } from "../middleware/error";
 import { Invitation, OrgInviteToken, UserOrganization } from "../models";
 import { Organization } from "../models/organization";
 import { OrganizationRole } from "../models/organization-role.entity";
@@ -45,6 +45,27 @@ export class OrgService implements IOrgService {
       return { new_organisation };
     } catch (error) {
       throw new BadRequest("Client error");
+    }
+  }
+
+  public async deleteOrganization(orgId: string): Promise<void> {
+    try {
+      const organization = await AppDataSource.manager.findOne(Organization, {
+        where: { id: orgId },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      await AppDataSource.manager.remove(organization);
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        throw error;
+      }
+      throw new ServerError(
+        "An error occurred while deleting the organization",
+      );
     }
   }
 

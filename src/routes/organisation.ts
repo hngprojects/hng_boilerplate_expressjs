@@ -24,6 +24,15 @@ orgRouter.delete(
   validateOrgId,
   orgController.removeUser.bind(orgController),
 );
+
+orgRouter.delete(
+  "/organizations/:org_id",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN, UserRole.ADMIN]),
+  validateOrgId,
+  orgController.deleteOrganization.bind(orgController),
+);
+
 orgRouter.get(
   "/organizations/:org_id/invite",
   authMiddleware,
