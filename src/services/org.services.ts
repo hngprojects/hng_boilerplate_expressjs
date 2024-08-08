@@ -12,28 +12,29 @@ import renderTemplate from "../views/email/renderTemplate";
 import { Conflict, ResourceNotFound } from "../middleware/error";
 import config from "../config/index";
 const frontendBaseUrl = config.BASE_URL;
+
 export class OrgService implements IOrgService {
   public async createOrganisation(
     payload: ICreateOrganisation,
     userId: string,
   ): Promise<{
-    newOrganisation: Partial<Organization>;
+    new_organisation: Partial<Organization>;
   }> {
     try {
       const organisation = new Organization();
       organisation.owner_id = userId;
       Object.assign(organisation, payload);
 
-      const newOrganisation = await AppDataSource.manager.save(organisation);
+      const new_organisation = await AppDataSource.manager.save(organisation);
 
       const userOrganization = new UserOrganization();
       userOrganization.userId = userId;
-      userOrganization.organizationId = newOrganisation.id;
+      userOrganization.organizationId = new_organisation.id;
       userOrganization.role = UserRole.ADMIN;
 
       await AppDataSource.manager.save(userOrganization);
 
-      return { newOrganisation };
+      return { new_organisation };
     } catch (error) {
       throw new BadRequest("Client error");
     }
@@ -280,10 +281,6 @@ export class OrgService implements IOrgService {
     userOrganization.role = UserRole.USER;
 
     await userOrganizationRepository.save(userOrganization);
-
-    // if (invitation) {
-    //   await invitationRepository.remove(invitation);
-    // }
   }
 
   public async searchOrganizationMembers(criteria: {

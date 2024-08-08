@@ -1,25 +1,25 @@
 import Router from "express";
 import { OrgController } from "../controllers/OrgController";
+import { UserRole } from "../enums/userRoles";
 import {
   authMiddleware,
   checkPermissions,
   organizationValidation,
+  validateOrgId,
   validateUpdateOrg,
 } from "../middleware";
-import { UserRole } from "../enums/userRoles";
-import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
-  "/organisations/:org_id",
+  "/organizations/:org_id",
   authMiddleware,
   validateOrgId,
   orgController.getSingleOrg.bind(orgController),
 );
 orgRouter.delete(
-  "/organisations/:org_id/user/:user_id",
+  "/organizations/:org_id/user/:user_id",
   authMiddleware,
   validateOrgId,
   orgController.removeUser.bind(orgController),
@@ -32,7 +32,7 @@ orgRouter.get(
   orgController.generateInviteLink.bind(orgController),
 );
 orgRouter.post(
-  "/organisations",
+  "/organizations",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController),
@@ -51,7 +51,7 @@ orgRouter.post(
   orgController.sendInviteLinks.bind(orgController),
 );
 orgRouter.get(
-  "/users/:id/organisations",
+  "/users/:id/organizations",
   authMiddleware,
   orgController.getOrganizations.bind(orgController),
 );

@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import { AuthService } from "../services/index.ts";
 import { authMiddleware } from "../middleware/auth.ts";
 import { OrgController } from "../controllers/orgController";
-import { validateOrgId } from "../middleware/organization.validation.ts";
+import { validateOrgId } from "../middleware/organizationValidation.ts";
 import {
   InvalidInput,
   HttpError,
