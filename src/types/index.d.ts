@@ -108,3 +108,7 @@ export type UpdateUserRecordOption = {
   updatePayload: Partial<User>;
   identifierOption: UserIdentifierOptionsType;
 };
+
+export interface IBillingPlanService {
+  createBillingPlan(planData: Partial<BillingPlan>): Promise<BillingPlan[]>;
+}
