@@ -3,20 +3,24 @@ import { v4 as uuidv4 } from "uuid";
 import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
-import { BadRequest } from "../middleware";
-import { Conflict, ResourceNotFound } from "../middleware/error";
-import { Invitation, OrgInviteToken, UserOrganization } from "../models";
-import { Organization } from "../models/organization";
+import { BadRequest, ResourceNotFound, Conflict } from "../middleware";
+import { Organization, Invitation, UserOrganization } from "../models";
 import { OrganizationRole } from "../models/organization-role.entity";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
+import log from "../utils/logger";
+
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import { Permissions } from "../models/permissions.entity";
 const frontendBaseUrl = config.BASE_URL;
 
 export class OrgService implements IOrgService {
   private organizationRepository: Repository<Organization>;
   private organizationRoleRepository: Repository<OrganizationRole>;
+  private permissionRepository: Repository<Permissions>;
+
   constructor() {
     this.organizationRepository = AppDataSource.getRepository(Organization);
     this.organizationRoleRepository =
@@ -144,151 +148,174 @@ export class OrgService implements IOrgService {
 
     Object.assign(organization, update_data);
 
-    await organizationRepository.update(organization.id, update_data);
-
-    return organization;
-  }
-
-  public async generateInviteLink(orgId: string) {
-    const organisationRepository = AppDataSource.getRepository(Organization);
-    const userRepository = AppDataSource.getRepository(User);
-    const userOrganizationRepository =
-      AppDataSource.getRepository(UserOrganization);
-    const orgInviteTokenRepository =
-      AppDataSource.getRepository(OrgInviteToken);
-    const userOrganization = await organisationRepository.findOne({
-      where: { id: orgId },
-    });
-    if (!userOrganization) {
-      throw new ResourceNotFound("Organization not found.");
+    try {
+      await organizationRepository.update(organization.id, update_data);
+      return organization;
+    } catch (error) {
+      throw error;
     }
-
-    const tokenValue = uuidv4();
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-
-    const orgInvteToken = new OrgInviteToken();
-    orgInvteToken.token = tokenValue;
-    orgInvteToken.expires_at = expiresAt;
-    orgInvteToken.organization = userOrganization;
-
-    await orgInviteTokenRepository.save(orgInvteToken);
-    const inviteLink = `${frontendBaseUrl}/accept-invite/${userOrganization.name}?token=${tokenValue}`;
-    return inviteLink;
   }
 
-  public async sendInviteLinks(orgId: string, emails: string[]): Promise<void> {
-    const organisationRepository = AppDataSource.getRepository(Organization);
-    const userRepository = AppDataSource.getRepository(User);
-    const userOrganizationRepository =
-      AppDataSource.getRepository(UserOrganization);
-    const orgInviteTokenRepository =
-      AppDataSource.getRepository(OrgInviteToken);
-    const invitationRepository = AppDataSource.getRepository(Invitation);
-
-    const organization = await organisationRepository.findOne({
-      where: { id: orgId },
+  public async generateGenericInviteLink(
+    organizationId: string,
+  ): Promise<string> {
+    const inviteRepository = AppDataSource.getRepository(Invitation);
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const organization = await organizationRepository.findOne({
+      where: { id: organizationId },
     });
-
     if (!organization) {
-      throw new ResourceNotFound("Organization not found.");
+      throw new ResourceNotFound(
+        `Organization with ID ${organizationId} not found`,
+      );
+    }
+    const token = uuidv4();
+
+    const invite = inviteRepository.create({
+      token,
+      isGeneric: true,
+      organization: { id: organizationId },
+    });
+
+    await inviteRepository.save(invite);
+
+    return `${frontendBaseUrl}/invite?token=${token}`;
+  }
+
+  async generateAndSendInviteLinks(
+    emails: string[],
+    organizationId: string,
+  ): Promise<void> {
+    const inviteRepository = AppDataSource.getRepository(Invitation);
+    const organizationRepository = AppDataSource.getRepository(Organization);
+    const organization = await organizationRepository.findOne({
+      where: { id: organizationId },
+    });
+    console.log("here", organization);
+    if (!organization) {
+      throw new ResourceNotFound(
+        `Organization with ID ${organizationId} not found`,
+      );
     }
 
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+    const invites = emails.map((email) => {
+      const token = uuidv4();
+      return inviteRepository.create({
+        token,
+        email: email,
+        isGeneric: false,
+        organization: { id: organizationId },
+      });
+    });
 
-    for (const email of emails) {
-      const tokenValue = uuidv4();
-
-      const orgInviteToken = new OrgInviteToken();
-      orgInviteToken.token = tokenValue;
-      orgInviteToken.expires_at = expiresAt;
-      orgInviteToken.organization = organization;
-
-      await orgInviteTokenRepository.save(orgInviteToken);
-
-      const invitation = new Invitation();
-      invitation.token = tokenValue;
-      invitation.organization = organization;
-      invitation.email = email;
-      invitation.orgInviteToken = orgInviteToken;
-
-      await invitationRepository.save(invitation);
-
-      const inviteLink = `${frontendBaseUrl}/accept-invite/${organization.name}?token=${tokenValue}`;
-
+    invites.forEach((invite) => {
+      const inviteLink = `${frontendBaseUrl}/invite?token=${invite.token}`;
       const emailContent = {
-        userName: "",
+        userName: invite.email.split("@")[0],
         title: "Invitation to Join Organization",
         body: `<p>You have been invited to join ${organization.name} organization. Please use the following link to accept the invitation:</p><a href="${inviteLink}">Here</a>`,
       };
+
       const mailOptions = {
-        from: "your-email@gmail.com",
-        to: email,
+        from: "admin@mail.com",
+        to: invite.email,
         subject: "Invitation to Join Organization",
         html: renderTemplate("custom-email", emailContent),
       };
 
       addEmailToQueue(mailOptions);
-    }
+    });
+    await inviteRepository.save(invites);
   }
 
-  public async joinOrganizationByInvite(
+  async addUserToOrganizationWithInvite(
     token: string,
     userId: string,
-  ): Promise<void> {
-    const organisationRepository = AppDataSource.getRepository(Organization);
-    const userRepository = AppDataSource.getRepository(User);
+  ): Promise<string> {
+    const inviteRepository = AppDataSource.getRepository(Invitation);
     const userOrganizationRepository =
       AppDataSource.getRepository(UserOrganization);
-    const orgInviteTokenRepository =
-      AppDataSource.getRepository(OrgInviteToken);
-    const invitationRepository = AppDataSource.getRepository(Invitation);
-
-    const user = await userRepository.findOneBy({ id: userId });
-    if (!user) {
-      throw new ResourceNotFound("Please register to join the organization");
-    }
-
-    let organization;
-    const invitation = await invitationRepository.findOne({
-      where: { token: token, email: user.email },
+    const userRepository = AppDataSource.getRepository(User);
+    const invite = await inviteRepository.findOne({
+      where: { token },
       relations: ["organization"],
     });
 
-    if (invitation) {
-      organization = invitation.organization;
-    } else {
-      const orgInviteToken = await orgInviteTokenRepository.findOne({
-        where: { token: token },
-        relations: ["organization"],
-      });
-
-      if (!orgInviteToken) {
-        throw new ResourceNotFound("Invalid invitation token.");
-      }
-
-      organization = orgInviteToken.organization;
+    if (!invite) {
+      throw new ResourceNotFound("Invalid or expired invite token");
     }
 
-    if (!organization) {
-      throw new ResourceNotFound("Organization not found.");
+    const user = await userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new ResourceNotFound("Please register to join the organization.");
     }
-
-    const existingUserOrg = await userOrganizationRepository.findOne({
-      where: { user: { id: userId }, organization: { id: organization.id } },
+    const existingMembership = await userOrganizationRepository.findOne({
+      where: {
+        userId: user.id,
+        organizationId: invite.organization.id,
+      },
     });
 
-    if (existingUserOrg) {
-      throw new Conflict("You are already a member.");
+    if (existingMembership) {
+      throw new Conflict("User already added to organization.");
     }
 
-    const userOrganization = new UserOrganization();
-    userOrganization.user = user;
-    userOrganization.organization = organization;
-    userOrganization.role = UserRole.USER;
-
+    const userOrganization = userOrganizationRepository.create({
+      userId: user.id,
+      organizationId: invite.organization.id,
+      user: user,
+      organization: invite.organization,
+      role: user.role,
+    });
     await userOrganizationRepository.save(userOrganization);
+
+    invite.isAccepted = true;
+    await inviteRepository.save(invite);
+
+    return "User added to organization successfully";
+  }
+  async getAllInvite(
+    page: number,
+    pageSize: number,
+  ): Promise<{
+    message: string;
+    data: Partial<Invitation>[];
+    total: number;
+    status_code: number;
+  }> {
+    const inviteRepository = AppDataSource.getRepository(Invitation);
+
+    const [invites, total] = await inviteRepository.findAndCount({
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+
+    if (invites.length === 0) {
+      return {
+        status_code: 200,
+        message: "No invites yet",
+        data: invites,
+        total,
+      };
+    }
+
+    const sentInvites = invites.map((invite) => {
+      return {
+        id: invite.id,
+        token: invite.token,
+        isAccepted: invite.isAccepted,
+        isGeneric: invite.isGeneric,
+        organization: invite.organization,
+        email: invite.email,
+      };
+    });
+
+    return {
+      status_code: 200,
+      message: "Successfully fetched invites",
+      data: sentInvites,
+      total,
+    };
   }
 
   public async searchOrganizationMembers(criteria: {
@@ -391,6 +418,62 @@ export class OrgService implements IOrgService {
       });
 
       return roles;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateRolePermissions(
+    roleId: string,
+    organizationId: string,
+    newPermissions: PermissionCategory[],
+  ) {
+    try {
+      const organization = await this.organizationRepository.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      const role = await this.organizationRoleRepository.findOne({
+        where: { id: roleId, organization: { id: organizationId } },
+        relations: ["permissions"],
+      });
+
+      if (!role) {
+        throw new ResourceNotFound("Role not found");
+      }
+
+      const newPermissionsSet = new Set(newPermissions);
+
+      role.permissions = role.permissions.filter((permission) =>
+        newPermissionsSet.has(permission.category),
+      );
+
+      const existingCategories = new Set(
+        role.permissions.map((permission) => permission.category),
+      );
+
+      for (const category of newPermissions) {
+        if (!existingCategories.has(category)) {
+          const newPermission = this.permissionRepository.create({
+            category,
+            role,
+            permission_list: true,
+          });
+          role.permissions.push(newPermission);
+        }
+      }
+
+      role.permissions = role.permissions.filter((permission) =>
+        newPermissionsSet.has(permission.category),
+      );
+
+      await this.organizationRoleRepository.save(role);
+
+      return role;
     } catch (error) {
       throw error;
     }

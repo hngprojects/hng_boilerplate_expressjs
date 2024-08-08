@@ -31,9 +31,9 @@ describe("NewsLetterSubscriptionService", () => {
   beforeEach(() => {
     newsLetterRepositoryMock = {
       findOne: jest.fn(),
+      findAndCount: jest.fn(),
       save: jest.fn(),
     } as any;
-
     (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
       if (entity === NewsLetterSubscriber) return newsLetterRepositoryMock;
     });
@@ -76,7 +76,6 @@ describe("NewsLetterSubscriptionService", () => {
       const user = new NewsLetterSubscriber();
       user.id = "123";
       user.email = "test@example.com";
-
       (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(user);
       (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
         (user) => {
@@ -178,8 +177,8 @@ describe("RestoreNewsLetterSubscription", () => {
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "USER" }; // Mock non-admin user
-      next(new Unauthorized("Access denied. Admins only.")); // Call next with error
+      req.user = { role: "USER" };
+      next(new Unauthorized("Access denied. Admins only."));
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
@@ -193,12 +192,78 @@ describe("RestoreNewsLetterSubscription", () => {
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "ADMIN" }; // Mock admin user
-      next(); // Call next without error
+      req.user = { role: "ADMIN" };
+      next();
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
 
     expect(mockNext).toHaveBeenCalled();
+  });
+});
+  describe("fetchAllNewsletter", () => {
+    it("should fetch all newsletters with pagination", async () => {
+      const page = 2;
+      const limit = 20;
+      const mockSubscribers: any = [
+        { id: "1", email: "user1@example.com" },
+        { id: "2", email: "user2@example.com" },
+        { id: "3", email: "user3@example.com" },
+      ] as unknown as NewsLetterSubscriber[];
+      const mockTotal = 50;
+
+      newsLetterRepositoryMock.findAndCount.mockResolvedValue([
+        mockSubscribers,
+        mockTotal,
+      ]);
+
+      const result = await newsLetterSubscriptionService.fetchAllNewsletter({
+        page,
+        limit,
+      });
+
+      expect(result).toEqual({
+        data: mockSubscribers,
+        meta: {
+          total: mockTotal,
+          page,
+          limit,
+          totalPages: Math.ceil(mockTotal / limit),
+        },
+      });
+      expect(newsLetterRepositoryMock.findAndCount).toHaveBeenCalledWith({
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+    });
+
+    it("should handle default pagination values", async () => {
+      const mockSubscribers: any = [
+        { id: "1", email: "user1@example.com" },
+        { id: "2", email: "user2@example.com" },
+      ];
+      const mockTotal = 20;
+
+      newsLetterRepositoryMock.findAndCount.mockResolvedValue([
+        mockSubscribers,
+        mockTotal,
+      ]);
+
+      const result = await newsLetterSubscriptionService.fetchAllNewsletter({});
+
+      expect(result).toEqual({
+        data: mockSubscribers,
+        meta: {
+          total: mockTotal,
+          page: 1,
+          limit: 10,
+          totalPages: 2,
+        },
+      });
+      expect(newsLetterRepositoryMock.findAndCount).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+      });
+    });
   });
 });
