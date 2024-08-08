@@ -4,6 +4,7 @@ dotenv.config();
 const config = {
   port: process.env.PORT ?? 8000,
   "api-prefix": "api/v1",
+  DB_URL: process.env.URL,
   DB_USER: process.env.DB_USER,
   DB_HOST: process.env.DB_HOST,
   DB_PASSWORD: process.env.DB_PASSWORD,
@@ -32,6 +33,7 @@ const config = {
   FLW_ENCRYPTION_KEY: process.env.FLW_ENCRYPTION_KEY,
   LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY,
   BASE_URL: process.env.BASE_URL,
+  PAYSTACK_SECRET: process.env.PAYSTACK_SECRET,
 };
 
 export default config;

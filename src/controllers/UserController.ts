@@ -435,7 +435,11 @@ class UserController {
 
   public async updateUserProfile(req: Request, res: Response) {
     try {
-      const user = await this.userService.updateUserProfile(req.params.id, req.body, req.file);
+      const user = await this.userService.updateUserProfile(
+        req.params.id,
+        req.body,
+        req.file,
+      );
       res.status(200).json(user);
     } catch (error) {
       if (error instanceof HttpError) {

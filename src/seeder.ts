@@ -1,7 +1,7 @@
-// // // src/seeder.ts
-// // import AppDataSource from "./data-source";
-// // import { User, Organization, Product, Profile } from "./models";
-// // import log from "./utils/logger";
+// // src/seeder.ts
+// import AppDataSource from "./data-source";
+// import { User, Organization, Product, Profile, Payment } from "./models";
+// import log from "./utils/logger";
 
 // const createUsers = async () => {
 //   try {
@@ -100,26 +100,107 @@
 //     organization2.owner_id = users[0].id; // Set owner_id
 //     organization2.description = "Description for org 2";
 
-// //   const organization3 = new Organization();
-// //   organization3.name = "Org 3";
-// //   organization3.description = "Description for org 3";
-// //   organization3.owner_id = user2.id;
+//     const organization3 = new Organization();
+//     organization3.name = "Org 3";
+//     organization3.owner_id = users[1].id; // Set owner_id
+//     organization3.description = "Description for org 3";
 
-// //   // Assign organizations to users
-// //   user1.organizations = [organization1, organization2];
-// //   user2.organizations = [organization1, organization2, organization3];
+//     log.info("Saving organizations...");
+//     await AppDataSource.manager.save([
+//       organization1,
+//       organization2,
+//       organization3,
+//     ]);
+//     log.info("Organizations created successfully");
+//     return [organization1, organization2, organization3];
+//   } catch (error) {
+//     log.error("Error creating organizations: ", error.message);
+//     log.error(error.stack);
+//     throw error;
+//   }
+// };
+// const createPayments = async (users: User[], organizations: Organization[]) => {
+//   try {
+//     log.info("Creating payemtnts...");
+//     const payment1 = new Payment();
+//     payment1.amount = 450;
+//     payment1.currency = "NGN";
+//     payment1.status = "pending";
+//     payment1.provider = "paystack";
+//     payment1.userId = users[0].id;
+//     payment1.user = users[0];
+//     payment1.reference = "wegbajh0afaj";
+//     payment1.organization = organizations[0];
+//     payment1.organizationId = users[0].id;
+//     payment1.payer_email = "hello@example.com";
+//     payment1.description = "Description for payment 1";
 
-// //   // Save entities
+//     const payment = new Payment();
+//     payment.amount = 450;
+//     payment.currency = "NGN";
+//     payment.status = "completed";
+//     payment.provider = "paystack";
+//     payment.userId = users[1].id;
+//     payment.user = users[1];
+//     payment.reference = "wegbajh0afaj";
+//     payment.organization = organizations[0];
+//     payment.organizationId = users[0].id;
+//     payment.payer_email = "hellothere@example.com";
+//     payment.description = "Description for payment";
 
-// //   await AppDataSource.manager.save(organization1);
-// //   await AppDataSource.manager.save(organization2);
-// //   await AppDataSource.manager.save(organization3);
-// //   await AppDataSource.manager.save(product1);
-// //   await AppDataSource.manager.save(product2);
-// //   await AppDataSource.manager.save(product3);
-// //   await AppDataSource.manager.save(product4);
+//     log.info("Saving organizations...");
+//     await AppDataSource.manager.save([payment, payment1]);
+//     log.info("Payments created successfully");
+//     return [payment, payment1];
+//   } catch (error) {
+//     log.error("Error creating Payments: ", error.message);
+//     log.error(error.stack);
+//     throw error;
+//   }
+// };
 
-// //   log.info("Seeding completed successfully.");
-// // };
+// const assignOrganizationsToUsers = async (
+//   users: User[],
+//   organizations: Organization[]
+// ) => {
+//   try {
+//     log.info("Assigning organizations to users...");
+//     users[0].organizations = [organizations[0], organizations[1]];
+//     users[1].organizations = [
+//       organizations[0],
+//       organizations[1],
+//       organizations[2],
+//     ];
 
-// // export { seed };
+//     log.info("Saving user-organization relationships...");
+//     await AppDataSource.manager.save(users);
+//     log.info("Organizations assigned to users successfully");
+//   } catch (error) {
+//     log.error("Error assigning organizations to users: ", error.message);
+//     log.error(error.stack);
+//     throw error;
+//   }
+// };
+
+// const seed = async () => {
+//   try {
+//     await AppDataSource.initialize();
+//     await AppDataSource.manager.transaction(
+//       async (transactionalEntityManager) => {
+//         const users = await createUsers();
+//         await createProducts(users);
+//         const organizations = await createOrganizations(users); // Pass users to createOrganizations
+//         const payments = await createPayments(users, organizations);
+//         await assignOrganizationsToUsers(users, organizations);
+//       }
+//     );
+//     log.info("Seeding completed successfully.");
+//   } catch (error) {
+//     log.error("Seeding failed: ", error.message);
+//     log.error(error.stack);
+//   } finally {
+//     await AppDataSource.destroy();
+//   }
+// };
+
+// seed();

@@ -41,6 +41,9 @@ export class Payment {
   @Column("uuid", { nullable: true })
   organizationId: string | null;
 
+  @Column({ nullable: true })
+  reference: string;
+
   @ManyToOne(() => Organization, (organization) => organization.payments, {
     nullable: true,
   })

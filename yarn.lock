@@ -1643,6 +1643,7 @@ buffer@^6.0.3:
     ieee754 "^1.2.1"
 
 bull@*, bull@^4.15.1:
+bull@*, bull@^4.15.1:
   version "4.15.1"
   resolved "https://registry.npmjs.org/bull/-/bull-4.15.1.tgz"
   integrity sha512-knVKiZdrXbRkB+fWqNryDz85b3JfsT3dBrZexkztwvTH/AFmpHvsC933VB3JX18aJCz47E+xdO57xbDvxljoAg==
