@@ -91,6 +91,96 @@ const subscribeToNewsletter = async (
   }
 };
 
+/**
+ * @swagger
+ * /api/v1/newsletters:
+ *   get:
+ *     summary: Get all newsletters with pagination
+ *     tags: [Newsletters]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: The page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: The number of items per page
+ *     responses:
+ *       200:
+ *         description: A list of newsletters with pagination metadata
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "success"
+ *                 message:
+ *                   type: string
+ *                   example: "Newsletters retrieved successfully"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id:
+ *                         type: string
+ *                         example: "newsletterId123"
+ *                       title:
+ *                         type: string
+ *                         example: "Weekly Update"
+ *                       content:
+ *                         type: string
+ *                         example: "This is the content of the newsletter."
+ *                 meta:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                       example: 100
+ *                     page:
+ *                       type: integer
+ *                       example: 1
+ *                     limit:
+ *                       type: integer
+ *                       example: 10
+ *                     totalPages:
+ *                       type: integer
+ *                       example: 10
+ *       400:
+ *         description: Bad request, possibly due to invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Invalid page or limit parameter"
+ *                 status_code:
+ *                   type: integer
+ *                   example: 400
+ *       500:
+ *         description: An error occurred while fetching the newsletters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ *                 status_code:
+ *                   type: integer
+ *                   example: 500
+ */
+
 const getAllNewsletter = async (
   req: Request,
   res: Response,

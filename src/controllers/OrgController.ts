@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { ResourceNotFound, ServerError, HttpError } from "../middleware";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import {
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
-import { InvalidInput } from "../middleware";
-import { PermissionCategory } from "../enums/permission-category.enum";
 
 export class OrgController {
   private orgService: OrgService;
@@ -1201,6 +1205,101 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles/{role_id}:
+   *   get:
+   *     summary: Get a specific role in an organization
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: role_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the role
+   *     responses:
+   *       200:
+   *         description: The details of the specified role or a message indicating that the role does not exist
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "roleId123"
+   *                     name:
+   *                       type: string
+   *                       example: "Admin"
+   *                     description:
+   *                       type: string
+   *                       example: "Administrator role with full access"
+   *                 message:
+   *                   type: string
+   *                   example: "The role with ID roleId123 does not exist in the organisation"
+   *       400:
+   *         description: Bad request, possibly due to invalid organization or role ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       401:
+   *         description: Unauthorized, possibly due to missing or invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *       404:
+   *         description: Role or organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: An error occurred while fetching the role
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
   async getSingleRole(req: Request, res: Response, next: NextFunction) {
     try {
       const organizationId = req.params.org_id;
@@ -1228,6 +1327,91 @@ export class OrgController {
       next(new ServerError("Encountered error while fetching user"));
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles:
+   *   get:
+   *     summary: Get all roles in an organization
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *     responses:
+   *       200:
+   *         description: A list of roles in the organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: string
+   *                       name:
+   *                         type: string
+   *                       description:
+   *                         type: string
+   *       400:
+   *         description: Bad request, possibly due to invalid organization ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       401:
+   *         description: Unauthorized, possibly due to missing or invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: An error occurred while fetching the roles
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
 
   async getAllOrganizationRoles(
     req: Request,
