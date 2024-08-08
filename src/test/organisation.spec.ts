@@ -1,33 +1,25 @@
 // @ts-nocheck
 import jwt from "jsonwebtoken";
 import AppDataSource from "../data-source";
-import { Organization, User } from "../models";
+import { Organization, User, OrganizationRole } from "../models";
 import { OrgService } from "../services";
-
 import { Repository } from "typeorm";
-import { OrgController } from "../controllers/OrgController.ts";
-
-import { authMiddleware } from "../middleware/auth.ts";
 import { OrgController } from "../controllers";
-import { validateOrgId } from "../middleware/organizationValidation.ts";
-import {
-  InvalidInput,
-  HttpError,
-  ResourceNotFound,
-} from "../middleware/error.ts";
+import { authMiddleware } from "../middleware/auth";
+import { validateOrgId } from "../middleware/organizationValidation";
+import { InvalidInput, HttpError, ResourceNotFound } from "../middleware/error";
 
-jest.mock("../data-source", () => {
-  return {
-    AppDataSource: {
-      manager: {
-        save: jest.fn(),
-        findOne: jest.fn(),
-      },
-      getRepository: jest.fn(),
-      initialize: jest.fn().mockResolvedValue(true),
+jest.mock("../data-source", () => ({
+  __esModule: true,
+  default: {
+    manager: {
+      save: jest.fn(),
+      findOne: jest.fn(),
     },
-  };
-});
+    getRepository: jest.fn(),
+    initialize: jest.fn().mockResolvedValue(true),
+  },
+}));
 jest.mock("../models");
 jest.mock("jsonwebtoken");
 
@@ -47,7 +39,7 @@ describe("Organization Controller and Middleware", () => {
       save: jest.fn(),
     };
     AppDataSource.manager = mockManager;
-    AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
+    AppDataSource.getRepository.mockReturnValue(mockManager);
   });
 
   it("check if user is authenticated", async () => {
@@ -148,7 +140,7 @@ describe("Update User Organization", () => {
       findOne: jest.fn(),
       update: jest.fn(),
     };
-    AppDataSource.getRepository = jest.fn().mockReturnValue(mockRepository);
+    AppDataSource.getRepository.mockReturnValue(mockRepository);
     orgService = new OrgService();
   });
 
