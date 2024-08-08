@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -1067,6 +1067,33 @@ export class OrgController {
           status_code: 404,
         });
       }
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getSingleRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const organizationId = req.params.org_id;
+      const roleId = req.params.role_id;
+      const response = await this.orgService.fetchSingleRole(
+        organizationId,
+        roleId,
+      );
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllOrganizationRoles(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const response =
+        await this.orgService.fetchAllRolesInOrganization(organizationId);
     } catch (error) {
       next(error);
     }

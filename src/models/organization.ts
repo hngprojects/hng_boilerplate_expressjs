@@ -1,19 +1,21 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToMany,
-  ManyToMany,
   BeforeInsert,
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { User } from ".";
 import { v4 as uuidv4 } from "uuid";
-import { UserOrganization } from "./user-organisation";
-import ExtendedBaseEntity from "./extended-base-entity";
+import { User } from ".";
 import { BillingPlan } from "./billing-plan";
+import ExtendedBaseEntity from "./extended-base-entity";
+import { OrganizationMember } from "./organization-member";
+import { OrganizationRole } from "./organization-role.entity";
 import { Payment } from "./payment";
 import { Product } from "./product";
+import { UserOrganization } from "./user-organisation";
 
 @Entity()
 export class Organization extends ExtendedBaseEntity {
@@ -73,6 +75,17 @@ export class Organization extends ExtendedBaseEntity {
 
   @OneToMany(() => Product, (product) => product.org, { cascade: true })
   products: Product[];
+
+  @OneToMany(() => OrganizationRole, (role) => role.organization, {
+    eager: false,
+  })
+  role: OrganizationRole;
+
+  @OneToMany(
+    () => OrganizationMember,
+    (organizationMember) => organizationMember.organization_id,
+  )
+  organizationMembers: OrganizationMember[];
 
   @BeforeInsert()
   generateSlug() {
