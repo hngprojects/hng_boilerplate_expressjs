@@ -20,4 +20,13 @@ export class JobController {
       res.status(500).json({ message: error.message, status_code: 400 });
     }
   }
+
+  async getAllJobs(req: Request, res: Response) {
+    try {
+      const billing = await this.jobService.getAllJobs(req);
+      res.status(201).json({ message: "Success", billing });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }

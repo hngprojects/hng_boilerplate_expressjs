@@ -19,4 +19,13 @@ export class JobService {
     const job = await Job.save(jobEntity);
     return job;
   }
+
+  public async getAllJobs(req: Request): Promise<Job[] | null> {
+    try {
+      return await Job.find();
+    } catch (error) {
+      console.error("Failed to fetch jobs", error);
+      throw new Error("Could not fetch jobs ");
+    }
+  }
 }

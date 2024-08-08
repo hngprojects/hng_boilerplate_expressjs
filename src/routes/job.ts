@@ -12,4 +12,10 @@ jobRouter.post(
   jobController.createJob.bind(jobController),
 );
 
+jobRouter.get(
+  "/jobs",
+  authMiddleware,
+  jobController.getAllJobs.bind(jobController),
+);
+
 export { jobRouter };
