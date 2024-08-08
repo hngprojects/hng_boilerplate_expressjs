@@ -6,6 +6,7 @@ import {
   checkPermissions,
   organizationValidation,
   validateOrgId,
+  validateOrgRole,
   validateUpdateOrg,
 } from "../middleware";
 
@@ -43,6 +44,14 @@ orgRouter.get(
   authMiddleware,
   checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
   orgController.generateGenericInviteLink.bind(orgController),
+);
+
+orgRouter.post(
+  "organizations/:org_id/roles",
+  authMiddleware,
+  validateOrgRole,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
+  orgController.createOrganizationRole.bind(orgController),
 );
 
 orgRouter.post(

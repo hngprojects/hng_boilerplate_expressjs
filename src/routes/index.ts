@@ -21,3 +21,5 @@ export * from "./paymentPaystack";
 export * from "./billing-plans";
 export * from "./squeeze";
 export * from "./newsLetterSubscription";
+export * from "./notification";
+export * from "./billingplan";
