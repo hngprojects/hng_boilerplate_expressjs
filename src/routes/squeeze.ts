@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { SqueezeController } from "../controllers";
-import { squeezeSchema } from "../schema/squeezeSchema";
 import { authMiddleware } from "../middleware";
 
 const squeezeRoute = Router();
