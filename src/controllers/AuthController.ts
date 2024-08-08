@@ -64,6 +64,7 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
     const { message, user, access_token } = await authService.signUp(req.body);
     res.status(201).json({ message, user, access_token });
   } catch (error) {
+    console.log(error);
     next(error);
   }
 };
