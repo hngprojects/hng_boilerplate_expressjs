@@ -1,8 +1,6 @@
 import { Repository } from "typeorm";
-import { Product } from "../models/product";
 import AppDataSource from "../data-source";
-import { ProductSize, StockStatus } from "../enums/product";
-import { ProductSchema } from "../schema/product.schema";
+import { StockStatus } from "../enums/product";
 import {
   HttpError,
   InvalidInput,
@@ -10,7 +8,8 @@ import {
   ServerError,
 } from "../middleware";
 import { Organization } from "../models/organization";
-import { UserRole } from "../enums/userRoles";
+import { Product } from "../models/product";
+import { ProductSchema } from "../schema/product.schema";
 
 export class ProductService {
   private productRepository: Repository<Product>;
