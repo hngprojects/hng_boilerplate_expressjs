@@ -28,6 +28,7 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      #- ./init-scripts:/docker-entrypoint-initdb.d
     ports:
       - 5432:5432
     healthcheck:
@@ -38,18 +39,21 @@ services:
     networks:
       - app
 
-  nginx-proxy-manager:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
+  nginx:
+    image: nginx:latest
     ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites-available/expressjs:/etc/nginx/sites-available/expressjs
+      - ./nginx/sites-enabled/expressjs:/etc/nginx/sites-enabled/expressjs
+      - /etc/letsencrypt:/etc/letsencrypt
     networks:
       - app
+    depends_on:
+      - backend
+    restart: always
 
   rabbitmq:
     image: rabbitmq:3-management
