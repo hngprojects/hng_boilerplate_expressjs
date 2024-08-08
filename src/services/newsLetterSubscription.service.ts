@@ -15,26 +15,36 @@ export class NewsLetterSubscriptionService
   }
 
   public async subscribeUser(email: string): Promise<{
-    isSubscribe: boolean;
+    isNewlySubscribe: boolean;
     subscriber: NewsLetterSubscriber;
   }> {
-    let isSubscribe = false;
+    let isNewlySubscribe = true;
+
     const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
       where: { email },
     });
-    if (isExistingSubscriber) {
-      isSubscribe = true;
-      return { isSubscribe, subscriber: isExistingSubscriber };
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === true) {
+      isNewlySubscribe = false;
+      return { isNewlySubscribe, subscriber: isExistingSubscriber };
     }
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === false) {
+      throw new BadRequest(
+        "You are already subscribed, please enable newsletter subscription to receive newsletter again",
+      );
+    }
+
     const newSubscriber = new NewsLetterSubscriber();
     newSubscriber.email = email;
+    newSubscriber.isSubscribe = true;
+
     const subscriber = await this.newsLetterSubscriber.save(newSubscriber);
+
     if (!subscriber) {
       throw new HttpError(
         500,
         "An error occurred while processing your request",
       );
     }
-    return { isSubscribe, subscriber };
+    return { isNewlySubscribe, subscriber };
   }
 }

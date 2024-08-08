@@ -52,6 +52,23 @@ const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
  *                   type: string
  *                   example: You are already subscribed to our newsletter.
  *
+ *       400:
+ *         description: User is already subscribed but unsubscribe.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 status_code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: You are already subscribed, please enable newsletter subscription to receive newsletter again
+ *
  *       500:
  *         description: Internal server error. An error occurred while processing the subscription.
  *         content:
@@ -80,13 +97,15 @@ const subscribeToNewsletter = async (
       throw new BadRequest("Email is missing in request body.");
     }
     const subscriber = await newsLetterSubscriptionService.subscribeUser(email);
-    res.status(!subscriber.isSubscribe ? 201 : 200).json({
+    res.status(subscriber.isNewlySubscribe ? 201 : 200).json({
       status: "success",
-      message: !subscriber.isSubscribe
+      message: subscriber.isNewlySubscribe
         ? "Subscriber subscription successful"
         : "You are already subscribed to our newsletter",
     });
   } catch (error) {
+    console.log(error);
+
     next(error);
   }
 };

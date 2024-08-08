@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
+import { BadRequest } from "../middleware";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -22,9 +23,7 @@ jest.mock("../utils");
 
 describe("NewsLetterSubscriptionService", () => {
   let newsLetterSubscriptionService: NewsLetterSubscriptionService;
-  let newsLetterRepositoryMock: jest.Mocked<
-    Repository<NewsLetterSubscriptionService>
-  >;
+  let newsLetterRepositoryMock: jest.Mocked<Repository<NewsLetterSubscriber>>;
 
   beforeEach(() => {
     newsLetterRepositoryMock = {
@@ -45,12 +44,8 @@ describe("NewsLetterSubscriptionService", () => {
 
   describe("SubscribeToNewsLetter", () => {
     it("should subscribe a new user", async () => {
-      const user = new NewsLetterSubscriber();
-      user.email = "test@example.com";
-
-      const payload = {
-        email: "test1@example.com",
-      };
+      const newSubscriber = new NewsLetterSubscriber();
+      newSubscriber.email = "test1@example.com";
 
       (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
       (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
@@ -59,38 +54,58 @@ describe("NewsLetterSubscriptionService", () => {
           return Promise.resolve(user);
         },
       );
+
       const result =
         await newsLetterSubscriptionService.subscribeUser("test1@example.com");
 
-      expect(result.isSubscribe).toBe(false);
+      expect(result.isNewlySubscribe).toBe(true);
       expect(result.subscriber).toEqual({
         id: "456",
         email: "test1@example.com",
+        isSubscribe: true,
       });
-      expect(newsLetterRepositoryMock.save).toHaveBeenCalled();
+      expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: "test1@example.com",
+          isSubscribe: true,
+        }),
+      );
     });
 
-    it("should handle already subscribed user", async () => {
-      const user = new NewsLetterSubscriber();
-      user.id = "123";
-      user.email = "test@example.com";
+    it("should handle an already subscribed user", async () => {
+      const existingSubscriber = new NewsLetterSubscriber();
+      existingSubscriber.id = "123";
+      existingSubscriber.email = "test@example.com";
+      existingSubscriber.isSubscribe = true;
 
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(user);
-      (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
-        (user) => {
-          user.id = "456";
-          return Promise.resolve(user);
-        },
+      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(
+        existingSubscriber,
       );
+
       const result =
         await newsLetterSubscriptionService.subscribeUser("test@example.com");
 
-      expect(result.isSubscribe).toBe(true);
+      expect(result.isNewlySubscribe).toBe(false);
       expect(result.subscriber).toEqual({
         id: "123",
         email: "test@example.com",
+        isSubscribe: true,
       });
       expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
+    });
+
+    it("should throw a Conflict error if already subscribed but inactive", async () => {
+      const inactiveSubscriber = new NewsLetterSubscriber();
+      inactiveSubscriber.email = "test@example.com";
+      inactiveSubscriber.isSubscribe = false;
+
+      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(
+        inactiveSubscriber,
+      );
+
+      await expect(
+        newsLetterSubscriptionService.subscribeUser("test@example.com"),
+      ).rejects.toThrow(BadRequest);
     });
 
     it("should throw an error if something goes wrong", async () => {
