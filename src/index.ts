@@ -18,7 +18,6 @@ import {
   helpRouter,
   jobRouter,
   newsLetterSubscriptionRoute,
-  notificationRouter,
   paymentFlutterwaveRouter,
   paymentRouter,
   paymentStripeRouter,
@@ -29,6 +28,8 @@ import {
   testimonialRoute,
   userRouter,
   squeezeRoute,
+  notificationsettingsRouter,
+  notificationRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -82,6 +83,7 @@ server.use("/api/v1", productRouter);
 server.use("/api/v1", paymentFlutterwaveRouter);
 server.use("/api/v1", paymentStripeRouter);
 server.use("/api/v1", smsRouter);
+server.use("/api/v1", notificationsettingsRouter);
 server.use("/api/v1", notificationRouter);
 server.use("/api/v1", paymentRouter);
 server.use("/api/v1", billingRouter);
