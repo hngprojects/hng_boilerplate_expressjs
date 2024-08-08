@@ -94,6 +94,21 @@ export interface INewsLetterSubscription {
   email: string;
 }
 
+export type UserIdentifierOptionsType =
+  | {
+      identifierType: "id";
+      identifier: string;
+    }
+  | {
+      identifierType: "email";
+      identifier: string;
+    };
+
+export type UpdateUserRecordOption = {
+  updatePayload: Partial<User>;
+  identifierOption: UserIdentifierOptionsType;
+};
+
 export interface IBillingPlanService {
   createBillingPlan(planData: Partial<BillingPlan>): Promise<BillingPlan[]>;
 }
