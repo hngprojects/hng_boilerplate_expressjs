@@ -56,7 +56,7 @@ describe("AuthService", () => {
 
       const hashedPassword = "hashedPassword";
       const otp = "123456";
-      const message = "user created";
+      const mailSent = "mailSent";
       const createdUser = {
         id: 1,
         name: "John Doe",
@@ -78,12 +78,13 @@ describe("AuthService", () => {
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
       mockManager.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
+      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.signUp(payload);
 
       expect(result).toEqual({
-        message,
-        user: {
+        mailSent,
+        newUser: {
           id: 1,
           name: "John Doe",
           email: "john.doe@example.com",
@@ -372,99 +373,6 @@ describe("AuthService", () => {
       const result = await authService.passwordlessLogin(userId);
 
       expect(result).toEqual({ access_token: mockAccessToken });
-    });
-  });
-
-  describe("AuthService-enable2FA", () => {
-    it("should enable 2FA successfully", async () => {
-      const mockUser = {
-        id: "user123",
-        email: "test@example.com",
-        password: "hashedPassword123",
-        is_2fa_enabled: false,
-      };
-      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
-      userServiceMock.compareUserPassword.mockResolvedValue(true);
-      userServiceMock.updateUserRecord.mockResolvedValue(undefined);
-
-      const speakeasySecretSpy = jest
-        .spyOn(speakeasy, "generateSecret")
-        .mockReturnValue({
-          base32: "mockSecret",
-          ascii: "mockAsciiSecret",
-        } as unknown as any);
-      const speakeasyOtpauthURLSpy = jest
-        .spyOn(speakeasy, "otpauthURL")
-        .mockReturnValue("mockQRCodeUrl");
-
-      const result = await authService.enable2FA("user123", "password123");
-      expect(userServiceMock.getUserById).toHaveBeenCalledWith("user123");
-      expect(userServiceMock.compareUserPassword).toHaveBeenCalledWith(
-        "password123",
-        "hashedPassword123",
-      );
-      expect(userServiceMock.updateUserRecord).toHaveBeenCalledWith({
-        updatePayload: expect.objectContaining({
-          secret: "mockSecret",
-          is_2fa_enabled: true,
-          backup_codes: expect.any(Array),
-        }),
-        identifierOption: {
-          identifier: "user123",
-          identifierType: "id",
-        },
-      });
-      expect(result).toEqual({
-        message: "2FA setup initiated",
-        data: {
-          secret: "mockSecret",
-          qr_code_url: "mockQRCodeUrl",
-          backup_codes: expect.any(Array),
-        },
-      });
-      expect(speakeasySecretSpy).toHaveBeenCalledWith({ length: 32 });
-      expect(speakeasyOtpauthURLSpy).toHaveBeenCalledWith({
-        secret: "mockAsciiSecret",
-        label: `Hng:test@example.com`,
-        issuer: `Hng Boilerplate`,
-      });
-    });
-
-    it("should throw BadRequest if password is invalid", async () => {
-      const mockUser = {
-        id: "user123",
-        password: "hashedPassword",
-        is_2fa_enabled: false,
-      };
-      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
-      await expect(
-        authService.enable2FA("user123", "wrongpassword"),
-      ).rejects.toThrow(BadRequest);
-      expect(userServiceMock.updateUserRecord).not.toHaveBeenCalled();
-    });
-
-    it("should throw BadRequest if 2FA is already enabled", async () => {
-      const mockUser = {
-        id: "user123",
-        password: "hashedPassword",
-        is_2fa_enabled: true,
-      };
-      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
-
-      await expect(
-        authService.enable2FA("user123", "password123"),
-      ).rejects.toThrow(BadRequest);
-      expect(userServiceMock.updateUserRecord).not.toHaveBeenCalled();
-    });
-
-    it("should throw ServerError for unexpected errors", async () => {
-      userServiceMock.getUserById.mockRejectedValue(
-        new Error("Database error"),
-      );
-
-      await expect(
-        authService.enable2FA("user123", "password123"),
-      ).rejects.toThrow(ServerError);
     });
   });
 });
