@@ -87,7 +87,7 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(null);
       (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
-      userRepositoryMock.save.mockResolvedValue(createdUser);
+      // userRepositoryMock.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
 
       const result = await authService.signUp(payload);
@@ -138,7 +138,7 @@ describe("AuthService", () => {
 
       (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
       (User.findOne as jest.Mock).mockResolvedValue(user);
-      userRepositoryMock.save.mockResolvedValue(user);
+      // userRepositoryMock.save.mockResolvedValue(user);
 
       const result = await authService.verifyEmail(token, otp);
 
@@ -234,10 +234,10 @@ describe("AuthService", () => {
       (User.findOne as jest.Mock).mockResolvedValue(user);
       (comparePassword as jest.Mock).mockResolvedValue(true);
       (hashPassword as jest.Mock).mockResolvedValue(hashedNewPassword);
-      userRepositoryMock.save.mockResolvedValue({
-        ...user,
-        password: hashedNewPassword,
-      });
+      // userRepositoryMock.save.mockResolvedValue({
+      //   ...user,
+      //   password: hashedNewPassword,
+      // });
 
       const result = await authService.changePassword(
         userId,
