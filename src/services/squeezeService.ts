@@ -6,13 +6,13 @@ import { squeezeSchema } from "../schema/squeezeSchema";
 const squeezeRepository = AppDataSource.getRepository(Squeeze);
 
 class SqueezeService {
-  static async createSqueeze(data: Partial<Squeeze>): Promise<Squeeze> {
-    const validation = squeezeSchema.safeParse(data);
-    if (!validation.success) {
-      throw new Conflict(
-        "Validation failed: " +
-          validation.error.errors.map((e) => e.message).join(", "),
-      );
+    public async createSqueeze(data: Partial<Squeeze>): Promise<Squeeze> {
+        const validation = squeezeSchema.safeParse(data);
+        if (!validation.success) {
+            throw new Conflict(
+            "Validation failed: " +
+            validation.error.errors.map((e) => e.message).join(", "),
+        );
     }
 
     const existingSqueeze = await squeezeRepository.findOne({
