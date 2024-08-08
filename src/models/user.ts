@@ -19,6 +19,7 @@ import { UserRole } from "../enums/userRoles";
 import { getIsInvalidMessage } from "../utils";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { Like } from "./like";
+import { OrganizationMember } from "./organization-member";
 import { UserOrganization } from "./user-organisation";
 import { Job } from "./job";
 
@@ -108,6 +109,12 @@ export class User extends ExtendedBaseEntity {
 
   @Column({ nullable: true, type: "bigint" })
   passwordResetExpires: number;
+
+  @OneToMany(
+    () => OrganizationMember,
+    (organizationMember) => organizationMember.organization_id,
+  )
+  organizationMembers: OrganizationMember[];
 
   createPasswordResetToken(): string {
     const resetToken = crypto.randomBytes(32).toString("hex");

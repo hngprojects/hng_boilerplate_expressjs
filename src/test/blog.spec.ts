@@ -14,6 +14,8 @@ jest.mock("../data-source", () => ({
   },
 }));
 
+jest.mock("../models");
+
 describe("BlogService", () => {
   let blogService: BlogService;
   let blogRepositoryMock: jest.Mocked<Repository<Blog>>;
