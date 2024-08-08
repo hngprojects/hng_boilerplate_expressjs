@@ -18,10 +18,12 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/product:
+   * /api/v1/organisation/{:id}/product:
    *   post:
-   *     summary: Create a product
-   *     tags: [Product]
+   *     tags:
+   *       - Product API
+   *     summary: Create a new product
+   *     description: Create a new product for organisations.
    *     parameters:
    *       - name: org_id
    *         in: path
@@ -252,17 +254,11 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/products/{product_id}:
+   * /api/v1/products/{product_id}:
    *   delete:
    *     summary: Delete a product by its ID
    *     tags: [Product]
    *     parameters:
-   *       - in: path
-   *         name: org_id
-   *         required: true
-   *         schema:
-   *           type: string
-   *         description: The ID of the organization
    *       - in: path
    *         name: product_id
    *         required: true
@@ -518,7 +514,7 @@ class ProductController {
       message: "product update successful",
       data: updatedProduct,
     });
-  }
+  }  
 
 /**
    * @openapi
@@ -623,21 +619,21 @@ class ProductController {
    *                   type: integer
    *                   example: 500
    */
-  public getSingleProduct = async (req: Request, res: Response) => {
-    const { org_id, product_id } = req.params;
-    if (product_id && org_id) {
-      const product = await this.productService.getProduct(org_id, product_id);
-      if (product) {
-        res.status(200).json({
-          status_code: 200,
-          message: "Product retrieved successfully",
-          data: product,
-        });
-      }
-    } else {
-      return new BadRequest("Invalid Product ID");
+public getSingleProduct = async (req: Request, res: Response) => {
+  const { org_id, product_id } = req.params;
+  if (product_id && org_id) {
+    const product = await this.productService.getProduct(org_id, product_id);
+    if (product) {
+      res.status(200).json({
+        status_code: 200,
+        message: "Product retrieved successfully",
+        data: product,
+      });
     }
-  };
+  } else {
+    return new BadRequest("Invalid Product ID");
+  }
+};  
 }
 
 export { ProductController };
