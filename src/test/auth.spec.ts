@@ -374,89 +374,97 @@ describe("AuthService", () => {
       expect(result).toEqual({ access_token: mockAccessToken });
     });
   });
+
+  describe("AuthService-enable2FA", () => {
+    it("should enable 2FA successfully", async () => {
+      const mockUser = {
+        id: "user123",
+        email: "test@example.com",
+        password: "hashedPassword123",
+        is_2fa_enabled: false,
+      };
+      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
+      userServiceMock.compareUserPassword.mockResolvedValue(true);
+      userServiceMock.updateUserRecord.mockResolvedValue(undefined);
+
+      const speakeasySecretSpy = jest
+        .spyOn(speakeasy, "generateSecret")
+        .mockReturnValue({
+          base32: "mockSecret",
+          ascii: "mockAsciiSecret",
+        } as unknown as any);
+      const speakeasyOtpauthURLSpy = jest
+        .spyOn(speakeasy, "otpauthURL")
+        .mockReturnValue("mockQRCodeUrl");
+
+      const result = await authService.enable2FA("user123", "password123");
+      expect(userServiceMock.getUserById).toHaveBeenCalledWith("user123");
+      expect(userServiceMock.compareUserPassword).toHaveBeenCalledWith(
+        "password123",
+        "hashedPassword123",
+      );
+      expect(userServiceMock.updateUserRecord).toHaveBeenCalledWith({
+        updatePayload: expect.objectContaining({
+          secret: "mockSecret",
+          is_2fa_enabled: true,
+          backup_codes: expect.any(Array),
+        }),
+        identifierOption: {
+          identifier: "user123",
+          identifierType: "id",
+        },
+      });
+      expect(result).toEqual({
+        message: "2FA setup initiated",
+        data: {
+          secret: "mockSecret",
+          qr_code_url: "mockQRCodeUrl",
+          backup_codes: expect.any(Array),
+        },
+      });
+      expect(speakeasySecretSpy).toHaveBeenCalledWith({ length: 32 });
+      expect(speakeasyOtpauthURLSpy).toHaveBeenCalledWith({
+        secret: "mockAsciiSecret",
+        label: `Hng:test@example.com`,
+        issuer: `Hng Boilerplate`,
+      });
+    });
+
+    it("should throw BadRequest if password is invalid", async () => {
+      const mockUser = {
+        id: "user123",
+        password: "hashedPassword",
+        is_2fa_enabled: false,
+      };
+      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
+      await expect(
+        authService.enable2FA("user123", "wrongpassword"),
+      ).rejects.toThrow(BadRequest);
+      expect(userServiceMock.updateUserRecord).not.toHaveBeenCalled();
+    });
+
+    it("should throw BadRequest if 2FA is already enabled", async () => {
+      const mockUser = {
+        id: "user123",
+        password: "hashedPassword",
+        is_2fa_enabled: true,
+      };
+      userServiceMock.getUserById.mockResolvedValue(mockUser as unknown as any);
+
+      await expect(
+        authService.enable2FA("user123", "password123"),
+      ).rejects.toThrow(BadRequest);
+      expect(userServiceMock.updateUserRecord).not.toHaveBeenCalled();
+    });
+
+    it("should throw ServerError for unexpected errors", async () => {
+      userServiceMock.getUserById.mockRejectedValue(
+        new Error("Database error"),
+      );
+
+      await expect(
+        authService.enable2FA("user123", "password123"),
+      ).rejects.toThrow(ServerError);
+    });
+  });
 });
-
-// describe('GoogleAuthService', () => {
-//   let googleAuthService: GoogleAuthService;
-
-//   beforeEach(() => {
-//     googleAuthService = new GoogleAuthService();
-//   });
-
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
-
-//   it('should register a new user if authUser is null', async () => {
-//     const payload = {
-//       email: 'user@example.com',
-//       email_verified: true,
-//       name: 'John Doe',
-//       picture: 'https://example.com/avatar.jpg',
-//       sub: '1234567890',
-//     };
-
-//     // Mock the save function to simulate database saving
-//     const saveMock = jest.fn().mockResolvedValue({ ...new User(), id: '1', profile: new UserProfile() });
-//     AppDataSource.manager.save = saveMock;
-
-//     // Mock jwt.sign to return a dummy token
-//     const jwtSignMock = jest.spyOn(jwt, 'sign').mockReturnValue('dummy_token');
-
-//     const result = await googleAuthService.handleGoogleAuthUser(payload, null);
-
-//     expect(result).toHaveProperty('access_token', 'dummy_token');
-//     expect(result.user).toHaveProperty('email', payload.email);
-//     expect(saveMock).toHaveBeenCalled();
-//     expect(jwtSignMock).toHaveBeenCalledWith(
-//       { userId: '1' }, // Assume '1' is the user ID returned from the mock save
-//       config.TOKEN_SECRET,
-//       { expiresIn: '1d' },
-//     );
-//   });
-
-//   it('should use existing user if authUser is provided', async () => {
-//     // Mock payload data
-//     const payload = {
-//       email: 'user@example.com',
-//       email_verified: true,
-//       name: 'John Doe',
-//       picture: 'https://example.com/avatar.jpg',
-//       sub: '1234567890',
-//     };
-
-//     const authUser = new User();
-//     authUser.email = payload.email;
-//     authUser.profile = new UserProfile();
-
-//     // Mock jwt.sign to return a dummy token
-//     const jwtSignMock = jest.spyOn(jwt, 'sign').mockReturnValue('dummy_token');
-
-//     const result = await googleAuthService.handleGoogleAuthUser(payload, authUser);
-
-//     expect(result).toHaveProperty('access_token', 'dummy_token');
-//     expect(result.user).toHaveProperty('email', payload.email);
-//     expect(jwtSignMock).toHaveBeenCalledWith(
-//       { userId: authUser.id },
-//       config.TOKEN_SECRET,
-//       { expiresIn: '1d' },
-//     );
-//   });
-
-//   it('should throw BadRequest error if email does not match', async () => {
-//     // Mock payload data
-//     const payload = {
-//       email: 'user@example.com',
-//       email_verified: true,
-//       name: 'John Doe',
-//       picture: 'https://example.com/avatar.jpg',
-//       sub: '1234567890',
-//     };
-
-//     const authUser = new User();
-//     authUser.email = 'different@example.com';
-//     authUser.profile = new UserProfile();
-
-//     await expect(googleAuthService.handleGoogleAuthUser(payload, authUser)).rejects.toThrow(BadRequest);
-//   });
-// });
