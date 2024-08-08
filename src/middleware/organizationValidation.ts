@@ -206,7 +206,6 @@ export const validateUserToOrg = async (
 
     next();
   } catch (error) {
-    console.log(error);
     res.status(500).json({
       status_code: 500,
       message: "Internal server error",
