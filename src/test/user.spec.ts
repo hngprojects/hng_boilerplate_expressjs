@@ -103,22 +103,6 @@ describe("UserController", () => {
       );
     });
 
-    it("should call next with BadRequest if user ID is invalid or missing in request header", async () => {
-      req.user = { id: "" } as any;
-
-      const userController = new UserController();
-
-      await userController.getUserProfile(
-        req as Request,
-        res as Response,
-        next,
-      );
-
-      expect(next).toHaveBeenCalledWith(
-        new BadRequest("Invalid or missing user ID! in request header"),
-      );
-    });
-
     it("should call next with BadRequest if user ID is invalid or missing in params", async () => {
       req.params = { user_id: "" } as any;
 

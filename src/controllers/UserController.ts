@@ -138,23 +138,13 @@ class UserController {
    */
   public getUserProfile = asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
-      const { id } = req.user;
       const { user_id } = req.params;
-      if (!id || !isUUID(id)) {
-        return next(
-          new BadRequest("Invalid or missing user ID! in request header"),
-        );
-      }
 
       if (!user_id || !isUUID(user_id)) {
         return next(new BadRequest("Invalid or missing user ID in params!"));
       }
 
-      if (id !== user_id) {
-        return next(new Forbidden("Not authorized to get user information"));
-      }
-
-      const user = await userservice.getUserById(id);
+      const user = await userservice.getUserById(user_id);
       if (!user || user.deletedAt || user.is_deleted) {
         return next(new ResourceNotFound("User not found!"));
       }
