@@ -1135,6 +1135,27 @@ export class OrgController {
     }
   }
 
+  // async createorganizationRole(
+  //   req: Request,
+  //   res: Response,
+  //   next: NextFunction,
+  // ) {
+  //   try {
+  //     const organizationId = req.params.org_id;
+  //     const { role } = req.body;
+  //     const response = await this.orgService.createOrganizationRole(
+  //       organizationId,
+  //       role,
+  //     );
+  //     return res.status(201).json({
+  //       status_code: 201,
+  //       data: response,
+  //     });
+  //   } catch (err) {
+  //     next(err);
+  //   }
+  // }
+
   async getAllOrganizationRoles(
     req: Request,
     res: Response,
