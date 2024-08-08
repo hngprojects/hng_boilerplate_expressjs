@@ -17,6 +17,7 @@ jest.mock("../data-source", () => ({
     create: jest.fn().mockReturnValue({}),
     save: jest.fn(),
     findOne: jest.fn(),
+    remove: jest.fn(),
     createQueryBuilder: jest.fn(() => ({
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
@@ -134,6 +135,7 @@ describe("ProductService", () => {
       ).rejects.toThrow(ServerError);
     });
   });
+
   describe("getProducts", () => {
     it("should search products successfully", async () => {
       const mockOrgId = "1";
@@ -243,12 +245,73 @@ describe("ProductService", () => {
     it("should throw a server error when organization is not found", async () => {
       const mockOrgId = "nonexistentOrg";
       const mockQuery = { name: "Test Product" };
-
       organizationRepository.findOne = jest.fn().mockResolvedValue(undefined);
-
       await expect(
         productService.getProducts(mockOrgId, mockQuery),
       ).rejects.toThrow(ServerError);
+    });
+  });
+
+  describe("deleteProduct", () => {
+    it("should delete the product from the organization", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+      // Mock data
+      const mockProduct = { id: product_id, name: "Test Product" } as Product;
+      productService["checkEntities"] = jest
+        .fn()
+        .mockResolvedValue({ product: mockProduct });
+      productRepository.remove = jest.fn().mockResolvedValue(mockProduct);
+
+      await productService.deleteProduct(org_id, product_id);
+
+      // Verify that the checkEntities and remove methods were called with the correct parameters
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).toHaveBeenCalledWith(mockProduct);
+    });
+    it("should throw an error if the product is not found", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+
+      // Mock the checkEntities method to return undefined for product
+      productService["checkEntities"] = jest
+        .fn()
+        .mockResolvedValue({ product: undefined });
+
+      await expect(
+        productService.deleteProduct(org_id, product_id),
+      ).rejects.toThrow("Product not found");
+
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).not.toHaveBeenCalled();
+    });
+
+    it("should throw an error if checkEntities fails", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+
+      // Mock the checkEntities method to throw an error
+      productService["checkEntities"] = jest
+        .fn()
+        .mockRejectedValue(new Error("Check entities failed"));
+
+      await expect(
+        productService.deleteProduct(org_id, product_id),
+      ).rejects.toThrow("Failed to delete product: Check entities failed");
+
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).not.toHaveBeenCalled();
     });
   });
 });

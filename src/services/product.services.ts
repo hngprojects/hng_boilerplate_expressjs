@@ -1,11 +1,10 @@
 import { Repository } from "typeorm";
-import { Product } from "../models/product";
 import AppDataSource from "../data-source";
-import { ProductSize, StockStatus } from "../enums/product";
-import { ProductSchema } from "../schema/product.schema";
+import { StockStatus } from "../enums/product";
 import { InvalidInput, ResourceNotFound, ServerError } from "../middleware";
 import { Organization } from "../models/organization";
-import { UserRole } from "../enums/userRoles";
+import { Product } from "../models/product";
+import { ProductSchema } from "../schema/product.schema";
 
 export class ProductService {
   private productRepository: Repository<Product>;
@@ -160,11 +159,22 @@ export class ProductService {
       },
     };
   }
+
   public async deleteProduct(org_id: string, product_id: string) {
-    const entities = await this.checkEntities({
-      organization: org_id,
-      product: product_id,
-    });
-    return this.productRepository.remove(entities.product);
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        throw new Error("Product not found");
+      }
+
+      await this.productRepository.remove(entities.product);
+      return { message: "Product deleted successfully" };
+    } catch (error) {
+      throw new Error(`Failed to delete product: ${error.message}`);
+    }
   }
 }

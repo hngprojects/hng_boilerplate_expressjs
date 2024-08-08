@@ -15,13 +15,23 @@ userRouter.delete(
   userController.deleteUser.bind(userController),
 );
 
-userRouter.get("/users/me", authMiddleware, UserController.getProfile);
+userRouter.get(
+  "/users/me",
+  authMiddleware,
+  userController.getProfile.bind(userController),
+);
 
 userRouter.put(
   "/users/:id",
   authMiddleware,
   upload,
   userController.updateUserProfile.bind(userController),
+);
+
+userRouter.put(
+  "/users/:id/timezone",
+  authMiddleware,
+  userController.updateUserTimezone.bind(userController),
 );
 
 export { userRouter };
