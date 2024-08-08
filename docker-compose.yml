@@ -4,11 +4,12 @@ services:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
-        - DATABASE_URL=postgres://postgres:postgres@backend_db:5432/postgres
     ports:
       - 2222:8000
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgres:// ${DB_USER}:${DB_PASSWORD}@backend_db:5432/${DB_NAME}
     networks:
       - app
     depends_on:
@@ -24,8 +25,8 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       #- ./init-scripts:/docker-entrypoint-initdb.d
