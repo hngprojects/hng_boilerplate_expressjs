@@ -1,8 +1,12 @@
 import Router from "express";
 import { OrgController } from "../controllers/OrgController";
-import { authMiddleware, checkPermissions } from "../middleware";
+import {
+  authMiddleware,
+  checkPermissions,
+  organizationValidation,
+  validateUpdateOrg,
+} from "../middleware";
 import { UserRole } from "../enums/userRoles";
-import { organizationValidation } from "../middleware/organization.validation";
 import { validateOrgId } from "../middleware/organization.validation";
 
 const orgRouter = Router();
@@ -57,9 +61,11 @@ orgRouter.get(
   authMiddleware,
   orgController.searchOrganizationMembers.bind(orgController),
 );
+
 orgRouter.put(
-  "/organizations/:org_id",
+  "/organizations/:organization_id",
   authMiddleware,
+  validateUpdateOrg,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
   orgController.updateOrganisation.bind(orgController),
 );

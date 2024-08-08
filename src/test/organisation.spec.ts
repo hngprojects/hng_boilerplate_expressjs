@@ -6,27 +6,32 @@ import { UserRole } from "../enums/userRoles";
 import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/index.ts";
-
 import { authMiddleware } from "../middleware/auth.ts";
-import { OrgService } from "../services/org.services.ts";
-import { OrgController } from "../controllers/OrgController.ts";
+import { OrgController } from "../controllers/orgController";
 import { validateOrgId } from "../middleware/organization.validation.ts";
-import { InvalidInput } from "../middleware/error.ts";
-import { authMiddleware } from "../middleware";
-import { OrgService } from "../services/organisation.service";
+import {
+  InvalidInput,
+  HttpError,
+  ResourceNotFound,
+} from "../middleware/error.ts";
 
-jest.mock("../data-source", () => {
-  return {
-    AppDataSource: {
-      manager: {
-        save: jest.fn(),
-        findOne: jest.fn(),
-      },
-      getRepository: jest.fn(),
-      initialize: jest.fn().mockResolvedValue(true),
+jest.mock("../data-source", () => ({
+  __esModule: true,
+  default: {
+    getRepository: jest.fn().mockReturnValue({
+      create: jest.fn(),
+      save: jest.fn(),
+      findOne: jest.fn(),
+      find: jest.fn(),
+    }),
+    manager: {
+      save: jest.fn(),
+      findOne: jest.fn(),
     },
-  };
-});
+    initialize: jest.fn().mockResolvedValue(true),
+  },
+}));
+
 jest.mock("../models");
 jest.mock("jsonwebtoken");
 
@@ -39,6 +44,7 @@ describe("Organization Controller and Middleware", () => {
     orgController = new OrgController();
     mockManager = {
       findOne: jest.fn(),
+      save: jest.fn(),
     };
     AppDataSource.manager = mockManager;
     AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
@@ -130,5 +136,82 @@ describe("Organization Controller and Middleware", () => {
     expect(() => validateOrgId[1](req, res, next)).toThrow(
       "Valid org_id must be provided",
     );
+  });
+});
+
+describe("Update User Organization", () => {
+  let orgService: OrgService;
+  let mockRepository;
+
+  beforeEach(() => {
+    mockRepository = {
+      findOne: jest.fn(),
+      update: jest.fn(),
+    };
+    AppDataSource.getRepository = jest.fn().mockReturnValue(mockRepository);
+    orgService = new OrgService();
+  });
+
+  it("should successfully update organization details", async () => {
+    const mockOrgId = "123e4567-e89b-12d3-a456-426614174000";
+    const userId = "user123";
+    const updateData = {
+      name: "New Organization Name",
+      email: "newemail@example.com",
+      industry: "Tech",
+      type: "Private",
+      country: "NGA",
+      address: "1234 New HNG",
+      state: "Lagos",
+      description: "A new description of the organization.",
+    };
+
+    const mockOrg = {
+      id: mockOrgId,
+      ...updateData,
+    };
+
+    mockRepository.findOne.mockResolvedValue(mockOrg);
+    mockRepository.update.mockResolvedValue(mockOrg);
+
+    const result = await orgService.updateOrganizationDetails(
+      mockOrgId,
+      userId,
+      updateData,
+    );
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: mockOrgId, userOrganizations: { user: { id: userId } } },
+    });
+
+    expect(mockRepository.update).toHaveBeenCalledWith(mockOrgId, updateData);
+    expect(result).toEqual(mockOrg);
+  });
+
+  it("should throw ResourceNotFound if organization does not exist", async () => {
+    const mockOrgId = "123e4567-e89b-12d3-a456-426614174000";
+    const userId = "user123";
+    const updateData = {
+      name: "New Organization Name",
+      email: "newemail@example.com",
+      industry: "Tech",
+      type: "Private",
+      country: "NGA",
+      address: "1234 New HNG",
+      state: "Lagos",
+      description: "A new description of the organization.",
+    };
+
+    mockRepository.findOne.mockResolvedValue(null);
+
+    await expect(
+      orgService.updateOrganizationDetails(mockOrgId, userId, updateData),
+    ).rejects.toThrow(ResourceNotFound);
+
+    expect(mockRepository.findOne).toHaveBeenCalledWith({
+      where: { id: mockOrgId, userOrganizations: { user: { id: userId } } },
+    });
+
+    expect(mockRepository.update).not.toHaveBeenCalled();
   });
 });
