@@ -1,14 +1,16 @@
 import { Router } from "express";
 import {
-  authenticateUserMagicLink,
+  VerifyUserMagicLink,
   changePassword,
   changeUserRole,
   createMagicToken,
+  enable2FA,
   forgotPassword,
   googleAuthCall,
   login,
   resetPassword,
   signUp,
+  verify2FA,
   verifyOtp,
 } from "../controllers";
 import { UserRole } from "../enums/userRoles";
@@ -16,6 +18,7 @@ import { UserRole } from "../enums/userRoles";
 import { authMiddleware, checkPermissions } from "../middleware";
 import { requestBodyValidator } from "../middleware/request-validation";
 import { emailSchema } from "../utils/request-body-validator";
+import { enable2FASchema } from "../schema/auth.schema";
 
 const authRoute = Router();
 
@@ -41,6 +44,13 @@ authRoute.post(
   requestBodyValidator(emailSchema),
   createMagicToken,
 );
-authRoute.get("/auth/magic-link", authenticateUserMagicLink);
+authRoute.get("/auth/magic-link/verify", VerifyUserMagicLink);
+authRoute.post(
+  "/auth/2fa/enable",
+  requestBodyValidator(enable2FASchema),
+  authMiddleware,
+  enable2FA,
+);
+authRoute.post("/auth/2fa/verify", authMiddleware, verify2FA);
 
 export { authRoute };
