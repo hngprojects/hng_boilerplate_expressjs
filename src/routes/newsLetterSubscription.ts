@@ -3,7 +3,8 @@ import {
   getAllNewsletter,
   subscribeToNewsletter,
 } from "../controllers/NewsLetterSubscriptionController";
-import { authMiddleware } from "../middleware";
+import { UserRole } from "../enums/userRoles";
+import { authMiddleware, checkPermissions } from "../middleware";
 
 const newsLetterSubscriptionRoute = Router();
 
@@ -14,8 +15,9 @@ newsLetterSubscriptionRoute.post(
 );
 
 newsLetterSubscriptionRoute.get(
-  "/newsletter",
+  "/newsletter-subscription",
   authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
   getAllNewsletter,
 );
 export { newsLetterSubscriptionRoute };

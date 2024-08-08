@@ -91,6 +91,28 @@ const subscribeToNewsletter = async (
   }
 };
 
-const getAllNewsletter = async () => {};
+const getAllNewsletter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { page, limit } = req.query;
+    const { data, meta } =
+      await newsLetterSubscriptionService.fetchAllNewsletter({
+        page: Number(page),
+        limit: Number(limit),
+      });
+
+    return res.status(200).json({
+      status: "",
+      message: "",
+      data: data,
+      meta,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export { getAllNewsletter, subscribeToNewsletter };
