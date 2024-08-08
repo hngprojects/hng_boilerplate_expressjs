@@ -11,7 +11,6 @@ import {
 } from "../middleware";
 import { Organization, Invitation, UserOrganization } from "../models";
 import { OrganizationRole } from "../models/organization-role.entity";
-import { Permissions } from "../models/permissions.entity";
 import { User } from "../models/user";
 import { ICreateOrganisation, ICreateOrgRole, IOrgService } from "../types";
 import log from "../utils/logger";
@@ -409,7 +408,7 @@ export class OrgService implements IOrgService {
       });
       const newRole = await this.organizationRoleRepository.save(role);
 
-      const defaultPermissions = await this.permissionsRepository.find();
+      const defaultPermissions = await this.permissionRepository.find();
 
       const rolePermissions = defaultPermissions.map((defaultPerm) => {
         const permission = new Permissions();
@@ -419,7 +418,7 @@ export class OrgService implements IOrgService {
         return permission;
       });
 
-      await this.permissionsRepository.save(rolePermissions);
+      await this.permissionRepository.save(rolePermissions);
       return newRole;
     } catch (err) {
       throw err;
