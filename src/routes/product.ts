@@ -17,13 +17,6 @@ productRouter.post(
   productController.createProduct,
 );
 
-productRouter.get(
-  "/organizations/:org_id/products/search",
-  authMiddleware,
-  validateUserToOrg,
-  productController.getProduct,
-);
-
 productRouter.delete(
   "/organizations/:org_id/products/:product_id",
   authMiddleware,
