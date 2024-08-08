@@ -21,6 +21,13 @@ jest.mock("../data-source", () => ({
     isInitialized: false,
   },
 }));
+jest.mock("jsonwebtoken");
+jest.mock("passport", () => ({
+  use: jest.fn(),
+}));
+jest.mock("passport-google-oauth2", () => ({
+  Strategy: jest.fn(),
+}));
 
 describe("Organization Controller and Middleware", () => {
   let organizationService: OrgService;
