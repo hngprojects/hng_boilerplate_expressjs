@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import { verifyToken } from "../config/google.passport.config";
-import { BadRequest } from "../middleware";
+import { BadRequest, Unauthorized } from "../middleware";
 import { User } from "../models";
 import { AuthService } from "../services/auth.services";
 import { GoogleUserInfo } from "../services/google.auth.service";
@@ -592,6 +592,39 @@ const googleAuthCall = async (req: Request, res: Response) => {
   }
 };
 
+const enable2FA = async (req: Request, res: Response, next: NextFunction) => {
+  const { password } = req.body;
+  const user = req.user;
+  const { message, data } = await authService.enable2FA(user.id, password);
+  if (!message) {
+    return next(new BadRequest("Error enabling 2FA"));
+  }
+
+  return res.status(200).json({
+    status_code: 200,
+    message,
+    data,
+  });
+};
+
+const verify2FA = async (req: Request, res: Response, next: NextFunction) => {
+  const { totp_code } = req.body;
+  const user = req.user;
+  if (!user.is_2fa_enabled) {
+    return next(new BadRequest("2FA is not enabled"));
+  }
+  const is_verified = authService.verify2FA(totp_code, user);
+  if (!is_verified) {
+    return next(new Unauthorized("Invalid 2FA code"));
+  }
+
+  return res.status(200).json({
+    status_code: 200,
+    message: "2FA code verified",
+    data: { verified: true },
+  });
+};
+
 export {
   VerifyUserMagicLink,
   changePassword,
@@ -603,4 +636,6 @@ export {
   resetPassword,
   signUp,
   verifyOtp,
+  enable2FA,
+  verify2FA,
 };

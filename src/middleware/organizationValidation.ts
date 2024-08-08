@@ -200,4 +200,43 @@ export const validateUserToOrg = async (
   }
 };
 
+export const validateOrgRole = [
+  param("org_id")
+    .notEmpty()
+    .withMessage("Organisation id is required")
+    .isString()
+    .withMessage("Organisation id must be a string")
+    .isUUID()
+    .withMessage("Valid organization ID must be provided")
+    .trim()
+    .escape(),
+  body("name")
+    .notEmpty()
+    .withMessage("Name is required")
+    .isString()
+    .isLength({ max: 50 })
+    .withMessage("Name must be a string")
+    .trim()
+    .escape(),
+  body("description")
+    .optional()
+    .isString()
+    .isLength({ max: 200 })
+    .withMessage("Description must be a string")
+    .trim()
+    .escape(),
+  (req: Request, res: Response, next: NextFunction) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({
+        status: "Error",
+        status_code: 422,
+        message:
+          "Valid organization ID, name, and description must be provided.",
+      });
+    }
+    next();
+  },
+];
+
 //TODO: Add validation for update organization

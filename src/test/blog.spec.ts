@@ -4,6 +4,7 @@ import AppDataSource from "../data-source";
 import { Category, Tag, User } from "../models";
 import { Blog } from "../models/blog";
 import { BlogService } from "../services";
+import { Forbidden, ResourceNotFound } from "../middleware";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -27,8 +28,8 @@ describe("BlogService", () => {
     blogRepositoryMock = {
       delete: jest.fn(),
       save: jest.fn(),
-      // Add other methods if needed
-    } as any; // Casting to any to match the mocked repository
+      findOne: jest.fn(),
+    } as any;
     tagRepositoryMock = {
       findOne: jest.fn(),
       create: jest.fn(),
@@ -49,7 +50,6 @@ describe("BlogService", () => {
       if (entity === Category) return categoryRepositoryMock;
     });
 
-    // Initialize the BlogService after setting up the mock
     blogService = new BlogService();
   });
 
@@ -62,7 +62,7 @@ describe("BlogService", () => {
       const id = "some-id";
       const deleteResult: DeleteResult = {
         affected: 1,
-        raw: [], // Provide an empty array or appropriate mock value
+        raw: [],
       };
 
       blogRepositoryMock.delete.mockResolvedValue(deleteResult);
@@ -77,7 +77,7 @@ describe("BlogService", () => {
       const id = "non-existing-id";
       const deleteResult: DeleteResult = {
         affected: 0,
-        raw: [], // Provide an empty array or appropriate mock value
+        raw: [],
       };
 
       blogRepositoryMock.delete.mockResolvedValue(deleteResult);
@@ -169,6 +169,209 @@ describe("BlogService", () => {
       expect(categoryRepositoryMock.findOne).toHaveBeenCalledTimes(2);
       expect(categoryRepositoryMock.create).toHaveBeenCalledTimes(2);
       expect(categoryRepositoryMock.save).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe("updateBlog", () => {
+    it("should update a blog post with new data, tags, and categories", async () => {
+      const blogId = "blog-123";
+      const userId = "user-456";
+      const payload = {
+        title: "Updated Blog Title",
+        content: "Updated Blog Content",
+        image_url: "updated-image.jpg",
+        tags: "tag1,tag2",
+        categories: "category1,category2",
+      };
+
+      const mockUser = { id: userId, name: "User Name" } as User;
+      const existingBlog = {
+        id: blogId,
+        title: "Old Title",
+        content: "Old Content",
+        image_url: "old-image.jpg",
+        author: { id: "user-456", name: "User Name" },
+        tags: [],
+        categories: [],
+        comments: [],
+        likes: 0,
+      } as unknown as Blog;
+
+      const tag1 = { id: "tag-1", name: "tag1" } as unknown as Tag;
+      const tag2 = { id: "tag-2", name: "tag2" } as unknown as Tag;
+      const category1 = {
+        id: "category-1",
+        name: "category1",
+      } as unknown as Category;
+      const category2 = {
+        id: "category-2",
+        name: "category2",
+      } as unknown as Category;
+
+      blogRepositoryMock.findOne.mockResolvedValue(existingBlog);
+      userRepositoryMock.findOne.mockResolvedValue(mockUser);
+      tagRepositoryMock.findOne
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      categoryRepositoryMock.findOne
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      tagRepositoryMock.create
+        .mockReturnValueOnce(tag1)
+        .mockReturnValueOnce(tag2);
+      categoryRepositoryMock.create
+        .mockReturnValueOnce(category1)
+        .mockReturnValueOnce(category2);
+      tagRepositoryMock.save
+        .mockResolvedValueOnce(tag1)
+        .mockResolvedValueOnce(tag2);
+      categoryRepositoryMock.save
+        .mockResolvedValueOnce(category1)
+        .mockResolvedValueOnce(category2);
+      blogRepositoryMock.save.mockResolvedValue({
+        ...existingBlog,
+        ...payload,
+        tags: [tag1, tag2],
+        categories: [category1, category2],
+      });
+
+      const result = await blogService.updateBlog(blogId, payload, userId);
+
+      expect(blogRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: blogId },
+        relations: ["author", "tags", "categories"],
+      });
+      expect(userRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: userId },
+      });
+      expect(tagRepositoryMock.findOne).toHaveBeenCalledTimes(2);
+      expect(categoryRepositoryMock.findOne).toHaveBeenCalledTimes(2);
+      expect(blogRepositoryMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          ...existingBlog,
+          ...payload,
+          tags: [tag1, tag2],
+          categories: [category1, category2],
+          author: mockUser,
+        }),
+      );
+
+      expect(result).toEqual({
+        blog_id: blogId,
+        title: payload.title,
+        content: payload.content,
+        tags: [tag1, tag2],
+        categories: [category1, category2],
+        image_urls: payload.image_url,
+        author: mockUser.name,
+      });
+    });
+
+    it("should throw Forbidden if the user is not authorized to update the blog post", async () => {
+      const blogId = "blog-123";
+      const userId = "user-789";
+      const payload = {
+        title: "Updated Blog Title",
+        content: "Updated Blog Content",
+        image_url: "updated-image.jpg",
+        tags: "tag1,tag2",
+        categories: "category1,category2",
+      };
+
+      const existingBlog = {
+        id: blogId,
+        title: "Old Title",
+        content: "Old Content",
+        image_url: "old-image.jpg",
+        author: { id: "user-456" },
+        tags: [],
+        categories: [],
+        comments: [],
+        likes: 0,
+      } as unknown as Blog;
+
+      blogRepositoryMock.findOne.mockResolvedValue(existingBlog);
+
+      await expect(
+        blogService.updateBlog(blogId, payload, userId),
+      ).rejects.toThrow(Forbidden);
+    });
+
+    it("should throw ResourceNotFound if the blog post does not exist", async () => {
+      const blogId = "non-existent-blog";
+      const userId = "user-456";
+      const payload = {};
+
+      blogRepositoryMock.findOne.mockResolvedValue(null);
+
+      await expect(
+        blogService.updateBlog(blogId, payload, userId),
+      ).rejects.toThrow(ResourceNotFound);
+    });
+
+    it("should create new tags and categories if they do not exist", async () => {
+      const blogId = "blog-123";
+      const userId = "user-456";
+      const payload = {
+        title: "Updated Blog Title",
+        content: "Updated Blog Content",
+        image_url: "updated-image.jpg",
+        tags: "newTag1,newTag2",
+        categories: "newCategory1,newCategory2",
+      };
+
+      const mockUser = { id: userId, name: "User Name" } as User;
+      const existingBlog = {
+        id: blogId,
+        tags: [],
+        categories: [],
+        author: { id: userId },
+      } as unknown as Blog;
+      const newTag1 = { id: "new-tag-1", name: "newTag1" } as unknown as Tag;
+      const newTag2 = { id: "new-tag-2", name: "newTag2" } as unknown as Tag;
+      const newCategory1 = {
+        id: "new-category-1",
+        name: "newCategory1",
+      } as unknown as Category;
+      const newCategory2 = {
+        id: "new-category-2",
+        name: "newCategory2",
+      } as unknown as Category;
+
+      blogRepositoryMock.findOne.mockResolvedValue(existingBlog);
+      userRepositoryMock.findOne.mockResolvedValue(mockUser);
+      tagRepositoryMock.findOne.mockResolvedValue(null);
+      tagRepositoryMock.create
+        .mockReturnValueOnce(newTag1)
+        .mockReturnValueOnce(newTag2);
+      categoryRepositoryMock.findOne.mockResolvedValue(null);
+      categoryRepositoryMock.create
+        .mockReturnValueOnce(newCategory1)
+        .mockReturnValueOnce(newCategory2);
+      tagRepositoryMock.save
+        .mockResolvedValueOnce(newTag1)
+        .mockResolvedValueOnce(newTag2);
+      categoryRepositoryMock.save
+        .mockResolvedValueOnce(newCategory1)
+        .mockResolvedValueOnce(newCategory2);
+      blogRepositoryMock.save.mockResolvedValue({
+        ...existingBlog,
+        ...payload,
+        tags: [newTag1, newTag2],
+        categories: [newCategory1, newCategory2],
+        author: mockUser,
+      });
+
+      const result = await blogService.updateBlog(blogId, payload, userId);
+
+      expect(tagRepositoryMock.save).toHaveBeenCalledWith(newTag1);
+      expect(tagRepositoryMock.save).toHaveBeenCalledWith(newTag2);
+      expect(categoryRepositoryMock.save).toHaveBeenCalledWith(newCategory1);
+      expect(categoryRepositoryMock.save).toHaveBeenCalledWith(newCategory2);
+      expect(result.tags).toEqual(expect.arrayContaining([newTag1, newTag2]));
+      expect(result.categories).toEqual(
+        expect.arrayContaining([newCategory1, newCategory2]),
+      );
     });
   });
 });
