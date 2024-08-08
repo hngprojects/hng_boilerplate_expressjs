@@ -320,7 +320,7 @@ describe("RestoreNewsLetterSubscription", () => {
       );
     });
 
-    it("should throw an error if user is not subscribed", async () => {
+    it("should throw an error if user isn't  subscribed", async () => {
       const inactiveSubscriber = new NewsLetterSubscriber();
       inactiveSubscriber.email = "test@example.com";
       inactiveSubscriber.isSubscribe = false;
