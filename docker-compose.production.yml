@@ -1,0 +1,78 @@
+services:
+  backend:
+    container_name: backend_prod
+    build:
+      context: .
+      args:
+        - NODE_ENV=${NODE_ENV}
+    ports:
+      - 4444:8000
+    env_file:
+      - .env
+    environment:
+      DB_HOST: backend_db_prod
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@backend_db_prod:5432/${DB_NAME}
+    networks:
+      - prod-net
+    depends_on:
+      backend_db_prod:
+        condition: service_healthy
+    restart: always
+    command: sh -c "sleep 10 && yarn start"
+
+  backend_db_prod:
+    image: postgres:13
+    container_name: backend_db_prod
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      #- ./init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prod-net
+
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #       - ./nginx/sites-available/expressjs:/etc/nginx/sites-available/expressjs
+  #       - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+  #       - /etc/letsencrypt:/etc/letsencrypt
+  #       - ./nginx-entrypoint.sh:/docker-entrypoint.sh
+  #   networks:
+  #     - app
+  #   depends_on:
+  #     - backend
+  #   restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rmq_prod
+    ports:
+      - "5672"
+      # - "5672:5672"
+      - "15672"
+      # - "15672:15672"
+    networks:
+      - prod-net
+
+networks:
+  prod-net:
+    driver: bridge
+
+volumes:
+  postgres-data:

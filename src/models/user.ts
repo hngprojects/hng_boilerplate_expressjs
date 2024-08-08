@@ -122,6 +122,15 @@ export class User extends ExtendedBaseEntity {
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
 
+  @Column({ nullable: true })
+  secret: string;
+
+  @Column({ default: false })
+  is_2fa_enabled: boolean;
+
+  @Column("simple-array", { nullable: true })
+  backup_codes: string[];
+
   createPasswordResetToken(): string {
     const resetToken = crypto.randomBytes(32).toString("hex");
 

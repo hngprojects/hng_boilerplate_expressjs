@@ -98,8 +98,24 @@ export interface GoogleUser {
 
 export interface INewsLetterSubscriptionService {
   subscribeUser(email: string): Promise<any>;
+  unSubcribeUser(email: string): Promise<any>;
 }
 
 export interface INewsLetterSubscription {
   email: string;
 }
+
+export type UserIdentifierOptionsType =
+  | {
+      identifierType: "id";
+      identifier: string;
+    }
+  | {
+      identifierType: "email";
+      identifier: string;
+    };
+
+export type UpdateUserRecordOption = {
+  updatePayload: Partial<User>;
+  identifierOption: UserIdentifierOptionsType;
+};
