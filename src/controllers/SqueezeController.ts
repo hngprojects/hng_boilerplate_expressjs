@@ -1,8 +1,13 @@
 import { Request, Response } from "express";
 import { SqueezeService } from "../services";
 
-
 class SqueezeController {
+  private squeezeService: SqueezeService;
+
+  constructor() {
+    this.squeezeService = new SqueezeService();
+  }
+
   /**
    * @openapi
    * /api/v1/squeeze-pages:
@@ -62,22 +67,22 @@ class SqueezeController {
    *         description: Conflict
    */
   public createSqueeze = async (req: Request, res: Response) => {
-      try {
-        const squeezeData = req.body;
-        const squeeze = await SqueezeService.createSqueeze(squeezeData);
-        res.status(201).json({
-          status: "success",
-          message: "Squeeze record created successfully.",
-          data: squeeze,
-        });
-      } catch (error) {
-        res.status(500).json({
-          status: "error",
-          message: "An error occurred while creating the squeeze record.",
-          error: error.message,
-        });
-      }
-    };
+    try {
+      const squeezeData = req.body;
+      const squeeze = await this.squeezeService.createSqueeze(squeezeData); // Use the instance method
+      res.status(201).json({
+        status: "success",
+        message: "Squeeze record created successfully.",
+        data: squeeze,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "An error occurred while creating the squeeze record.",
+        error: error.message,
+      });
+    }
+  };
 }
 
 export { SqueezeController };
