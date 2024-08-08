@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { subscribeToNewsletter } from "../controllers/NewsLetterSubscriptionController";
+import {
+  getAllNewsletter,
+  subscribeToNewsletter,
+} from "../controllers/NewsLetterSubscriptionController";
 import { authMiddleware } from "../middleware";
 
 const newsLetterSubscriptionRoute = Router();
@@ -10,4 +13,9 @@ newsLetterSubscriptionRoute.post(
   subscribeToNewsletter,
 );
 
+newsLetterSubscriptionRoute.get(
+  "/newsletter",
+  authMiddleware,
+  getAllNewsletter,
+);
 export { newsLetterSubscriptionRoute };
