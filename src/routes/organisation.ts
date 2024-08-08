@@ -69,4 +69,16 @@ orgRouter.put(
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
   orgController.updateOrganisation.bind(orgController),
 );
+
+orgRouter.get(
+  "/organizations/:org_id/roles/:role_id",
+  authMiddleware,
+  orgController.getSingleRole,
+);
+
+orgRouter.get(
+  "/organizations/:org_id/roles",
+  authMiddleware,
+  orgController.getAllOrganizationRoles,
+);
 export { orgRouter };

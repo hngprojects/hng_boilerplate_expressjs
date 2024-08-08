@@ -1,19 +1,27 @@
+import { Repository } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
 import { BadRequest } from "../middleware";
+import { Conflict, ResourceNotFound } from "../middleware/error";
+import { Invitation, OrgInviteToken, UserOrganization } from "../models";
 import { Organization } from "../models/organization";
+import { OrganizationRole } from "../models/organization-role.entity";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
-import log from "../utils/logger";
-import { UserOrganization, Invitation, OrgInviteToken } from "../models";
-import { v4 as uuidv4 } from "uuid";
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
-import { Conflict, ResourceNotFound } from "../middleware/error";
-import config from "../config/index";
 const frontendBaseUrl = config.BASE_URL;
 
 export class OrgService implements IOrgService {
+  private organizationRepository: Repository<Organization>;
+  private organizationRoleRepository: Repository<OrganizationRole>;
+  constructor() {
+    this.organizationRepository = AppDataSource.getRepository(Organization);
+    this.organizationRoleRepository =
+      AppDataSource.getRepository(OrganizationRole);
+  }
   public async createOrganisation(
     payload: ICreateOrganisation,
     userId: string,
@@ -337,5 +345,30 @@ export class OrgService implements IOrgService {
     }
 
     return [];
+  }
+
+  public async fetchSingleRole(organizationId: string, roleId: string) {
+    // const orgRoles = await this.
+  }
+
+  public async fetchAllRolesInOrganization(organizationId: string) {
+    try {
+      const organization = await this.organizationRepository.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      const roles = await this.organizationRoleRepository.find({
+        where: { organization: { id: organizationId } },
+        select: ["id", "name", "description"],
+      });
+
+      return roles;
+    } catch (error) {
+      throw error;
+    }
   }
 }
