@@ -198,7 +198,7 @@ class ProductController {
   /**
    * @swagger
    * /api/v1/{org_id}/products/{product_id}:
-   *   patch:
+   *   put:
    *     summary: Update a product
    *     description: Update details of a product within an organization.
    *     tags:
@@ -249,6 +249,9 @@ class ProductController {
    *             schema:
    *               type: object
    *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "success"
    *                 status_code:
    *                   type: integer
    *                   example: 200
@@ -331,7 +334,7 @@ class ProductController {
    *                   example: 404
    *                 message:
    *                   type: string
-   *                   example: "Product with id {provided id} not found"
+   *                   example: "Product with id b14e4406-80f6-4029-9681-715798741c8f not found"
    *       422:
    *         description: Unprocessable Entity
    *         content:
