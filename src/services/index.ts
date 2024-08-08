@@ -11,3 +11,4 @@ export * from "./contactService";
 export * from "./faq.services";
 export * from "./org.services";
 export * from "./billing-plans.services";
+export * from "./squeezeService";
