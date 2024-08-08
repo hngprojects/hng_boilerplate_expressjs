@@ -370,8 +370,32 @@ export class OrgService implements IOrgService {
     return [];
   }
 
-  public async fetchSingleRole(organizationId: string, roleId: string) {
-    // const orgRoles = await this.
+  public async fetchSingleRole(
+    organizationId: string,
+    roleId: string,
+  ): Promise<null | OrganizationRole> {
+    try {
+      const organisation = await this.organizationRepository.findOne({
+        where: { id: organizationId },
+      });
+      if (!organisation) {
+        throw new ResourceNotFound(
+          `Organisation with ID ${organizationId} not found`,
+        );
+      }
+
+      const role = await this.organizationRoleRepository.findOne({
+        where: { id: roleId, organization: { id: organizationId } },
+        relations: ["permissions"],
+      });
+      if (!role) {
+        return null;
+      }
+
+      return role;
+    } catch (error) {
+      throw error;
+    }
   }
 
   public async fetchAllRolesInOrganization(organizationId: string) {

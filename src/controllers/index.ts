@@ -17,3 +17,5 @@ export * from "./contactController";
 export * from "./FaqController";
 export * from "./OrgController";
 export * from "./runTestController";
+export * from "./billingController";
+export * from "./SqueezeController";

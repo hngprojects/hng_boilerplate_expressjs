@@ -1209,12 +1209,22 @@ export class OrgController {
         roleId,
       );
 
+      if (!response || response === null) {
+        return res.status(200).json({
+          status_code: "200",
+          message: `The role with ID ${roleId} does not exist in the organisation`,
+        });
+      }
+
       return res.status(200).json({
         status_code: 200,
         data: response,
       });
     } catch (error) {
-      next(error);
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(new ServerError("Encountered error while fetching user"));
     }
   }
 

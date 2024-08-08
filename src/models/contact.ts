@@ -11,9 +11,6 @@ export class Contact {
   @Column({ type: "varchar", length: 100 })
   email!: string;
 
-  @Column({ type: "varchar", length: 20 })
-  phoneNumber!: string;
-
   @Column({ type: "text" })
   message!: string;
 }
