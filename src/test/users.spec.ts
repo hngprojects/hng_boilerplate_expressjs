@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { UserService } from "../services";
-import { UserController } from "../controllers/UserController";
-import { User } from "../models";
+import { NextFunction, Request, Response } from "express";
 import { Repository } from "typeorm";
+import { validate as mockUuidValidate } from "uuid";
+import { UserController } from "../controllers/UserController";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
-import { validate as mockUuidValidate } from "uuid";
-import { Request, Response, NextFunction } from "express";
+import { User } from "../models";
+import { UserService } from "../services";
 
 jest.mock("../data-source", () => ({
   getRepository: jest.fn(),
@@ -40,7 +40,6 @@ describe("UserService", () => {
     };
     next = jest.fn();
     mockUuidValidate.mockReturnValue(true);
-
     (AppDataSource.getRepository as jest.Mock).mockReturnValue(
       userRepositoryMock,
     );
