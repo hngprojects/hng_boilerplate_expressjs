@@ -14,7 +14,6 @@ jobRouter.post(
 
 jobRouter.get(
   "/jobs",
-  authMiddleware,
   jobController.getAllJobs.bind(jobController),
 );
 
