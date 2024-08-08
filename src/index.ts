@@ -27,6 +27,7 @@ import {
   sendEmailRoute,
   testimonialRoute,
   userRouter,
+  paymentPaystackRouter,
   squeezeRoute,
   notificationsettingsRouter,
   notificationRouter,
@@ -94,6 +95,7 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", roleRouter);
+server.use("/api/v1", paymentPaystackRouter);
 server.use("/api/v1", billingPlanRouter);
 server.use("/api/v1", newsLetterSubscriptionRoute);
 server.use("/api/v1", squeezeRoute);

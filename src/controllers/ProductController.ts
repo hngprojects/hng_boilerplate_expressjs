@@ -501,7 +501,7 @@ class ProductController {
    *                 message:
    *                   type: string
    *                   example: "Internal server error"
-   */ 
+   */
   public updateProduct = async (req: Request, res: Response) => {
     const { org_id, product_id } = req.params;
     const updatedProduct = await this.productService.updateProduct(
@@ -514,9 +514,9 @@ class ProductController {
       message: "product update successful",
       data: updatedProduct,
     });
-  }  
+  };
 
-/**
+  /**
    * @openapi
    * /api/v1/organizations/{org_id}/products/{product_id}:
    *   get:
@@ -619,21 +619,21 @@ class ProductController {
    *                   type: integer
    *                   example: 500
    */
-public getSingleProduct = async (req: Request, res: Response) => {
-  const { org_id, product_id } = req.params;
-  if (product_id && org_id) {
-    const product = await this.productService.getProduct(org_id, product_id);
-    if (product) {
-      res.status(200).json({
-        status_code: 200,
-        message: "Product retrieved successfully",
-        data: product,
-      });
+  public getSingleProduct = async (req: Request, res: Response) => {
+    const { org_id, product_id } = req.params;
+    if (product_id && org_id) {
+      const product = await this.productService.getProduct(org_id, product_id);
+      if (product) {
+        res.status(200).json({
+          status_code: 200,
+          message: "Product retrieved successfully",
+          data: product,
+        });
+      }
+    } else {
+      return new BadRequest("Invalid Product ID");
     }
-  } else {
-    return new BadRequest("Invalid Product ID");
-  }
-};  
+  };
 }
 
 export { ProductController };

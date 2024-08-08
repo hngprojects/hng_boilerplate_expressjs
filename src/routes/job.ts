@@ -17,4 +17,6 @@ jobRouter.delete(
   jobController.deleteJob.bind(jobController),
 );
 
+jobRouter.get("/jobs", jobController.getAllJobs.bind(jobController));
+
 export { jobRouter };
