@@ -1,19 +1,27 @@
+import { Repository } from "typeorm";
+import { v4 as uuidv4 } from "uuid";
+import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
-import { BadRequest } from "../middleware";
-import { Organization } from "../models/organization";
+import { BadRequest, ResourceNotFound, Conflict } from "../middleware";
+import { Organization, Invitation, UserOrganization } from "../models";
+import { OrganizationRole } from "../models/organization-role.entity";
 import { User } from "../models/user";
 import { ICreateOrganisation, IOrgService } from "../types";
 import log from "../utils/logger";
-import { UserOrganization, Invitation } from "../models";
-import { v4 as uuidv4 } from "uuid";
+
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
-import { Conflict, ResourceNotFound } from "../middleware/error";
-import config from "../config/index";
 const frontendBaseUrl = config.BASE_URL;
 
 export class OrgService implements IOrgService {
+  private organizationRepository: Repository<Organization>;
+  private organizationRoleRepository: Repository<OrganizationRole>;
+  constructor() {
+    this.organizationRepository = AppDataSource.getRepository(Organization);
+    this.organizationRoleRepository =
+      AppDataSource.getRepository(OrganizationRole);
+  }
   public async createOrganisation(
     payload: ICreateOrganisation,
     userId: string,
@@ -121,16 +129,17 @@ export class OrgService implements IOrgService {
   }
   public async updateOrganizationDetails(
     org_id: string,
+    userId: string,
     update_data: Partial<Organization>,
   ): Promise<Organization> {
     const organizationRepository = AppDataSource.getRepository(Organization);
 
     const organization = await organizationRepository.findOne({
-      where: { id: org_id },
+      where: { id: org_id, userOrganizations: { user: { id: userId } } },
     });
 
     if (!organization) {
-      throw new Error("Organization not found");
+      throw new ResourceNotFound(`Organization with id '${org_id}' not found`);
     }
 
     Object.assign(organization, update_data);
@@ -359,5 +368,30 @@ export class OrgService implements IOrgService {
     }
 
     return [];
+  }
+
+  public async fetchSingleRole(organizationId: string, roleId: string) {
+    // const orgRoles = await this.
+  }
+
+  public async fetchAllRolesInOrganization(organizationId: string) {
+    try {
+      const organization = await this.organizationRepository.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      const roles = await this.organizationRoleRepository.find({
+        where: { organization: { id: organizationId } },
+        select: ["id", "name", "description"],
+      });
+
+      return roles;
+    } catch (error) {
+      throw error;
+    }
   }
 }

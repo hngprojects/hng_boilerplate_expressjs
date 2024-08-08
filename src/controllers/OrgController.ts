@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import { ResourceNotFound, ServerError, HttpError } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 import { InvalidInput } from "../middleware";
@@ -502,20 +503,19 @@ export class OrgController {
       });
     }
   }
+
   /**
    * @swagger
    * /organizations/{organization_id}:
    *   put:
    *     summary: Update organization details
-   *     description: Updates the details of an organization by its ID.
-   *     tags:
-   *       - Organization
+   *     description: Update the details of an existing organization
    *     parameters:
    *       - in: path
    *         name: organization_id
+   *         required: true
    *         schema:
    *           type: string
-   *         required: true
    *         description: The ID of the organization to update
    *     requestBody:
    *       required: true
@@ -523,93 +523,138 @@ export class OrgController {
    *         application/json:
    *           schema:
    *             type: object
+   *             required:
+   *               - name
+   *               - email
+   *               - industry
+   *               - type
+   *               - country
+   *               - address
+   *               - state
+   *               - description
    *             properties:
    *               name:
    *                 type: string
-   *               address:
-   *                 type: string
-   *               phone:
-   *                 type: string
+   *                 example: "New Organization Name"
    *               email:
    *                 type: string
+   *                 example: "newemail@example.com"
+   *               industry:
+   *                 type: string
+   *                 example: "Tech"
+   *               type:
+   *                 type: string
+   *                 example: "Private"
+   *               country:
+   *                 type: string
+   *                 example: "NGA"
+   *               address:
+   *                 type: string
+   *                 example: "1234 New HNG"
+   *               state:
+   *                 type: string
+   *                 example: "Lagos"
+   *               description:
+   *                 type: string
+   *                 example: "A new description of the organization."
    *     responses:
    *       200:
-   *         description: Organization details updated successfully
+   *         description: Organization updated successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 message:
+   *                 status:
    *                   type: string
+   *                   example: "success"
    *                 status_code:
    *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "Organisation updated successfully"
    *                 data:
    *                   type: object
    *                   properties:
-   *                     id:
+   *                     organization_id:
    *                       type: string
+   *                       example: "61202249-0bc4-41eb-8cd5-7b873b7c7cc7"
    *                     name:
    *                       type: string
-   *                     address:
-   *                       type: string
-   *                     phone:
-   *                       type: string
+   *                       example: "New Organization Name"
    *                     email:
    *                       type: string
+   *                       example: "newemail@example.com"
+   *                     industry:
+   *                       type: string
+   *                       example: "Tech"
+   *                     type:
+   *                       type: string
+   *                       example: "Private"
+   *                     country:
+   *                       type: string
+   *                       example: "NGA"
+   *                     address:
+   *                       type: string
+   *                       example: "1234 New HNG"
+   *                     state:
+   *                       type: string
+   *                       example: "Lagos"
+   *                     description:
+   *                       type: string
+   *                       example: "A new description of the organization."
    *       404:
    *         description: Organization not found
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                 status_code:
-   *                   type: integer
-   *                 message:
-   *                   type: string
    *       500:
    *         description: Failed to update organization details
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                 status_code:
-   *                   type: integer
-   *                 message:
-   *                   type: string
    */
+
   async updateOrganisation(req: Request, res: Response, next: NextFunction) {
     try {
-      const orgId = req.params.org_id;
+      const orgId = req.params.organization_id;
       const payload = req.body;
+      const userId = req.user.id;
 
       const updatedOrganisation =
-        await this.orgService.updateOrganizationDetails(orgId, payload);
+        await this.orgService.updateOrganizationDetails(orgId, userId, payload);
 
-      if (!updatedOrganisation) {
-        return res.status(404).json({
-          status: "error",
-          message: "Organisation not found",
-          status_code: 404,
-        });
-      }
+      const {
+        id,
+        name,
+        email,
+        industry,
+        type,
+        country,
+        address,
+        state,
+        description,
+      } = updatedOrganisation;
 
       const respObj = {
         status: "success",
-        message: "Organisation updated successfully",
-        data: updatedOrganisation,
         status_code: 200,
+        message: "Organisation updated successfully",
+        data: {
+          organization_id: id,
+          name,
+          email,
+          industry,
+          type,
+          country,
+          address,
+          state,
+          description,
+        },
       };
 
       return res.status(200).json(respObj);
     } catch (error) {
-      next(error);
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      } else {
+        next(new HttpError(500, "Failed to update organization details"));
+      }
     }
   }
 
@@ -789,13 +834,11 @@ export class OrgController {
         req.params.org_id,
       );
       if (link) {
-        res
-          .status(200)
-          .json({
-            status_code: 200,
-            message: "Invite link generated successfully",
-            link,
-          });
+        res.status(200).json({
+          status_code: 200,
+          message: "Invite link generated successfully",
+          link,
+        });
       }
     } catch (error) {
       res.status(500).json({
@@ -1154,6 +1197,46 @@ export class OrgController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getSingleRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const organizationId = req.params.org_id;
+      const roleId = req.params.role_id;
+      const response = await this.orgService.fetchSingleRole(
+        organizationId,
+        roleId,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllOrganizationRoles(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const response =
+        await this.orgService.fetchAllRolesInOrganization(organizationId);
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(new ServerError("Error fetching all roles in organization"));
     }
   }
 }

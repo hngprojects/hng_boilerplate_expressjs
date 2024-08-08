@@ -1,11 +1,10 @@
 // src/services/UserService.ts
-import { User } from "../models/user";
-import { Profile } from "../models/profile";
-import { IUserService } from "../types";
-import { HttpError } from "../middleware";
 import { Repository, UpdateResult } from "typeorm";
-import AppDataSource from "../data-source";
 import { cloudinary } from "../config/multer";
+import AppDataSource from "../data-source";
+import { HttpError } from "../middleware";
+import { Profile } from "../models/profile";
+import { User } from "../models/user";
 
 interface IUserProfileUpdate {
   first_name: string;

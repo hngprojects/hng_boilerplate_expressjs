@@ -6,6 +6,7 @@ import {
   checkPermissions,
   organizationValidation,
   validateOrgId,
+  validateUpdateOrg,
 } from "../middleware";
 
 const orgRouter = Router();
@@ -67,10 +68,24 @@ orgRouter.get(
   authMiddleware,
   orgController.searchOrganizationMembers.bind(orgController),
 );
+
 orgRouter.put(
-  "/organizations/:org_id",
+  "/organizations/:organization_id",
   authMiddleware,
+  validateUpdateOrg,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
   orgController.updateOrganisation.bind(orgController),
+);
+
+orgRouter.get(
+  "/organizations/:org_id/roles/:role_id",
+  authMiddleware,
+  orgController.getSingleRole,
+);
+
+orgRouter.get(
+  "/organizations/:org_id/roles",
+  authMiddleware,
+  orgController.getAllOrganizationRoles,
 );
 export { orgRouter };
