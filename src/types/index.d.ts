@@ -84,3 +84,11 @@ export interface GoogleUser {
   picture: string;
   sub: string;
 }
+
+export interface INewsLetterSubscriptionService {
+  subscribeUser(email: string): Promise<any>;
+}
+
+export interface INewsLetterSubscription {
+  email: string;
+}
