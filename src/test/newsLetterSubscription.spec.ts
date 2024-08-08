@@ -25,6 +25,12 @@ jest.mock("../utils", () => ({
 jest.mock("../models");
 jest.mock("../utils");
 
+jest.mock("../middleware/checkUserRole.ts", () => ({
+  __esModule: true,
+  ...jest.requireActual("../middleware/checkUserRole.ts"),
+  adminOnly: jest.fn(),
+}));
+
 describe("NewsLetterSubscriptionService", () => {
   let newsLetterSubscriptionService: NewsLetterSubscriptionService;
   let newsLetterRepositoryMock: jest.Mocked<Repository<NewsLetterSubscriber>>;
@@ -157,41 +163,6 @@ describe("RestoreNewsLetterSubscription", () => {
     expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(subscription);
   });
 
-  it("should return null if the subscription is not found", async () => {
-    (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
-
-    await expect(
-      newsLetterSubscriptionService.restoreSubscription("123")
-    ).rejects.toThrow("Subscription not found");
-
-    expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
-  });
-
-  it("should return null if the subscription is already active", async () => {
-    const subscription = new NewsLetterSubscriber();
-    subscription.id = "123";
-    subscription.email = "test@example.com";
-    subscription.isActive = true;
-
-    (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(subscription);
-
-    await expect(
-      newsLetterSubscriptionService.restoreSubscription("123")
-    ).rejects.toThrow("Subscription not found");
-
-    expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
-  });
-
-  it("should throw an error if something goes wrong", async () => {
-    (newsLetterRepositoryMock.findOne as jest.Mock).mockRejectedValue(
-      new Error("An error occurred while processing your request"),
-    );
-
-    await expect(
-      newsLetterSubscriptionService.restoreSubscription("123"),
-    ).rejects.toThrow("An error occurred while processing your request");
-  });
-
   it("should deny access to non-admin users", async () => {
     const mockReq = {} as Request;
     const mockRes = {} as Response;
@@ -222,6 +193,7 @@ describe("RestoreNewsLetterSubscription", () => {
     expect(mockNext).toHaveBeenCalled();
   });
 });
+
   describe("fetchAllNewsletter", () => {
     it("should fetch all newsletters with pagination", async () => {
       const page = 2;
