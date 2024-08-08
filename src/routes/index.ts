@@ -20,3 +20,4 @@ export * from "./run-test";
 export * from "./billing-plans";
 export * from "./squeeze";
 export * from "./newsLetterSubscription";
+export * from "./billingplan";

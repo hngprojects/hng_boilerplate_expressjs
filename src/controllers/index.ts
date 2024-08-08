@@ -19,3 +19,4 @@ export * from "./OrgController";
 export * from "./runTestController";
 export * from "./billingController";
 export * from "./SqueezeController";
+export * from "./billingplanController";

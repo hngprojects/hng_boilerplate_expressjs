@@ -94,6 +94,7 @@
     "pino": "^9.3.1",
     "pino-pretty": "^11.2.1",
     "reflect-metadata": "^0.1.14",
+    "speakeasy": "^2.0.0",
     "stripe": "^16.5.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

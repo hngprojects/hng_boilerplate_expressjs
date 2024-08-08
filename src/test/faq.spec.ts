@@ -2,7 +2,7 @@ import { FAQService } from "../services";
 import { Repository } from "typeorm";
 import { FAQ } from "../models/faq";
 import AppDataSource from "../data-source";
-import { BadRequest } from "../middleware";
+import { BadRequest, HttpError } from "../middleware";
 
 jest.mock("../data-source");
 
@@ -14,6 +14,7 @@ describe("FaqService", () => {
     faqRepository = {
       findOne: jest.fn(),
       update: jest.fn(),
+      delete: jest.fn(),
     } as any;
 
     AppDataSource.getRepository = jest.fn().mockImplementation((model) => {
@@ -77,6 +78,50 @@ describe("FaqService", () => {
       await expect(faqService.updateFaq(payload, faqId)).rejects.toThrow(
         BadRequest,
       );
+    });
+  });
+
+  describe("deleteFaq", () => {
+    it("should delete an existing FAQ", async () => {
+      const faqId = "faq-123";
+      const existingFaq = {
+        id: faqId,
+        question: "FAQ question",
+        answer: "Answer",
+        category: "General",
+      } as FAQ;
+
+      faqRepository.findOne.mockResolvedValue(existingFaq);
+      faqRepository.delete.mockResolvedValue({ affected: 1, raw: [] });
+
+      const result = await faqService.deleteFaq(faqId);
+
+      expect(faqRepository.findOne).toHaveBeenCalledWith({
+        where: { id: faqId },
+      });
+      expect(faqRepository.delete).toHaveBeenCalledWith(faqId);
+      expect(result).toBe(true);
+    });
+
+    it("should throw BadRequest if FAQ does not exist", async () => {
+      const faqId = "faq-123";
+
+      faqRepository.findOne.mockResolvedValue(null);
+
+      await expect(faqService.deleteFaq(faqId)).rejects.toThrow(BadRequest);
+    });
+
+    it("should throw HttpError if deletion fails", async () => {
+      const faqId = "faq-123";
+      const existingFaq = {
+        id: faqId,
+        question: "FAQ question",
+        answer: "Answer",
+        category: "General",
+      } as FAQ;
+
+      faqRepository.findOne.mockResolvedValue(existingFaq);
+      faqRepository.delete.mockResolvedValue({ affected: 0, raw: [] });
     });
   });
 });

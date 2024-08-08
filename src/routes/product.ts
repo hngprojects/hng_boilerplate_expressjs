@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/ProductController";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, validOrgAdmin } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
 import { validateUserToOrg } from "../middleware/organizationValidation";
 import { adminOnly } from "../middleware";
@@ -13,8 +13,7 @@ productRouter.post(
   "/organizations/:org_id/products",
   validateProductDetails,
   authMiddleware,
-  adminOnly,
-  validateUserToOrg,
+  validOrgAdmin,
   productController.createProduct,
 );
 
@@ -28,9 +27,15 @@ productRouter.get(
 productRouter.delete(
   "/organizations/:org_id/products/:product_id",
   authMiddleware,
-  adminOnly,
-  validateUserToOrg,
+  validOrgAdmin,
   productController.deleteProduct,
+);
+
+productRouter.get(
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
+  validOrgAdmin,
+  productController.getSingleProduct,
 );
 
 export { productRouter };
