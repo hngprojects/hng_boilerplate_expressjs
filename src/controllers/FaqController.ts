@@ -68,8 +68,24 @@ class FAQController {
    *                     createdBy:
    *                       type: string
    *                       example: "SUPER_ADMIN"
+   *       '400':
+   *         description: Bad Request if input data is invalid
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: "Invalid request data"
    *       '401':
-   *         description: Unauthorized if user is not authenticated or invalid request data
+   *         description: Unauthorized if user is not authenticated
    *         content:
    *           application/json:
    *             schema:
@@ -83,7 +99,7 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: "User not authenticated" or "Invalid request data"
+   *                   example: "User not authenticated"
    *       '403':
    *         description: Forbidden if user is not a super admin
    *         content:
@@ -101,7 +117,7 @@ class FAQController {
    *                   type: string
    *                   example: "User is not authorized to create FAQ"
    *       '500':
-   *         description: Internal server error if an unexpected error occurs
+   *         description: Internal Server Error if an unexpected error occurs
    *         content:
    *           application/json:
    *             schema:
@@ -115,7 +131,7 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: "An unexpected error occured"
+   *                   example: "An unexpected error occurred"
    */
   public async createFAQ(req: Request, res: Response, next: NextFunction) {
     try {
@@ -130,8 +146,8 @@ class FAQController {
         });
       }
 
-      if (!question || answer || category) {
-        return res.status(401).json({
+      if (!question || !answer || !category) {
+        return res.status(400).json({
           status_code: 400,
           success: false,
           message: "Invalid request data",
@@ -157,14 +173,14 @@ class FAQController {
       res.status(201).json({
         status_code: 201,
         success: true,
-        message: "FAQ Created successfully",
+        message: "The FAQ has been successfully created.",
         data: faq,
       });
     } catch (error) {
       res.status(500).json({
         status_code: 500,
         success: false,
-        message: "An unexpected error occured",
+        message: error.message || "An unexpected error occurred",
       });
     }
   }
