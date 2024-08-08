@@ -11,12 +11,6 @@ jest.mock("../services", () => ({
   })),
 }));
 
-// jest.mock("../data-source", () => ({
-//   getRepository: jest.fn().mockReturnValue({
-//     findOneBy: jest.fn(),
-//   }),
-// }));
-
 jest.mock("../data-source", () => ({
   __esModule: true,
   default: {
