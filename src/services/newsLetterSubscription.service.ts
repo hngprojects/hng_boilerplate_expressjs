@@ -1,7 +1,7 @@
 import { Repository } from "typeorm";
+import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
-import AppDataSource from "../data-source";
 import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 
 export class NewsLetterSubscriptionService
@@ -27,6 +27,7 @@ export class NewsLetterSubscriptionService
       isNewlySubscribe = false;
       return { isNewlySubscribe, subscriber: isExistingSubscriber };
     }
+
     if (isExistingSubscriber && isExistingSubscriber.isSubscribe === false) {
       throw new BadRequest(
         "You are already subscribed, please enable newsletter subscription to receive newsletter again",
@@ -64,5 +65,36 @@ export class NewsLetterSubscriptionService
     }
 
     throw new BadRequest("You already unsubscribed to newsletter");
+  }
+
+  public async fetchAllNewsletter({
+    page = 1,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }) {
+    try {
+      const [newsletters, total] = await this.newsLetterSubscriber.findAndCount(
+        {
+          skip: (page - 1) * limit,
+          take: limit,
+        },
+      );
+      const totalPages = Math.ceil(total / limit);
+      const meta = {
+        total,
+        page,
+        limit,
+        totalPages,
+      };
+
+      return {
+        data: newsletters,
+        meta,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }

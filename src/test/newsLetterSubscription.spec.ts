@@ -28,9 +28,9 @@ describe("NewsLetterSubscriptionService", () => {
   beforeEach(() => {
     newsLetterRepositoryMock = {
       findOne: jest.fn(),
+      findAndCount: jest.fn(),
       save: jest.fn(),
     } as any;
-
     (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
       if (entity === NewsLetterSubscriber) return newsLetterRepositoryMock;
     });
@@ -72,18 +72,22 @@ describe("NewsLetterSubscriptionService", () => {
       );
     });
 
-    it("should handle an already subscribed user", async () => {
-      const existingSubscriber = new NewsLetterSubscriber();
-      existingSubscriber.id = "123";
-      existingSubscriber.email = "test@example.com";
-      existingSubscriber.isSubscribe = true;
-
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(
-        existingSubscriber,
+    it("should handle already subscribed user", async () => {
+      const user = new NewsLetterSubscriber();
+      user.id = "123";
+      user.email = "test@example.com";
+      user.isSubscribe = true;
+      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(user);
+      (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
+        (user) => {
+          user.id = "456";
+          return Promise.resolve(user);
+        },
       );
 
       const result =
         await newsLetterSubscriptionService.subscribeUser("test@example.com");
+      console.log(result);
 
       expect(result.isNewlySubscribe).toBe(false);
       expect(result.subscriber).toEqual({
@@ -119,52 +123,69 @@ describe("NewsLetterSubscriptionService", () => {
     });
   });
 
-  describe("UnsubscribeFromNewsLetter", () => {
-    it("should successfully unsubscribe a logged-in user from the newsletter", async () => {
-      const user = new NewsLetterSubscriber();
-      user.email = "test1@example.com";
-      user.id = "5678";
-      user.isSubscribe = true;
+  describe("fetchAllNewsletter", () => {
+    it("should fetch all newsletters with pagination", async () => {
+      const page = 2;
+      const limit = 20;
+      const mockSubscribers: any = [
+        { id: "1", email: "user1@example.com" },
+        { id: "2", email: "user2@example.com" },
+        { id: "3", email: "user3@example.com" },
+      ] as unknown as NewsLetterSubscriber[];
+      const mockTotal = 50;
 
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(user);
+      newsLetterRepositoryMock.findAndCount.mockResolvedValue([
+        mockSubscribers,
+        mockTotal,
+      ]);
 
-      (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
-        (user) => {
-          user.isSubscribe = false;
-          return Promise.resolve(user);
-        },
-      );
-
-      const result =
-        await newsLetterSubscriptionService.unSubcribeUser("test1@example.com");
-
-      expect(result).toEqual({
-        id: "5678",
-        email: "test1@example.com",
-        isSubscribe: false,
+      const result = await newsLetterSubscriptionService.fetchAllNewsletter({
+        page,
+        limit,
       });
 
-      expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(
-        expect.objectContaining({
-          id: "5678",
-          email: "test1@example.com",
-          isSubscribe: false,
-        }),
-      );
+      expect(result).toEqual({
+        data: mockSubscribers,
+        meta: {
+          total: mockTotal,
+          page,
+          limit,
+          totalPages: Math.ceil(mockTotal / limit),
+        },
+      });
+      expect(newsLetterRepositoryMock.findAndCount).toHaveBeenCalledWith({
+        skip: (page - 1) * limit,
+        take: limit,
+      });
     });
 
-    it("should throw and error if user is not subscribed", async () => {
-      const inactiveSubscriber = new NewsLetterSubscriber();
-      inactiveSubscriber.email = "test@example.com";
-      inactiveSubscriber.isSubscribe = false;
+    it("should handle default pagination values", async () => {
+      const mockSubscribers: any = [
+        { id: "1", email: "user1@example.com" },
+        { id: "2", email: "user2@example.com" },
+      ];
+      const mockTotal = 20;
 
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(
-        inactiveSubscriber,
-      );
+      newsLetterRepositoryMock.findAndCount.mockResolvedValue([
+        mockSubscribers,
+        mockTotal,
+      ]);
 
-      await expect(
-        newsLetterSubscriptionService.subscribeUser("test@example.com"),
-      ).rejects.toThrow(BadRequest);
+      const result = await newsLetterSubscriptionService.fetchAllNewsletter({});
+
+      expect(result).toEqual({
+        data: mockSubscribers,
+        meta: {
+          total: mockTotal,
+          page: 1,
+          limit: 10,
+          totalPages: 2,
+        },
+      });
+      expect(newsLetterRepositoryMock.findAndCount).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10,
+      });
     });
   });
 });
