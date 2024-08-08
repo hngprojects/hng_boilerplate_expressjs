@@ -20,3 +20,4 @@ export * from "./invitation";
 export * from "./contact-us";
 export * from "./faq";
 export * from "./orgInviteToken";
+export * from "./squeeze";
