@@ -16,7 +16,7 @@ class SqueezeService {
     if (!validation.success) {
       throw new Conflict(
         "Validation failed: " +
-        validation.error.errors.map((e) => e.message).join(", ")
+          validation.error.errors.map((e) => e.message).join(", "),
       );
     }
 
@@ -26,7 +26,9 @@ class SqueezeService {
       });
 
       if (existingSqueeze) {
-        throw new Conflict("A squeeze has already been generated using this email");
+        throw new Conflict(
+          "A squeeze has already been generated using this email",
+        );
       }
 
       const squeeze = this.squeezeRepository.create(data);
@@ -34,6 +36,15 @@ class SqueezeService {
       return savedSqueeze;
     } catch (error) {
       throw new BadRequest("Failed to create squeeze: " + error.message);
+    }
+  }
+
+  public async getSqueezeById(id: string): Promise<Squeeze | null> {
+    try {
+      const squeeze = await this.squeezeRepository.findOne({ where: { id } });
+      return squeeze;
+    } catch (error) {
+      throw new BadRequest("Failed to retrieve squeeze: " + error.message);
     }
   }
 }
