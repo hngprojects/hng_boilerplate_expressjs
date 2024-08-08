@@ -37,7 +37,6 @@ export class JobService {
           newJob.job_mode = JobMode[createJobBody.job_mode];
           newJob.company_name = createJobBody.company_name;
           newJob.user = user;
-          newJob.user_id = user.id;
 
           return await transactionalEntityManager.save(Job, newJob);
         },

@@ -30,16 +30,13 @@ export enum JobMode {
   onsite = "onsite",
 }
 
-@Entity()
+@Entity({ name: "jobs" })
 export class Job extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column("text", { nullable: false })
   title: string;
-
-  @Column()
-  user_id: string;
 
   @Column("text", { nullable: false })
   description: string;
