@@ -169,8 +169,8 @@ describe("RestoreNewsLetterSubscription", () => {
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "USER" };
-      next(new Unauthorized("Access denied. Admins only."));
+      req.user = { role: "USER" }; // Mock non-admin user
+      next(new Unauthorized("Access denied. Admins only.")); // Call next with error
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
@@ -184,8 +184,8 @@ describe("RestoreNewsLetterSubscription", () => {
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "ADMIN" };
-      next();
+      req.user = { role: "ADMIN" }; // Mock admin user
+      next(); // Call next without error
     });
 
     await adminOnly(mockReq, mockRes, mockNext);
