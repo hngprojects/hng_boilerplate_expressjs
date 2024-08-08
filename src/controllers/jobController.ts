@@ -73,7 +73,6 @@ export class JobController {
    *                     description:
    *                       type: string
    *                       example: "Develop and maintain software applications."
-   *                     // Add other job properties as needed
    *       404:
    *         description: Job not found
    *         content:
@@ -88,7 +87,7 @@ export class JobController {
    *                   type: integer
    *                   example: 404
    *       422:
-   *         description: Validation failed: Valid job ID required
+   *         description: Validation failed. Valid job ID required
    *         content:
    *           application/json:
    *             schema:
@@ -96,7 +95,7 @@ export class JobController {
    *               properties:
    *                 message:
    *                   type: string
-   *                   example: "Validation failed: Valid job ID required"
+   *                   example: "Validation failed. Valid job ID required"
    *                 status_code:
    *                   type: integer
    *                   example: 422
