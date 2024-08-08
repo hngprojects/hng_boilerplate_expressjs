@@ -105,66 +105,21 @@ export class ProductService {
       },
     };
   }
-
-  public async getProducts(
-    orgId: string,
-    query: {
-      name?: string;
-      category?: string;
-      minPrice?: number;
-      maxPrice?: number;
-    },
-    page: number = 1,
-    limit: number = 10,
-  ) {
-    const org = await this.organizationRepository.findOne({
-      where: { id: orgId },
-    });
-    if (!org) {
-      throw new ServerError(
-        "Unprocessable entity exception: Invalid organization credentials",
-      );
-    }
-
-    const { name, category, minPrice, maxPrice } = query;
-    const queryBuilder = this.productRepository
-      .createQueryBuilder("product")
-      .where("product.orgId = :orgId", { orgId });
-
-    if (name) {
-      queryBuilder.andWhere("product.name ILIKE :name", { name: `%${name}%` });
-    }
-    if (minPrice) {
-      queryBuilder.andWhere("product.price >= :minPrice", { minPrice });
-    }
-    if (maxPrice) {
-      queryBuilder.andWhere("product.price <= :maxPrice", { maxPrice });
-    }
-
-    const skip = (page - 1) * limit;
-    queryBuilder.skip(skip).take(limit);
-
-    const [products, total] = await queryBuilder.getManyAndCount();
-
-    return {
-      success: true,
-      statusCode: 200,
-      data: {
-        products,
-        pagination: {
-          total,
-          page,
-          limit,
-          totalPages: Math.ceil(total / limit),
-        },
-      },
-    };
-  }
   public async deleteProduct(org_id: string, product_id: string) {
-    const entities = await this.checkEntities({
-      organization: org_id,
-      product: product_id,
-    });
-    return this.productRepository.remove(entities.product);
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        throw new Error("Product not found");
+      }
+
+      await this.productRepository.remove(entities.product);
+      return { message: "Product deleted successfully" };
+    } catch (error) {
+      throw new Error(`Failed to delete product: ${error.message}`);
+    }
   }
 }
