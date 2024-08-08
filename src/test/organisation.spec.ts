@@ -7,7 +7,11 @@ import { OrgService } from "../services";
 import { Repository } from "typeorm";
 import { OrgController } from "../controllers/OrgController.ts";
 import { authMiddleware } from "../middleware/auth.ts";
-import { InvalidInput, ResourceNotFound } from "../middleware/error.ts";
+import {
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware/error.ts";
 import { validateOrgId } from "../middleware/organizationValidation.ts";
 import { OrganizationRole } from "../models/organization-role.entity.ts";
 
@@ -20,7 +24,7 @@ jest.mock("../data-source", () => ({
   },
 }));
 
-describe("Organization Controller and Middleware", () => {
+describe("Organization", () => {
   let organizationService: OrgService;
   let orgController: OrgController;
   let mockManager;
@@ -39,6 +43,7 @@ describe("Organization Controller and Middleware", () => {
     } as any;
     organizationRoleRepositoryMock = {
       find: jest.fn(),
+      findOne: jest.fn(),
     } as any;
     (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
       if (entity === Organization) return organizationRepositoryMock;
@@ -135,7 +140,7 @@ describe("Organization Controller and Middleware", () => {
     );
   });
 
-  describe("fetchAllRolesInOrganization", () => {
+  describe("fetchAllRolesInOrganisation", () => {
     it("should fetch all roles for an existing organization", async () => {
       const organizationId = "org123";
       const mockOrganization = { id: organizationId, name: "Test Org" };
@@ -196,6 +201,76 @@ describe("Organization Controller and Middleware", () => {
         where: { organization: { id: organizationId } },
         select: ["id", "name", "description"],
       });
+    });
+  });
+
+  describe("fetchSingleRoleInOrganisation", () => {
+    it("should fetch as single role", async () => {
+      const organisationId = "org123";
+      const roleId = "role456";
+      const mockOrganization: Organization = {
+        id: organisationId,
+        name: "Test Org",
+      };
+      const mockRole: OrganizationRole = {
+        id: roleId,
+        name: "Administrator",
+        description: "Administrator",
+        permissions: [],
+        organization: mockOrganization,
+      };
+
+      organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
+      organizationRoleRepositoryMock.findOne.mockResolvedValue(mockRole);
+
+      const result = await organizationService.fetchSingleRole(
+        organisationId,
+        roleId,
+      );
+      expect(result).toEqual(mockRole);
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organisationId },
+      });
+      expect(organizationRoleRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: roleId, organization: { id: organisationId } },
+        relations: ["permissions"],
+      });
+    });
+
+    it("should throw ResourceNotFound if the organization does not exist", async () => {
+      const organisationId = "nonexistent123";
+      const roleId = "role456";
+
+      organizationRepositoryMock.findOne.mockResolvedValue(null);
+
+      await expect(
+        organizationService.fetchSingleRole(organisationId, roleId),
+      ).rejects.toThrow(ResourceNotFound);
+
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organisationId },
+      });
+      expect(organizationRoleRepositoryMock.findOne).not.toHaveBeenCalled();
+    });
+
+    it("should throw ServerError for unexpected errors", async () => {
+      const organisationId = "org123";
+      const roleId = "role456";
+      const mockError = new Error("Database error");
+
+      organizationRepositoryMock.findOne.mockRejectedValue(mockError);
+      try {
+        await expect(
+          organizationService.fetchSingleRole(organisationId, roleId),
+        ).rejects.toThrow(ServerError);
+      } catch (error) {
+        expect(error).toBeInstanceOf(ServerError);
+      }
+
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organisationId },
+      });
+      expect(organizationRoleRepositoryMock.findOne).not.toHaveBeenCalled();
     });
   });
 });
