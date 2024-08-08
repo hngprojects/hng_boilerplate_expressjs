@@ -87,6 +87,7 @@ export interface GoogleUser {
 
 export interface INewsLetterSubscriptionService {
   subscribeUser(email: string): Promise<any>;
+  unSubcribeUser(email: string): Promise<any>;
 }
 
 export interface INewsLetterSubscription {
