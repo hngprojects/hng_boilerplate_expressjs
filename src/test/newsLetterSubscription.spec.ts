@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
-import { BadRequest } from "../middleware";
+import { BadRequest, ResourceNotFound } from "../middleware";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -186,6 +186,55 @@ describe("NewsLetterSubscriptionService", () => {
         skip: 0,
         take: 10,
       });
+    });
+  });
+
+  describe("UnsubscribeFromNewsLetter", () => {
+    it("should successfully unsubscribe a logged-in user from the newsletter", async () => {
+      const user = new NewsLetterSubscriber();
+      user.email = "test1@example.com";
+      user.id = "5678";
+      user.isSubscribe = true;
+
+      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(user);
+
+      (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
+        (user) => {
+          user.isSubscribe = false;
+          return Promise.resolve(user);
+        },
+      );
+
+      const result =
+        await newsLetterSubscriptionService.unSubcribeUser("test1@example.com");
+
+      expect(result).toEqual({
+        id: "5678",
+        email: "test1@example.com",
+        isSubscribe: false,
+      });
+
+      expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "5678",
+          email: "test1@example.com",
+          isSubscribe: false,
+        }),
+      );
+    });
+
+    it("should throw an error if user is not subscribed", async () => {
+      const inactiveSubscriber = new NewsLetterSubscriber();
+      inactiveSubscriber.email = "test@example.com";
+      inactiveSubscriber.isSubscribe = false;
+
+      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(
+        inactiveSubscriber,
+      );
+
+      await expect(
+        newsLetterSubscriptionService.subscribeUser("test@example.com"),
+      ).rejects.toThrow(BadRequest);
     });
   });
 });
