@@ -13,3 +13,4 @@ export * from "./org.services";
 export * from "./billing-plans.services";
 export * from "./squeezeService";
 export * from "./blogComment.services";
+export * from "./newsLetterSubscription.service";

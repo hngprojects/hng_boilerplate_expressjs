@@ -12,4 +12,7 @@ export class NewsLetterSubscriber {
 
   @Column()
   email: string;
+
+  @Column({ default: true })
+  isActive: boolean;
 }

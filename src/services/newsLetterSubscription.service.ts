@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
 import AppDataSource from "../data-source";
-import { BadRequest, HttpError } from "../middleware";
+import { HttpError, ResourceNotFound } from "../middleware";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -36,5 +36,20 @@ export class NewsLetterSubscriptionService
       );
     }
     return { isSubscribe, subscriber };
+  }
+
+  public async restoreSubscription(subscriptionId: string): Promise<NewsLetterSubscriber | null> {
+    const subscription = await this.newsLetterSubscriber.findOne({
+      where: { id: subscriptionId },
+    });
+  
+    if (!subscription || subscription.isActive) {
+      throw new ResourceNotFound("Subscription not found");
+    }
+  
+    subscription.isActive = true;
+    await this.newsLetterSubscriber.save(subscription);
+  
+    return subscription;
   }
 }
