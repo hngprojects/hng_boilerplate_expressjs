@@ -73,12 +73,12 @@ orgRouter.put(
 orgRouter.get(
   "/organizations/:org_id/roles/:role_id",
   authMiddleware,
-  orgController.getSingleRole,
+  orgController.getSingleRole.bind(orgController),
 );
 
 orgRouter.get(
   "/organizations/:org_id/roles",
   authMiddleware,
-  orgController.getAllOrganizationRoles,
+  orgController.getAllOrganizationRoles.bind(orgController),
 );
 export { orgRouter };
