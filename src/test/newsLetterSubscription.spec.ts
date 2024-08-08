@@ -1,9 +1,11 @@
+import { Request, Response, NextFunction } from 'express';
 import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
 import { ResourceNotFound, BadRequest, Unauthorized } from "../middleware";
 import { adminOnly } from "../middleware/checkUserRole";
+
 
 
 jest.mock("../data-source", () => ({
@@ -191,12 +193,18 @@ describe("RestoreNewsLetterSubscription", () => {
   });
 
   it("should deny access to non-admin users", async () => {
-    const mockReq = {} as Request;
+    const mockReq = {
+      user: { role: "USER" },
+      headers: {},
+      body: {},
+      query: {},
+      params: {}
+    } as Request;
+
     const mockRes = {} as Response;
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "USER" };
       next(new Unauthorized("Access denied. Admins only."));
     });
 
@@ -206,12 +214,18 @@ describe("RestoreNewsLetterSubscription", () => {
   });
 
   it("should allow access to admin users", async () => {
-    const mockReq = {} as Request;
+    const mockReq = {
+      user: { role: "ADMIN" }, 
+      headers: {},
+      body: {},
+      query: {},
+      params: {}
+    } as Request;
+
     const mockRes = {} as Response;
     const mockNext = jest.fn();
 
     (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "ADMIN" };
       next();
     });
 

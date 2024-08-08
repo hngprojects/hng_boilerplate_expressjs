@@ -2,7 +2,6 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
-import AppDataSource from "../data-source";
 import { HttpError, ResourceNotFound, BadRequest } from "../middleware";
 
 export class NewsLetterSubscriptionService
