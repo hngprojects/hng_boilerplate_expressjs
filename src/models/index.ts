@@ -19,4 +19,3 @@ export * from "./log";
 export * from "./invitation";
 export * from "./contact-us";
 export * from "./faq";
-export * from "./orgInviteToken";
