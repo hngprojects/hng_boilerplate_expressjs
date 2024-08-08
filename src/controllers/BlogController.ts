@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { BlogService } from "../services";
 
 export class BlogController {
@@ -384,7 +384,7 @@ export class BlogController {
     }
   }
 
-  async createBlogController(req: Request, res: Response) {
+  async createBlogController(req: Request, res: Response, next: NextFunction) {
     const { title, content, image_url, tags, categories } = req.body;
 
     try {
@@ -411,6 +411,35 @@ export class BlogController {
         status_code: 500,
         message: error.message,
       });
+    }
+  }
+
+  async updateBlog(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user.id;
+      const blogId = req.params.id;
+      const { title, content, image_url, tags, categories } = req.body;
+      if (!title || !content || image_url || tags || categories) {
+      }
+      const updatedBlog = await this.blogService.updateBlog(
+        blogId,
+        req.body,
+        userId,
+      );
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Blog post updated successfully.",
+        post: updatedBlog,
+      });
+    } catch (error) {
+      // res.status(500).json({
+      //   status: "unsuccessful",
+      //   status_code: 500,
+      //   message: error.message,
+      // });
+      console.log("err", error);
+      next(error);
     }
   }
 }

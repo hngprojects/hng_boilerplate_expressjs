@@ -24,6 +24,11 @@ blogRouter.get(
   authMiddleware,
   blogController.listBlogsByUser.bind(blogController),
 );
+blogRouter.patch(
+  "/blog/edit/:id",
+  authMiddleware,
+  blogController.updateBlog.bind(blogController),
+);
 blogRouter.put("/:id", authMiddleware, updateBlogController);
 
 blogRouter.delete(

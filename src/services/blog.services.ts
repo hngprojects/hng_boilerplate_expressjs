@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { Category, Tag, User } from "../models";
 import { Blog } from "../models/blog";
+import { ResourceNotFound } from "../middleware";
 
 export class BlogService {
   private blogRepository: Repository<Blog>;
@@ -113,5 +114,28 @@ export class BlogService {
     } catch (error) {
       throw error;
     }
+  }
+  async updateBlog(blogId: string, payload: Blog, userId: string) {
+    const blog = await this.blogRepository.findOne({
+      where: { id: blogId },
+      relations: ["author"],
+    });
+
+    if (!blog) {
+      throw new ResourceNotFound("Blog post not found");
+    }
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    Object.assign(blog, payload, { author: user });
+
+    const updatedBlog = await this.blogRepository.save(blog);
+    return {
+      blog_id: updatedBlog.id,
+      title: updatedBlog.title,
+      content: updatedBlog.content,
+      tags: updatedBlog.tags,
+      image_urls: updatedBlog.image_url,
+      author: updatedBlog.author.name,
+      updatedBlog_at: updatedBlog.created_at,
+    };
   }
 }
