@@ -11,7 +11,7 @@ const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
  *     summary: Subscribe to the newsletter
  *     description: Allows a user to subscribe to the newsletter by providing an email address.
  *     tags:
- *       - Newsletter Subscription
+ *       - Newsletter
  *     requestBody:
  *       required: true
  *       content:
@@ -110,4 +110,84 @@ const subscribeToNewsletter = async (
   }
 };
 
-export { subscribeToNewsletter };
+/**
+ * @swagger
+ * /newsletter/unsubscribe:
+ *   post:
+ *     summary: Unsubscribe from newsletter
+ *     description: Allows a logedegin user to unsubscribe from the newsletter using their email address.
+ *     tags:
+ *       - Newsletter
+ *     security:
+ *       - bearerAuth: [] # Assumes you're using bearer token authentication
+ *     responses:
+ *       200:
+ *         description: Successfully unsubscribed from the newsletter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: success
+ *                 message:
+ *                   type: string
+ *                   example: Successfully unsubscribed from newsletter
+ *       400:
+ *         description: Bad request, missing or invalid email.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: unsuccessful
+ *                 status_code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: You already unsubscribed to newsletter.
+ *       404:
+ *         description: User not subscribed ti newsletter.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: unsuccessful
+ *                 status_code:
+ *                   type: number
+ *                   example: 404
+ *                 message:
+ *                   type: string
+ *                   example: You are not subscribed to newsletter.
+ */
+const unSubscribeToNewsletter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { email } = req.user;
+    if (!email) {
+      throw new BadRequest("Email is missing in request body.");
+    }
+    const subscriber =
+      await newsLetterSubscriptionService.unSubcribeUser(email);
+    if (subscriber) {
+      res.status(200).json({
+        status: "success",
+        message: "Successfully unsubscribed from newsletter",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { subscribeToNewsletter, unSubscribeToNewsletter };

@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
 import AppDataSource from "../data-source";
-import { BadRequest, HttpError } from "../middleware";
+import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -46,5 +46,23 @@ export class NewsLetterSubscriptionService
       );
     }
     return { isNewlySubscribe, subscriber };
+  }
+
+  public async unSubcribeUser(email: string): Promise<any> {
+    const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
+      where: { email },
+    });
+
+    if (!isExistingSubscriber) {
+      throw new ResourceNotFound("You are not subscribed to newsletter");
+    }
+
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === true) {
+      isExistingSubscriber.isSubscribe = false;
+      await this.newsLetterSubscriber.save(isExistingSubscriber);
+      return isExistingSubscriber;
+    }
+
+    throw new BadRequest("You already unsubscribed to newsletter");
   }
 }
