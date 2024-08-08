@@ -25,6 +25,7 @@ import {
   sendEmailRoute,
   testimonialRoute,
   userRouter,
+  paymentPaystackRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -87,6 +88,7 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", roleRouter);
+server.use("/api/v1", paymentPaystackRouter);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
