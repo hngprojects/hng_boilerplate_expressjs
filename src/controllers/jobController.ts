@@ -29,7 +29,8 @@ export class JobController {
       res.status(201).json({ message: "Success", billing });
     } catch (error) {
       res.status(500).json({ message: error.message });
-
+   }
+  }
   /**
    * @swagger
    * /jobs/{jobId}:
