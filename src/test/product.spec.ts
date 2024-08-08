@@ -197,4 +197,55 @@ describe("ProductService", () => {
       expect(productRepository.remove).not.toHaveBeenCalled();
     });
   });
+
+  describe("updateProduct", () => {
+    it("should successfully update a product", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+      const mockProduct = { id: product_id, name: "Test Product" } as Product;
+      const updateDetails = { price: 10 };
+      const updatedProduct = { ...mockProduct, ...updateDetails };
+
+      // Mocking checkEntities to return the product
+      productService["checkEntities"] = jest.fn().mockResolvedValue({
+        product: mockProduct,
+      });
+
+      // Mocking the save method to return the updated product
+      productRepository.save = jest.fn().mockResolvedValue(updatedProduct);
+
+      const result = await productService.updateProduct(
+        org_id,
+        product_id,
+        updateDetails,
+      );
+
+      expect(productRepository.save).toHaveBeenCalledWith(updatedProduct);
+      expect(result).toEqual(updatedProduct);
+    });
+
+    it("should throw ServerError if product update fails", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+      const mockProduct = { id: product_id, name: "Test Product" } as Product;
+      const updateDetails = { price: 10 };
+
+      // Mocking checkEntities to return the product
+      productService["checkEntities"] = jest.fn().mockResolvedValue({
+        product: mockProduct,
+      });
+
+      // Mocking the save method to return undefined (simulating a failure)
+      productRepository.save = jest.fn().mockResolvedValue(undefined);
+
+      await expect(
+        productService.updateProduct(org_id, product_id, updateDetails),
+      ).rejects.toThrow(ServerError);
+
+      expect(productRepository.save).toHaveBeenCalledWith({
+        ...mockProduct,
+        ...updateDetails,
+      });
+    });
+  });
 });
