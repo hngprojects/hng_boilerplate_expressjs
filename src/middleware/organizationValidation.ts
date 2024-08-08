@@ -5,6 +5,8 @@ import { User } from "../models";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 import { InvalidInput } from "./error";
+import { UserOrganization } from "../models";
+import { UserRole } from "../enums/userRoles";
 
 export const organizationValidation = async (
   req: Request & { user?: User },
@@ -93,7 +95,6 @@ export const validateUserToOrg = async (
   try {
     const { org_id } = req.params;
     const { user } = req;
-    log.error(org_id, user.id);
 
     if (!user || !org_id) {
       return res.status(400).json({
@@ -102,20 +103,30 @@ export const validateUserToOrg = async (
       });
     }
 
-    const orgService = new OrgService();
-    const userOrg = await orgService.getSingleOrg(org_id, user.id);
+    const orgMember = await UserOrganization.findOne({
+      where: {
+        userId: user.id,
+        organizationId: org_id,
+      },
+    });
 
-    if (!userOrg) {
+    if (!orgMember) {
       return res.status(400).json({
         status_code: 400,
         message: "user not a member of organization",
       });
     }
 
-    log.error(org_id, user, userOrg);
+    if (![UserRole.ADMIN, UserRole.SUPER_ADMIN].includes(orgMember.role)) {
+      return res.status(400).json({
+        status_code: 403,
+        message: "Forbidden: User not an admin or super admin",
+      });
+    }
+
     next();
   } catch (error) {
-    console.error("Error:", error);
+    console.log(error);
     res.status(500).json({
       status_code: 500,
       message: "Internal server error",

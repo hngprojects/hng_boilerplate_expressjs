@@ -1,167 +1,50 @@
 // @ts-nocheck
-import { OrgService } from "../services";
-import { Organization, User, UserOrganization } from "../models";
-import AppDataSource from "../data-source";
-import { UserRole } from "../enums/userRoles";
-import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
-import { AuthService } from "../services/index.ts";
+import AppDataSource from "../data-source";
+import { Organization, User } from "../models";
+import { OrgService } from "../services";
 
-import { authMiddleware } from "../middleware/auth.ts";
-import { OrgService } from "../services/org.services.ts";
+import { Repository } from "typeorm";
 import { OrgController } from "../controllers/OrgController.ts";
-import { validateOrgId } from "../middleware/organization.validation.ts";
-import { InvalidInput } from "../middleware/error.ts";
-import { authMiddleware } from "../middleware";
-import { OrgService } from "../services/organisation.service";
+import { authMiddleware } from "../middleware/auth.ts";
+import { InvalidInput, ResourceNotFound } from "../middleware/error.ts";
+import { validateOrgId } from "../middleware/organizationValidation.ts";
+import { OrganizationRole } from "../models/organization-role.entity.ts";
 
-jest.mock("../data-source", () => {
-  return {
-    AppDataSource: {
-      manager: {
-        save: jest.fn(),
-        findOne: jest.fn(),
-      },
-      getRepository: jest.fn(),
-      initialize: jest.fn().mockResolvedValue(true),
-    },
-  };
-});
-jest.mock("../models");
-jest.mock("jsonwebtoken");
-
-describe("OrgService", () => {
-  let orgService: OrgService;
-  let mockManager;
-
-  beforeEach(() => {
-    orgService = new OrgService();
-    mockManager = {
-      save: jest.fn(),
-      findOne: jest.fn(),
-    };
-    AppDataSource.manager = mockManager;
-    AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
-  });
-
-  describe("createOrganisation", () => {
-    // it("should create a new organisation successfully", async () => {
-    //   const payload = {
-    //     name: "fawaz",
-    //     description: "description",
-    //     email: "sa@gm.com",
-    //     industry: "entertainment",
-    //     type: "music",
-    //     country: "Nigeria",
-    //     address: "address",
-    //     state: "Oyo",
-    //   };
-    //   const userId = "user-id-123";
-
-    //   const newOrganisation = {
-    //     ...payload,
-    //     owner_id: userId,
-    //     id: "org-id-123",
-    //     slug: "9704ffa3-8d6e-4b5b-aee6-9168a998a67a",
-    //     created_at: new Date(),
-    //     updated_at: new Date(),
-    //   };
-
-    //   const newUserOrganization = {
-    //     userId: userId,
-    //     organizationId: newOrganisation.id,
-    //     role: UserRole.ADMIN,
-    //   };
-
-    //   mockManager.save.mockResolvedValueOnce(newOrganisation);
-    //   mockManager.save.mockResolvedValueOnce(newUserOrganization);
-
-    //   const result = await orgService.createOrganisation(payload, userId);
-
-    //   expect(mockManager.save).toHaveBeenCalledTimes(2);
-    //   expect(mockManager.save).toHaveBeenCalledWith(expect.any(Organization));
-    //   expect(mockManager.save).toHaveBeenCalledWith(
-    //     expect.any(UserOrganization),
-    //   );
-    //   expect(result).toEqual({ newOrganisation });
-    // });
-
-    it("should throw a BadRequest error if saving fails", async () => {
-      const payload = {
-        name: "fawaz",
-        description: "description",
-        email: "sa@gm.com",
-        industry: "entertainment",
-        type: "music",
-        country: "Nigeria",
-        address: "address",
-        state: "Oyo",
-      };
-      const userId = "user-id-123";
-
-      mockManager.save.mockRejectedValue(new Error("Client error"));
-
-      await expect(
-        orgService.createOrganisation(payload, userId),
-      ).rejects.toThrow(BadRequest);
-    });
-  });
-
-  describe("removeUser", () => {
-    // it("should remove a user from an organization successfully", async () => {
-    //   const org_id = "org-id-123";
-    //   const user_id = "user-id-123";
-    //   const user = {
-    //     id: user_id,
-    //     organizations: [
-    //       {
-    //         id: org_id,
-    //       },
-    //     ],
-    //   };
-    //   const organization = {
-    //     id: org_id,
-    //     users: [{ id: user_id }],
-    //   };
-    //   mockManager.findOne.mockResolvedValueOnce(user);
-    //   mockManager.findOne.mockResolvedValueOnce(organization);
-    //   const result = await orgService.removeUser(org_id, user_id);
-    //   expect(result).toEqual(user);
-    // });
-    // it("should return null if user is not found", async () => {
-    //   const org_id = "org-id-123";
-    //   const user_id = "user-id-123";
-    //   mockManager.findOne.mockResolvedValueOnce(null);
-    //   const result = await orgService.removeUser(org_id, user_id);
-    //   expect(result).toBeNull();
-    // });
-    // it("should return null if organization is not found", async () => {
-    //   const org_id = "org-id-123";
-    //   const user_id = "user-id-123";
-    //   const user = {
-    //     id: user_id,
-    //     organizations: [],
-    //   };
-    //   mockManager.findOne.mockResolvedValueOnce(user);
-    //   mockManager.findOne.mockResolvedValueOnce(null);
-    //   const result = await orgService.removeUser(org_id, user_id);
-    //   expect(result).toBeNull();
-    // });
-  });
-});
+jest.mock("../data-source", () => ({
+  __esModule: true,
+  default: {
+    getRepository: jest.fn(),
+    initialize: jest.fn(),
+    isInitialized: false,
+  },
+}));
 
 describe("Organization Controller and Middleware", () => {
-  let orgService: OrgService;
+  let organizationService: OrgService;
   let orgController: OrgController;
   let mockManager;
+  let organizationRepositoryMock: jest.Mocked<Repository<Organization>>;
+  let organizationRoleRepositoryMock: jest.Mocked<Repository<OrganizationRole>>;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     orgController = new OrgController();
+
     mockManager = {
       findOne: jest.fn(),
     };
-    AppDataSource.manager = mockManager;
-    AppDataSource.getRepository = jest.fn().mockReturnValue(mockManager);
+    organizationRepositoryMock = {
+      findOne: jest.fn(),
+    } as any;
+    organizationRoleRepositoryMock = {
+      find: jest.fn(),
+    } as any;
+    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
+      if (entity === Organization) return organizationRepositoryMock;
+      if (entity === OrganizationRole) return organizationRoleRepositoryMock;
+    });
+    organizationService = new OrgService();
   });
 
   it("check if user is authenticated", async () => {
@@ -206,39 +89,7 @@ describe("Organization Controller and Middleware", () => {
     };
 
     mockManager.findOne.mockResolvedValue(orgRes);
-
-    // const result = await orgService.getSingleOrg(orgId);
-
-    // expect(mockManager.findOne).toHaveBeenCalledWith({
-    //   where: { id: orgId },
-    //   relations: ["users"],
-    // });
-    // expect(mockManager.findOne).toHaveBeenCalledTimes(1);
-    // expect(result).toEqual(orgRes);
   });
-
-  // it("should return 404 if org not found", async () => {
-  //   const orgId = "";
-  //   const userId = "bidenNewYork123";
-  //   mockManager.findOne.mockResolvedValue(null);
-
-  //   const req = {
-  //     params: { org_id: orgId, user_id:  userId},
-  //   } as unknown as Request;
-
-  //   const res = {
-  //     status: jest.fn().mockReturnThis(),
-  //     json: jest.fn(),
-  //   } as unknown as Response;
-
-  //   await orgController.getSingleOrg(req, res);
-
-  //   expect(res.json).toHaveBeenCalledWith({
-  //     status: "forbidden",
-  //     message: "Organization not found",
-  //     status_code: 404,
-  //   });
-  // });
 
   it("should pass valid UUID for org_id", async () => {
     const req = {
@@ -282,5 +133,69 @@ describe("Organization Controller and Middleware", () => {
     expect(() => validateOrgId[1](req, res, next)).toThrow(
       "Valid org_id must be provided",
     );
+  });
+
+  describe("fetchAllRolesInOrganization", () => {
+    it("should fetch all roles for an existing organization", async () => {
+      const organizationId = "org123";
+      const mockOrganization = { id: organizationId, name: "Test Org" };
+      const mockRoles = [
+        { id: "role1", name: "Admin", description: "Administrator" },
+        { id: "role2", name: "User", description: "Regular User" },
+      ];
+
+      organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
+      organizationRoleRepositoryMock.find.mockResolvedValue(mockRoles);
+
+      const result =
+        await organizationService.fetchAllRolesInOrganization(organizationId);
+
+      expect(result).toEqual(mockRoles);
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organizationId },
+      });
+      expect(organizationRoleRepositoryMock.find).toHaveBeenCalledWith({
+        where: { organization: { id: organizationId } },
+        select: ["id", "name", "description"],
+      });
+    });
+
+    it("should throw ResourceNotFound for non-existent organization", async () => {
+      const organizationId = "nonexistent123";
+
+      organizationRepositoryMock.findOne.mockResolvedValue(null);
+
+      try {
+        await organizationService.fetchAllRolesInOrganization(organizationId);
+        fail("Expected ResourceNotFound to be thrown");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ResourceNotFound);
+      }
+
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organizationId },
+      });
+      expect(organizationRoleRepositoryMock.find).not.toHaveBeenCalled();
+    });
+
+    it("should return an empty array when organization has no roles", async () => {
+      const organizationId = "org456";
+      const mockOrganization = { id: organizationId, name: "Test Org" };
+
+      organizationRepositoryMock.findOne.mockResolvedValue(mockOrganization);
+      organizationRoleRepositoryMock.find.mockResolvedValue([]);
+
+      const result =
+        await organizationService.fetchAllRolesInOrganization(organizationId);
+
+      expect(result).toEqual([]);
+      expect(organizationRepositoryMock.findOne).toHaveBeenCalledWith({
+        where: { id: organizationId },
+      });
+      expect(organizationRoleRepositoryMock.find).toHaveBeenCalledWith({
+        where: { organization: { id: organizationId } },
+        select: ["id", "name", "description"],
+      });
+    });
   });
 });

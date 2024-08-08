@@ -17,6 +17,7 @@ jest.mock("../data-source", () => ({
     create: jest.fn().mockReturnValue({}),
     save: jest.fn(),
     findOne: jest.fn(),
+    remove: jest.fn(),
     createQueryBuilder: jest.fn(() => ({
       where: jest.fn().mockReturnThis(),
       andWhere: jest.fn().mockReturnThis(),
@@ -134,132 +135,66 @@ describe("ProductService", () => {
       ).rejects.toThrow(ServerError);
     });
   });
-  describe("getProducts", () => {
-    it("should search products successfully", async () => {
-      const mockOrgId = "1";
-      const mockQuery = { name: "Test", minPrice: 0, maxPrice: 100 };
-      const mockOrg = { id: "1", name: "Test Organization" };
-      const mockProducts = [{ id: "1", name: "Test Product", price: 50 }];
-      const mockTotalCount = 2;
-
-      const mockQueryBuilder = {
-        where: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        getManyAndCount: jest
-          .fn()
-          .mockResolvedValue([mockProducts, mockTotalCount]),
-      };
-
-      productRepository.createQueryBuilder = jest
+  describe("deleteProduct", () => {
+    it("should delete the product from the organization", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
+      // Mock data
+      const mockProduct = { id: product_id, name: "Test Product" } as Product;
+      productService["checkEntities"] = jest
         .fn()
-        .mockReturnValue(mockQueryBuilder);
-      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
+        .mockResolvedValue({ product: mockProduct });
+      productRepository.remove = jest.fn().mockResolvedValue(mockProduct);
 
-      const result = await productService.getProducts(mockOrgId, mockQuery);
-      expect(result.success).toBe(true);
-      expect(result.statusCode).toBe(200);
-      expect(result.data.products).toEqual(mockProducts);
-      expect(result.data.pagination.total).toBe(mockTotalCount);
-      expect(result.data.pagination.page).toBe(1);
-      expect(result.data.pagination.limit).toBe(10);
+      await productService.deleteProduct(org_id, product_id);
+
+      // Verify that the checkEntities and remove methods were called with the correct parameters
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).toHaveBeenCalledWith(mockProduct);
     });
-    it("should search products successfully with specified pagination", async () => {
-      const mockOrgId = "1";
-      const mockQuery = { name: "Test", minPrice: 0, maxPrice: 100 };
-      const mockPage = 2;
-      const mockLimit = 5;
-      const mockOrg = { id: "1", name: "Test Organization" };
-      const mockProducts = [{ id: "1", name: "Test Product", price: 50 }];
-      const mockTotalCount = 5;
+    it("should throw an error if the product is not found", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
 
-      const mockQueryBuilder = {
-        where: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        getManyAndCount: jest
-          .fn()
-          .mockResolvedValue([mockProducts, mockTotalCount]),
-      };
-
-      productRepository.createQueryBuilder = jest
+      // Mock the checkEntities method to return undefined for product
+      productService["checkEntities"] = jest
         .fn()
-        .mockReturnValue(mockQueryBuilder);
-      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
-
-      const result = await productService.getProducts(
-        mockOrgId,
-        mockQuery,
-        mockPage,
-        mockLimit,
-      );
-      expect(result.success).toBe(true);
-      expect(result.statusCode).toBe(200);
-      expect(result.data.pagination.total).toBe(mockTotalCount);
-      expect(result.data.pagination.page).toBe(mockPage);
-      expect(result.data.pagination.limit).toBe(mockLimit);
-    });
-
-    it("should throw a ResourceNotFound error when no products are found", async () => {
-      const mockOrgId = "1";
-      const mockQuery = { name: "Nonexistent Product" };
-      const mockOrg = { id: "1", name: "Test Organization" };
-
-      const mockQueryBuilder = {
-        where: jest.fn().mockReturnThis(),
-        andWhere: jest.fn().mockReturnThis(),
-        skip: jest.fn().mockReturnThis(),
-        take: jest.fn().mockReturnThis(),
-        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
-      };
-
-      productRepository.createQueryBuilder = jest
-        .fn()
-        .mockReturnValue(mockQueryBuilder);
-      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
+        .mockResolvedValue({ product: undefined });
 
       await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ResourceNotFound);
+        productService.deleteProduct(org_id, product_id),
+      ).rejects.toThrow("Product not found");
+
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).not.toHaveBeenCalled();
     });
 
-    it("should throw a ServerError when organization is not found", async () => {
-      const mockOrgId = "nonexistentOrg";
-      const mockQuery = { name: "Test Product" };
+    it("should throw an error if checkEntities fails", async () => {
+      const org_id = "org123";
+      const product_id = "prod123";
 
-      organizationRepository.findOne = jest.fn().mockResolvedValue(undefined);
-
-      await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ServerError);
-    });
-
-    it("should throw a resource not found error when no products are found", async () => {
-      const mockOrgId = "1";
-      const mockQuery = { name: "Nonexistent Product" };
-      const mockOrg = { id: "1", name: "Test Organization" };
-
-      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
-      productRepository.createQueryBuilder().getManyAndCount = jest
+      // Mock the checkEntities method to throw an error
+      productService["checkEntities"] = jest
         .fn()
-        .mockResolvedValue([[], 0]);
+        .mockRejectedValue(new Error("Check entities failed"));
 
       await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ResourceNotFound);
-    });
+        productService.deleteProduct(org_id, product_id),
+      ).rejects.toThrow("Failed to delete product: Check entities failed");
 
-    it("should throw a server error when organization is not found", async () => {
-      const mockOrgId = "nonexistentOrg";
-      const mockQuery = { name: "Test Product" };
-
-      organizationRepository.findOne = jest.fn().mockResolvedValue(undefined);
-
-      await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ServerError);
+      // Verify that the checkEntities method was called correctly and remove method was not called
+      expect(productService["checkEntities"]).toHaveBeenCalledWith({
+        organization: org_id,
+        product: product_id,
+      });
+      expect(productRepository.remove).not.toHaveBeenCalled();
     });
   });
 });

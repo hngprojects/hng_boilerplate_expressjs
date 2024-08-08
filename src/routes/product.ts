@@ -2,17 +2,14 @@ import { Router } from "express";
 import { ProductController } from "../controllers/ProductController";
 import { authMiddleware } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
-import { validateUserToOrg } from "../middleware/organization.validation";
+import { validateUserToOrg } from "../middleware/organizationValidation";
 import { adminOnly } from "../middleware";
-
-console.log("ProductController:", ProductController);
-console.log("authMiddleware:", authMiddleware);
 
 const productRouter = Router();
 const productController = new ProductController();
 
 productRouter.post(
-  "/organizations/:id/products",
+  "/organizations/:org_id/products",
   validateProductDetails,
   authMiddleware,
   adminOnly,
@@ -20,18 +17,17 @@ productRouter.post(
   productController.createProduct,
 );
 
-productRouter.get(
-  "/organizations/:id/products/search",
-  authMiddleware,
-  validateUserToOrg,
-  productController.getProduct,
-);
-
 productRouter.delete(
-  "/organizations/:org_id/products/product_id",
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
   adminOnly,
   validateUserToOrg,
-  authMiddleware,
+  productController.deleteProduct,
 );
+
+const updateRoute = "/:org_id/products/:product_id";
+productRouter
+  .route(updateRoute)
+  .patch(authMiddleware, validateUserToOrg, productController.updateProduct);
 
 export { productRouter };

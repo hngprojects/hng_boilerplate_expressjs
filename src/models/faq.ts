@@ -1,29 +1,23 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-} from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
+import { UserRole } from "../enums/userRoles";
 
 @Entity()
-export class FAQ extends ExtendedBaseEntity {
+class FAQ extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
-  title: string;
+  @Column({ nullable: false })
+  question: string;
 
-  @Column()
-  content: string;
+  @Column({ nullable: false })
+  answer: string;
 
-  @Column()
-  author: string;
+  @Column({ nullable: false })
+  category: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ nullable: false, default: UserRole.SUPER_ADMIN })
+  createdBy: string;
 }
+
+export { FAQ };

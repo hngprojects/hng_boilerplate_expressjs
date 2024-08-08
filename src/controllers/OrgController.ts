@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
+import { ResourceNotFound, ServerError } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -10,7 +11,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations:
+   * /api/v1/organizations:
    *   post:
    *     summary: Create a new organisation
    *     description: This endpoint allows a user to create a new organisation
@@ -44,6 +45,9 @@ export class OrgController {
    *               country:
    *                 type: string
    *                 example: Nigeria
+   *               address:
+   *                 type: string
+   *                 example: 121 ikeja
    *               state:
    *                 type: string
    *                 example: Oyo
@@ -54,6 +58,7 @@ export class OrgController {
    *               - industry
    *               - type
    *               - country
+   *               - address
    *               - state
    *     responses:
    *       '201':
@@ -93,6 +98,9 @@ export class OrgController {
    *                     country:
    *                       type: string
    *                       example: Nigeria
+   *                     address:
+   *                       type: string
+   *                       example: 121 ikeja
    *                     state:
    *                       type: string
    *                       example: Oyo
@@ -149,8 +157,6 @@ export class OrgController {
    *       type: http
    *       scheme: bearer
    *       bearerFormat: JWT
-   *
-   *
    */
 
   async createOrganisation(req: Request, res: Response, next: NextFunction) {
@@ -160,7 +166,7 @@ export class OrgController {
       const userId = user.id;
 
       const organisationService = new OrgService();
-      const newOrganisation = await organisationService.createOrganisation(
+      const new_organisation = await organisationService.createOrganisation(
         payload,
         userId,
       );
@@ -168,7 +174,7 @@ export class OrgController {
       const respObj = {
         status: "success",
         message: "organisation created successfully",
-        data: newOrganisation,
+        data: new_organisation,
         status_code: 201,
       };
 
@@ -180,7 +186,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/users/{userId}/organisations:
+   * /api/v1/users/{userId}/organizations:
    *   get:
    *     summary: Get user organizations
    *     description: Retrieve all organizations associated with a specific user
@@ -295,7 +301,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations/{org_id}:
+   * /api/v1/organizations/{org_id}:
    *   get:
    *     summary: Get a single organization
    *     description: Retrieve details of a specific organization by its ID
@@ -401,7 +407,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organisations/{org_id}/user/{user_id}:
+   * /api/v1/organizations/{org_id}/user/{user_id}:
    *   delete:
    *     summary: Remove a user from an organization
    *     description: Delete a user from a specific organization by user ID and organization ID
@@ -1064,6 +1070,46 @@ export class OrgController {
       }
     } catch (error) {
       next(error);
+    }
+  }
+
+  async getSingleRole(req: Request, res: Response, next: NextFunction) {
+    try {
+      const organizationId = req.params.org_id;
+      const roleId = req.params.role_id;
+      const response = await this.orgService.fetchSingleRole(
+        organizationId,
+        roleId,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getAllOrganizationRoles(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const response =
+        await this.orgService.fetchAllRolesInOrganization(organizationId);
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(new ServerError("Error fetching all roles in organization"));
     }
   }
 }
