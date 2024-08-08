@@ -67,7 +67,7 @@ const errorHandler = (
   const { success, status_code, message } = err;
   const cleanedMessage = message.replace(/"/g, "");
   res.status(status_code).json({
-    success,
+    success: success || "unsuccessful",
     status_code,
     message: cleanedMessage,
   });
