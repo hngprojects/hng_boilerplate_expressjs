@@ -344,7 +344,7 @@ describe("ProductService", () => {
         .mockResolvedValue({ product: undefined });
 
       await expect(
-        productService.getProduct(org_id, product_id),
+        productService.deleteProduct(org_id, product_id),
       ).rejects.toThrow("Product not found");
 
       // Verify that the checkEntities method was called correctly and remove method was not called
