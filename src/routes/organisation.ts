@@ -13,6 +13,12 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
+  "/organizations/invites",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
+  orgController.getAllInvite.bind(orgController),
+);
+orgRouter.get(
   "/organizations/:org_id",
   authMiddleware,
   validateOrgId,
@@ -24,13 +30,7 @@ orgRouter.delete(
   validateOrgId,
   orgController.removeUser.bind(orgController),
 );
-orgRouter.get(
-  "/organizations/:org_id/invite",
-  authMiddleware,
-  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
 
-  orgController.generateInviteLink.bind(orgController),
-);
 orgRouter.post(
   "/organizations",
   authMiddleware,
@@ -38,18 +38,25 @@ orgRouter.post(
   orgController.createOrganisation.bind(orgController),
 );
 
-orgRouter.post(
-  "/organizations/accept-invite",
+orgRouter.get(
+  "/organizations/:org_id/invite",
   authMiddleware,
-  orgController.acceptInvite.bind(orgController),
+  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
+  orgController.generateGenericInviteLink.bind(orgController),
 );
 
 orgRouter.post(
   "/organizations/:org_id/send-invite",
   authMiddleware,
-  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
-  orgController.sendInviteLinks.bind(orgController),
+  checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
+  orgController.generateAndSendInviteLinks.bind(orgController),
 );
+orgRouter.post(
+  "/organizations/accept-invite",
+  authMiddleware,
+  orgController.addUserToOrganizationWithInvite.bind(orgController),
+);
+
 orgRouter.get(
   "/users/:id/organizations",
   authMiddleware,
@@ -73,12 +80,20 @@ orgRouter.put(
 orgRouter.get(
   "/organizations/:org_id/roles/:role_id",
   authMiddleware,
-  orgController.getSingleRole,
+  orgController.getSingleRole.bind(orgController),
 );
 
 orgRouter.get(
   "/organizations/:org_id/roles",
   authMiddleware,
-  orgController.getAllOrganizationRoles,
+  orgController.getAllOrganizationRoles.bind(orgController),
 );
+
+orgRouter.put(
+  "/organizations/:org_id/roles/:role_id/permissions",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN]),
+  orgController.updateOrganizationRolePermissions.bind(orgController),
+);
+
 export { orgRouter };

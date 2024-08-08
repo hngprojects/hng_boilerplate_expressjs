@@ -52,11 +52,11 @@ export class UserService {
     return deletedUser;
   }
 
-  public async updateUserProfile(
+  public updateUserProfile = async (
     id: string,
     payload: IUserProfileUpdate,
     file?: Express.Multer.File,
-  ): Promise<User | null> {
+  ): Promise<User | null> => {
     try {
       const userRepository = AppDataSource.getRepository(User);
       const profileRepository = AppDataSource.getRepository(Profile);
@@ -71,10 +71,11 @@ export class UserService {
       }
 
       const profile: Partial<Profile> = {
-        first_name: payload.first_name,
-        last_name: payload.last_name,
-        phone_number: payload.phone_number,
+        // first_name: payload.first_name,
+        // last_name: payload.last_name,
+        // phone_number: payload.phone_number,
         avatarUrl: file ? file.path : undefined,
+        ...payload,
       };
 
       const userProfile = await profileRepository.findOne({
@@ -130,5 +131,5 @@ export class UserService {
     } catch (error) {
       throw new Error(error.message);
     }
-  }
+  };
 }

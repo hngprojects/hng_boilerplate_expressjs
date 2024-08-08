@@ -17,11 +17,11 @@ userRouter.delete(
 
 userRouter.get("/users/me", authMiddleware, UserController.getProfile);
 
-userRouter.put(
-  "/users/:id",
+userRouter.patch(
+  "/users/:user_id",
   authMiddleware,
   upload,
-  userController.updateUserProfile.bind(userController),
+  userController.updateUserProfile,
 );
 
 export { userRouter };

@@ -433,9 +433,13 @@ class UserController {
    *               example: Internal Server Error
    */
 
-  public async updateUserProfile(req: Request, res: Response) {
+  public updateUserProfile = async (req: Request, res: Response) => {
     try {
-      const user = await this.userService.updateUserProfile(req.params.id, req.body, req.file);
+      const user = await this.userService.updateUserProfile(
+        req.params.user_id,
+        req.body,
+        req.file,
+      );
       res.status(200).json(user);
     } catch (error) {
       if (error instanceof HttpError) {
@@ -448,7 +452,7 @@ class UserController {
         });
       }
     }
-  }
+  };
 }
 
 export { UserController };

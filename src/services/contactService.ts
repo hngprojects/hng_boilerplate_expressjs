@@ -1,5 +1,5 @@
 import AppDataSource from "../data-source";
-import { Contact } from "../models/contact-us";
+import { Contact } from "../models/contact";
 
 export class ContactService {
   private contactRepository = AppDataSource.getRepository(Contact);
