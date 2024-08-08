@@ -1135,26 +1135,114 @@ export class OrgController {
     }
   }
 
-  // async createorganizationRole(
-  //   req: Request,
-  //   res: Response,
-  //   next: NextFunction,
-  // ) {
-  //   try {
-  //     const organizationId = req.params.org_id;
-  //     const { role } = req.body;
-  //     const response = await this.orgService.createOrganizationRole(
-  //       organizationId,
-  //       role,
-  //     );
-  //     return res.status(201).json({
-  //       status_code: 201,
-  //       data: response,
-  //     });
-  //   } catch (err) {
-  //     next(err);
-  //   }
-  // }
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles:
+   *   post:
+   *     summary: Create a new organization role
+   *     tags: [Organization Roles]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/CreateOrgRole'
+   *     responses:
+   *       201:
+   *         description: Organization role created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/OrganizationRole'
+   *       400:
+   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *
+   * components:
+   *   schemas:
+   *     CreateOrgRole:
+   *       type: object
+   *       required:
+   *         - name
+   *         - description
+   *       properties:
+   *         name:
+   *           type: string
+   *         description:
+   *           type: string
+   *     OrganizationRole:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         name:
+   *           type: string
+   *         description:
+   *           type: string
+   *         organization:
+   *           $ref: '#/components/schemas/Organization'
+   *     Organization:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         name:
+   *           type: string
+   *     ErrorResponse:
+   *       type: object
+   *       properties:
+   *         error:
+   *           type: string
+   *         status_code:
+   *           type: integer
+   */
+  async createOrganizationRole(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const payload = req.body;
+      const response = await this.orgService.createOrganizationRole(
+        payload,
+        organizationId,
+      );
+
+      return res.status(201).json({
+        status_code: 201,
+        data: response,
+      });
+    } catch (err) {
+      if (err instanceof ResourceNotFound) {
+        next(err);
+      }
+      next(new ServerError("Error creating Organization roles"));
+    }
+  }
 
   async getAllOrganizationRoles(
     req: Request,
