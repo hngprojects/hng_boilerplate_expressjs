@@ -435,8 +435,91 @@ class UserController {
 
   public async updateUserProfile(req: Request, res: Response) {
     try {
-      const user = await this.userService.updateUserProfile(req.params.id, req.body, req.file);
+      const user = await this.userService.updateUserProfile(
+        req.params.id,
+        req.body,
+        req.file,
+      );
       res.status(200).json(user);
+    } catch (error) {
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message,
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error",
+        });
+      }
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/users/{id}/timezone:
+   *   put:
+   *     tags:
+   *       - User
+   *     summary: Update User Timezone
+   *     description: Update the timezone settings of a user
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         schema:
+   *           type: string
+   *           description: The ID of the user
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               timezone:
+   *                 type: string
+   *                 example: America/New_York
+   *                 description: The user's timezone
+   *               gmtOffset:
+   *                 type: string
+   *                 example: -05:00
+   *                 description: The GMT offset of the user's timezone
+   *               description:
+   *                 type: string
+   *                 example: Eastern Standard Time
+   *                 description: A description of the user's timezone
+   *     responses:
+   *       200:
+   *         description: Timezone successfully updated.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Timezone successfully updated.
+   *       404:
+   *         description: Timezone not found.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Timezone not found.
+   */
+
+  public async updateUserTimezone(req: Request, res: Response) {
+    try {
+      const user = await this.userService.updateUserTimezone(
+        req.params.id,
+        req.body,
+      );
+      res.status(200).json({ message: "Timezone successfully updated." });
     } catch (error) {
       if (error instanceof HttpError) {
         return res.status(error.status_code).json({
