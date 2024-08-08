@@ -12,4 +12,6 @@ jobRouter.post(
   jobController.createJob.bind(jobController),
 );
 
+jobRouter.get("/jobs/:id", jobController.getJobById.bind(jobController));
+
 export { jobRouter };
