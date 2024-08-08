@@ -16,6 +16,7 @@ import {
   faqRouter,
   helpRouter,
   jobRouter,
+  newsLetterSubscriptionRoute,
   notificationRouter,
   paymentFlutterwaveRouter,
   paymentRouter,
@@ -89,6 +90,7 @@ server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", roleRouter);
+server.use("/api/v1", newsLetterSubscriptionRoute);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

@@ -1,7 +1,7 @@
 export * from "./auth";
 export * from "./admin";
 export * from "./blog";
-export * from "./contactRoutes";
+export * from "./contact";
 export * from "./export";
 export * from "./help-center";
 export * from "./job";
@@ -18,3 +18,4 @@ export * from "./user";
 export * from "./faq";
 export * from "./run-test";
 export * from "./billing-plans";
+export * from "./newsLetterSubscription";
