@@ -1,28 +1,41 @@
-import AppDataSource from "../data-source";
+import AppDataSource, { initializeDataSource } from "../data-source";
 import { Comment } from "../models/comment";
 import { Blog } from "../models/blog";
+import log from "../utils/logger";
+import { ResourceNotFound } from "../middleware";
+import { User } from "../models";
 
-const commentRepository = AppDataSource.getRepository(Comment);
-const blogRepository = AppDataSource.getRepository(Blog);
+let commentRepository;
+let blogRepository;
 
-export const createComment = async (blogId: string, content: string) => {
+async function initializeRepositories() {
+  await initializeDataSource();
+  commentRepository = AppDataSource.getRepository(Comment);
+  blogRepository = AppDataSource.getRepository(Blog);
+}
+
+export const createComment = async (
+  blogId: string,
+  content: string,
+  userId: string,
+) => {
+  await initializeRepositories();
   const blog = await blogRepository.findOneBy({ id: blogId });
+  const user = await AppDataSource.getRepository(User).findOneBy({
+    id: userId,
+  });
 
   if (!blog) throw new Error("Blog not found");
+  if (!user) throw new Error("User not found");
 
   const newComment = new Comment();
   newComment.content = content;
   newComment.blog = blog;
+  newComment.author = user;
 
   return commentRepository.save(newComment);
 };
 
-/**
- * This function checks if 30 mins has elapsed since the comment was created or updated
- * @param createdAt
- * @param updatedAt
- * @returns boolean
- */
 function hasThirtyMinutesElapsed(
   createdAt: Date,
   updatedAt: Date | null,
@@ -51,6 +64,7 @@ function hasThirtyMinutesElapsed(
 }
 
 export const editComment = async (commentId: number, content: string) => {
+  await initializeRepositories();
   //retrieve the comment
   const comment = await commentRepository.findOneBy({ id: commentId });
 
@@ -72,4 +86,23 @@ export const editComment = async (commentId: number, content: string) => {
   const updateResult = await commentRepository.update(commentId, { content });
 
   return updateResult;
+};
+
+export const getAllComments = async (blogId: string) => {
+  await initializeRepositories();
+  const blog = await blogRepository.findOne({
+    where: { id: blogId },
+    relations: ["comments", "comments.author"],
+  });
+
+  if (!blog) {
+    throw new ResourceNotFound("Blog post not found");
+  }
+
+  return blog.comments.map((comment) => ({
+    id: comment.id,
+    author: comment.author ? comment.author.name : "Anonymous",
+    text: comment.content,
+    timestamp: comment.created_at.toISOString(),
+  }));
 };
