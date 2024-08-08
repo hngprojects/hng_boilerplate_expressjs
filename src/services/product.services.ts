@@ -3,7 +3,12 @@ import { Product } from "../models/product";
 import AppDataSource from "../data-source";
 import { ProductSize, StockStatus } from "../enums/product";
 import { ProductSchema } from "../schema/product.schema";
-import { InvalidInput, ResourceNotFound, ServerError } from "../middleware";
+import {
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { Organization } from "../models/organization";
 import { UserRole } from "../enums/userRoles";
 
@@ -120,6 +125,22 @@ export class ProductService {
       return { message: "Product deleted successfully" };
     } catch (error) {
       throw new Error(`Failed to delete product: ${error.message}`);
+    }
+  }
+
+  public async getProduct(org_id: string, product_id: string) {
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        return new HttpError(404, "Product not found");
+      }
+      return entities.product;
+    } catch (error) {
+      throw new ResourceNotFound(error.message);
     }
   }
 }
