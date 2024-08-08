@@ -31,17 +31,44 @@ jest.mock("jsonwebtoken");
 
 describe("AuthService", () => {
   let authService: AuthService;
-  let mockManager;
+  let userRepositoryMock: jest.Mocked<Repository<User>>;
+  let profilesRepositoryMock: Repository<Profile>;
+  let userServiceMock: jest.Mocked<UserService>;
 
   beforeEach(() => {
-    authService = new AuthService();
-
-    mockManager = {
+    userRepositoryMock = {
+      findOne: jest.fn(),
       save: jest.fn(),
-    };
+    } as any;
 
-    // Assign the mock manager to the AppDataSource.manager
-    AppDataSource.manager = mockManager;
+    profilesRepositoryMock = {
+      save: jest.fn(),
+    } as unknown as Repository<Profile>;
+    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
+      if (entity === User) return userRepositoryMock;
+      if (entity === Profile) return profilesRepositoryMock;
+      return {};
+    });
+
+    userServiceMock = {
+      getUserById: jest.fn(),
+      updateUserRecord: jest.fn(),
+      compareUserPassword: jest.fn(),
+      getUserByEmail: jest.fn(),
+    } as any;
+    authService = new AuthService();
+    (authService as any).userService = userServiceMock;
+    (speakeasy.generateSecret as jest.Mock).mockReturnValue({
+      base32: "TESTSECRET",
+      ascii: "TESTASCII",
+    });
+    (speakeasy.otpauthURL as jest.Mock).mockReturnValue(
+      "http://test-qr-code-url",
+    );
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   describe("signUp", () => {
