@@ -202,10 +202,12 @@ describe("ProductService", () => {
       expect(result.data.pagination.limit).toBe(mockLimit);
     });
 
-    it("should throw a ResourceNotFound error when no products are found", async () => {
+    it("should return an empty product array when product is not found", async () => {
       const mockOrgId = "1";
       const mockQuery = { name: "Nonexistent Product" };
       const mockOrg = { id: "1", name: "Test Organization" };
+      const mockTotalCount = 0;
+      const mockProducts = [];
 
       const mockQueryBuilder = {
         where: jest.fn().mockReturnThis(),
@@ -220,9 +222,11 @@ describe("ProductService", () => {
         .mockReturnValue(mockQueryBuilder);
       organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
 
-      await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ResourceNotFound);
+      const result = await productService.getProducts(mockOrgId, mockQuery);
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.data.pagination.total).toBe(mockTotalCount);
+      expect(result.data.products).toStrictEqual(mockProducts);
     });
 
     it("should throw a ServerError when organization is not found", async () => {
@@ -234,21 +238,6 @@ describe("ProductService", () => {
       await expect(
         productService.getProducts(mockOrgId, mockQuery),
       ).rejects.toThrow(ServerError);
-    });
-
-    it("should throw a resource not found error when no products are found", async () => {
-      const mockOrgId = "1";
-      const mockQuery = { name: "Nonexistent Product" };
-      const mockOrg = { id: "1", name: "Test Organization" };
-
-      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
-      productRepository.createQueryBuilder().getManyAndCount = jest
-        .fn()
-        .mockResolvedValue([[], 0]);
-
-      await expect(
-        productService.getProducts(mockOrgId, mockQuery),
-      ).rejects.toThrow(ResourceNotFound);
     });
 
     it("should throw a server error when organization is not found", async () => {
