@@ -11,6 +11,7 @@ import {
   Conflict,
   HttpError,
   ResourceNotFound,
+  ServerError,
 } from "../middleware";
 import { Profile, User } from "../models";
 import { IAuthService, IUserLogin, IUserSignUp } from "../types";
@@ -27,8 +28,14 @@ import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
 import { generateMagicLinkEmail } from "../views/magic-link.email";
 import { compilerOtp } from "../views/welcome";
+import speakeasy from "speakeasy";
+import { UserService } from "./user.services";
 
 export class AuthService implements IAuthService {
+  private userService: UserService;
+  constructor() {
+    this.userService = new UserService();
+  }
   public async signUp(payload: IUserSignUp): Promise<{
     message: string;
     user: Partial<User>;
@@ -326,6 +333,67 @@ export class AuthService implements IAuthService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  public generate2FARecoveryCode() {
+    const codes = [];
+    for (let i = 0; i < 8; i++) {
+      codes.push(Math.random().toString(36).substring(2, 8).toUpperCase());
+    }
+    return codes;
+  }
+
+  public async enable2FA(user_id: string, password: string) {
+    try {
+      const user = await this.userService.getUserById(user_id);
+
+      const is_password_valid = await this.userService.compareUserPassword(
+        password,
+        user.password,
+      );
+      if (!is_password_valid) {
+        throw new BadRequest("Invalid password");
+      }
+      if (user.is_2fa_enabled) {
+        throw new BadRequest("2FA is already enabled");
+      }
+
+      const secret = speakeasy.generateSecret({ length: 32 });
+      const backup_codes = this.generate2FARecoveryCode();
+      const payload = {
+        secret: secret.base32,
+        is_2fa_enabled: true,
+        backup_codes: backup_codes,
+      };
+
+      await this.userService.updateUserRecord({
+        updatePayload: payload,
+        identifierOption: {
+          identifier: user_id,
+          identifierType: "id",
+        },
+      });
+
+      const qrCodeUrl = speakeasy.otpauthURL({
+        secret: secret.ascii,
+        label: `Hng:${user.email}`,
+        issuer: `Hng Boilerplate`,
+      });
+
+      return {
+        message: "2FA setup initiated",
+        data: {
+          secret: secret.base32,
+          qr_code_url: qrCodeUrl,
+          backup_codes,
+        },
+      };
+    } catch (error) {
+      if (error instanceof BadRequest) {
+        throw error;
+      }
+      throw new ServerError("An error occurred while trying to enable 2FA");
     }
   }
 }

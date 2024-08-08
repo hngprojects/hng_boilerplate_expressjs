@@ -11,6 +11,11 @@ jobRouter.post(
   authMiddleware,
   jobController.createJob.bind(jobController),
 );
+jobRouter.delete(
+  "/jobs/:jobId",
+  authMiddleware,
+  jobController.deleteJob.bind(jobController),
+);
 
 jobRouter.get(
   "/jobs",
