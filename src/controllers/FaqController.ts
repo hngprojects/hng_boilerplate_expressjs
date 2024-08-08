@@ -345,6 +345,56 @@ class FAQController {
 
   /**
    * @swagger
+   * /faqs:
+   *   get:
+   *     summary: Retrieve all FAQs
+   *     description: Retrieve a list of all FAQs with their respective questions, answers, and categories.
+   *     tags: [FAQ]
+   *     responses:
+   *       200:
+   *         description: Successfully retrieved all FAQs.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *                 properties:
+   *                   id:
+   *                     type: string
+   *                     description: The unique identifier for the FAQ.
+   *                     example: 12345
+   *                   question:
+   *                     type: string
+   *                     description: The question part of the FAQ.
+   *                     example: What is the return policy?
+   *                   answer:
+   *                     type: string
+   *                     description: The answer part of the FAQ.
+   *                     example: You can return any item within 30 days.
+   *                   category:
+   *                     type: string
+   *                     description: The category of the FAQ.
+   *                     example: Returns
+   *       500:
+   *         description: Internal server error.
+   */
+  public async getFaq(req: Request, res: Response, next: NextFunction) {
+    try {
+      const faqs = await faqService.getAllFaqs();
+      res.status(200).json({
+        status_code: 200,
+        success: true,
+        message: "The FAQ has been retrieved successfully.",
+        data: faqs,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * @swagger
    * /faqs/{faqId}:
    *   delete:
    *     summary: Delete an FAQ

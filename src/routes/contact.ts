@@ -5,12 +5,12 @@ const contactRouter = Router();
 const contactController = new ContactController();
 
 contactRouter.post(
-  "/contact-us",
+  "/contact",
   contactController.createContact.bind(contactController),
 );
 
 contactRouter.get(
-  "/contact-us",
+  "/contact",
   contactController.getAllContact.bind(contactController),
 );
 

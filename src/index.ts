@@ -22,10 +22,12 @@ import {
   paymentRouter,
   paymentStripeRouter,
   productRouter,
+  billingRouter,
   runTestRouter,
   sendEmailRoute,
   testimonialRoute,
   userRouter,
+  squeezeRoute,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
 import { smsRouter } from "./routes/sms";
@@ -81,6 +83,7 @@ server.use("/api/v1", paymentStripeRouter);
 server.use("/api/v1", smsRouter);
 server.use("/api/v1", notificationRouter);
 server.use("/api/v1", paymentRouter);
+server.use("/api/v1", billingRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
@@ -89,6 +92,7 @@ server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
 server.use("/api/v1", roleRouter);
 server.use("/api/v1", newsLetterSubscriptionRoute);
+server.use("/api/v1", squeezeRoute);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 

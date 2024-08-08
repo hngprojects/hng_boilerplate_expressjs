@@ -14,5 +14,6 @@ faqRouter.delete(
   checkPermissions([UserRole.SUPER_ADMIN]),
   faqController.deleteFaq,
 );
+faqRouter.get("/faqs", faqController.getFaq);
 
 export { faqRouter };

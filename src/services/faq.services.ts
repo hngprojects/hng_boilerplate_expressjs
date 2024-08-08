@@ -50,6 +50,15 @@ class FAQService {
     }
   }
 
+  public async getAllFaqs(): Promise<FAQ[]> {
+    try {
+      const faqs = await this.faqRepository.find();
+      return faqs;
+    } catch (error) {
+      throw new Error("Failed to fetch FAQs");
+    }
+  }
+
   public async deleteFaq(faqId: string) {
     const faq = await this.faqRepository.findOne({ where: { id: faqId } });
 
