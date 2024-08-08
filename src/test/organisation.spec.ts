@@ -9,6 +9,7 @@ import { authMiddleware } from "../middleware/auth";
 import { validateOrgId } from "../middleware/organizationValidation";
 import { InvalidInput, HttpError, ResourceNotFound } from "../middleware/error";
 
+// Mock necessary modules
 jest.mock("../data-source", () => ({
   __esModule: true,
   default: {
@@ -22,6 +23,12 @@ jest.mock("../data-source", () => ({
 }));
 jest.mock("../models");
 jest.mock("jsonwebtoken");
+jest.mock("passport", () => ({
+  use: jest.fn(),
+}));
+jest.mock("passport-google-oauth2", () => ({
+  Strategy: jest.fn(),
+}));
 
 describe("Organization Controller and Middleware", () => {
   let organizationService: OrgService;
