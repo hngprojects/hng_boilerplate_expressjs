@@ -5,14 +5,11 @@ import { validateProductDetails } from "../middleware/product";
 import { validateUserToOrg } from "../middleware/organization.validation";
 import { adminOnly } from "../middleware";
 
-console.log("ProductController:", ProductController);
-console.log("authMiddleware:", authMiddleware);
-
 const productRouter = Router();
 const productController = new ProductController();
 
 productRouter.post(
-  "/organizations/:id/products",
+  "/organizations/:org_id/products",
   validateProductDetails,
   authMiddleware,
   adminOnly,
@@ -21,17 +18,18 @@ productRouter.post(
 );
 
 productRouter.get(
-  "/organizations/:id/products/search",
+  "/organizations/:org_id/products/search",
   authMiddleware,
   validateUserToOrg,
   productController.getProduct,
 );
 
 productRouter.delete(
-  "/organizations/:org_id/products/product_id",
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
   adminOnly,
   validateUserToOrg,
-  authMiddleware,
+  productController.deleteProduct,
 );
 
 export { productRouter };

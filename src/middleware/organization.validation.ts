@@ -93,7 +93,6 @@ export const validateUserToOrg = async (
   try {
     const { org_id } = req.params;
     const { user } = req;
-    log.error(org_id, user.id);
 
     if (!user || !org_id) {
       return res.status(400).json({
@@ -112,10 +111,8 @@ export const validateUserToOrg = async (
       });
     }
 
-    log.error(org_id, user, userOrg);
     next();
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).json({
       status_code: 500,
       message: "Internal server error",

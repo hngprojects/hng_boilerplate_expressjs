@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ProductService } from "../services/product.services";
 
 class ProductController {
@@ -215,31 +215,40 @@ class ProductController {
    *         description: No products found
    */
 
-  public getProduct = async (req: Request, res: Response) => {
-    const orgId = req.params.org_id;
-    const {
-      name,
-      category,
-      minPrice,
-      maxPrice,
-      page = 1,
-      limit = 10,
-    } = req.query as any;
-    const searchCriteria = {
-      name,
-      category,
-      minPrice: Number(minPrice),
-      maxPrice: Number(maxPrice),
-    };
-    const products = await this.productService.getProducts(
-      orgId,
-      searchCriteria,
-      Number(page),
-      Number(limit),
-    );
-    res
-      .status(200)
-      .json({ message: "Product search successful", data: products });
+  public getProduct = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const orgId = req.params.org_id;
+      const {
+        name,
+        category,
+        minPrice,
+        maxPrice,
+        page = 1,
+        limit = 10,
+      } = req.query as any;
+      const searchCriteria = {
+        name,
+        category,
+        minPrice: Number(minPrice),
+        maxPrice: Number(maxPrice),
+      };
+
+      const products = await this.productService.getProducts(
+        orgId,
+        searchCriteria,
+        Number(page),
+        Number(limit),
+      );
+      return res
+        .status(200)
+        .json({ message: "Product search successful", data: products });
+    } catch (error) {
+      next(error);
+    }
   };
 
   /**

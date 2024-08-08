@@ -134,10 +134,10 @@ export class ProductService {
     if (name) {
       queryBuilder.andWhere("product.name ILIKE :name", { name: `%${name}%` });
     }
-    if (minPrice !== undefined) {
+    if (minPrice) {
       queryBuilder.andWhere("product.price >= :minPrice", { minPrice });
     }
-    if (maxPrice !== undefined) {
+    if (maxPrice) {
       queryBuilder.andWhere("product.price <= :maxPrice", { maxPrice });
     }
 
@@ -145,10 +145,6 @@ export class ProductService {
     queryBuilder.skip(skip).take(limit);
 
     const [products, total] = await queryBuilder.getManyAndCount();
-
-    if (products.length === 0) {
-      throw new ResourceNotFound("No products found");
-    }
 
     return {
       success: true,
@@ -166,7 +162,7 @@ export class ProductService {
   }
   public async deleteProduct(org_id: string, product_id: string) {
     const entities = await this.checkEntities({
-      organisation: org_id,
+      organization: org_id,
       product: product_id,
     });
     return this.productRepository.remove(entities.product);
