@@ -6,7 +6,7 @@ services:
     ports:
       - 3333:8000
     env_file:
-      - .env
+      - /var/www/aihomework/staging/.env
     environment:
       NODE_ENV: staging
       DB_HOST: backend_db_staging
@@ -24,7 +24,7 @@ services:
     container_name: backend_db_staging
     restart: unless-stopped
     env_file:
-      - .env
+      - /var/www/aihomework/staging/.env
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
