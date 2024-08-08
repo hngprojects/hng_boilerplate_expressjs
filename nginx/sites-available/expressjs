@@ -1,0 +1,80 @@
+server { 
+    server_name staging.api-expressjs.boilerplate.hng.tech; 
+    location / {
+	proxy_pass http://backend:8080;
+    }
+    
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/staging.api-expressjs.boilerplate.hng.tech/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/staging.api-expressjs.boilerplate.hng.tech/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}    
+server {
+    if ($host = staging.api-expressjs.boilerplate.hng.tech) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80; 
+    server_name staging.api-expressjs.boilerplate.hng.tech;
+    return 404; # managed by Certbot
+
+
+}
+server { 
+    server_name api-expressjs.boilerplate.hng.tech; 
+    location / {
+	proxy_pass http://backend:8000;
+    }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/api-expressjs.boilerplate.hng.tech/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/api-expressjs.boilerplate.hng.tech/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+server {
+    server_name deployment.api-expressjs.boilerplate.hng.tech; 
+    location / {
+	proxy_pass http://backend:8080;
+    }
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/deployment.api-expressjs.boilerplate.hng.tech/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/deployment.api-expressjs.boilerplate.hng.tech/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}    
+
+
+
+server {
+    if ($host = api-expressjs.boilerplate.hng.tech) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+ 
+    server_name api-expressjs.boilerplate.hng.tech;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}
+server {
+    if ($host = deployment.api-expressjs.boilerplate.hng.tech) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name deployment.api-expressjs.boilerplate.hng.tech;
+    listen 80;
+    return 404; # managed by Certbot
+
+
+}

@@ -4,11 +4,12 @@ services:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
-        - DATABASE_URL=postgres://postgres:postgres@backend_db:5432/postgres
     ports:
-      - 8000:8000
+      - 2222:8000
     env_file:
       - .env
+    environment:
+      DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@backend_db:5432/${DB_NAME}
     networks:
       - app
     depends_on:
@@ -24,12 +25,13 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      #- ./init-scripts:/docker-entrypoint-initdb.d
     ports:
-      - 5432:5432
+      - 5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -38,24 +40,30 @@ services:
     networks:
       - app
 
-  nginx-proxy-manager:
-    image: 'jc21/nginx-proxy-manager:latest'
-    restart: unless-stopped
-    ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
-    volumes:
-      - ./data:/data
-      - ./letsencrypt:/etc/letsencrypt
-    networks:
-      - app
+  # nginx:
+  #   image: nginx:latest
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  #       - ./nginx/sites-available/expressjs:/etc/nginx/sites-available/expressjs
+  #       - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+  #       - /etc/letsencrypt:/etc/letsencrypt
+  #       - ./nginx-entrypoint.sh:/docker-entrypoint.sh
+  #   networks:
+  #     - app
+  #   depends_on:
+  #     - backend
+  #   restart: always
 
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "5672"
+      # - "5672:5672"
+      - "15672"
+      # - "15672:15672"
     networks:
       - app
 

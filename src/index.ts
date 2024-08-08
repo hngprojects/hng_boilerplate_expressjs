@@ -16,6 +16,7 @@ import {
   faqRouter,
   helpRouter,
   jobRouter,
+  newsLetterSubscriptionRoute,
   notificationRouter,
   paymentFlutterwaveRouter,
   paymentRouter,
@@ -67,7 +68,7 @@ server.get("/api/v1/probe", (req: Request, res: Response) => {
   res.send("I am the express api responding for team panther");
 });
 server.use("/run-tests", runTestRouter);
-
+server.use("/api/v1", faqRouter);
 server.use("/api/v1", authRoute);
 server.use("/api/v1", userRouter);
 server.use("/api/v1/queues", ServerAdapter.getRouter());
@@ -86,8 +87,8 @@ server.use("/api/v1", testimonialRoute);
 server.use("/api/v1", blogRouter);
 server.use("/api/v1", contactRouter);
 server.use("/api/v1", jobRouter);
-server.use("/api/v1", faqRouter);
 server.use("/api/v1", roleRouter);
+server.use("/api/v1", newsLetterSubscriptionRoute);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
