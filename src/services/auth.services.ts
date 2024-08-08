@@ -396,4 +396,12 @@ export class AuthService implements IAuthService {
       throw new ServerError("An error occurred while trying to enable 2FA");
     }
   }
+
+  public verify2FA(totp_code: string, user: User) {
+    return speakeasy.totp.verify({
+      secret: user.secret,
+      encoding: "base32",
+      token: totp_code,
+    });
+  }
 }
