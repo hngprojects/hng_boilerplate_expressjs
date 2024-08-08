@@ -64,7 +64,7 @@ class UserController {
    *
    */
 
-  static async getProfile(req: Request, res: Response, next: NextFunction) {
+  async getProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.user;
 
@@ -82,7 +82,7 @@ class UserController {
         });
       }
 
-      const user = await UserService.getUserById(id);
+      const user = await this.userService.getUserById(id);
       if (!user) {
         return res.status(404).json({
           status_code: 404,

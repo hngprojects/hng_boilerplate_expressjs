@@ -591,6 +591,21 @@ const googleAuthCall = async (req: Request, res: Response) => {
   }
 };
 
+const enable2FA = async (req: Request, res: Response, next: NextFunction) => {
+  const { password } = req.body;
+  const user = req.user;
+  const { message, data } = await authService.enable2FA(user.id, password);
+  if (!message) {
+    return next(new BadRequest("Error enabling 2FA"));
+  }
+
+  return res.status(200).json({
+    status_code: 200,
+    message,
+    data,
+  });
+};
+
 export {
   VerifyUserMagicLink,
   changePassword,
@@ -602,4 +617,5 @@ export {
   resetPassword,
   signUp,
   verifyOtp,
+  enable2FA,
 };

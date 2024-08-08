@@ -93,3 +93,18 @@ export interface INewsLetterSubscriptionService {
 export interface INewsLetterSubscription {
   email: string;
 }
+
+export type UserIdentifierOptionsType =
+  | {
+      identifierType: "id";
+      identifier: string;
+    }
+  | {
+      identifierType: "email";
+      identifier: string;
+    };
+
+export type UpdateUserRecordOption = {
+  updatePayload: Partial<User>;
+  identifierOption: UserIdentifierOptionsType;
+};
