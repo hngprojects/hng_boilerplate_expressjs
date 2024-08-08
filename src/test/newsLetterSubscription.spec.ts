@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
+import { adminOnly, Unauthorized } from "../middleware";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
