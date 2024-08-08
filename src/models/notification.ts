@@ -1,26 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
-import { IsBoolean, IsUUID } from "class-validator";
-import ExtendedBaseEntity from "./extended-base-entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./user";
 
 @Entity()
-@Unique(["user_id"])
-export class NotificationSetting extends ExtendedBaseEntity {
+class Notification {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column()
-  @IsUUID()
-  user_id: string;
+  message: string;
 
-  @Column()
-  @IsBoolean()
-  email_notifications: boolean;
+  @Column({ default: false })
+  isRead: boolean;
 
-  @Column()
-  @IsBoolean()
-  push_notifications: boolean;
+  @ManyToOne(() => User, (user) => user.notifications, { onDelete: "CASCADE" })
+  user: User;
 
-  @Column()
-  @IsBoolean()
-  sms_notifications: boolean;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
+
+export { Notification };

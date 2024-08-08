@@ -16,11 +16,10 @@ export * from "./invitation";
 export * from "./job";
 export * from "./like";
 export * from "./log";
-export * from "./notification";
+export * from "./notificationsettings";
 export * from "./organization";
 export * from "./organization-member";
 export * from "./organization-role.entity";
-export * from "./orgInviteToken";
 
 export * from "./payment";
 export * from "./permissions.entity";
@@ -34,3 +33,4 @@ export * from "./user-organisation";
 export * from "./squeeze";
 
 export * from "./billing-plan";
+export * from "./notification";

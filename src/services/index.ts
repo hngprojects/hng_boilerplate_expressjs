@@ -10,5 +10,7 @@ export * from "./payment/flutter.service";
 export * from "./contactService";
 export * from "./faq.services";
 export * from "./org.services";
+export * from "./billingplan.services";
 export * from "./squeezeService";
 export * from "./blogComment.services";
+export * from "./notification.services";

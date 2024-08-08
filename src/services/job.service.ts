@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { Job, User, SalaryRange, JobType, JobMode } from "../models";
 import AppDataSource from "../data-source";
 import { ICreateJobs } from "../types";
+import { HttpError } from "../middleware";
 
 export class JobService {
   private userRepository: Repository<User>;
@@ -43,6 +44,27 @@ export class JobService {
       );
     } catch (error) {
       throw new Error(error);
+    }
+  }
+
+  public async delete(jobId: string): Promise<Job | null> {
+    try {
+      const existingJob = await this.jobRepository.findOne({
+        where: { id: jobId },
+      });
+      if (!existingJob) {
+        throw new HttpError(404, "Job not found");
+      }
+
+      await this.jobRepository.delete({ id: jobId });
+
+      return existingJob;
+    } catch (err) {
+      if (err instanceof HttpError) {
+        throw err;
+      } else {
+        throw new HttpError(500, err.message || "Error deleting job");
+      }
     }
   }
 }

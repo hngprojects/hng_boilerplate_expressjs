@@ -1,5 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { ResourceNotFound, ServerError, HttpError } from "../middleware";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import {
+  Forbidden,
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
 
@@ -661,8 +668,8 @@ export class OrgController {
    * @swagger
    * /organizations/accept-invite:
    *   post:
-   *     summary: Accept an invitation to join an organization
-   *     description: Accept an invitation to join an organization using a token provided in the query parameters.
+   *     summary: Add user to organization using an invite token
+   *     description: Adds a user to an organization using an invite token. The user must be registered to join the organization.
    *     tags: [Organization]
    *     parameters:
    *       - in: query
@@ -672,110 +679,89 @@ export class OrgController {
    *           type: string
    *         description: The invitation token
    *     responses:
-   *       200:
-   *         description: You have been added to the organization.
+   *       201:
+   *         description: User added to organization successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: success
    *                 status_code:
    *                   type: integer
-   *                   example: 200
+   *                   example: 201
    *                 message:
    *                   type: string
-   *                   example: You have been added to the organization.
-   *       422:
-   *         description: Invite token is required.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
-   *                 status_code:
-   *                   type: integer
-   *                   example: 422
-   *                 message:
-   *                   type: string
-   *                   example: Invite token is required!
+   *                   example: User added to organization successfully
    *       404:
-   *         description: Resource not found.
+   *         description: Invalid or expired invite token, or user not registered.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 404
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Resource not found.
+   *                   example: Invalid or expired invite token
    *       409:
-   *         description: Conflict - already a member.
+   *         description: User already added to organization.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 409
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: You are already a member.
-   *       400:
-   *         description: An error occurred while processing the request.
+   *                   example: User already added to organization
+   *       500:
+   *         description: An unexpected error occurred while processing the request.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
-   *                   example: 400
+   *                   example: 500
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Error message
+   *                   example: An unexpected error occurred
    */
 
-  public async acceptInvite(req: Request, res: Response, next: NextFunction) {
+  async addUserToOrganizationWithInvite(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
     try {
-      const token = req.query.token as string;
-      if (!token) {
-        res.status(422).json({
-          status: "Unsuccessful",
-          status_code: 422,
-          message: "Invite token is required!",
-        });
-        return;
-      }
+      const { token } = req.query;
       const userId = req.user.id;
+      const message = await this.orgService.addUserToOrganizationWithInvite(
+        token as string,
+        userId,
+      );
 
-      await this.orgService.joinOrganizationByInvite(token, userId);
-
-      res.status(200).json({
-        status: "success",
-        status_code: 200,
-        message: "You have been added to the organization.",
-      });
+      res.status(201).json({ status_code: 201, message: message });
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: error.message || "An unexpected error occurred",
+      });
     }
   }
 
@@ -783,8 +769,8 @@ export class OrgController {
    * @swagger
    * /organizations/{org_id}/invite:
    *   get:
-   *     summary: Generate an invitation link for an organization
-   *     description: Generate an invitation link for an organization using the organization ID provided in the URL parameters.
+   *     summary: Generate a generic invite link for an organization
+   *     description: Generate a generic invite link that can be used to invite users to join the specified organization. The invite link is returned for sharing or use in invitation emails.
    *     tags: [Organization]
    *     parameters:
    *       - in: path
@@ -795,21 +781,21 @@ export class OrgController {
    *         description: The ID of the organization
    *     responses:
    *       200:
-   *         description: Invitation link generated successfully.
+   *         description: Generic invite link generated successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: success
    *                 status_code:
    *                   type: integer
    *                   example: 200
-   *                 invite_token:
+   *                 message:
    *                   type: string
-   *                   example: generated-token
+   *                   example: Invite link generated successfully
+   *                 link:
+   *                   type: string
+   *                   example: "http://example.com/invite?token=abc123"
    *       404:
    *         description: Organization not found.
    *         content:
@@ -817,58 +803,64 @@ export class OrgController {
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 404
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Organization not found.
-   *       400:
-   *         description: An error occurred while processing the request.
+   *                   example: Organization with ID {org_id} not found
+   *       500:
+   *         description: An unexpected error occurred while processing the request.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
-   *                   example: 400
+   *                   example: 500
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Error message
+   *                   example: An unexpected error occurred
    */
 
-  public async generateInviteLink(
+  async generateGenericInviteLink(
     req: Request,
     res: Response,
     next: NextFunction,
   ) {
     try {
-      const orgId = req.params.org_id;
-
-      const invite_link = await this.orgService.generateInviteLink(orgId);
-      res.status(200).json({
-        status: "success",
-        status_code: 200,
-        invite_link,
-      });
+      const link = await this.orgService.generateGenericInviteLink(
+        req.params.org_id,
+      );
+      if (link) {
+        res.status(200).json({
+          status_code: 200,
+          message: "Invite link generated successfully",
+          link,
+        });
+      }
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: error.message || "An unexpected error occurred",
+      });
     }
   }
 
   /**
    * @swagger
-   * /organizations/{org_id}/send-invite:
+   * /organizations/{org_id}/send-invites:
    *   post:
-   *     summary: Send invitation links to join an organization
-   *     description: Send invitation links to a list of emails to join an organization using the organization ID provided in the URL parameters.
+   *     summary: Generate and send invitation links to emails
+   *     description: Generate invitation links for a list of emails and send them to the provided addresses. The invites are associated with the specified organization.
    *     tags: [Organization]
    *     parameters:
    *       - in: path
@@ -888,7 +880,7 @@ export class OrgController {
    *                 type: array
    *                 items:
    *                   type: string
-   *                 description: The list of emails to send invitations to
+   *                 description: The list of email addresses to send invitations to
    *             example:
    *               email: ["user1@example.com", "user2@example.com"]
    *     responses:
@@ -899,31 +891,28 @@ export class OrgController {
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Success
    *                 status_code:
    *                   type: integer
    *                   example: 200
    *                 message:
    *                   type: string
    *                   example: Invitations successfully sent.
-   *       422:
-   *         description: Emails are required.
+   *       400:
+   *         description: Invalid input data, email(s) are required.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
-   *                   example: 422
+   *                   example: 400
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Emails are required!
+   *                   example: Email(s) are required!
    *       404:
    *         description: Organization not found.
    *         content:
@@ -931,34 +920,34 @@ export class OrgController {
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
    *                   example: 404
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Organization not found.
-   *       400:
-   *         description: An error occurred while processing the request.
+   *                   example: Organization with ID {org_id} not found.
+   *       500:
+   *         description: An unexpected error occurred while processing the request.
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 status:
-   *                   type: string
-   *                   example: Unsuccessful
    *                 status_code:
    *                   type: integer
-   *                   example: 400
+   *                   example: 500
+   *                 success:
+   *                   type: boolean
+   *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Error message
+   *                   example: An unexpected error occurred
    */
 
-  public async sendInviteLinks(
+  async generateAndSendInviteLinks(
     req: Request,
     res: Response,
     next: NextFunction,
@@ -968,24 +957,124 @@ export class OrgController {
       const orgId = req.params.org_id;
 
       if (!email) {
-        return res.status(422).json({
-          status: "Unsuccessful",
-          status_code: 422,
-          message: "Emails are required!",
-        });
+        throw new InvalidInput("Email(s) are required!");
       }
 
       const emailList = Array.isArray(email) ? email : [email];
-
-      await this.orgService.sendInviteLinks(orgId, emailList);
-
-      res.status(200).json({
-        status: "Success",
-        status_code: 200,
-        message: "Invitations successfully sent.",
-      });
+      await this.orgService.generateAndSendInviteLinks(emailList, orgId);
+      res
+        .status(200)
+        .json({ status_code: 200, message: "Invitations successfully sent." });
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: error.message || "An unexpected error occurred",
+      });
+    }
+  }
+
+  /**
+   * @swagger
+   * /organizations/invites:
+   *   get:
+   *     summary: Get all invitation links
+   *     description: Retrieve a paginated list of all invitation links.
+   *     tags: [Organization]
+   *     parameters:
+   *       - in: query
+   *         name: page
+   *         schema:
+   *           type: integer
+   *           default: 1
+   *         description: The page number to retrieve
+   *       - in: query
+   *         name: pageSize
+   *         schema:
+   *           type: integer
+   *           default: 10
+   *         description: The number of items per page
+   *     responses:
+   *       200:
+   *         description: Successfully fetched invites
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: Successfully fetched invites
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: string
+   *                         example: "123"
+   *                       token:
+   *                         type: string
+   *                         example: "abc123token"
+   *                       isAccepted:
+   *                         type: boolean
+   *                         example: false
+   *                       isGeneric:
+   *                         type: boolean
+   *                         example: false
+   *                       organization:
+   *                         type: string
+   *                         example: "Organization Name"
+   *                       email:
+   *                         type: string
+   *                         example: "user@example.com"
+   *                 total:
+   *                   type: integer
+   *                   example: 50
+   *                 page:
+   *                   type: integer
+   *                   example: 1
+   *                 pageSize:
+   *                   type: integer
+   *                   example: 10
+   *       500:
+   *         description: An unexpected error occurred while processing the request.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 success:
+   *                   type: boolean
+   *                   example: false
+   *                 message:
+   *                   type: string
+   *                   example: An unexpected error occurred
+   */
+
+  async getAllInvite(req: Request, res: Response, next: NextFunction) {
+    try {
+      const page = parseInt(req.query.page as string, 10) || 1;
+      const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+
+      const { status_code, message, data, total } =
+        await this.orgService.getAllInvite(page, pageSize);
+
+      res
+        .status(200)
+        .json({ status_code, message, data, total, page, pageSize });
+    } catch (error) {
+      res.status(500).json({
+        status_code: 500,
+        success: false,
+        message: error.message || "An unexpected error occurred",
+      });
     }
   }
 
@@ -1117,6 +1206,101 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles/{role_id}:
+   *   get:
+   *     summary: Get a specific role in an organization
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: role_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the role
+   *     responses:
+   *       200:
+   *         description: The details of the specified role or a message indicating that the role does not exist
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "roleId123"
+   *                     name:
+   *                       type: string
+   *                       example: "Admin"
+   *                     description:
+   *                       type: string
+   *                       example: "Administrator role with full access"
+   *                 message:
+   *                   type: string
+   *                   example: "The role with ID roleId123 does not exist in the organisation"
+   *       400:
+   *         description: Bad request, possibly due to invalid organization or role ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       401:
+   *         description: Unauthorized, possibly due to missing or invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *       404:
+   *         description: Role or organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: An error occurred while fetching the role
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
   async getSingleRole(req: Request, res: Response, next: NextFunction) {
     try {
       const organizationId = req.params.org_id;
@@ -1145,6 +1329,115 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles:
+   *   post:
+   *     summary: Create a new organization role
+   *     tags: [Organization Roles]
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             $ref: '#/components/schemas/CreateOrgRole'
+   *     responses:
+   *       201:
+   *         description: Organization role created successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/OrganizationRole'
+   *       400:
+   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/components/schemas/ErrorResponse'
+   *
+   * components:
+   *   schemas:
+   *     CreateOrgRole:
+   *       type: object
+   *       required:
+   *         - name
+   *         - description
+   *       properties:
+   *         name:
+   *           type: string
+   *         description:
+   *           type: string
+   *     OrganizationRole:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         name:
+   *           type: string
+   *         description:
+   *           type: string
+   *         organization:
+   *           $ref: '#/components/schemas/Organization'
+   *     Organization:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *         name:
+   *           type: string
+   *     ErrorResponse:
+   *       type: object
+   *       properties:
+   *         error:
+   *           type: string
+   *         status_code:
+   *           type: integer
+   */
+  async createOrganizationRole(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req.params.org_id;
+      const payload = req.body;
+      const response = await this.orgService.createOrganizationRole(
+        payload,
+        organizationId,
+      );
+
+      return res.status(201).json({
+        status_code: 201,
+        data: response,
+      });
+    } catch (err) {
+      if (err instanceof ResourceNotFound) {
+        next(err);
+      }
+      next(new ServerError("Error creating Organization roles"));
+    }
+  }
+
   async getAllOrganizationRoles(
     req: Request,
     res: Response,
@@ -1164,6 +1457,244 @@ export class OrgController {
         next(error);
       }
       next(new ServerError("Error fetching all roles in organization"));
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{organizationId}/roles/{roleId}/permissions:
+   *   put:
+   *     summary: Update permissions for a specific role in an organization
+   *     tags: [Roles]
+   *     parameters:
+   *       - in: path
+   *         name: organizationId
+   *         required: true
+   *         description: The ID of the organization
+   *         schema:
+   *           type: string
+   *           example: "org-12345"
+   *       - in: path
+   *         name: roleId
+   *         required: true
+   *         description: The ID of the role within the organization
+   *         schema:
+   *           type: string
+   *           example: "role-67890"
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               permissions:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                   enum:
+   *                     - canViewTransactions
+   *                     - canViewRefunds
+   *                     - canLogRefunds
+   *                     - canViewUsers
+   *                     - canCreateUsers
+   *                     - canEditUsers
+   *                     - canBlacklistWhitelistUsers
+   *                 example:
+   *                   - canViewTransactions
+   *                   - canCreateUsers
+   *                   - canLogRefunds
+   *             required:
+   *               - permissions
+   *     responses:
+   *       200:
+   *         description: Permissions updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   description: The updated role object with permissions
+   *       400:
+   *         description: Bad Request - Missing required parameters or permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "OrganizationID and Role ID are required."
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       404:
+   *         description: Not Found - Organization or Role not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Role not found"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal Server Error - Error updating permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Error updating the role permissions of this organization"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  async updateOrganizationRolePermissions(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req?.params?.org_id || null;
+      const roleId = req?.params?.role_id || null;
+      const newPermissions: PermissionCategory[] = req.body?.permissions || [];
+
+      if (!(organizationId && roleId)) {
+        return res.status(400).json({
+          error: "OrganizationID and Role ID are required.",
+          status_code: 400,
+        });
+      }
+
+      if (!newPermissions?.length) {
+        return res.status(400).json({
+          error: "Permissions are required.",
+          status_code: 400,
+        });
+      }
+
+      const response = await this.orgService.updateRolePermissions(
+        roleId,
+        organizationId,
+        newPermissions,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(
+        new ServerError(
+          "Error updating the role permissions of this organization",
+        ),
+      );
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/members:
+   *   get:
+   *     summary: Get all members of an organization
+   *     description: This endpoint retrieves all members of a specified organization
+   *     tags: [Organization]
+   *     operationId: getOrganizationMembers
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *     responses:
+   *       '200':
+   *         description: Members retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     $ref: '#/components/schemas/OrganizationMember'
+   *       '500':
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: Failed to get user organisation. Please try again later.
+   * components:
+   *   schemas:
+   *     OrganizationMember:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           example: "1"
+   *         name:
+   *           type: string
+   *           example: John Doe
+   *         email:
+   *           type: string
+   *           example: johndoe@example.com
+   *         role:
+   *           type: string
+   *           example: admin
+   */
+
+  async getAllOrganizationMembers(req: Request, res: Response) {
+    try {
+      const org = await this.orgService.getOrganisationMembers(
+        req.params.org_id,
+      );
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        data: org,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to get user organisation. Please try again later.",
+      });
     }
   }
 }

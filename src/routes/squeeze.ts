@@ -11,4 +11,10 @@ squeezeRoute.post(
   squeezecontroller.createSqueeze.bind(squeezecontroller),
 );
 
+squeezeRoute.get(
+  "/squeeze/:id",
+  authMiddleware,
+  squeezecontroller.getSqueezeById.bind(squeezecontroller),
+);
+
 export { squeezeRoute };
