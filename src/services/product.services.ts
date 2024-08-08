@@ -142,4 +142,20 @@ export class ProductService {
     }
     return updatedProduct;
   }
+  
+  async getProduct(org_id: string, product_id: string) {
+    try {
+      const entities = await this.checkEntities({
+        organization: org_id,
+        product: product_id,
+      });
+
+      if (!entities.product) {
+        return new HttpError(404, "Product not found");
+      }
+      return entities.product;
+    } catch (error) {
+      throw new ResourceNotFound(error.message);
+    }
+  }
 }
