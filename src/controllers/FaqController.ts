@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { FAQService } from "../services";
 import { UserRole } from "../enums/userRoles";
 import isSuperAdmin from "../utils/isSuperAdmin";
-import { Category } from "../models";
-import { HttpError } from "../middleware";
+import { ServerError, BadRequest, HttpError } from "../middleware";
 
 const faqService = new FAQService();
 
@@ -339,7 +338,10 @@ class FAQController {
         status_code: 200,
       });
     } catch (error) {
-      next(error);
+      if (error instanceof BadRequest) {
+        next(error);
+      }
+      next(new ServerError("Internal server error."));
     }
   }
 

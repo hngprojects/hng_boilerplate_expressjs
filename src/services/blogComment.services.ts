@@ -106,3 +106,28 @@ export const getAllComments = async (blogId: string) => {
     timestamp: comment.created_at.toISOString(),
   }));
 };
+
+export const deleteComment = async (commentId: string, userId: string) => {
+  await initializeRepositories();
+
+  const comment = await commentRepository.findOne({
+    where: { id: commentId },
+    relations: ["author"],
+  });
+
+  if (!comment) {
+    throw new Error("COMMENT_NOT_FOUND");
+  }
+
+  const { author } = comment;
+
+  if (author.id !== userId) {
+    throw new Error("UNAUTHORIZED_ACTION");
+  }
+
+  await commentRepository.delete(commentId);
+
+  return {
+    message: "Comment deleted successfully",
+  };
+};

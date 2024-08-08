@@ -1,6 +1,10 @@
+//@ts-nocheck
 import express from "express";
 import request from "supertest";
 import { Router } from "express";
+import { SqueezeService } from "../services";
+import { Squeeze } from "../models";
+import { ResourceNotFound } from "../middleware";
 
 const mockSqueezeService = {
   getSqueezeById: jest.fn(),

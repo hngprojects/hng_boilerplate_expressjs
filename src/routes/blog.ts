@@ -1,11 +1,10 @@
 import { Router } from "express";
 import { BlogCommentController } from "../controllers/blogCommentController";
 import { BlogController } from "../controllers/BlogController";
-// import { createBlogController } from "../controllers/createBlogController"
-import { updateBlogController } from "../controllers/updateBlogController";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, checkPermissions } from "../middleware";
 import { requestBodyValidator } from "../middleware/request-validation";
 import { createBlogSchema } from "../utils/request-body-validator";
+import { UserRole } from "../enums/userRoles";
 
 const blogRouter = Router();
 const blogController = new BlogController();
@@ -24,7 +23,12 @@ blogRouter.get(
   authMiddleware,
   blogController.listBlogsByUser.bind(blogController),
 );
-blogRouter.put("/:id", authMiddleware, updateBlogController);
+blogRouter.patch(
+  "/blog/edit/:id",
+  requestBodyValidator(createBlogSchema),
+  authMiddleware,
+  blogController.updateBlog.bind(blogController),
+);
 
 blogRouter.delete(
   "/blog/:id",
@@ -32,18 +36,22 @@ blogRouter.delete(
   blogController.deleteBlogPost.bind(blogController),
 );
 
-//endpoint to create a comment on a blog post
 blogRouter.post(
   "/blog/:postId/comment",
   authMiddleware,
   blogCommentController.createComment.bind(blogCommentController),
 );
 
-//endpoint to edit a comment on a blog post
 blogRouter.patch(
   "/blog/:commentId/edit-comment",
   authMiddleware,
   blogCommentController.editComment.bind(blogCommentController),
+);
+
+blogRouter.delete(
+  "/blog/:commentId",
+  authMiddleware,
+  blogCommentController.deleteComment.bind(blogCommentController),
 );
 
 blogRouter.get(

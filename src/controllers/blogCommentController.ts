@@ -3,6 +3,7 @@ import {
   editComment,
   createComment,
   getAllComments,
+  deleteComment,
 } from "../services/blogComment.services";
 import log from "../utils/logger";
 import { HttpError, ResourceNotFound } from "../middleware";
@@ -381,6 +382,121 @@ export class BlogCommentController {
     } catch (error) {
       if (error instanceof ResourceNotFound) {
         next(error);
+      } else {
+        next(new HttpError(500, "Internal server error"));
+      }
+    }
+  }
+
+  /**
+   * @swagger
+   * /blog/{commentId}:
+   *   delete:
+   *     summary: Delete a specific comment
+   *     tags: [Comments]
+   *     parameters:
+   *       - in: path
+   *         name: commentId
+   *         required: true
+   *         description: The ID of the comment to be deleted
+   *         schema:
+   *           type: string
+   *           example: "comment-12345"
+   *     responses:
+   *       200:
+   *         description: Comment deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "success"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "Comment deleted successfully"
+   *       400:
+   *         description: Invalid comment ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "unsuccessful"
+   *                 message:
+   *                   type: string
+   *                   example: "Invalid comment ID"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       404:
+   *         description: Comment not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Comment not found"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Internal server error"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  async deleteComment(req: Request, res: Response, next: NextFunction) {
+    try {
+      const commentId = req.params?.commentId || null;
+
+      if (!commentId) {
+        return res.status(400).json({
+          status: "unsuccessful",
+          message: "Invalid comment ID",
+          status_code: 400,
+        });
+      }
+
+      const hasDeletedComment = await deleteComment(commentId, req.user.id);
+
+      return res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Comment deleted successfully",
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      } else if (error.message === "COMMENT_NOT_FOUND") {
+        return res.status(404).json({
+          status: "unsuccessful",
+          message: "The comment you are trying to delete does not exist",
+          status_code: 404,
+        });
+      } else if (error.message === "UNAUTHORIZED_ACTION") {
+        return res.status(404).json({
+          status: "unsuccessful",
+          message: "Sorry, but you are not the author of this comment",
+          status_code: 404,
+        });
       } else {
         next(new HttpError(500, "Internal server error"));
       }
