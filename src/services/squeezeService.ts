@@ -38,6 +38,15 @@ class SqueezeService {
       throw new BadRequest("Failed to create squeeze: " + error.message);
     }
   }
+
+  public async getSqueezeById(id: string): Promise<Squeeze | null> {
+    try {
+      const squeeze = await this.squeezeRepository.findOne({ where: { id } });
+      return squeeze;
+    } catch (error) {
+      throw new BadRequest("Failed to retrieve squeeze: " + error.message);
+    }
+  }
 }
 
 export { SqueezeService };

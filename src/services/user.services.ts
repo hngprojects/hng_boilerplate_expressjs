@@ -14,6 +14,12 @@ interface IUserProfileUpdate {
   avatarUrl: string;
 }
 
+interface TimezoneData {
+  timezone: string;
+  gmtOffset: string;
+  description: string;
+}
+
 export class UserService {
   private userRepository: Repository<User>;
   constructor() {
@@ -179,5 +185,24 @@ export class UserService {
 
   async compareUserPassword(password: string, hashedPassword: string) {
     return comparePassword(password, hashedPassword);
+  }
+
+  public async updateUserTimezone(
+    userId: string,
+    timezoneData: TimezoneData,
+  ): Promise<User> {
+    const { timezone, gmtOffset, description } = timezoneData;
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+
+    user.timezone = { timezone, gmtOffset, description };
+    await this.userRepository.save(user);
+    return user;
   }
 }

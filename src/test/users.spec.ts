@@ -178,3 +178,65 @@ describe("UserService", () => {
     });
   });
 });
+
+describe("UserService - updateUserTimezone", () => {
+  let userService: UserService;
+  let userRepositoryMock: jest.Mocked<Repository<User>>;
+
+  beforeEach(() => {
+    userRepositoryMock = {
+      findOne: jest.fn(),
+      save: jest.fn(),
+      ...jest.requireActual("typeorm").Repository.prototype,
+    } as jest.Mocked<Repository<User>>;
+
+    (AppDataSource.getRepository as jest.Mock).mockReturnValue(
+      userRepositoryMock,
+    );
+    userService = new UserService();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should update the user's timezone successfully", async () => {
+    const user: User = { id: "123", timezone: {} } as User;
+    userRepositoryMock.findOne.mockResolvedValue(user);
+
+    const timezoneData = {
+      timezone: "America/New_York",
+      gmtOffset: "-05:00",
+      description: "Eastern Standard Time",
+    };
+
+    await userService.updateUserTimezone("123", timezoneData);
+
+    expect(userRepositoryMock.findOne).toHaveBeenCalledWith({
+      where: { id: "123" },
+    });
+    expect(userRepositoryMock.save).toHaveBeenCalledWith({
+      ...user,
+      timezone: timezoneData,
+    });
+  });
+
+  it("should throw a 404 error if user not found", async () => {
+    userRepositoryMock.findOne.mockResolvedValue(null);
+
+    const timezoneData = {
+      timezone: "America/New_York",
+      gmtOffset: "-05:00",
+      description: "Eastern Standard Time",
+    };
+
+    await expect(
+      userService.updateUserTimezone("123", timezoneData),
+    ).rejects.toThrow(new HttpError(404, "User not found"));
+
+    expect(userRepositoryMock.findOne).toHaveBeenCalledWith({
+      where: { id: "123" },
+    });
+    expect(userRepositoryMock.save).not.toHaveBeenCalled();
+  });
+});

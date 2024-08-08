@@ -28,4 +28,10 @@ userRouter.put(
   userController.updateUserProfile.bind(userController),
 );
 
+userRouter.put(
+  "/users/:id/timezone",
+  authMiddleware,
+  userController.updateUserTimezone.bind(userController),
+);
+
 export { userRouter };

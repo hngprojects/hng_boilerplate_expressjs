@@ -106,6 +106,13 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: true, type: "bigint" })
   passwordResetExpires: number;
 
+  @Column("jsonb", { nullable: true })
+  timezone: {
+    timezone: string;
+    gmtOffset: string;
+    description: string;
+  };
+
   @OneToMany(
     () => OrganizationMember,
     (organizationMember) => organizationMember.organization_id,
