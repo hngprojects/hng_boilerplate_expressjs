@@ -55,23 +55,47 @@ export class OrgService implements IOrgService {
   }
 
   public async deleteOrganization(orgId: string): Promise<void> {
+    const queryRunner = AppDataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
-      const organization = await AppDataSource.manager.findOne(Organization, {
+      const organization = await queryRunner.manager.findOne(Organization, {
         where: { id: orgId },
+        relations: [
+          "userOrganizations",
+          "users",
+          "payments",
+          "billingPlans",
+          "products",
+          "role",
+          "organizationMembers",
+        ],
       });
 
       if (!organization) {
         throw new ResourceNotFound("Organization not found");
       }
+      await queryRunner.manager.remove(organization.userOrganizations);
+      await queryRunner.manager.remove(organization.payments);
+      await queryRunner.manager.remove(organization.billingPlans);
+      await queryRunner.manager.remove(organization.products);
+      await queryRunner.manager.remove(organization.role);
+      await queryRunner.manager.remove(organization.organizationMembers);
 
-      await AppDataSource.manager.remove(organization);
+      await queryRunner.manager.remove(organization);
+      await queryRunner.commitTransaction();
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       if (error instanceof ResourceNotFound) {
         throw error;
       }
       throw new ServerError(
         "An error occurred while deleting the organization",
       );
+    } finally {
+      await queryRunner.release();
     }
   }
 

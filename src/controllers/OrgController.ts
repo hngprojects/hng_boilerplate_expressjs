@@ -186,6 +186,80 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{id}:
+   *   delete:
+   *     summary: Delete an organisation
+   *     description: This endpoint allows an administrator to delete an organisation by its ID
+   *     tags: [Organisation]
+   *     operationId: deleteOrganisation
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The organisation ID
+   *     responses:
+   *       '200':
+   *         description: Organisation deleted successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 message:
+   *                   type: string
+   *                   example: Organisation deleted successfully
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *       '404':
+   *         description: Organisation not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Organisation not found
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       '500':
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: error
+   *                 message:
+   *                   type: string
+   *                   example: Internal server error
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   * components:
+   *   securitySchemes:
+   *     bearerAuth:
+   *       type: http
+   *       scheme: bearer
+   *       bearerFormat: JWT
+   */
+
   async deleteOrganization(req: Request, res: Response, next: NextFunction) {
     try {
       const { org_id } = req.params;
