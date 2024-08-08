@@ -14,3 +14,4 @@ export * from "./billing-plans.services";
 export * from "./squeezeService";
 export * from "./blogComment.services";
 export * from "./newsLetterSubscription.service";
+export * from "./notification.services";
