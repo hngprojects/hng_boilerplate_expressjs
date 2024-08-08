@@ -7,7 +7,7 @@ import { BadRequest } from "../middleware";
 import jwt from "jsonwebtoken";
 import { AuthService } from "../services/index.ts";
 import { authMiddleware } from "../middleware/auth.ts";
-import { OrgController } from "../controllers/orgController";
+import { OrgController } from "../controllers";
 import { validateOrgId } from "../middleware/organizationValidation.ts";
 import {
   InvalidInput,
