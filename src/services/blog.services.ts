@@ -5,6 +5,9 @@ import { Blog } from "../models/blog";
 import { ResourceNotFound } from "../middleware";
 
 export class BlogService {
+  getAllComments(mockBlogId: string) {
+    throw new Error("Method not implemented.");
+  }
   private blogRepository: Repository<Blog>;
   private categoryRepository: Repository<Category>;
   private tagRepository: Repository<Tag>;
