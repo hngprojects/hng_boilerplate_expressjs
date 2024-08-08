@@ -1,7 +1,7 @@
 services:
   backend:
     container_name: backend_staging
-    build: 
+    build:
       context: .
       args:
         - NODE_ENV=${NODE_ENV}
@@ -18,7 +18,7 @@ services:
       backend_db_staging:
         condition: service_healthy
     restart: always
-    command: sh -c "sleep 10 && yarn start" 
+    command: sh -c "sleep 10 && yarn start"
 
   backend_db_staging:
     image: postgres:13
