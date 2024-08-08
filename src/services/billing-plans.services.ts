@@ -9,7 +9,6 @@ export class BillingService {
     try {
       return await this.billingRepository.find();
     } catch (error) {
-      console.error("Failed to fetch billing plans:", error);
       throw new Error("Could not fetch billing plans");
     }
   }
