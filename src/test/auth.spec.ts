@@ -84,8 +84,8 @@ describe("AuthService", () => {
       };
       const token = "access_token";
 
-      (User.findOne as jest.Mock).mockResolvedValue(null);
-      (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
+      // (User.findOne as jest.Mock).mockResolvedValue(null);
+      // (hashPassword as jest.Mock).mockResolvedValue(hashedPassword);
       (generateNumericOTP as jest.Mock).mockReturnValue(otp);
       // userRepositoryMock.save.mockResolvedValue(createdUser);
       (jwt.sign as jest.Mock).mockReturnValue(token);
@@ -118,7 +118,7 @@ describe("AuthService", () => {
         phone: "1234567890",
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue({});
+      // (User.findOne as jest.Mock).mockResolvedValue({});
 
       await expect(authService.signUp(payload)).rejects.toThrow(Conflict);
     });
@@ -137,7 +137,7 @@ describe("AuthService", () => {
       };
 
       (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
-      (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
       // userRepositoryMock.save.mockResolvedValue(user);
 
       const result = await authService.verifyEmail(token, otp);
@@ -157,7 +157,7 @@ describe("AuthService", () => {
       };
 
       (jwt.verify as jest.Mock).mockReturnValue({ userId: 1 });
-      (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
 
       await expect(authService.verifyEmail(token, otp)).rejects.toThrow(
         HttpError,
@@ -181,8 +181,8 @@ describe("AuthService", () => {
 
       const token = "access_token";
 
-      (User.findOne as jest.Mock).mockResolvedValue(user);
-      (comparePassword as jest.Mock).mockResolvedValue(true);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (comparePassword as jest.Mock).mockResolvedValue(true);
       (jwt.sign as jest.Mock).mockReturnValue(token);
 
       const result = await authService.login(payload);
@@ -210,8 +210,8 @@ describe("AuthService", () => {
         isverified: true,
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(user);
-      (comparePassword as jest.Mock).mockResolvedValue(false);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (comparePassword as jest.Mock).mockResolvedValue(false);
 
       await expect(authService.login(payload)).rejects.toThrow(HttpError);
     });
@@ -231,9 +231,9 @@ describe("AuthService", () => {
 
       const hashedNewPassword = "hashedNewPassword";
 
-      (User.findOne as jest.Mock).mockResolvedValue(user);
-      (comparePassword as jest.Mock).mockResolvedValue(true);
-      (hashPassword as jest.Mock).mockResolvedValue(hashedNewPassword);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (comparePassword as jest.Mock).mockResolvedValue(true);
+      // (hashPassword as jest.Mock).mockResolvedValue(hashedNewPassword);
       // userRepositoryMock.save.mockResolvedValue({
       //   ...user,
       //   password: hashedNewPassword,
@@ -260,8 +260,8 @@ describe("AuthService", () => {
         password: "hashedOldPassword",
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(user);
-      (comparePassword as jest.Mock).mockResolvedValue(false);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (comparePassword as jest.Mock).mockResolvedValue(false);
 
       await expect(
         authService.changePassword(
@@ -284,8 +284,8 @@ describe("AuthService", () => {
         password: "hashedOldPassword",
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(user);
-      (comparePassword as jest.Mock).mockResolvedValue(true);
+      // (User.findOne as jest.Mock).mockResolvedValue(user);
+      // (comparePassword as jest.Mock).mockResolvedValue(true);
 
       await expect(
         authService.changePassword(
@@ -304,7 +304,7 @@ describe("AuthService", () => {
         email: "nonexistent@example.com",
       };
 
-      (User.findOne as jest.Mock).mockResolvedValue(null);
+      // (User.findOne as jest.Mock).mockResolvedValue(null);
 
       await expect(
         authService.generateMagicLink(payload.email),
@@ -329,9 +329,9 @@ describe("AuthService", () => {
       const mailSent = "Email sent successfully.";
 
       // Mock successful responses
-      (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+      // (User.findOne as jest.Mock).mockResolvedValue(mockUser);
       (generateToken as jest.Mock).mockReturnValue(token);
-      (Sendmail as jest.Mock).mockResolvedValue(mailSent);
+      // (Sendmail as jest.Mock).mockResolvedValue(mailSent);
 
       const result = await authService.generateMagicLink(payload.email);
 
@@ -354,7 +354,7 @@ describe("AuthService", () => {
       const mockUser = { id: "1", email };
 
       (verifyToken as jest.Mock).mockReturnValue({ email });
-      (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+      // (User.findOne as jest.Mock).mockResolvedValue(mockUser);
 
       const result = await authService.validateMagicLinkToken(token);
 
@@ -378,7 +378,7 @@ describe("AuthService", () => {
       const userId = "1";
       const mockAccessToken = "mock-access-token";
 
-      (generateAccessToken as jest.Mock).mockResolvedValue(mockAccessToken);
+      // (generateAccessToken as jest.Mock).mockResolvedValue(mockAccessToken);
 
       const result = await authService.passwordlessLogin(userId);
 

@@ -54,8 +54,8 @@ describe("UserService", () => {
     describe("softDeleteUser", () => {
       it("should soft delete a user", async () => {
         const user: User = { id: "123", is_deleted: false } as User;
-        userRepositoryMock.findOne.mockResolvedValue(user);
-        userRepositoryMock.softDelete.mockResolvedValue({ affected: 1 } as any);
+        // userRepositoryMock.findOne.mockResolvedValue(user);
+        // userRepositoryMock.softDelete.mockResolvedValue({ affected: 1 } as any);
 
         const result = await userService.softDeleteUser("123");
 
@@ -73,7 +73,7 @@ describe("UserService", () => {
       });
 
       it("should throw a 404 error if user not found", async () => {
-        userRepositoryMock.findOne.mockResolvedValue(null);
+        // userRepositoryMock.findOne.mockResolvedValue(null);
 
         await expect(userService.softDeleteUser("123")).rejects.toThrow(
           new HttpError(404, "User Not Found"),
@@ -202,7 +202,7 @@ describe("UserService - updateUserTimezone", () => {
 
   it("should update the user's timezone successfully", async () => {
     const user: User = { id: "123", timezone: {} } as User;
-    userRepositoryMock.findOne.mockResolvedValue(user);
+    // userRepositoryMock.findOne.mockResolvedValue(user);
 
     const timezoneData = {
       timezone: "America/New_York",
@@ -222,7 +222,7 @@ describe("UserService - updateUserTimezone", () => {
   });
 
   it("should throw a 404 error if user not found", async () => {
-    userRepositoryMock.findOne.mockResolvedValue(null);
+    // userRepositoryMock.findOne.mockResolvedValue(null);
 
     const timezoneData = {
       timezone: "America/New_York",
