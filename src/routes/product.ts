@@ -30,4 +30,11 @@ productRouter
   .route(updateRoute)
   .patch(authMiddleware, validateUserToOrg, productController.updateProduct);
 
+productRouter.get(
+  "/organizations/:org_id/products/:product_id",
+  authMiddleware,
+  validOrgAdmin,
+  productController.getSingleProduct,
+);
+
 export { productRouter };
