@@ -110,6 +110,62 @@ export class ProductService {
       },
     };
   }
+
+  public async getProducts(
+    orgId: string,
+    query: {
+      name?: string;
+      category?: string;
+      minPrice?: number;
+      maxPrice?: number;
+    },
+    page: number = 1,
+    limit: number = 10,
+  ) {
+    const org = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!org) {
+      throw new ServerError(
+        "Unprocessable entity exception: Invalid organization credentials",
+      );
+    }
+
+    const { name, category, minPrice, maxPrice } = query;
+    const queryBuilder = this.productRepository
+      .createQueryBuilder("product")
+      .where("product.orgId = :orgId", { orgId });
+
+    if (name) {
+      queryBuilder.andWhere("product.name ILIKE :name", { name: `%${name}%` });
+    }
+    if (minPrice) {
+      queryBuilder.andWhere("product.price >= :minPrice", { minPrice });
+    }
+    if (maxPrice) {
+      queryBuilder.andWhere("product.price <= :maxPrice", { maxPrice });
+    }
+
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [products, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      success: true,
+      statusCode: 200,
+      data: {
+        products,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+    };
+  }
+
   public async deleteProduct(org_id: string, product_id: string) {
     try {
       const entities = await this.checkEntities({

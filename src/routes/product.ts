@@ -8,12 +8,20 @@ import { adminOnly } from "../middleware";
 const productRouter = Router();
 const productController = new ProductController();
 
+// route
 productRouter.post(
   "/organizations/:org_id/products",
   validateProductDetails,
   authMiddleware,
   validOrgAdmin,
   productController.createProduct,
+);
+
+productRouter.get(
+  "/organizations/:org_id/products/search",
+  authMiddleware,
+  validateUserToOrg,
+  productController.getProduct,
 );
 
 productRouter.delete(
@@ -27,7 +35,7 @@ productRouter.get(
   "/organizations/:org_id/products/:product_id",
   authMiddleware,
   validOrgAdmin,
-  productController.getProduct,
+  productController.getSingleProduct,
 );
 
 export { productRouter };

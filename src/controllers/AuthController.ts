@@ -515,7 +515,7 @@ const createMagicToken = async (
  *         description: Internal server error
  *     security: []
  */
-const authenticateUserMagicLink = async (
+const VerifyUserMagicLink = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -593,7 +593,7 @@ const googleAuthCall = async (req: Request, res: Response) => {
 };
 
 export {
-  authenticateUserMagicLink,
+  VerifyUserMagicLink,
   changePassword,
   createMagicToken,
   forgotPassword,

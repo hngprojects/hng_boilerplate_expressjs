@@ -136,6 +136,123 @@ describe("ProductService", () => {
       ).rejects.toThrow(ServerError);
     });
   });
+
+  describe("getProducts", () => {
+    it("should search products successfully", async () => {
+      const mockOrgId = "1";
+      const mockQuery = { name: "Test", minPrice: 0, maxPrice: 100 };
+      const mockOrg = { id: "1", name: "Test Organization" };
+      const mockProducts = [{ id: "1", name: "Test Product", price: 50 }];
+      const mockTotalCount = 2;
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest
+          .fn()
+          .mockResolvedValue([mockProducts, mockTotalCount]),
+      };
+
+      productRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
+
+      const result = await productService.getProducts(mockOrgId, mockQuery);
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.data.products).toEqual(mockProducts);
+      expect(result.data.pagination.total).toBe(mockTotalCount);
+      expect(result.data.pagination.page).toBe(1);
+      expect(result.data.pagination.limit).toBe(10);
+    });
+    it("should search products successfully with specified pagination", async () => {
+      const mockOrgId = "1";
+      const mockQuery = { name: "Test", minPrice: 0, maxPrice: 100 };
+      const mockPage = 2;
+      const mockLimit = 5;
+      const mockOrg = { id: "1", name: "Test Organization" };
+      const mockProducts = [{ id: "1", name: "Test Product", price: 50 }];
+      const mockTotalCount = 5;
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest
+          .fn()
+          .mockResolvedValue([mockProducts, mockTotalCount]),
+      };
+
+      productRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
+
+      const result = await productService.getProducts(
+        mockOrgId,
+        mockQuery,
+        mockPage,
+        mockLimit,
+      );
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.data.pagination.total).toBe(mockTotalCount);
+      expect(result.data.pagination.page).toBe(mockPage);
+      expect(result.data.pagination.limit).toBe(mockLimit);
+    });
+
+    it("should return an empty product array when product is not found", async () => {
+      const mockOrgId = "1";
+      const mockQuery = { name: "Nonexistent Product" };
+      const mockOrg = { id: "1", name: "Test Organization" };
+      const mockTotalCount = 0;
+      const mockProducts = [];
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      productRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+      organizationRepository.findOne = jest.fn().mockResolvedValue(mockOrg);
+
+      const result = await productService.getProducts(mockOrgId, mockQuery);
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.data.pagination.total).toBe(mockTotalCount);
+      expect(result.data.products).toStrictEqual(mockProducts);
+    });
+
+    it("should throw a ServerError when organization is not found", async () => {
+      const mockOrgId = "nonexistentOrg";
+      const mockQuery = { name: "Test Product" };
+
+      organizationRepository.findOne = jest.fn().mockResolvedValue(undefined);
+
+      await expect(
+        productService.getProducts(mockOrgId, mockQuery),
+      ).rejects.toThrow(ServerError);
+    });
+
+    it("should throw a server error when organization is not found", async () => {
+      const mockOrgId = "nonexistentOrg";
+      const mockQuery = { name: "Test Product" };
+      organizationRepository.findOne = jest.fn().mockResolvedValue(undefined);
+      await expect(
+        productService.getProducts(mockOrgId, mockQuery),
+      ).rejects.toThrow(ServerError);
+    });
+  });
+
   describe("deleteProduct", () => {
     it("should delete the product from the organization", async () => {
       const org_id = "org123";
