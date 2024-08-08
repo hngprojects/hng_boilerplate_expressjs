@@ -10,7 +10,7 @@ class SqueezeController {
 
   /**
    * @openapi
-   * /api/v1/squeeze-pages:
+   * /api/v1/squeezes:
    *   post:
    *     tags:
    *       - Squeeze
@@ -155,6 +155,81 @@ class SqueezeController {
         status: "error",
         message: "An error occurred while retrieving the squeeze record.",
         error: error.message,
+      });
+    }
+  };
+
+  /**
+   * @openapi
+   * /api/v1/squeezes/{squeeze_id}:
+   *   post:
+   *     tags:
+   *       - Squeeze
+   *     summary: Update a squeeze page
+   *     description: Update a squeeze entry.
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               email:
+   *                 type: string
+   *               first_name:
+   *                 type: string
+   *               last_name:
+   *                 type: string
+   *               phone:
+   *                 type: string
+   *               location:
+   *                 type: string
+   *               job_title:
+   *                 type: string
+   *               company:
+   *                 type: string
+   *               interests:
+   *                 type: array
+   *               referral_source:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Squeeze updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "success"
+   *                 message:
+   *                   type: string
+   *                   example: "Squeeze updated successfully"
+   *                 data:
+   *                   type: object
+   *       400:
+   *         description: Bad request
+   *       404:
+   *         description: Squeeze service not found
+   *       500:
+   *         description: Error occurred while updating the squeeze record.
+   */
+  public updateSqueeze = async (req: Request, res: Response) => {
+    const { squeeze_id } = req.params;
+    const data = req.body;
+    const squeeze = await this.squeezeService.updateSqueeze(squeeze_id, data);
+
+    if (squeeze) {
+      return res.status(200).json({
+        status: "Success",
+        message: "Squeeze updated successfully",
+        data: squeeze,
+      });
+    } else {
+      res.status(500).json({
+        status: "error",
+        message: "Error occurred while updating the squeeze record.",
       });
     }
   };

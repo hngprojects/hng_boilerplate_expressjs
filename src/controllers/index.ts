@@ -17,6 +17,7 @@ export * from "./contactController";
 export * from "./FaqController";
 export * from "./OrgController";
 export * from "./runTestController";
+export * from "./paymentPaystackController";
 export * from "./SqueezeController";
 export * from "./NotificationController";
 export * from "./billingplansController";

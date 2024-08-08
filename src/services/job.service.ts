@@ -47,6 +47,27 @@ export class JobService {
     }
   }
 
+  public async getById(jobId: string): Promise<Job | null> {
+    try {
+      const job = await this.jobRepository.findOne({
+        where: { id: jobId },
+      });
+
+      return job;
+    } catch (error) {
+      throw new Error("Failed to fetch job details");
+    }
+  }
+
+  public async getAllJobs(): Promise<Job[] | null> {
+    try {
+      return await Job.find();
+    } catch (error) {
+      console.error("Failed to fetch jobs", error);
+      throw new Error("Could not fetch jobs ");
+    }
+  }
+
   public async delete(jobId: string): Promise<Job | null> {
     try {
       const existingJob = await this.jobRepository.findOne({
