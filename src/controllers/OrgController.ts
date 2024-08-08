@@ -1,8 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { ResourceNotFound, ServerError, HttpError } from "../middleware";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import {
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
-import { InvalidInput } from "../middleware";
 
 export class OrgController {
   private orgService: OrgService;
@@ -1200,6 +1205,101 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles/{role_id}:
+   *   get:
+   *     summary: Get a specific role in an organization
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: role_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the role
+   *     responses:
+   *       200:
+   *         description: The details of the specified role or a message indicating that the role does not exist
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "roleId123"
+   *                     name:
+   *                       type: string
+   *                       example: "Admin"
+   *                     description:
+   *                       type: string
+   *                       example: "Administrator role with full access"
+   *                 message:
+   *                   type: string
+   *                   example: "The role with ID roleId123 does not exist in the organisation"
+   *       400:
+   *         description: Bad request, possibly due to invalid organization or role ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       401:
+   *         description: Unauthorized, possibly due to missing or invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *       404:
+   *         description: Role or organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: An error occurred while fetching the role
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
   async getSingleRole(req: Request, res: Response, next: NextFunction) {
     try {
       const organizationId = req.params.org_id;
@@ -1228,6 +1328,91 @@ export class OrgController {
     }
   }
 
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/roles:
+   *   get:
+   *     summary: Get all roles in an organization
+   *     tags: [Organizations]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *     responses:
+   *       200:
+   *         description: A list of roles in the organization
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       id:
+   *                         type: string
+   *                       name:
+   *                         type: string
+   *                       description:
+   *                         type: string
+   *       400:
+   *         description: Bad request, possibly due to invalid organization ID
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       401:
+   *         description: Unauthorized, possibly due to missing or invalid credentials
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *       404:
+   *         description: Organization not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: An error occurred while fetching the roles
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
   async getAllOrganizationRoles(
     req: Request,
     res: Response,
@@ -1247,6 +1432,153 @@ export class OrgController {
         next(error);
       }
       next(new ServerError("Error fetching all roles in organization"));
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{organizationId}/roles/{roleId}/permissions:
+   *   put:
+   *     summary: Update permissions for a specific role in an organization
+   *     tags: [Roles]
+   *     parameters:
+   *       - in: path
+   *         name: organizationId
+   *         required: true
+   *         description: The ID of the organization
+   *         schema:
+   *           type: string
+   *           example: "org-12345"
+   *       - in: path
+   *         name: roleId
+   *         required: true
+   *         description: The ID of the role within the organization
+   *         schema:
+   *           type: string
+   *           example: "role-67890"
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               permissions:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                   enum:
+   *                     - canViewTransactions
+   *                     - canViewRefunds
+   *                     - canLogRefunds
+   *                     - canViewUsers
+   *                     - canCreateUsers
+   *                     - canEditUsers
+   *                     - canBlacklistWhitelistUsers
+   *                 example:
+   *                   - canViewTransactions
+   *                   - canCreateUsers
+   *                   - canLogRefunds
+   *             required:
+   *               - permissions
+   *     responses:
+   *       200:
+   *         description: Permissions updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   description: The updated role object with permissions
+   *       400:
+   *         description: Bad Request - Missing required parameters or permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "OrganizationID and Role ID are required."
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       404:
+   *         description: Not Found - Organization or Role not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Role not found"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal Server Error - Error updating permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Error updating the role permissions of this organization"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  async updateOrganizationRolePermissions(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req?.params?.org_id || null;
+      const roleId = req?.params?.role_id || null;
+      const newPermissions: PermissionCategory[] = req.body?.permissions || [];
+
+      if (!(organizationId && roleId)) {
+        return res.status(400).json({
+          error: "OrganizationID and Role ID are required.",
+          status_code: 400,
+        });
+      }
+
+      if (!newPermissions?.length) {
+        return res.status(400).json({
+          error: "Permissions are required.",
+          status_code: 400,
+        });
+      }
+
+      const response = await this.orgService.updateRolePermissions(
+        roleId,
+        organizationId,
+        newPermissions,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(
+        new ServerError(
+          "Error updating the role permissions of this organization",
+        ),
+      );
     }
   }
 }

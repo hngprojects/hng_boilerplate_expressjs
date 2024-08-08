@@ -12,11 +12,15 @@ import log from "../utils/logger";
 
 import { addEmailToQueue } from "../utils/queue";
 import renderTemplate from "../views/email/renderTemplate";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import { Permissions } from "../models/permissions.entity";
 const frontendBaseUrl = config.BASE_URL;
 
 export class OrgService implements IOrgService {
   private organizationRepository: Repository<Organization>;
   private organizationRoleRepository: Repository<OrganizationRole>;
+  private permissionRepository: Repository<Permissions>;
+
   constructor() {
     this.organizationRepository = AppDataSource.getRepository(Organization);
     this.organizationRoleRepository =
@@ -414,6 +418,62 @@ export class OrgService implements IOrgService {
       });
 
       return roles;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateRolePermissions(
+    roleId: string,
+    organizationId: string,
+    newPermissions: PermissionCategory[],
+  ) {
+    try {
+      const organization = await this.organizationRepository.findOne({
+        where: { id: organizationId },
+      });
+
+      if (!organization) {
+        throw new ResourceNotFound("Organization not found");
+      }
+
+      const role = await this.organizationRoleRepository.findOne({
+        where: { id: roleId, organization: { id: organizationId } },
+        relations: ["permissions"],
+      });
+
+      if (!role) {
+        throw new ResourceNotFound("Role not found");
+      }
+
+      const newPermissionsSet = new Set(newPermissions);
+
+      role.permissions = role.permissions.filter((permission) =>
+        newPermissionsSet.has(permission.category),
+      );
+
+      const existingCategories = new Set(
+        role.permissions.map((permission) => permission.category),
+      );
+
+      for (const category of newPermissions) {
+        if (!existingCategories.has(category)) {
+          const newPermission = this.permissionRepository.create({
+            category,
+            role,
+            permission_list: true,
+          });
+          role.permissions.push(newPermission);
+        }
+      }
+
+      role.permissions = role.permissions.filter((permission) =>
+        newPermissionsSet.has(permission.category),
+      );
+
+      await this.organizationRoleRepository.save(role);
+
+      return role;
     } catch (error) {
       throw error;
     }
