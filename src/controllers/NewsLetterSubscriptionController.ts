@@ -1,10 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { NewsLetterSubscriptionService } from "../services";
-import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
-import { NextFunction, Request, Response } from "express";
-import { BadRequest } from "../middleware";
 import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
+import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
 
+// Initialize the service
 const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
 
 /**
@@ -291,7 +289,6 @@ const unSubscribeToNewsletter = async (
  *                   type: string
  *                   example: An error occurred while processing your request.
  */
-
 const restoreNewsletterSubscription = async (
   req: Request,
   res: Response,
@@ -432,4 +429,4 @@ const restoreNewsletterSubscription = async (
   }
 };
 
-export { getAllNewsletter, subscribeToNewsletter, unSubscribeToNewsletter restoreNewsletterSubscription,  };
+export { getAllNewsletter, subscribeToNewsletter, unSubscribeToNewsletter, restoreNewsletterSubscription };

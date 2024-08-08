@@ -46,8 +46,8 @@ describe("NewsLetterSubscriptionService", () => {
 
   describe("SubscribeToNewsLetter", () => {
     it("should subscribe a new user", async () => {
-      const newSubscriber = new NewsLetterSubscriber();
-      newSubscriber.email = "test1@example.com";
+      const user = new NewsLetterSubscriber();
+      user.email = "test@example.com";
 
       (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
       (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(

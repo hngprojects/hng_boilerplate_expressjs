@@ -82,7 +82,6 @@ export class NewsLetterSubscriptionService
   
     return subscription;
   }
-  
   public async fetchAllNewsletter({
     page = 1,
     limit = 10,
