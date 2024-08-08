@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
-import { NewsLetterSubscriptionService } from "../services";
+import { NewsLetterSubscriptionService } from "../services/newsLetterSubscription.service";
 import { BadRequest, ResourceNotFound, Unauthorized } from "../middleware";
 
+// Initialize the service
 const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
 
 /**
@@ -51,7 +52,6 @@ const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
  *                 message:
  *                   type: string
  *                   example: You are already subscribed to our newsletter.
- *
  *       500:
  *         description: Internal server error. An error occurred while processing the subscription.
  *         content:
@@ -188,7 +188,6 @@ const subscribeToNewsletter = async (
  *                   type: string
  *                   example: An error occurred while processing your request.
  */
-
 const restoreNewsletterSubscription = async (
   req: Request,
   res: Response,
@@ -214,5 +213,28 @@ const restoreNewsletterSubscription = async (
   }
 };
 
+const getAllNewsletter = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { page, limit } = req.query;
+    const { data, meta } =
+      await newsLetterSubscriptionService.fetchAllNewsletter({
+        page: Number(page),
+        limit: Number(limit),
+      });
 
-export { subscribeToNewsletter, restoreNewsletterSubscription };
+    return res.status(200).json({
+      status: "success",
+      message: "Fetched all newsletters successfully.",
+      data: data,
+      meta,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { subscribeToNewsletter, restoreNewsletterSubscription, getAllNewsletter };

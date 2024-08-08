@@ -20,7 +20,6 @@ export * from "./notification";
 export * from "./organization";
 export * from "./organization-member";
 export * from "./organization-role.entity";
-export * from "./orgInviteToken";
 
 export * from "./payment";
 export * from "./permissions.entity";

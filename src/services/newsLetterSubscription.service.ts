@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
-import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
-import { INewsLetterSubscriptionService } from "../types";
 import AppDataSource from "../data-source";
 import { HttpError, ResourceNotFound } from "../middleware";
+import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
+import { INewsLetterSubscriptionService } from "../types";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -51,5 +51,36 @@ export class NewsLetterSubscriptionService
     await this.newsLetterSubscriber.save(subscription);
   
     return subscription;
+  }
+
+  public async fetchAllNewsletter({
+    page = 1,
+    limit = 10,
+  }: {
+    page?: number;
+    limit?: number;
+  }) {
+    try {
+      const [newsletters, total] = await this.newsLetterSubscriber.findAndCount(
+        {
+          skip: (page - 1) * limit,
+          take: limit,
+        },
+      );
+      const totalPages = Math.ceil(total / limit);
+      const meta = {
+        total,
+        page,
+        limit,
+        totalPages,
+      };
+
+      return {
+        data: newsletters,
+        meta,
+      };
+    } catch (error) {
+      throw error;
+    }
   }
 }
