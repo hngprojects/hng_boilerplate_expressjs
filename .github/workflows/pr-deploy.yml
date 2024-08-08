@@ -17,7 +17,7 @@ jobs:
 
       - id: deploy
         name: Pull Request Deploy
-        uses: hngprojects/pr-deploy@latest
+        uses: hngprojects/pr-deploy
         with:
           server_host: ${{ secrets.SERVER_HOST }}
           server_username: ${{ secrets.SERVER_USERNAME }}
