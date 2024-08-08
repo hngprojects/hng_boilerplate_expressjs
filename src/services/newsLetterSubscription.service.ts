@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
-import { HttpError } from "../middleware";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
+import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -15,27 +15,56 @@ export class NewsLetterSubscriptionService
   }
 
   public async subscribeUser(email: string): Promise<{
-    isSubscribe: boolean;
+    isNewlySubscribe: boolean;
     subscriber: NewsLetterSubscriber;
   }> {
-    let isSubscribe = false;
+    let isNewlySubscribe = true;
+
     const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
       where: { email },
     });
-    if (isExistingSubscriber) {
-      isSubscribe = true;
-      return { isSubscribe, subscriber: isExistingSubscriber };
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === true) {
+      isNewlySubscribe = false;
+      return { isNewlySubscribe, subscriber: isExistingSubscriber };
     }
+
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === false) {
+      throw new BadRequest(
+        "You are already subscribed, please enable newsletter subscription to receive newsletter again",
+      );
+    }
+
     const newSubscriber = new NewsLetterSubscriber();
     newSubscriber.email = email;
+    newSubscriber.isSubscribe = true;
+
     const subscriber = await this.newsLetterSubscriber.save(newSubscriber);
+
     if (!subscriber) {
       throw new HttpError(
         500,
         "An error occurred while processing your request",
       );
     }
-    return { isSubscribe, subscriber };
+    return { isNewlySubscribe, subscriber };
+  }
+
+  public async unSubcribeUser(email: string): Promise<any> {
+    const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
+      where: { email },
+    });
+
+    if (!isExistingSubscriber) {
+      throw new ResourceNotFound("You are not subscribed to newsletter");
+    }
+
+    if (isExistingSubscriber && isExistingSubscriber.isSubscribe === true) {
+      isExistingSubscriber.isSubscribe = false;
+      await this.newsLetterSubscriber.save(isExistingSubscriber);
+      return isExistingSubscriber;
+    }
+
+    throw new BadRequest("You already unsubscribed to newsletter");
   }
 
   public async fetchAllNewsletter({
