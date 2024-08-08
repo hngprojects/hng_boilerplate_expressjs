@@ -105,95 +105,100 @@ describe("NewsLetterSubscriptionService", () => {
     });
   });
 
-  describe("RestoreNewsLetterSubscription", () => {
-    it("should restore a valid deleted subscription", async () => {
-      const subscription = new NewsLetterSubscriber();
-      subscription.id = "123";
-      subscription.email = "test@example.com";
-      subscription.isActive = false;
-  
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(subscription);
-      (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
-        (subscription) => {
-          subscription.isActive = true;
-          return Promise.resolve(subscription);
-        },
-      );
-  
-      const result =
-        await newsLetterSubscriptionService.restoreSubscription("123");
-  
-      expect(result).toEqual({
-        id: "123",
-        email: "test@example.com",
-        isActive: true,
-      });
-      expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(subscription);
+jest.mock("../middleware", () => ({
+  ...jest.requireActual("../middleware"),
+  adminOnly: jest.fn(),
+}));
+
+describe("RestoreNewsLetterSubscription", () => {
+  it("should restore a valid deleted subscription", async () => {
+    const subscription = new NewsLetterSubscriber();
+    subscription.id = "123";
+    subscription.email = "test@example.com";
+    subscription.isActive = false;
+
+    (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(subscription);
+    (newsLetterRepositoryMock.save as jest.Mock).mockImplementation(
+      (subscription) => {
+        subscription.isActive = true;
+        return Promise.resolve(subscription);
+      },
+    );
+
+    const result =
+      await newsLetterSubscriptionService.restoreSubscription("123");
+
+    expect(result).toEqual({
+      id: "123",
+      email: "test@example.com",
+      isActive: true,
     });
-  
-    it("should return null if the subscription is not found", async () => {
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
-  
-      await expect(
-        newsLetterSubscriptionService.restoreSubscription("123")
-      ).rejects.toThrow("Subscription not found");
-  
-      expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
-    });
-  
-    it("should return null if the subscription is already active", async () => {
-      const subscription = new NewsLetterSubscriber();
-      subscription.id = "123";
-      subscription.email = "test@example.com";
-      subscription.isActive = true;
-  
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(subscription);
-  
-      await expect(
-        newsLetterSubscriptionService.restoreSubscription("123")
-      ).rejects.toThrow("Subscription not found");
-  
-      expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
-    });
-  
-    it("should throw an error if something goes wrong", async () => {
-      (newsLetterRepositoryMock.findOne as jest.Mock).mockRejectedValue(
-        new Error("An error occurred while processing your request"),
-      );
-  
-      await expect(
-        newsLetterSubscriptionService.restoreSubscription("123"),
-      ).rejects.toThrow("An error occurred while processing your request");
-    });
-  
-    it("should deny access to non-admin users", async () => {
-      const mockReq = {} as any;
-      const mockRes = {} as any;
-      const mockNext = jest.fn();
-  
-      (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-        req.user = { role: "USER" };
-        next();
-      });
-  
-      await adminOnly(mockReq, mockRes, mockNext);
-  
-      expect(mockNext).toHaveBeenCalledWith(new Unauthorized("Access denied. Admins only."));
-    });
-  
-    it("should allow access to admin users", async () => {
-      const mockReq = {} as any;
-      const mockRes = {} as any;
-      const mockNext = jest.fn();
-  
-      (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-        req.user = { role: "ADMIN" };
-        next();
-      });
-  
-      await adminOnly(mockReq, mockRes, mockNext);
-  
-      expect(mockNext).toHaveBeenCalled();
-    });
+    expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(subscription);
   });
+
+  it("should return null if the subscription is not found", async () => {
+    (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(null);
+
+    await expect(
+      newsLetterSubscriptionService.restoreSubscription("123")
+    ).rejects.toThrow("Subscription not found");
+
+    expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
+  });
+
+  it("should return null if the subscription is already active", async () => {
+    const subscription = new NewsLetterSubscriber();
+    subscription.id = "123";
+    subscription.email = "test@example.com";
+    subscription.isActive = true;
+
+    (newsLetterRepositoryMock.findOne as jest.Mock).mockResolvedValue(subscription);
+
+    await expect(
+      newsLetterSubscriptionService.restoreSubscription("123")
+    ).rejects.toThrow("Subscription not found");
+
+    expect(newsLetterRepositoryMock.save).not.toHaveBeenCalled();
+  });
+
+  it("should throw an error if something goes wrong", async () => {
+    (newsLetterRepositoryMock.findOne as jest.Mock).mockRejectedValue(
+      new Error("An error occurred while processing your request"),
+    );
+
+    await expect(
+      newsLetterSubscriptionService.restoreSubscription("123"),
+    ).rejects.toThrow("An error occurred while processing your request");
+  });
+
+  it("should deny access to non-admin users", async () => {
+    const mockReq = {} as any;
+    const mockRes = {} as any;
+    const mockNext = jest.fn();
+
+    (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
+      req.user = { role: "USER" };
+      next();
+    });
+
+    await adminOnly(mockReq, mockRes, mockNext);
+
+    expect(mockNext).toHaveBeenCalledWith(new Unauthorized("Access denied. Admins only."));
+  });
+
+  it("should allow access to admin users", async () => {
+    const mockReq = {} as any;
+    const mockRes = {} as any;
+    const mockNext = jest.fn();
+
+    (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
+      req.user = { role: "ADMIN" };
+      next();
+    });
+
+    await adminOnly(mockReq, mockRes, mockNext);
+
+    expect(mockNext).toHaveBeenCalled();
+  });
+});
 });
