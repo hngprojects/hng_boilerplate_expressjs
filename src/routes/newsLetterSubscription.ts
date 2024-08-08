@@ -6,7 +6,7 @@ const newsLetterSubscriptionRoute = Router();
 
 newsLetterSubscriptionRoute.post(
   "/newsletter-subscription",
-  // authMiddleware,
+  authMiddleware,
   subscribeToNewsletter,
 );
 
