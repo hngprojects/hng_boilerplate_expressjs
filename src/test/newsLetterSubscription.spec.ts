@@ -87,7 +87,6 @@ describe("NewsLetterSubscriptionService", () => {
 
       const result =
         await newsLetterSubscriptionService.subscribeUser("test@example.com");
-      console.log(result);
 
       expect(result.isNewlySubscribe).toBe(false);
       expect(result.subscriber).toEqual({
