@@ -37,7 +37,7 @@ export class JobService {
       throw new Error("Could not fetch jobs ");
     }
   }
-  
+
   public async delete(jobId: string): Promise<Job | null> {
     try {
       const existingJob = await this.jobRepository.findOne({

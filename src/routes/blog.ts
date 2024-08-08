@@ -48,6 +48,12 @@ blogRouter.patch(
   blogCommentController.editComment.bind(blogCommentController),
 );
 
+blogRouter.delete(
+  "/blog/:commentId",
+  authMiddleware,
+  blogCommentController.deleteComment.bind(blogCommentController),
+);
+
 blogRouter.get(
   "/blog/:blogId/comments",
   authMiddleware,
