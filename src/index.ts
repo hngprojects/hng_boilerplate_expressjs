@@ -22,6 +22,7 @@ import {
   paymentRouter,
   paymentStripeRouter,
   productRouter,
+  billingRouter,
   runTestRouter,
   sendEmailRoute,
   testimonialRoute,
@@ -81,6 +82,7 @@ server.use("/api/v1", paymentStripeRouter);
 server.use("/api/v1", smsRouter);
 server.use("/api/v1", notificationRouter);
 server.use("/api/v1", paymentRouter);
+server.use("/api/v1", billingRouter);
 server.use("/api/v1", orgRouter);
 server.use("/api/v1", exportRouter);
 server.use("/api/v1", testimonialRoute);
