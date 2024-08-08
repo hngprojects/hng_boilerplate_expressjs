@@ -17,6 +17,6 @@ export * from "./testimonial";
 export * from "./user";
 export * from "./faq";
 export * from "./run-test";
+export * from "./billing-plans";
 export * from "./squeeze";
 export * from "./newsLetterSubscription";
-
