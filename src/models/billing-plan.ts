@@ -13,7 +13,7 @@ export class BillingPlan {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column("uuid")
+  @Column("uuid", { nullable: true })
   organizationId: string;
 
   @Column()

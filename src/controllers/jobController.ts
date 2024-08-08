@@ -23,6 +23,14 @@ export class JobController {
     }
   }
 
+  async getAllJobs(req: Request, res: Response) {
+    try {
+      const billing = await this.jobService.getAllJobs(req);
+      res.status(200).json({ message: "Jobs retrieved successfully", billing });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
   /**
    * @swagger
    * /jobs/{jobId}:
