@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ResourceNotFound, ServerError } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
+import { PermissionCategory } from "../enums/permission-category.enum";
 
 export class OrgController {
   private orgService: OrgService;
@@ -1110,6 +1111,153 @@ export class OrgController {
         next(error);
       }
       next(new ServerError("Error fetching all roles in organization"));
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{organizationId}/roles/{roleId}/permissions:
+   *   put:
+   *     summary: Update permissions for a specific role in an organization
+   *     tags: [Roles]
+   *     parameters:
+   *       - in: path
+   *         name: organizationId
+   *         required: true
+   *         description: The ID of the organization
+   *         schema:
+   *           type: string
+   *           example: "org-12345"
+   *       - in: path
+   *         name: roleId
+   *         required: true
+   *         description: The ID of the role within the organization
+   *         schema:
+   *           type: string
+   *           example: "role-67890"
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               permissions:
+   *                 type: array
+   *                 items:
+   *                   type: string
+   *                   enum:
+   *                     - canViewTransactions
+   *                     - canViewRefunds
+   *                     - canLogRefunds
+   *                     - canViewUsers
+   *                     - canCreateUsers
+   *                     - canEditUsers
+   *                     - canBlacklistWhitelistUsers
+   *                 example:
+   *                   - canViewTransactions
+   *                   - canCreateUsers
+   *                   - canLogRefunds
+   *             required:
+   *               - permissions
+   *     responses:
+   *       200:
+   *         description: Permissions updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   description: The updated role object with permissions
+   *       400:
+   *         description: Bad Request - Missing required parameters or permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "OrganizationID and Role ID are required."
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *       404:
+   *         description: Not Found - Organization or Role not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Role not found"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *       500:
+   *         description: Internal Server Error - Error updating permissions
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: "Error updating the role permissions of this organization"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   */
+
+  async updateOrganizationRolePermissions(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const organizationId = req?.params?.org_id || null;
+      const roleId = req?.params?.role_id || null;
+      const newPermissions: PermissionCategory[] = req.body?.permissions || [];
+
+      if (!(organizationId && roleId)) {
+        return res.status(400).json({
+          error: "OrganizationID and Role ID are required.",
+          status_code: 400,
+        });
+      }
+
+      if (!newPermissions?.length) {
+        return res.status(400).json({
+          error: "Permissions are required.",
+          status_code: 400,
+        });
+      }
+
+      const response = await this.orgService.updateRolePermissions(
+        roleId,
+        organizationId,
+        newPermissions,
+      );
+
+      return res.status(200).json({
+        status_code: 200,
+        data: response,
+      });
+    } catch (error) {
+      if (error instanceof ResourceNotFound) {
+        next(error);
+      }
+      next(
+        new ServerError(
+          "Error updating the role permissions of this organization",
+        ),
+      );
     }
   }
 }

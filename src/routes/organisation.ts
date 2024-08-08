@@ -78,4 +78,12 @@ orgRouter.get(
   authMiddleware,
   orgController.getAllOrganizationRoles,
 );
+
+orgRouter.put(
+  "/organizations/:org_id/roles/:role_id/permissions",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN]),
+  orgController.updateOrganizationRolePermissions.bind(orgController),
+);
+
 export { orgRouter };
