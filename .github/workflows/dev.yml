@@ -12,20 +12,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build Docker image
+      - name: Build Docker images using docker-compose
         run: |
-          docker build -t backend_dev .
+          docker compose -f docker-compose.yml build
 
-      - name: Save Docker image to tarball
+      - name: Save Docker images to tarball
         run: |
-          docker save backend_dev | gzip > backend_dev.tar.gz
+          docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') | gzip > docker-images.tar.gz
 
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
       - name: Upload to server
         run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/backend_dev.tar.gz
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no docker-images.tar.gz docker-compose.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/
         env:
           SSH_HOST: ${{ secrets.HOST }}
           SSH_USERNAME: ${{ secrets.USERNAME }}
@@ -34,12 +34,13 @@ jobs:
       - name: Deploy and start on remote server
         run: |
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-            docker load -i /tmp/backend_dev.tar.gz
             cd /var/www/aihomework/dev
             git stash
             git pull origin dev
+            docker load -i /tmp/docker-images.tar.gz
             docker compose down
-            docker compose up -d 
+            docker compose up -d
+            rm /tmp/docker-images.tar.gz
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
