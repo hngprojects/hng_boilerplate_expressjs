@@ -7,16 +7,16 @@ export class Profile extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   first_name: string;
 
-  @Column()
+  @Column({ nullable: true })
   last_name: string;
 
   @Column({ nullable: true })
   phone_number: string;
 
-  @Column()
+  @Column({ nullable: true })
   avatarUrl: string;
 
   @OneToOne(() => User, (user) => user.profile)

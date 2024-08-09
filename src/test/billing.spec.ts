@@ -1,4 +1,4 @@
-import { BillingService } from "../services/billing-plans.services";
+import { BillingPlanService } from "../services/billingplan.services";
 import { BillingPlan } from "../models/billing-plan";
 import AppDataSource from "../data-source";
 import { Repository } from "typeorm";
@@ -8,7 +8,7 @@ jest.mock("../data-source", () => ({
 }));
 
 describe("BillingService", () => {
-  let billingService: BillingService;
+  let billingService: BillingPlanService;
   let billingRepository: Repository<BillingPlan>;
 
   beforeEach(() => {
@@ -19,7 +19,7 @@ describe("BillingService", () => {
     (AppDataSource.getRepository as jest.Mock).mockReturnValue(
       billingRepository,
     );
-    billingService = new BillingService();
+    billingService = new BillingPlanService();
   });
 
   afterEach(() => {

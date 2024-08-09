@@ -14,7 +14,7 @@ const AppDataSource = new DataSource({
   synchronize: isDevelopment,
   logging: false,
   entities: ["src/models/**/*.ts"],
-  migrations: ["src/migrations/**/*.ts"],
+  migrations: ["db/migrations/**/*.ts"],
   migrationsTableName: "migrations",
   // ssl: true,
   // extra: {

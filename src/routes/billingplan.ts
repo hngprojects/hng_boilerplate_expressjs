@@ -20,4 +20,11 @@ billingPlanRouter.get(
   billingPlanController.getBillingPlans,
 );
 
+billingPlanRouter.get(
+  "/billing-plans",
+  authMiddleware,
+  billingPlanController.getAllBillings,
+);
+
+// billingPlanRouter.post("/billing-plans", authMiddleware, createBillingPlan);
 export { billingPlanRouter };

@@ -1,32 +1,50 @@
-import { NextFunction, Request, Response } from "express";
-import { Job } from "../models";
-import AppDataSource from "../data-source";
 import { Repository } from "typeorm";
+import { Job, User, SalaryRange, JobType, JobMode } from "../models";
+import AppDataSource from "../data-source";
+import { ICreateJobs } from "../types";
 import { HttpError } from "../middleware";
 
 export class JobService {
+  private userRepository: Repository<User>;
   private jobRepository: Repository<Job>;
 
   constructor() {
+    this.userRepository = AppDataSource.getRepository(User);
     this.jobRepository = AppDataSource.getRepository(Job);
   }
 
-  public async create(req: Request): Promise<Job | null> {
-    const { title, description, location, salary, job_type, company_name } =
-      req.body;
-    const user_id = (req as Record<string, any>).user.id;
+  async createJob(
+    createJobBody: ICreateJobs,
+    ownerId: User["id"],
+  ): Promise<Job> {
+    try {
+      return await AppDataSource.manager.transaction(
+        async (transactionalEntityManager) => {
+          const user = await transactionalEntityManager.findOne(User, {
+            where: { id: ownerId },
+          });
 
-    const jobEntity = Job.create({
-      user_id,
-      title,
-      description,
-      location,
-      salary,
-      job_type,
-      company_name,
-    });
-    const job = await Job.save(jobEntity);
-    return job;
+          if (!user) {
+            throw new Error("User not found");
+          }
+
+          const newJob = new Job();
+          newJob.title = createJobBody.title;
+          newJob.description = createJobBody.description;
+          newJob.location = createJobBody.location;
+          newJob.deadline = createJobBody.deadline;
+          newJob.salary_range = createJobBody.salary_range;
+          newJob.job_type = createJobBody.job_type;
+          newJob.job_mode = JobMode[createJobBody.job_mode];
+          newJob.company_name = createJobBody.company_name;
+          newJob.user = user;
+
+          return await transactionalEntityManager.save(Job, newJob);
+        },
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
   public async getById(jobId: string): Promise<Job | null> {
@@ -41,7 +59,7 @@ export class JobService {
     }
   }
 
-  public async getAllJobs(req: Request): Promise<Job[] | null> {
+  public async getAllJobs(): Promise<Job[] | null> {
     try {
       return await Job.find();
     } catch (error) {

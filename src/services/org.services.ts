@@ -528,4 +528,34 @@ export class OrgService implements IOrgService {
       throw error;
     }
   }
+
+  async getOrganisationMembers(orgId: string) {
+    const organisation = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+
+    if (!organisation) throw new Error("No organisation found");
+    console.log(organisation);
+    const members = await this.organizationRoleRepository.find({
+      where: { organization: organisation },
+      relations: { organizationMembers: true },
+    });
+
+    if (!members.length) {
+      return {
+        status_code: 200,
+        message: "members retrieved successfully",
+        data: [],
+      };
+    }
+    const organisationMembers = members.map(
+      (instance) => instance.organizationMembers,
+    );
+
+    return {
+      status_code: 200,
+      message: "members retrieved successfully",
+      organisationMembers,
+    };
+  }
 }

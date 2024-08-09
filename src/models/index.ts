@@ -33,4 +33,6 @@ export * from "./user";
 export * from "./user-organisation";
 
 export * from "./squeeze";
+
+export * from "./billing-plan";
 export * from "./notification";

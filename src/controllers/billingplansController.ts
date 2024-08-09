@@ -159,4 +159,68 @@ export class BillingPlanController {
       next(new HttpError(500, error.message));
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/billing-plans:
+   *   get:
+   *     summary: Get all billing plans
+   *     description: Retrieves a specific billing plan by its ID
+   *     tags: [Billing Plan]
+   *     responses:
+   *       200:
+   *         description: Successful response
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 success:
+   *                   type: string
+   *                   example: "successful"
+   *                 status_code:
+   *                   type: number
+   *                   example: 200
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "6b792203-dc65-475c-8733-2d018b9e3c7c"
+   *                     organizationId:
+   *                       type: string
+   *                       example: "a73449ef-7d16-4a72-981a-79016f30735c"
+   *                     name:
+   *                       type: string
+   *                       example: "hello"
+   *                     price:
+   *                       type: string
+   *                       example: "4.00"
+   *                     currency:
+   *                       type: string
+   *                       example: "USD"
+   *                     duration:
+   *                       type: string
+   *                       example: "monthly"
+   *                     description:
+   *                       type: string
+   *                       nullable: true
+   *                       example: null
+   *                     features:
+   *                       type: array
+   *                       items:
+   *                         type: string
+   *                       example: []
+   *       500:
+   *         description: Internal Server Error
+   */
+
+  async getAllBillings(req: Request, res: Response) {
+    try {
+      const billing = await this.billingPlanService.getAllBillingPlans();
+      res.status(201).json({ message: "Success", billing });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
