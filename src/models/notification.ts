@@ -1,21 +1,32 @@
-import { Entity, PrimaryGeneratedColumn, Column, Unique } from "typeorm";
-import ExtendedBaseEntity from "./extended-base-entity";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
+import { User } from "./user";
 
 @Entity()
-@Unique(["user_id"])
-export class NotificationSetting extends ExtendedBaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+class Notification {
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
-  user_id: string;
+  message: string;
 
-  @Column()
-  email_notifications: boolean;
+  @Column({ default: false })
+  isRead: boolean;
 
-  @Column()
-  push_notifications: boolean;
+  @ManyToOne(() => User, (user) => user.notifications, { onDelete: "CASCADE" })
+  user: User;
 
-  @Column()
-  sms_notifications: boolean;
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
+
+export { Notification };

@@ -1,10 +1,10 @@
-// src/services/UserService.ts
-import { User } from "../models/user";
-import { Profile } from "../models/profile";
-import { IUserService } from "../types";
-import { HttpError } from "../middleware";
 import { Repository, UpdateResult } from "typeorm";
 import AppDataSource from "../data-source";
+import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
+import { User } from "../models/user";
+import { UpdateUserRecordOption, UserIdentifierOptionsType } from "../types";
+import { comparePassword } from "../utils";
+import { Profile } from "../models";
 import { cloudinary } from "../config/multer";
 
 interface IUserProfileUpdate {
@@ -14,20 +14,29 @@ interface IUserProfileUpdate {
   avatarUrl: string;
 }
 
+interface TimezoneData {
+  timezone: string;
+  gmtOffset: string;
+  description: string;
+}
+
 export class UserService {
   private userRepository: Repository<User>;
-
   constructor() {
     this.userRepository = AppDataSource.getRepository(User);
   }
 
-  static async getUserById(id: string): Promise<User | null> {
-    const userRepository = AppDataSource.getRepository(User);
-    const user = userRepository.findOne({
+  public async getUserById(id: string): Promise<User | null> {
+    const user = await this.userRepository.findOne({
       where: { id },
       relations: ["profile"],
       withDeleted: true,
     });
+
+    if (!user) {
+      throw new ResourceNotFound("User Not Found!");
+    }
+
     return user;
   }
 
@@ -131,5 +140,69 @@ export class UserService {
     } catch (error) {
       throw new Error(error.message);
     }
+  }
+
+  async getUserByEmail(
+    email: string,
+    withDeleted: boolean = true,
+  ): Promise<User | null> {
+    const user = await this.userRepository.findOne({
+      where: { email },
+      relations: ["profile"],
+      withDeleted: withDeleted,
+    });
+
+    if (!user) throw new ResourceNotFound("User not found!");
+
+    return user;
+  }
+
+  async updateUserRecord(userUpdateOptions: UpdateUserRecordOption) {
+    const { identifierOption, updatePayload } = userUpdateOptions;
+    const user = await this.getUserRecord(identifierOption);
+    Object.assign(user, updatePayload);
+    await this.userRepository.save(user);
+  }
+
+  async getUserRecord(
+    identifierOption: UserIdentifierOptionsType,
+  ): Promise<User> {
+    const { identifier, identifierType } = identifierOption;
+    let user = null;
+    switch (identifierType) {
+      case "id":
+        user = await this.getUserById(identifier);
+        break;
+      case "email":
+        user = await this.getUserByEmail(identifier);
+        break;
+      default:
+        throw new BadRequest("Invalid Identifier");
+    }
+    if (!user) throw new ResourceNotFound("User not found!");
+    return user;
+  }
+
+  async compareUserPassword(password: string, hashedPassword: string) {
+    return comparePassword(password, hashedPassword);
+  }
+
+  public async updateUserTimezone(
+    userId: string,
+    timezoneData: TimezoneData,
+  ): Promise<User> {
+    const { timezone, gmtOffset, description } = timezoneData;
+
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+
+    user.timezone = { timezone, gmtOffset, description };
+    await this.userRepository.save(user);
+    return user;
   }
 }

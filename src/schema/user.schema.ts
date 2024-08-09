@@ -81,6 +81,24 @@ import { array, number, object, string, TypeOf } from "zod";
  *           example: "User deleted successfully"
  */
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Timezone:
+ *       type: object
+ *       properties:
+ *         timezone:
+ *           type: string
+ *           example: "America/New_York"
+ *         gmtOffset:
+ *           type: string
+ *           example: "-05:00"
+ *         description:
+ *           type: string
+ *           example: "Eastern Standard Time"
+ */
+
 const payload = object({
   id: string(),
   user_name: string(),
@@ -129,9 +147,27 @@ export const deleteUserSchema = object({
   }),
 });
 
+const timezoneSchema = object({
+  timezone: string({
+    required_error: "Timezone is required",
+  }),
+  gmtOffset: string({
+    required_error: "GMT Offset is required",
+  }),
+  description: string({
+    required_error: "Description is required",
+  }),
+});
+
+export const updateUserTimezoneSchema = object({
+  ...params,
+  body: timezoneSchema,
+});
+
 export type GetUserProfileResponse = TypeOf<
   typeof getUserProfileSchema
 >["response"];
 export type GetAllUsersResponse = TypeOf<typeof getAllUsersSchema>["response"];
 export type DeleteUserInput = TypeOf<typeof deleteUserSchema>;
 export type DeleteUserResponse = TypeOf<typeof deleteUserSchema>["response"];
+export type UpdateUserTimezoneInput = TypeOf<typeof updateUserTimezoneSchema>;

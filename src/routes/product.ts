@@ -1,39 +1,41 @@
-import express from "express";
-import ProductController from "../controllers/ProductController";
-import { authMiddleware } from "../middleware";
+import { Router } from "express";
+import { ProductController } from "../controllers/ProductController";
+import { authMiddleware, validOrgAdmin } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
-const productRouter = express.Router();
+import { validateUserToOrg } from "../middleware/organizationValidation";
+import { adminOnly } from "../middleware";
+
+const productRouter = Router();
 const productController = new ProductController();
 
-productRouter.get(
-  "/",
+// route
+productRouter.post(
+  "/organizations/:org_id/products",
+  validateProductDetails,
   authMiddleware,
-  productController.getProductPagination.bind(productController),
+  validOrgAdmin,
+  productController.createProduct,
 );
 
-productRouter.put(
-  "/:product_id",
+productRouter.get(
+  "/organizations/:org_id/products/search",
   authMiddleware,
-  productController.updateProductById.bind(productController),
+  validateUserToOrg,
+  productController.getProduct,
 );
 
 productRouter.delete(
-  "/:product_id",
+  "/organizations/:org_id/products/:product_id",
   authMiddleware,
-  productController.deleteProduct.bind(productController),
+  validOrgAdmin,
+  productController.deleteProduct,
 );
 
 productRouter.get(
-  "/:product_id",
+  "/organizations/:org_id/products/:product_id",
   authMiddleware,
-  productController.fetchProductById.bind(productController),
+  validOrgAdmin,
+  productController.getSingleProduct,
 );
 
-productRouter
-  .route("/product/")
-  .post(
-    validateProductDetails,
-    authMiddleware,
-    productController.createProduct.bind(productController),
-  );
 export { productRouter };

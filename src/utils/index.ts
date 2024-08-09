@@ -30,7 +30,9 @@ export const generateNumericOTP = (length: number): string => {
 };
 
 export const generateToken = (payload: Record<string, unknown>) => {
-  return jwt.sign(payload, config.TOKEN_SECRET, { expiresIn: "1h" });
+  return jwt.sign(payload, config.TOKEN_SECRET, {
+    expiresIn: config.TOKEN_EXPIRY,
+  });
 };
 
 export const verifyToken = (token: string): Record<string, unknown> | null => {

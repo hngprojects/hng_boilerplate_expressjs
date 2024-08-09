@@ -26,6 +26,7 @@ export class AdminOrganisationService {
       const oldOrg = await orgRepository.findOne({
         where: { id: org_id },
       });
+
       if (!oldOrg) {
         throw new HttpError(
           404,

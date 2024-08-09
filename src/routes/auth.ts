@@ -1,15 +1,24 @@
-import {
-  signUp,
-  verifyOtp,
-  login,
-  changeUserRole,
-  changePassword,
-  handleGoogleAuth,
-} from "../controllers";
 import { Router } from "express";
-import { authMiddleware, checkPermissions } from "../middleware";
+import {
+  VerifyUserMagicLink,
+  changePassword,
+  changeUserRole,
+  createMagicToken,
+  enable2FA,
+  forgotPassword,
+  googleAuthCall,
+  login,
+  resetPassword,
+  signUp,
+  verify2FA,
+  verifyOtp,
+} from "../controllers";
 import { UserRole } from "../enums/userRoles";
-import { googleAuthCallback, initiateGoogleAuthRequest } from "../controllers/GoogleAuthController";
+
+import { authMiddleware, checkPermissions } from "../middleware";
+import { requestBodyValidator } from "../middleware/request-validation";
+import { emailSchema } from "../utils/request-body-validator";
+import { enable2FASchema } from "../schema/auth.schema";
 
 const authRoute = Router();
 
@@ -23,17 +32,25 @@ authRoute.put(
   changeUserRole,
 );
 
-authRoute.post("/auth/google-signin", handleGoogleAuth);
+authRoute.post("/auth/forgot-password", forgotPassword);
+authRoute.post("/auth/reset-password/:token", resetPassword);
 
-// For manually testing google auth functionality locally
-authRoute.get('/auth/test-google-auth', (req, res) => {
-  res.send('<a href="http://localhost:8000/api/v1/auth/google">Authenticate with Google</a>');
-});
-
-authRoute.get('/auth/google', initiateGoogleAuthRequest);
-
-authRoute.get('/auth/google/callback', googleAuthCallback);
+authRoute.post("/auth/google", googleAuthCall);
 
 authRoute.patch("/auth/change-password", authMiddleware, changePassword);
+
+authRoute.post(
+  "/auth/magic-link",
+  requestBodyValidator(emailSchema),
+  createMagicToken,
+);
+authRoute.get("/auth/magic-link/verify", VerifyUserMagicLink);
+authRoute.post(
+  "/auth/2fa/enable",
+  requestBodyValidator(enable2FASchema),
+  authMiddleware,
+  enable2FA,
+);
+authRoute.post("/auth/2fa/verify", authMiddleware, verify2FA);
 
 export { authRoute };

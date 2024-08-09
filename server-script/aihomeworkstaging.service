@@ -1,0 +1,13 @@
+[Unit]
+Description=AIHomework-Dev
+After=network.target
+
+[Service]
+WorkingDirectory=/var/www/aihomework/staging
+ExecStart=/bin/bash /var/www/aihomework/dev/server-script/startappstaging.sh
+#Restart=on-failure
+#RestartSec=20s
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target

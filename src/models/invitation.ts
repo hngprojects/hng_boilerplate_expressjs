@@ -1,35 +1,34 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  CreateDateColumn,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { User } from "./user";
-import { Organization } from "./organization";
+
+import { Organization } from ".";
 
 @Entity()
 export class Invitation {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: "uuid", nullable: false })
   token: string;
 
-  @Column()
-  expires_at: Date;
+  @Column({ nullable: true })
+  email: string;
 
-  @ManyToOne(() => User)
-  user: User;
+  @Column({ default: false })
+  isGeneric: boolean;
+
+  @Column({ default: false })
+  isAccepted: boolean;
 
   @ManyToOne(() => Organization)
   organization: Organization;
 
-  @Column()
-  email: string;
-
-  @CreateDateColumn()
+  @UpdateDateColumn()
   created_at: Date;
 
   @UpdateDateColumn()

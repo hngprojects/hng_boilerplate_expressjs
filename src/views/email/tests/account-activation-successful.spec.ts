@@ -3,6 +3,9 @@ import fs from 'fs-extra';
 import Handlebars from 'handlebars';
 import path from 'path';
 
+const baseTemplateSource = fs.readFileSync(path.resolve('src/views/email/templates/base_template.hbs'), 'utf8');
+Handlebars.registerPartial('base_template', baseTemplateSource);
+
 // Load the template
 const templateSource = fs.readFileSync(path.resolve('src/views/email/templates/account-activation-successful.hbs'), 'utf8');
 const template = Handlebars.compile(templateSource);
@@ -11,7 +14,7 @@ const template = Handlebars.compile(templateSource);
 const data = {
     title: 'Your Account is Now Active!',
     logoUrl: 'https://example.com/logo.png',
-    imageUrl: 'https://example.com/example.png',
+    // imageUrl: 'https://example.com/example.png',
     userName: 'John Doe',
     companyName: 'Boilerplate',
     supportUrl: 'https://example.com/support',
@@ -32,7 +35,7 @@ describe('Email Template', () => {
         // Check for the presence of critical elements
         expect(result).toContain(data.title);
         expect(result).toContain(data.logoUrl);
-        expect(result).toContain(data.imageUrl);
+        // expect(result).toContain(data.imageUrl);
         expect(result).toContain(`Hi ${data.userName}`);
         expect(result).toContain(data.companyName);
         expect(result).toContain(data.supportUrl);

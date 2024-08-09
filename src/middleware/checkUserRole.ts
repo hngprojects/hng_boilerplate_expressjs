@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserRole } from "../enums/userRoles";
-import { Unauthorized } from "./error";
-import { User } from "../models";
+import { HttpError, ServerError, Unauthorized } from "./error";
+import { User, UserOrganization } from "../models";
 import AppDataSource from "../data-source";
 import jwt from "jsonwebtoken";
 
@@ -37,4 +37,37 @@ export const checkPermissions = (roles: UserRole[]) => {
         .json({ status: "error", message: "Access denied. Invalid token" });
     }
   };
+};
+
+export function adminOnly(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+
+  if (!user || user.role !== UserRole.ADMIN) {
+    return next(new Unauthorized("Access denied. Admins only."));
+  }
+  next();
+}
+
+export const validOrgAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = req.user;
+    const { org_id } = req.params;
+    const userOrg = await AppDataSource.getRepository(UserOrganization).findOne(
+      {
+        where: { userId: user.id, organizationId: org_id },
+      },
+    );
+    if (!userOrg || userOrg.role !== "admin") {
+      return next(
+        new Unauthorized("Access denied. Not an admin in this organization"),
+      );
+    }
+    next();
+  } catch (error) {
+    return new ServerError(error.message);
+  }
 };

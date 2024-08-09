@@ -49,6 +49,7 @@ export const initializePayment = async (
       description: `Payment of ${detailsWithoutUserId.amount} ${detailsWithoutUserId.currency} via Flutterwave`,
       metadata: { tx_ref, flutterwave_response: response },
       // status: response.data.status,
+      id: response.data.metadata.data.id,
       status: "completed",
       provider: "flutterwave",
     });
@@ -72,10 +73,12 @@ export const verifyPayment = async (transactionId: string): Promise<object> => {
 
     const paymentStatus =
       response.data.status === "successful" ? "completed" : "failed";
-    await updatePaymentStatus(transactionId, paymentStatus);
+    await updatePaymentStatus(transactionIdNumber, paymentStatus);
 
+    console.log(response);
     return response;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 };
@@ -99,9 +102,16 @@ async function saveTransactionToDatabase(
  * @param {'completed' | 'failed'} status - The new status of the payment.
  */
 async function updatePaymentStatus(
-  transactionId: string,
+  transactionIdNumber: number,
   status: "completed" | "failed",
 ): Promise<void> {
   const paymentRepository = AppDataSource.getRepository(Payment);
-  await paymentRepository.update({ id: transactionId }, { status });
+  await paymentRepository
+    .createQueryBuilder()
+    .update(Payment)
+    .set({ status })
+    .where(`metadata->'data'->>'id' = :transactionIdNumber`, {
+      transactionIdNumber,
+    })
+    .execute();
 }
