@@ -28,7 +28,7 @@ jobs:
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: scp backend_dev.tar.gz $SERVER_USERNAME@$SERVER_HOST:/opt/backend-tar/
+        script: scp backend_dev.tar.gz $USERNAME@$HOST:/opt/backend-tar/
         
     - name: Load Docker image on server and start
       uses: appleboy/ssh-action@v1.0.3
