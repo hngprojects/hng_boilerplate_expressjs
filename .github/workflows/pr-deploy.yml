@@ -1,5 +1,4 @@
 name: PR Deploy
-
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
@@ -10,15 +9,12 @@ jobs:
       name: preview
       url: ${{ steps.deploy.outputs.preview-url }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout to branch
         uses: actions/checkout@v4
-
       - id: deploy
         name: Pull Request Deploy
-        uses: uses: hngprojects/pr-deploy@1.0.0
-
+        uses: hngprojects/pr-deploy@2.0.1
         with:
           server_host: ${{ secrets.SERVER_HOST }}
           server_username: ${{ secrets.SERVER_USERNAME }}
@@ -31,7 +27,6 @@ jobs:
           host_volume_path: '/var/'
           container_volume_path: '/var/'
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Print Preview URL
+      - name: Print Preview Url
         run: |
-          echo "Preview URL: ${{ steps.deploy.outputs.preview-url }}"
+          echo "Preview Url: ${{ steps.deploy.outputs.preview-url }}" 
