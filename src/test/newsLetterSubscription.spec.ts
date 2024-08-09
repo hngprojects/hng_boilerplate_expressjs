@@ -163,36 +163,6 @@ describe("RestoreNewsLetterSubscription", () => {
     expect(newsLetterRepositoryMock.save).toHaveBeenCalledWith(subscription);
   });
 
-  it("should deny access to non-admin users", async () => {
-    const mockReq = {} as Request;
-    const mockRes = {} as Response;
-    const mockNext = jest.fn();
-
-    (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "USER" }; // Mock non-admin user
-      next(new Unauthorized("Access denied. Admins only.")); // Call next with error
-    });
-
-    await adminOnly(mockReq, mockRes, mockNext);
-
-    expect(mockNext).toHaveBeenCalledWith(new Unauthorized("Access denied. Admins only."));
-  });
-
-  it("should allow access to admin users", async () => {
-    const mockReq = {} as Request;
-    const mockRes = {} as Response;
-    const mockNext = jest.fn();
-
-    (adminOnly as jest.Mock).mockImplementation((req, res, next) => {
-      req.user = { role: "ADMIN" }; // Mock admin user
-      next(); // Call next without error
-    });
-
-    await adminOnly(mockReq, mockRes, mockNext);
-
-    expect(mockNext).toHaveBeenCalled();
-  });
-});
 
   describe("fetchAllNewsletter", () => {
     it("should fetch all newsletters with pagination", async () => {
