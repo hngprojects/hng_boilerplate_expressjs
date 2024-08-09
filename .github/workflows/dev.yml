@@ -1,49 +1,63 @@
-name: Build, Test, and Deploy for Dev Branch
+name: Dev-Deployment
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
+    branches: [dev]
 
 jobs:
-  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Build Docker images using docker-compose
+      - name: Build docker images
+        run: docker compose -f docker-compose.yml build
+      
+      - name: Save and compress Docker images
         run: |
-          docker compose -f docker-compose.yml build
+          docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') > dev-images.tar
+          gzip dev-images.tar
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-images
+          path: dev-images.tar.gz
+      
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: docker-images
+          path: .
+      
+      - name: Copy to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "dev-images.tar.gz,docker-compose.yml"
+          target: "~/tmp/"
 
-      - name: Save Docker images to tarball
-        run: |
-          docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') | gzip > docker-images.tar.gz
+      - name: Deploy images to server 
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/tmp/
+            gunzip dev-images.tar.gz
+            docker load < dev-images.tar
+            rm -f dev-images.tar
+            cd /var/www/aihomework/dev
+            git stash
+            git pull origin dev
+            docker compose down
+            docker compose up -d
+  
 
-      - name: Install sshpass
-        run: sudo apt-get install sshpass
 
-      - name: Upload to server
-        run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no docker-images.tar.gz docker-compose.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/
-        env:
-          SSH_HOST: ${{ secrets.HOST }}
-          SSH_USERNAME: ${{ secrets.USERNAME }}
-          SSH_PASSWORD: ${{ secrets.PASSWORD }}
-
-      - name: Deploy and start on remote server
-        run: |
-          sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-          gunzip /tmp/docker-images.tar.gz
-          docker load < /tmp/docker-images.tar.gz
-          cd /var/www/aihomework/dev
-          git stash
-          git pull origin dev
-          docker compose down
-          docker compose up -d
-          rm /tmp/docker-images.tar.gz
-          "
-        env:
-          SSH_HOST: ${{ secrets.HOST }}
-          SSH_USERNAME: ${{ secrets.USERNAME }}
-          SSH_PASSWORD: ${{ secrets.PASSWORD }}
