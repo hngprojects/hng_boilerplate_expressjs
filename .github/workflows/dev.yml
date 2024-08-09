@@ -8,37 +8,38 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      
-    - name: Build Docker image
-      run: |
-        docker build -t backend_dev .
-        
-    - name: Save Docker image to tarball
-      run: |
-        docker save backend_dev | gzip > backend_dev.tar.gz
-        
-    - name: Upload to server
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: scp backend_dev.tar.gz $USERNAME@$HOST:/opt/backend-tar/
-        
-    - name: Load Docker image on server and start
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
-        script: |
-          docker load -i /opt/backend-tar/backend_dev.tar.gz
-          cd /var/www/aihomework/dev
-          docker-compose down
-          docker-compose up -d
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t backend_dev .
+
+      - name: Save Docker image to tarball
+        run: |
+          docker save backend_dev | gzip > backend_dev.tar.gz
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Upload to server
+        run: |
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/backend-tar/
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Load Docker image on server and start
+        run: |
+          sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
+            docker load -i /opt/backend-tar/backend_dev.tar.gz
+            cd /var/www/aihomework/dev
+            docker-compose down
+            docker-compose up -d
+          "
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
