@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { UserController } from "../controllers";
-import { authMiddleware } from "../middleware";
+import { authMiddleware, checkPermissions } from "../middleware";
 import { multerConfig } from "../config/multer";
+import { UserRole } from "../enums/userRoles";
 
 const upload = multerConfig.single("avatarUrl");
 
@@ -32,6 +33,13 @@ userRouter.put(
   "/users/:id/timezone",
   authMiddleware,
   userController.updateUserTimezone.bind(userController),
+);
+
+userRouter.put(
+  "/users/:id/deactivate",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN]),
+  userController.deactivateUser.bind(userController),
 );
 
 export { userRouter };

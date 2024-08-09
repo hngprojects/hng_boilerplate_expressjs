@@ -532,6 +532,31 @@ class UserController {
       }
     }
   }
+
+  public async deactivateUser(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { confirmation, reason } = req.body;
+
+      if (!confirmation) {
+        return res
+          .status(400)
+          .json({ message: "Confirmation needs to be true for deactivation" });
+      }
+      await this.userService.deactivateUser(id, reason);
+      res.status(200).json({ message: "Account Deactivated Successfully" });
+    } catch (error) {
+      if (error instanceof HttpError) {
+        return res.status(error.status_code).json({
+          message: error.message,
+        });
+      } else {
+        return res.status(500).json({
+          message: error.message || "Internal Server Error",
+        });
+      }
+    }
+  }
 }
 
 export { UserController };

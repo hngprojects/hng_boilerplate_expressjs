@@ -142,6 +142,12 @@ export class User extends ExtendedBaseEntity {
   @Column("simple-array", { nullable: true })
   backup_codes: string[];
 
+  @Column({ default: true })
+  is_active: boolean;
+
+  @Column({ nullable: true })
+  deactivation_reason: string;
+
   createPasswordResetToken(): string {
     const resetToken = crypto.randomBytes(32).toString("hex");
 

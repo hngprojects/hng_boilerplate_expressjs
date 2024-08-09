@@ -147,6 +147,9 @@ export class AuthService implements IAuthService {
       if (!user.isverified) {
         throw new HttpError(403, "Email not verified");
       }
+      if (!user.is_active) {
+        throw new HttpError(403, "User account has been deactivated");
+      }
 
       const access_token = jwt.sign({ userId: user.id }, config.TOKEN_SECRET, {
         expiresIn: "1d",

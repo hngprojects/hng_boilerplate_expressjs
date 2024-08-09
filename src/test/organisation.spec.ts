@@ -352,3 +352,154 @@ describe("Update User Organization", () => {
     expect(mockRepository.update).not.toHaveBeenCalled();
   });
 });
+
+//----------------
+// New tests for deleteOrganization
+
+describe("deleteOrganization", () => {
+  let orgService: OrgService;
+  let mockQueryRunner;
+  let organizationRepositoryMock: jest.Mocked<Repository<Organization>>;
+
+  beforeEach(() => {
+    mockQueryRunner = {
+      connect: jest.fn(),
+      startTransaction: jest.fn(),
+      commitTransaction: jest.fn(),
+      rollbackTransaction: jest.fn(),
+      release: jest.fn(),
+      manager: {
+        findOne: jest.fn(),
+        remove: jest.fn(),
+      },
+    };
+
+    AppDataSource.createQueryRunner = jest
+      .fn()
+      .mockReturnValue(mockQueryRunner);
+
+    organizationRepositoryMock = {
+      findOne: jest.fn(),
+    } as any;
+
+    (AppDataSource.getRepository as jest.Mock).mockImplementation((entity) => {
+      if (entity === Organization) return organizationRepositoryMock;
+      return {};
+    });
+
+    orgService = new OrgService();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should delete an organization successfully", async () => {
+    const orgId = "123e4567-e89b-12d3-a456-426614174000";
+    const mockOrganization = {
+      id: orgId,
+      userOrganizations: [],
+      users: [],
+      payments: [],
+      billingPlans: [],
+      products: [],
+      role: {},
+      organizationMembers: [],
+    };
+
+    mockQueryRunner.manager.findOne.mockResolvedValue(mockOrganization);
+
+    await orgService.deleteOrganization(orgId);
+
+    expect(mockQueryRunner.connect).toHaveBeenCalled();
+    expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
+    expect(mockQueryRunner.manager.findOne).toHaveBeenCalledWith(Organization, {
+      where: { id: orgId },
+      relations: [
+        "userOrganizations",
+        "users",
+        "payments",
+        "billingPlans",
+        "products",
+        "role",
+        "organizationMembers",
+      ],
+    });
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledTimes(7); // Updated expected call count to 7
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.userOrganizations,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.payments,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.billingPlans,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.products,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.role,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization.organizationMembers,
+    );
+    expect(mockQueryRunner.manager.remove).toHaveBeenCalledWith(
+      mockOrganization,
+    );
+    expect(mockQueryRunner.commitTransaction).toHaveBeenCalled();
+  });
+
+  it("should throw ResourceNotFound if organization does not exist", async () => {
+    const orgId = "123e4567-e89b-12d3-a456-426614174000";
+
+    mockQueryRunner.manager.findOne.mockResolvedValue(null);
+
+    await expect(orgService.deleteOrganization(orgId)).rejects.toThrow(
+      ResourceNotFound,
+    );
+
+    expect(mockQueryRunner.connect).toHaveBeenCalled();
+    expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
+    expect(mockQueryRunner.manager.findOne).toHaveBeenCalledWith(Organization, {
+      where: { id: orgId },
+      relations: [
+        "userOrganizations",
+        "users",
+        "payments",
+        "billingPlans",
+        "products",
+        "role",
+        "organizationMembers",
+      ],
+    });
+    expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+  });
+
+  it("should throw ServerError on transaction failure", async () => {
+    const orgId = "123e4567-e89b-12d3-a456-426614174000";
+    const mockError = new Error("Test Error");
+
+    mockQueryRunner.manager.findOne.mockRejectedValue(mockError);
+
+    await expect(orgService.deleteOrganization(orgId)).rejects.toThrow(
+      ServerError,
+    );
+
+    expect(mockQueryRunner.connect).toHaveBeenCalled();
+    expect(mockQueryRunner.startTransaction).toHaveBeenCalled();
+    expect(mockQueryRunner.manager.findOne).toHaveBeenCalledWith(Organization, {
+      where: { id: orgId },
+      relations: [
+        "userOrganizations",
+        "users",
+        "payments",
+        "billingPlans",
+        "products",
+        "role",
+        "organizationMembers",
+      ],
+    });
+    expect(mockQueryRunner.rollbackTransaction).toHaveBeenCalled();
+  });
+});

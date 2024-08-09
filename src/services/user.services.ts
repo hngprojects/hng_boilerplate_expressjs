@@ -205,4 +205,32 @@ export class UserService {
     await this.userRepository.save(user);
     return user;
   }
+
+  public async deactivateUser(
+    id: string,
+    reason: string,
+  ): Promise<UpdateResult> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new HttpError(404, "User Not Found");
+    }
+
+    if (!user.is_active) {
+      throw new HttpError(400, "User has already been deactivated");
+    }
+
+    user.is_active = false;
+    user.deactivation_reason = reason;
+    await this.userRepository.save(user);
+
+    const deactivatedUser = await this.userRepository.update(id, {
+      is_active: false,
+      deactivation_reason: reason,
+    });
+
+    return deactivatedUser;
+  }
 }
