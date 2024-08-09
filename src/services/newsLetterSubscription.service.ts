@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
-import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
+import { HttpError, ResourceNotFound, BadRequest } from "../middleware";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -67,6 +67,20 @@ export class NewsLetterSubscriptionService
     throw new BadRequest("You already unsubscribed to newsletter");
   }
 
+  public async restoreSubscription(subscriptionId: string): Promise<NewsLetterSubscriber | null> {
+    const subscription = await this.newsLetterSubscriber.findOne({
+      where: { id: subscriptionId },
+    });
+  
+    if (!subscription || subscription.isActive) {
+      throw new ResourceNotFound("Subscription not found");
+    }
+  
+    subscription.isActive = true;
+    await this.newsLetterSubscriber.save(subscription);
+  
+    return subscription;
+  }
   public async fetchAllNewsletter({
     page = 1,
     limit = 10,
