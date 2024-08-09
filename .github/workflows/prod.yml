@@ -1,9 +1,9 @@
-name: Deploy to staging Branch
+name: Deploy to prod Branch
 
 on:
   push:
     branches:
-      - dev
+      - prod
 
 jobs:
   build-and-deploy:
