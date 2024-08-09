@@ -6,35 +6,40 @@ on:
       - dev
 
 jobs:
-  build:
-    runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: /var/www/aihomework/dev
-
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
     steps:
-      - name: Pull from github
-        id: pull
-        run: |
-          git stash
-          git pull origin dev
-
-      - name: install dependencies
-        run: yarn install
-
-      - name: Run Test
-        run: yarn test
-
-      - name: buld the dist
-        run: yarn build
-
-      - name: migrate
-        run: yarn reset-db
-
-      - name: setup service file
-        run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
-
-      - name: start the app
-        run: |
-          sudo systemctl daemon-reload
-          sudo systemctl restart aihomeworkdev
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Build Docker image
+      run: |
+        docker build -t backend_dev .
+        
+    - name: Save Docker image to tarball
+      run: |
+        docker save backend_dev | gzip > backend_dev.tar.gz
+        
+    - name: Upload to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        source: "backend_dev.tar.gz"
+        target: "/opt/backend-tar/"
+        
+    - name: Load Docker image on server and start
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          docker load -i /opt/backend-tar/backend_dev.tar.gz
+          cd /var/www/aihomework/dev
+          docker-compose down
+          docker-compose up -d
