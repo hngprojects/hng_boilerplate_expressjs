@@ -31,9 +31,6 @@ jobs:
         run: |
           docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') | gzip > docker-images.tar.gz
 
-      - name: Install sshpass
-        run: sudo apt-get install sshpass
-
       - name: Upload to server
         run: |
           sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no docker-images.tar.gz docker-compose.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/
@@ -51,7 +48,7 @@ jobs:
             docker load -i /tmp/docker-images.tar.gz
             docker compose -f /tmp/docker-compose.yml down
             docker compose -f /tmp/docker-compose.yml up -d
-            rm /tmp/docker-images.tar.gz /tmp/docker-compose.yml
+            rm /tmp/docker-images.tar.gz 
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
