@@ -1,3 +1,4 @@
+YAML
 name: Build, Test, and Deploy for Dev Branch
 
 on:
@@ -34,13 +35,14 @@ jobs:
       - name: Deploy and start on remote server
         run: |
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-            cd /var/www/aihomework/dev
-            git stash
-            git pull origin dev
-            docker load -i /tmp/docker-images.tar.gz
-            docker compose down
-            docker compose up -d
-            rm /tmp/docker-images.tar.gz
+          gunzip /tmp/docker-images.tar.gz
+          docker load < /tmp/docker-images.tar.gz
+          cd /var/www/aihomework/dev
+          git stash
+          git pull origin dev
+          docker compose down
+          docker compose up -d
+          rm /tmp/docker-images.tar.gz
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
