@@ -1,69 +1,59 @@
-name: Deploy to dev
+name: Build, Test, and Deploy for Dev Branch
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types:
-      - completed
-    branches: [dev]
+  push:
+    branches:
+      - dev
 
 jobs:
-  on-success:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion=='success' && github.event.workflow_run.head_branch == 'dev' }
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Build docker images
-        run: docker compose -f docker-compose.yml build
-      
-      - name: Save and compress Docker images
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Fetch .env file from server
         run: |
-          docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') > dev-images.tar
-          gzip dev-images.tar
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: docker-images
-          path: dev-images.tar.gz
-      
-      - name: Download artifact
-        uses: actions/download-artifact@v2
-        with:
-          name: docker-images
-          path: .
-      
-      - name: Copy to server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "dev-images.tar.gz,docker-compose.yml"
-          target: "~/tmp/"
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/aihomework/dev/.env .env
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
 
-      - name: Deploy images to server 
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd ~/tmp/
-            gunzip dev-images.tar.gz
-            docker load < dev-images.tar
-            rm -f dev-images.tar
+      - name: Build Docker images using docker-compose
+        run: |
+          docker compose --env-file .env -f docker-compose.yml build
+
+      - name: Save Docker images to tarball
+        run: |
+          docker save $(docker compose -f docker-compose.yml config | grep 'image:' | awk '{print $2}') | gzip > docker-images.tar.gz
+
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Upload to server
+        run: |
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no docker-images.tar.gz docker-compose.yml ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
+
+      - name: Deploy and start on remote server
+        run: |
+          sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
             cd /var/www/aihomework/dev
             git stash
             git pull origin dev
-            docker compose down
-            docker compose up -d
-  
-  on-failure:
-      runs-on: ubuntu-latest
-      if: ${{ github.event.workflow_run.conclusion=='failure' }}
-      steps:
-        - run: echo "Triggering the Workflow Failed"
-  
+            docker load -i /tmp/docker-images.tar.gz
+            docker compose -f /tmp/docker-compose.yml down
+            docker compose -f /tmp/docker-compose.yml up -d
+            rm /tmp/docker-images.tar.gz /tmp/docker-compose.yml
+          "
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
