@@ -25,7 +25,7 @@ jobs:
 
       - name: Upload to server
         run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/backend-tar/
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/backend-tar/backend_dev.tar.gz
         env:
           SSH_HOST: ${{ secrets.HOST }}
           SSH_USERNAME: ${{ secrets.USERNAME }}
