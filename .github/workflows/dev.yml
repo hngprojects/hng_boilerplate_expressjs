@@ -1,4 +1,4 @@
-name: Build, Test, and Deploy for Dev Branch
+name: Deploy to Dev 
 
 on:
   push:
