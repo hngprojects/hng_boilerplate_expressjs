@@ -35,7 +35,12 @@ jobs:
         run: |
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
             docker load -i /tmp/backend_dev.tar.gz
+
+      - name: Pull from github and run docker compose 
+        run: |
             cd /var/www/aihomework/dev
+            git stash
+            git pull origin dev
             docker-compose down
             docker-compose up -d
           "
