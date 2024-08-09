@@ -51,7 +51,7 @@ jobs:
             docker load -i /tmp/docker-images.tar.gz
             docker compose -f /tmp/docker-compose.yml down
             docker compose -f /tmp/docker-compose.yml up -d
-            rm /tmp/docker-images.tar.gz /tmp/docker-compose.yml
+            rm /tmp/docker-images.tar.gz 
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
