@@ -45,6 +45,7 @@ export function adminOnly(req: Request, res: Response, next: NextFunction) {
   if (!user || user.role !== UserRole.ADMIN) {
     return next(new Unauthorized("Access denied. Admins only."));
   }
+
   next();
 }
 

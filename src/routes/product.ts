@@ -31,6 +31,11 @@ productRouter.delete(
   productController.deleteProduct,
 );
 
+const updateRoute = "/:org_id/products/:product_id";
+productRouter
+  .route(updateRoute)
+  .patch(authMiddleware, validateUserToOrg, productController.updateProduct);
+
 productRouter.get(
   "/organizations/:org_id/products/:product_id",
   authMiddleware,

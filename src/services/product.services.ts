@@ -1,15 +1,11 @@
 import { Repository } from "typeorm";
-import AppDataSource from "../data-source";
-import { StockStatus } from "../enums/product";
-import {
-  HttpError,
-  InvalidInput,
-  ResourceNotFound,
-  ServerError,
-} from "../middleware";
-import { Organization } from "../models/organization";
 import { Product } from "../models/product";
+import AppDataSource from "../data-source";
+import { ProductSize, StockStatus } from "../enums/product";
 import { ProductSchema } from "../schema/product.schema";
+import { InvalidInput, ResourceNotFound, ServerError, HttpError } from "../middleware";
+import { Organization } from "../models/organization";
+import { UserRole } from "../enums/userRoles";
 
 export class ProductService {
   private productRepository: Repository<Product>;
@@ -182,8 +178,28 @@ export class ProductService {
       throw new Error(`Failed to delete product: ${error.message}`);
     }
   }
+  
+  public async updateProduct(
+    org_id: string,
+    product_id: string,
+    productDetails,
+  ) {
+    const entities = await this.checkEntities({
+      organization: org_id,
+      product: product_id,
+    });
 
-  public async getProduct(org_id: string, product_id: string) {
+    const updatedProduct = await this.productRepository.save({
+      ...entities.product,
+      ...productDetails,
+    });
+    if (!updatedProduct) {
+      throw new ServerError("Internal server Error");
+    }
+    return updatedProduct;
+  }
+  
+  async getProduct(org_id: string, product_id: string) {
     try {
       const entities = await this.checkEntities({
         organization: org_id,
@@ -198,4 +214,5 @@ export class ProductService {
       throw new ResourceNotFound(error.message);
     }
   }
+
 }

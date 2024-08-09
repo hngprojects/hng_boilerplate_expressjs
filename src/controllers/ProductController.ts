@@ -18,10 +18,12 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/product:
+   * /api/v1/organisation/{:id}/product:
    *   post:
-   *     summary: Create a product
-   *     tags: [Product]
+   *     tags:
+   *       - Product API
+   *     summary: Create a new product
+   *     description: Create a new product for organisations.
    *     parameters:
    *       - name: org_id
    *         in: path
@@ -252,7 +254,7 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/products/{product_id}:
+   * /api/v1/products/{product_id}:
    *   delete:
    *     summary: Delete a product by its ID
    *     tags: [Product]
@@ -331,6 +333,187 @@ class ProductController {
     const { org_id, product_id } = req.params;
     await this.productService.deleteProduct(org_id, product_id);
     res.status(200).json({ message: "Product deleted successfully" });
+  };
+
+  /**
+   * @swagger
+   * /api/v1/{org_id}/products/{product_id}:
+   *   put:
+   *     summary: Update a product
+   *     description: Update details of a product within an organization.
+   *     tags:
+   *       - Products
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the organization
+   *       - in: path
+   *         name: product_id
+   *         required: true
+   *         schema:
+   *           type: string
+   *         description: The ID of the product
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               description:
+   *                 type: string
+   *                 example: "product 1 updated price"
+   *               price:
+   *                 type: number
+   *                 example: 30
+   *               name:
+   *                 type: string
+   *               category:
+   *                 type: string
+   *               quantity:
+   *                 type: integer
+   *               image:
+   *                 type: string
+   *               size:
+   *                 type: string
+   *               stock_status:
+   *                 type: string
+   *     responses:
+   *       200:
+   *         description: Product updated successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: "success"
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "product update successful"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     id:
+   *                       type: string
+   *                       example: "b14e4406-80f6-4029-9681-715798741c8f"
+   *                     name:
+   *                       type: string
+   *                       example: "Product 1"
+   *                     description:
+   *                       type: string
+   *                       example: "product 1 updated price"
+   *                     price:
+   *                       type: number
+   *                       example: 30
+   *                     quantity:
+   *                       type: integer
+   *                       example: 1
+   *                     category:
+   *                       type: string
+   *                       example: "test product"
+   *                     image:
+   *                       type: string
+   *                       example: "image url"
+   *                     updated_at:
+   *                       type: string
+   *                       format: date-time
+   *                       example: "2024-08-08T09:06:36.210Z"
+   *                     created_at:
+   *                       type: string
+   *                       format: date-time
+   *                       example: "2024-08-08T07:12:33.936Z"
+   *                     size:
+   *                       type: string
+   *                       example: "Standard"
+   *                     stock_status:
+   *                       type: string
+   *                       example: "low on stock"
+   *       400:
+   *         description: Bad request
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *                   example: "user not a member of organization"
+   *       403:
+   *         description: Forbidden
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 403
+   *                 message:
+   *                   type: string
+   *                   example: "Forbidden: User not an admin or super admin"
+   *       404:
+   *         description: Resource not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *                 message:
+   *                   type: string
+   *                   example: "Product with id b14e4406-80f6-4029-9681-715798741c8f not found"
+   *       422:
+   *         description: Unprocessable Entity
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 422
+   *                 message:
+   *                   type: string
+   *                   example: "Product ID not provided"
+   *       500:
+   *         description: Internal server error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: "Internal server error"
+   */
+  public updateProduct = async (req: Request, res: Response) => {
+    const { org_id, product_id } = req.params;
+    const updatedProduct = await this.productService.updateProduct(
+      org_id,
+      product_id,
+      req.body,
+    );
+    res.status(200).json({
+      status_code: 200,
+      message: "product update successful",
+      data: updatedProduct,
+    });
   };
 
   /**
@@ -436,7 +619,6 @@ class ProductController {
    *                   type: integer
    *                   example: 500
    */
-
   public getSingleProduct = async (req: Request, res: Response) => {
     const { org_id, product_id } = req.params;
     if (product_id && org_id) {
