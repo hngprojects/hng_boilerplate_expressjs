@@ -38,8 +38,8 @@ jobs:
             cd /var/www/aihomework/dev
             git stash
             git pull origin dev
-            docker-compose down
-            docker-compose up -d 
+            docker compose down
+            docker compose up -d 
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
