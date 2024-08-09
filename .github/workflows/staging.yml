@@ -13,28 +13,36 @@ jobs:
         working-directory: /var/www/aihomework/staging
 
     steps:
-      - name: Pull from github
-        id: pull
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+
+      - name: Pull from GitHub
         run: |
+          if [ ! -d ".git" ]; then
+            echo "Cloning the repository..."
+            git clone https://github.com/hngprojects/hng_boilerplate_expressjs.git
+          fi
           git stash
           git pull origin staging
 
-      - name: install dependencies
+      - name: Install dependencies
         run: yarn install
 
       - name: Run Test
         run: yarn test
 
-      - name: buld the dist
+      - name: Build the dist
         run: yarn build
 
-      - name: migrate
+      - name: Migrate
         run: yarn reset-db
 
-      - name: setup service file
+      - name: Setup service file
         run: sudo cp server-script/aihomeworkstaging.service /etc/systemd/system
 
-      - name: start the app
+      - name: Start the app
         run: |
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkstaging
