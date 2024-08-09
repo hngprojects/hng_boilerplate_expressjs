@@ -25,7 +25,7 @@ jobs:
 
       - name: Upload to server
         run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/opt/backend-tar/backend_dev.tar.gz
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no backend_dev.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/backend_dev.tar.gz
         env:
           SSH_HOST: ${{ secrets.HOST }}
           SSH_USERNAME: ${{ secrets.USERNAME }}
@@ -34,7 +34,7 @@ jobs:
       - name: Load Docker image on server and start
         run: |
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-            docker load -i /opt/backend-tar/backend_dev.tar.gz
+            docker load -i /tmp/backend_dev.tar.gz
             cd /var/www/aihomework/dev
             docker-compose down
             docker-compose up -d
