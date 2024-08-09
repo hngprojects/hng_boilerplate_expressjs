@@ -3,7 +3,6 @@ import {
   getAllNewsletter,
   restoreNewsletterSubscription,
   subscribeToNewsletter,
-  restoreNewsletterSubscription,
 } from "../controllers/NewsLetterSubscriptionController";
 import { UserRole } from "../enums/userRoles";
 import { authMiddleware, checkPermissions, adminOnly } from "../middleware";
