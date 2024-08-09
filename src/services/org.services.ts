@@ -417,7 +417,6 @@ export class OrgService implements IOrgService {
         permission.role = newRole;
         return permission;
       });
-
       await this.permissionRepository.save(rolePermissions);
       return newRole;
     } catch (err) {
