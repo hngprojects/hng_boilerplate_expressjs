@@ -22,14 +22,13 @@ jobs:
         docker save backend_dev | gzip > backend_dev.tar.gz
         
     - name: Upload to server
-      uses: appleboy/scp-action@master
+      uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        source: "backend_dev.tar.gz"
-        target: "/opt/backend-tar/"
+        script: scp backend_dev.tar.gz $SERVER_USERNAME@$SERVER_HOST:/opt/backend-tar/
         
     - name: Load Docker image on server and start
       uses: appleboy/ssh-action@v1.0.3
