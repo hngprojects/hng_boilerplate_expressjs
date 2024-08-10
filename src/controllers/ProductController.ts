@@ -348,7 +348,7 @@ class ProductController {
    *         description: The ID of the product to get
    *     responses:
    *       200:
-   *         description: Product retrieved successfully
+   *         description: Product fetched successfully
    *         content:
    *           application/json:
    *             schema:
@@ -444,7 +444,7 @@ class ProductController {
       if (product) {
         res.status(200).json({
           status_code: 200,
-          message: "Product retrieved successfully",
+          message: "Product fetched successfully",
           data: product,
         });
       }

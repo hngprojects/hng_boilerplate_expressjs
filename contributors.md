@@ -2,3 +2,4 @@
 Erasmus Tayviah (StarmannRassy)
 [Adekolu Samuel Samixx](https://github.com/samixYasuke)
 [Micheal Peter] (https://github.com/myconpeter)
+[Uzochukwu Onyekwelu] (https://github.com/Uzo-Felix)
