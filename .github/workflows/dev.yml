@@ -8,7 +8,7 @@ on:
     branches: [dev]
 
 jobs:
-  build-and-deploy:
+  on-success:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
@@ -44,7 +44,7 @@ jobs:
 
       - name: Save Docker images to tarball
         run: |
-          docker save $(docker images --format '{{.Repository}}:{{.Tag}}' | grep -v '<none>') | gzip > dev-images.tar.gz
+          docker save hng_boilerplate_expressjs-backend:latest | gzip > dev-images.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
