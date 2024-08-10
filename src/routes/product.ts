@@ -8,7 +8,6 @@ import { adminOnly } from "../middleware";
 const productRouter = Router();
 const productController = new ProductController();
 
-// route
 productRouter.post(
   "/organizations/:org_id/products",
   validateProductDetails,

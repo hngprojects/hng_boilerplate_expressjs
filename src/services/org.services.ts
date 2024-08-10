@@ -11,7 +11,7 @@ import {
 } from "../middleware";
 import { Organization, Invitation, UserOrganization } from "../models";
 import { OrganizationRole } from "../models/organization-role.entity";
-import { User } from "../models/user";
+import { User, Product } from "../models";
 import { ICreateOrganisation, ICreateOrgRole, IOrgService } from "../types";
 import log from "../utils/logger";
 
@@ -528,4 +528,17 @@ export class OrgService implements IOrgService {
       throw error;
     }
   }
+
+  public getAllOrgProducts = async (org_id: string) => {
+    try {
+      const productRepository = AppDataSource.getRepository(Product);
+      const products = await productRepository.find({
+        where: { org: { id: org_id } },
+        order: { created_at: "DESC" },
+      });
+      return products;
+    } catch (error) {
+      throw new Error("Unable to retrieve products. Please try again later.");
+    }
+  };
 }

@@ -24,6 +24,9 @@ export class Product extends ExtendedBaseEntity {
   @Column()
   price: number;
 
+  @Column()
+  cost_price: number;
+
   @Column({ default: 1 })
   quantity: number;
 

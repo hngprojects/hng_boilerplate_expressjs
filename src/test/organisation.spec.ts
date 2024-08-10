@@ -12,6 +12,7 @@ import {
 import { validateOrgId } from "../middleware/organizationValidation";
 import { Organization, OrganizationRole, User } from "../models";
 import { OrgService } from "../services";
+import isSuperAdmin from "../utils/isSuperAdmin";
 
 jest.mock("../data-source", () => ({
   __esModule: true,
@@ -28,6 +29,8 @@ jest.mock("passport", () => ({
 jest.mock("passport-google-oauth2", () => ({
   Strategy: jest.fn(),
 }));
+
+jest.mock("../utils/isSuperAdmin");
 
 describe("Organization Controller and Middleware", () => {
   let organizationService: OrgService;
@@ -350,5 +353,82 @@ describe("Update User Organization", () => {
     });
 
     expect(mockRepository.update).not.toHaveBeenCalled();
+  });
+
+  describe("OrganizationController - getAllOrgProducts", () => {
+    let orgController: OrgController;
+    let mockRequest: Partial<Request>;
+    let mockResponse: Partial<Response>;
+    let mockNext: NextFunction;
+    let orgServiceMock: jest.Mocked<OrgService>;
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+
+      orgServiceMock = {
+        getAllOrgProducts: jest.fn(),
+      } as any;
+
+      orgController = new OrgController();
+      mockRequest = {
+        params: { org_id: "mock-org-id" },
+        user: { id: "mock-user-id" },
+      };
+      mockResponse = { status: jest.fn().mockReturnThis(), json: jest.fn() };
+      mockNext = jest.fn();
+    });
+
+    it("should return 401 if user is not authenticated", async () => {
+      mockRequest.user = null; // Simulate unauthenticated user
+
+      await orgController.getAllOrgProducts(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(401);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        status_code: 401,
+        success: false,
+        message: "User not authenticated",
+      });
+    });
+
+    it("should return 403 if user is not authorized", async () => {
+      jest.mocked(isSuperAdmin).mockResolvedValue(false); // Simulate user is not a super admin
+
+      await orgController.getAllOrgProducts(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(403);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        status_code: 403,
+        success: false,
+        message: "User is not authorized to fetch all products",
+      });
+    });
+
+    it("should return 500 if an error occurs", async () => {
+      jest.mocked(isSuperAdmin).mockResolvedValue(true);
+      orgServiceMock.getAllOrgProducts.mockRejectedValue(
+        new Error("Database error"),
+      );
+
+      await orgController.getAllOrgProducts(
+        mockRequest as Request,
+        mockResponse as Response,
+        mockNext,
+      );
+
+      expect(mockResponse.status).toHaveBeenCalledWith(500);
+      expect(mockResponse.json).toHaveBeenCalledWith({
+        status_code: 500,
+        message: "Unable to retrieve products. Please try again later.",
+      });
+    });
   });
 });
