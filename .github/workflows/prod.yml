@@ -1,35 +1,74 @@
-name: Build, Test, and Deploy for Prod Branch
+name: Deploy to Prod
 
 on:
-  push:
-    branches: [main]
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
+    branches: [prod]
 
 jobs:
-  build:
-    runs-on: self-hosted
-    defaults:
-      run:
-        working-directory: /var/www/aihomework/prod
-
+  on-success:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
-      - name: Pull from GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
+
+      - name: Fetch .env file from server
         run: |
-          git stash
-          git pull origin main
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/prod-deployment/hng_boilerplate_expressjs/.env .env
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
 
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Build the dist
-        run: yarn build
-
-      - name: migrate
-        run: yarn migrate
-
-      - name: Setup service file
-        run: sudo cp server-script/aihomeworkprod.service /etc/systemd/system
-
-      - name: Start the app
+      - name: Build Docker images
         run: |
-          sudo systemctl daemon-reload
-          sudo systemctl restart aihomeworkprod
+          docker compose --env-file .env -f docker-compose.production.yml build
+
+      - name: List Docker images
+        run: docker images
+
+      - name: Save Docker images to tarball
+        run: |
+          docker save hng_boilerplate_expressjs-backend_prod:latest | gzip > prod-images.tar.gz
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: prod-images
+          path: prod-images.tar.gz
+
+      - name: Copy Docker images to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "prod-images.tar.gz"
+          target: "~/images-tar"
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/prod-deployment/hng_boilerplate_expressjs
+            git stash
+            git checkout prod
+            git pull
+            docker load -i ~/images-tar/prod-images.tar.gz
+            docker compose -f docker-compose.production.yml down
+            docker compose -f docker-compose.production.yml up -d
+
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo "CI Workflow failed. Prod deployment was not triggered."
