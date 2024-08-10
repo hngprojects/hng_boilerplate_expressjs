@@ -52,7 +52,7 @@ export class User extends ExtendedBaseEntity {
   @Column({
     default: false,
   })
-  isverified: boolean;
+  is_superadmin: boolean;
 
   @OneToOne(() => Profile, (profile) => profile.user, { cascade: true })
   @JoinColumn()
