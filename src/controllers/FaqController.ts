@@ -137,52 +137,17 @@ class FAQController {
   public async createFAQ(req: Request, res: Response, next: NextFunction) {
     try {
       const { question, answer, category } = req.body;
-      const userId = req.user?.id;
 
-      if (!userId) {
-        return res.status(401).json({
-          status_code: 401,
-          success: false,
-          message: "User not authenticated",
-        });
-      }
-
-      if (!question || !answer || !category) {
-        return res.status(400).json({
-          status_code: 400,
-          success: false,
-          message: "Invalid request data",
-        });
-      }
-
-      const isAdmin = await isSuperAdmin(userId);
-      if (!isAdmin) {
-        return res.status(403).json({
-          status_code: 403,
-          success: false,
-          message: "User is not authorized to create FAQ",
-        });
-      }
-
-      const faq = await faqService.createFaq({
+      const faqResponse = await faqService.createFaq({
         question,
         answer,
         category,
         createdBy: UserRole.SUPER_ADMIN,
       });
 
-      res.status(201).json({
-        status_code: 201,
-        success: true,
-        message: "The FAQ has been successfully created.",
-        data: faq,
-      });
+      res.status(faqResponse.status_code).json(faqResponse);
     } catch (error) {
-      res.status(500).json({
-        status_code: 500,
-        success: false,
-        message: error.message || "An unexpected error occurred",
-      });
+      next(error); // Pass the error to the centralized error handler
     }
   }
 

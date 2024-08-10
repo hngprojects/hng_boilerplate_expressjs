@@ -1,32 +1,55 @@
 import AppDataSource from "../data-source";
 import { FAQ } from "../models/faq";
 import { Repository } from "typeorm";
+import { FAQResponse, FAQType } from "../types/faq";
+import { QueryFailedError } from "typeorm";
+import { asyncHandler } from "../utils/asyncHandler";
 import {
   BadRequest,
   HttpError,
   ResourceNotFound,
   Unauthorized,
+  ServerError,
+  Conflict,
 } from "../middleware";
-
-type FAQType = {
-  question: string;
-  answer: string;
-  category: string;
-  createdBy: string;
-};
 
 class FAQService {
   private faqRepository: Repository<FAQ>;
   constructor() {
     this.faqRepository = AppDataSource.getRepository(FAQ);
   }
-  public async createFaq(data: FAQType): Promise<FAQ> {
+
+  public async createFaq(
+    data: FAQType,
+  ): Promise<{ status_code: number; message: string; data: FAQResponse }> {
     try {
+      const existingFAQ = await this.faqRepository.findOne({
+        where: { question: data.question },
+      });
+
+      if (existingFAQ) {
+        throw new Conflict("FAQ with this question already exists");
+      }
+
       const faq = this.faqRepository.create(data);
       const createdFAQ = await this.faqRepository.save(faq);
-      return createdFAQ;
+
+      const { createdBy, ...result } = createdFAQ;
+
+      return {
+        status_code: 201,
+        message: "FAQ created successfully",
+        data: result as FAQResponse,
+      };
     } catch (error) {
-      throw new Error("Failed to create FAQ");
+      if (error instanceof QueryFailedError) {
+        if ((error as any).code === "23505") {
+          throw new Conflict("FAQ already exists with similar data");
+        }
+        throw new ServerError("Invalid data provided");
+      }
+
+      throw new ServerError(error.message || "Failed to create FAQ");
     }
   }
 

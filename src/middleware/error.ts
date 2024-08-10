@@ -64,10 +64,16 @@ const errorHandler = (
   res: Response,
   _next: NextFunction,
 ) => {
-  const { success, status_code, message } = err;
+  const {
+    success = false,
+    status_code = 500,
+    message = "An unexpected error occurred",
+  } = err;
+
   const cleanedMessage = message.replace(/"/g, "");
+
   res.status(status_code).json({
-    success: success || "unsuccessful",
+    success,
     status_code,
     message: cleanedMessage,
   });
