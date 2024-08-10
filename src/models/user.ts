@@ -29,8 +29,9 @@ import ExtendedBaseEntity from "./extended-base-entity";
 import { Like } from "./like";
 import { OrganizationMember } from "./organization-member";
 import { UserOrganization } from "./user-organisation";
+import { Job } from "./job";
 
-@Entity()
+@Entity({ name: "users" })
 @Unique(["email"])
 export class User extends ExtendedBaseEntity {
   @PrimaryGeneratedColumn("uuid")
@@ -95,6 +96,9 @@ export class User extends ExtendedBaseEntity {
   })
   @JoinTable()
   organizations: Organization[];
+
+  @OneToMany(() => Job, (job) => job.user)
+  jobs: Job[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -96,6 +96,37 @@ export interface GoogleUser {
   sub: string;
 }
 
+export interface IJobs {
+  title: string;
+  description: string;
+  location: string;
+  deadline: Date;
+  salary_range: SalaryRange;
+  job_type: JobType;
+  job_mode: JobMode;
+  company_name: string;
+  is_deleted?: boolean;
+}
+
+export interface ICreateJobs extends Omit<IJobs, "id" | "is_deleted"> {
+  user_id: string;
+}
+
+export interface IUpdateJobs {
+  title?: string;
+  description?: string;
+  location?: string;
+  deadline?: Date;
+  salary_range?: SalaryRange;
+  job_type?: JobType;
+  job_mode?: JobMode;
+  company_name?: string;
+}
+
+export interface IDeleteJobs {
+  id: string;
+}
+
 export interface INewsLetterSubscriptionService {
   subscribeUser(email: string): Promise<any>;
   unSubcribeUser(email: string): Promise<any>;

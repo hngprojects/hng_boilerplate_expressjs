@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { PermissionCategory } from "../enums/permission-category.enum";
 import {
+  Forbidden,
   HttpError,
   InvalidInput,
   ResourceNotFound,
@@ -1603,6 +1604,97 @@ export class OrgController {
           "Error updating the role permissions of this organization",
         ),
       );
+    }
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/members:
+   *   get:
+   *     summary: Get all members of an organization
+   *     description: This endpoint retrieves all members of a specified organization
+   *     tags: [Organization]
+   *     operationId: getOrganizationMembers
+   *     security:
+   *       - bearerAuth: []
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         schema:
+   *           type: string
+   *         required: true
+   *         description: The ID of the organization
+   *     responses:
+   *       '200':
+   *         description: Members retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: success
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 data:
+   *                   type: array
+   *                   items:
+   *                     $ref: '#/components/schemas/OrganizationMember'
+   *       '500':
+   *         description: Internal Server Error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                   example: unsuccessful
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: Failed to get user organisation. Please try again later.
+   * components:
+   *   schemas:
+   *     OrganizationMember:
+   *       type: object
+   *       properties:
+   *         id:
+   *           type: string
+   *           example: "1"
+   *         name:
+   *           type: string
+   *           example: John Doe
+   *         email:
+   *           type: string
+   *           example: johndoe@example.com
+   *         role:
+   *           type: string
+   *           example: admin
+   */
+
+  async getAllOrganizationMembers(req: Request, res: Response) {
+    try {
+      const org = await this.orgService.getOrganisationMembers(
+        req.params.org_id,
+      );
+
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        data: org,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to get user organisation. Please try again later.",
+      });
     }
   }
 }

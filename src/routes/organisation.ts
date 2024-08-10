@@ -14,6 +14,13 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
+  "/organizations/:org_id/members",
+  authMiddleware,
+  checkPermissions([UserRole.ADMIN]),
+  orgController.getAllOrganizationMembers.bind(orgController),
+);
+
+orgRouter.get(
   "/organizations/invites",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
