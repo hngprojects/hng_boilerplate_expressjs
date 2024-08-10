@@ -68,6 +68,9 @@ export class User extends ExtendedBaseEntity {
   @Column({ nullable: true })
   otp: number;
 
+  @Column({ default: false })
+  is_superadmin: boolean;
+
   @Column({ nullable: true })
   otp_expires_at: Date;
 
