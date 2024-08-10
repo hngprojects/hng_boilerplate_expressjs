@@ -1,6 +1,11 @@
 import { Squeeze } from "../models";
 import AppDataSource from "../data-source";
-import { Conflict, BadRequest } from "../middleware";
+import {
+  Conflict,
+  BadRequest,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { squeezeSchema } from "../schema/squeezeSchema";
 import { Repository } from "typeorm";
 
@@ -36,6 +41,37 @@ class SqueezeService {
       return savedSqueeze;
     } catch (error) {
       throw new BadRequest("Failed to create squeeze: " + error.message);
+    }
+  }
+
+  public async getSqueezeById(id: string): Promise<Squeeze | null> {
+    try {
+      const squeeze = await this.squeezeRepository.findOne({ where: { id } });
+      return squeeze;
+    } catch (error) {
+      throw new BadRequest("Failed to retrieve squeeze: " + error.message);
+    }
+  }
+
+  public async updateSqueeze(id: string, data: Squeeze): Promise<Squeeze> {
+    const validation = squeezeSchema.safeParse(data);
+    if (!validation.success) {
+      throw new Conflict(
+        "Validation failed: " +
+          validation.error.errors.map((e) => e.message).join(", "),
+      );
+    }
+    try {
+      const findSqueeze = await this.squeezeRepository.findOne({
+        where: { id },
+      });
+      if (!findSqueeze) {
+        throw new ResourceNotFound("Squeeze not found");
+      }
+      const newSqueeze = this.squeezeRepository.merge(findSqueeze, data);
+      return await this.squeezeRepository.save(newSqueeze);
+    } catch (error) {
+      throw new ServerError(error.message);
     }
   }
 }

@@ -48,6 +48,7 @@ export class NewsLetterSubscriptionService
     }
     return { isNewlySubscribe, subscriber };
   }
+
   public async unSubcribeUser(email: string): Promise<any> {
     const isExistingSubscriber = await this.newsLetterSubscriber.findOne({
       where: { email },

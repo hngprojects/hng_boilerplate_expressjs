@@ -11,7 +11,7 @@ const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
  *     summary: Subscribe to the newsletter
  *     description: Allows a user to subscribe to the newsletter by providing an email address.
  *     tags:
- *       - Newsletter Subscription
+ *       - Newsletter
  *     requestBody:
  *       required: true
  *       content:
@@ -52,6 +52,23 @@ const newsLetterSubscriptionService = new NewsLetterSubscriptionService();
  *                   type: string
  *                   example: You are already subscribed to our newsletter.
  *
+ *       400:
+ *         description: User is already subscribed but unsubscribe.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: boolean
+ *                   example: false
+ *                 status_code:
+ *                   type: number
+ *                   example: 400
+ *                 message:
+ *                   type: string
+ *                   example: You are already subscribed, please enable newsletter subscription to receive newsletter again
+ *
  *       500:
  *         description: Internal server error. An error occurred while processing the subscription.
  *         content:
@@ -87,6 +104,8 @@ const subscribeToNewsletter = async (
         : "You are already subscribed to our newsletter",
     });
   } catch (error) {
+    console.log(error);
+
     next(error);
   }
 };

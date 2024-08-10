@@ -11,12 +11,14 @@ export * from "./log";
 export * from "./payment";
 
 export * from "./faq";
+// export * from "./orgInviteToken";
+export * from "./billing-plan";
 export * from "./helpcentertopic";
 export * from "./invitation";
 export * from "./job";
 export * from "./like";
 export * from "./log";
-export * from "./notification";
+export * from "./notificationsettings";
 export * from "./organization";
 export * from "./organization-member";
 export * from "./organization-role.entity";
@@ -31,3 +33,4 @@ export * from "./user";
 export * from "./user-organisation";
 
 export * from "./squeeze";
+export * from "./notification";
