@@ -1,9 +1,11 @@
-name: Build, Test, and Deploy for Dev Branch
+name: Deploy to Dev
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
+    branches: [dev]
 
 jobs:
   build-and-deploy:
