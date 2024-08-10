@@ -165,6 +165,21 @@ export class ProductService {
     };
   }
 
+  public async getAllProducts(page: number = 1, limit: number = 10) {
+    const queryBuilder = this.productRepository.createQueryBuilder("product");
+
+    const skip = (page - 1) * limit;
+    queryBuilder.skip(skip).take(limit);
+
+    const [products, total] = await queryBuilder.getManyAndCount();
+
+    return {
+      success: true,
+      statusCode: 200,
+      products,
+    };
+  }
+
   public async deleteProduct(org_id: string, product_id: string) {
     try {
       const entities = await this.checkEntities({
