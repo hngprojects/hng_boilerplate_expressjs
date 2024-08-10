@@ -1,8 +1,8 @@
 import { Repository } from "typeorm";
 import AppDataSource from "../data-source";
+import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 import { NewsLetterSubscriber } from "../models/newsLetterSubscription";
 import { INewsLetterSubscriptionService } from "../types";
-import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 
 export class NewsLetterSubscriptionService
   implements INewsLetterSubscriptionService
@@ -75,6 +75,8 @@ export class NewsLetterSubscriptionService
     limit?: number;
   }) {
     try {
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
       const [newsletters, total] = await this.newsLetterSubscriber.findAndCount(
         {
           skip: (page - 1) * limit,

@@ -294,8 +294,8 @@ const getAllNewsletter = async (
       });
 
     return res.status(200).json({
-      status: "",
-      message: "",
+      status: "ok",
+      message: "Successful",
       data: data,
       meta,
     });

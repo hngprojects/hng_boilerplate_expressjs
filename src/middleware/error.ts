@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import log from "../utils/logger";
 
 class HttpError extends Error {
   status_code: number;
@@ -65,6 +66,7 @@ const errorHandler = (
   _next: NextFunction,
 ) => {
   const { success, status_code, message } = err;
+  log.error({ err });
   const cleanedMessage = message.replace(/"/g, "");
   res.status(status_code).json({
     success: success || "unsuccessful",
