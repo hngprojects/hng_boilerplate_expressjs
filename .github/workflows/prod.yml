@@ -1,9 +1,11 @@
-name: Deploy to staging Branch
+name: Deploy to prod Branch
 
 on:
-  push:
-    branches:
-      - dev
+  workflow_run:
+    workflows: [CI]
+    types:
+      - completed
+    branches: [main]
 
 jobs:
   build-and-deploy:
@@ -42,13 +44,12 @@ jobs:
       - name: Deploy and start on remote server
         run: |
           sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-            cd /var/www/aihomework/dev
+            cd /var/www/aihomework/prod
             git stash
-            git pull origin dev
+            git pull origin main
             docker load -i /tmp/docker-images.tar.gz
             docker compose -f docker-compose.production.yml down
             docker compose -f docker-compose.production.yml up -d
-            rm /tmp/docker-images.tar.gz 
           "
         env:
           SSH_HOST: ${{ secrets.HOST }}
