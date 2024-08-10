@@ -9,7 +9,7 @@ const productRouter = Router();
 const productController = new ProductController();
 
 productRouter.post(
-  "/organizations/:org_id/products",
+  "/organisations/:org_id/products",
   requestBodyValidator(productSchema),
   authMiddleware,
   validOrgAdmin,
@@ -17,7 +17,7 @@ productRouter.post(
 );
 
 productRouter.get(
-  "/organizations/:org_id/products/search",
+  "/organisations/:org_id/products/search",
   authMiddleware,
   validateUserToOrg,
   productController.getProduct,

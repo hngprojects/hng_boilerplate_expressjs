@@ -7,9 +7,7 @@ export const productSchema = z.object({
   price: z.number().min(0.1, "Price is required and must be greater than 0"),
   image: z.string(),
   quantity: z.number().min(1, "Quantity is required"),
-  cost_price: z
-    .number()
-    .min(0.1, "Cost price is required and must be greater than 0"),
+  cost_price: z.number().optional(),
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;

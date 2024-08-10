@@ -92,15 +92,11 @@ export class ProductService {
     }
 
     return {
-      status_code: 201,
-      status: "success",
-      message: "Product created successfully",
       data: {
         id: product.id,
         name: product.name,
         description: product.description,
         price: product.price,
-        image: product.image,
         status: product.stock_status,
         quantity: product.quantity,
         created_at: product.created_at,

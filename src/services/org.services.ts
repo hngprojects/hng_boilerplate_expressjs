@@ -3,22 +3,16 @@ import { v4 as uuidv4 } from "uuid";
 import config from "../config/index";
 import AppDataSource from "../data-source";
 import { UserRole } from "../enums/userRoles";
-import {
-  BadRequest,
-  ResourceNotFound,
-  HttpError,
-  Conflict,
-} from "../middleware";
-import { Organization, Invitation, UserOrganization } from "../models";
+import { BadRequest, Conflict, ResourceNotFound } from "../middleware";
+import { Invitation, Organization, UserOrganization } from "../models";
 import { OrganizationRole } from "../models/organization-role.entity";
 import { User } from "../models/user";
 import { ICreateOrganisation, ICreateOrgRole, IOrgService } from "../types";
-import log from "../utils/logger";
 
-import { addEmailToQueue } from "../utils/queue";
-import renderTemplate from "../views/email/renderTemplate";
 import { PermissionCategory } from "../enums/permission-category.enum";
 import { Permissions } from "../models/permissions.entity";
+import { addEmailToQueue } from "../utils/queue";
+import renderTemplate from "../views/email/renderTemplate";
 const frontendBaseUrl = config.BASE_URL;
 
 export class OrgService implements IOrgService {
@@ -196,7 +190,6 @@ export class OrgService implements IOrgService {
     const organization = await organizationRepository.findOne({
       where: { id: organizationId },
     });
-    console.log("here", organization);
     if (!organization) {
       throw new ResourceNotFound(
         `Organization with ID ${organizationId} not found`,
