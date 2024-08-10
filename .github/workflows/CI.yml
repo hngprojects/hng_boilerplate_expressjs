@@ -1,9 +1,11 @@
 name: CI
 
 on:
+  push:
+    branches: [dev, staging, main]
   pull_request:
-    branches:
-      - dev
+    types: [opened, synchronize, reopened]
+    branches: [dev, staging, main]
 
 jobs:
   test:
@@ -25,5 +27,6 @@ jobs:
         run: yarn test
         env:
           CI: true
-      - name: buld the dist
+          
+      - name: Build the dist
         run: yarn build

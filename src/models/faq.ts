@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import ExtendedBaseEntity from "./extended-base-entity";
 import { UserRole } from "../enums/userRoles";
 
@@ -18,6 +24,12 @@ class FAQ extends ExtendedBaseEntity {
 
   @Column({ nullable: false, default: UserRole.SUPER_ADMIN })
   createdBy: string;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
 export { FAQ };
