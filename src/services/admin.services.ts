@@ -1,9 +1,9 @@
 // / src/services/AdminOrganisationService.ts
-import { NextFunction, Request, Response } from "express";
+import { Request } from "express";
 // import { getRepository, Repository } from 'typeorm';
-import { User, Organization, Log } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
+import { Log, Organization, User } from "../models";
 import { hashPassword } from "../utils/index";
 
 export class AdminOrganisationService {
