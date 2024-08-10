@@ -14,15 +14,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      # - name: Fetch .env file from server
-      #   uses: appleboy/scp-action@master
-      #   with:
-      #     host: ${{ secrets.HOST }}
-      #     username: ${{ secrets.USERNAME }}
-      #     password: ${{ secrets.PASSWORD }}
-      #     source: "/var/www/aihomework/dev/.env"
-      #     target: ".env"
       
       - name: Install sshpass
         run: sudo apt-get install sshpass
