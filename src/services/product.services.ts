@@ -78,7 +78,6 @@ export class ProductService {
     if (!organization) {
       throw new ServerError("Invalid organisation credentials");
     }
-
     const newProduct = this.productRepository.create(new_Product);
     newProduct.org = organization;
     newProduct.stock_status = await this.calculateProductStatus(
