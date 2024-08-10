@@ -1,9 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { ResourceNotFound, ServerError, HttpError } from "../middleware";
+import { PermissionCategory } from "../enums/permission-category.enum";
+import {
+  HttpError,
+  InvalidInput,
+  ResourceNotFound,
+  ServerError,
+} from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
-import { InvalidInput } from "../middleware";
-import { PermissionCategory } from "../enums/permission-category.enum";
 
 export class OrgController {
   private orgService: OrgService;

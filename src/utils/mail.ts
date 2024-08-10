@@ -5,10 +5,10 @@ import log from "./logger";
 
 const Sendmail = async (emailcontent: any) => {
   const transporter = nodemailer.createTransport({
-    service: config.SMTP_SERVICE,
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    // service: config.SMTP_SERVICE,
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    // secure: false,
     auth: {
       user: config.SMTP_USER,
       pass: config.SMTP_PASSWORD,
