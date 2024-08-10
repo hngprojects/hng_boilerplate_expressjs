@@ -206,7 +206,7 @@ export class ProductService {
   public async updateProduct(
     orgId: string,
     productId: string,
-    payload: any,
+    payload: ProductSchema,
     userId: any,
   ) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
@@ -234,6 +234,7 @@ export class ProductService {
         "Product not found or does not belong to the organization",
       );
     }
+    product.stock_status = await this.calculateProductStatus(payload.quantity);
 
     Object.assign(product, payload);
 

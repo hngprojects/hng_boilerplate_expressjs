@@ -33,11 +33,13 @@ describe("ProductService", () => {
   let productService: ProductService;
   let productRepository: Repository<Product>;
   let organizationRepository: Repository<Organization>;
+  let userRepository: Repository<User>;
 
   beforeEach(() => {
     productService = new ProductService();
     productRepository = productService["productRepository"];
     organizationRepository = productService["organizationRepository"];
+    userRepository = productService["userRepository"];
   });
 
   describe("createProducts", () => {
