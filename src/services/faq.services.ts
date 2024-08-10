@@ -63,14 +63,17 @@ class FAQService {
     const faq = await this.faqRepository.findOne({ where: { id: faqId } });
 
     if (!faq) {
-      throw new BadRequest(`Invalid request data`);
+      throw new ResourceNotFound("FAQ not found");
     }
 
     try {
       const result = await this.faqRepository.delete(faqId);
       return result.affected !== 0;
     } catch (error) {
-      throw new HttpError(500, "Deletion failed");
+      throw new HttpError(
+        500,
+        "An error occurred while processing your request",
+      );
     }
   }
 }
