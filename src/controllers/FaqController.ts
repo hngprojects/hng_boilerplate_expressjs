@@ -13,7 +13,7 @@ class FAQController {
    *   name: FAQ
    *   description: FAQ management
    *
-   * /faqs:
+   * /api/v1/faqs:
    *   post:
    *     summary: Create a new FAQ
    *     tags: [FAQ]
@@ -188,126 +188,82 @@ class FAQController {
 
   /**
    * @swagger
-   * /faqs/{id}:
+   * /api/v1/faqs/{id}:
    *   put:
-   *     summary: Update an FAQ
-   *     description: Update an existing FAQ entry using the FAQ ID provided in the URL parameters and the update data in the request body. The request requires admin authorization.
+   *     summary: Update an existing FAQ
    *     tags: [FAQ]
    *     parameters:
    *       - in: path
-   *         name: faq_id
+   *         name: id
    *         required: true
    *         schema:
    *           type: string
-   *         description: The ID of the FAQ entry
+   *         description: The ID of the FAQ to update
    *     requestBody:
    *       required: true
    *       content:
    *         application/json:
    *           schema:
    *             type: object
+   *             required:
+   *               - question
+   *               - answer
+   *               - category
    *             properties:
    *               question:
    *                 type: string
-   *                 description: The updated question text
+   *                 example: "My new faw"
    *               answer:
    *                 type: string
-   *                 description: The updated answer text
+   *                 example: "It's a group of people."
    *               category:
    *                 type: string
-   *                 description: The updated category
-   *             example:
-   *               question: "Updated question?"
-   *               answer: "Updated answer."
-   *               category: "General"
+   *                 example: "general"
    *     responses:
    *       200:
-   *         description: The FAQ has been successfully updated.
+   *         description: FAQ updated successfully
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: true
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
    *                 message:
    *                   type: string
-   *                   example: The FAQ has been successfully updated.
+   *                   example: "FAQ updated successful"
    *                 data:
    *                   type: object
    *                   properties:
    *                     id:
    *                       type: string
-   *                       example: "123"
+   *                       example: "2d6218d5-1bda-4d62-9ba1-0c687c05aa09"
    *                     question:
    *                       type: string
-   *                       example: "Updated question?"
+   *                       example: "My new faw"
    *                     answer:
    *                       type: string
-   *                       example: "Updated answer."
+   *                       example: "It's a group of people."
    *                     category:
    *                       type: string
-   *                       example: "General"
-   *                     createdAt:
+   *                       example: "general"
+   *                     created_at:
    *                       type: string
    *                       format: date-time
-   *                       example: "2023-01-01T00:00:00.000Z"
-   *                     updatedAt:
+   *                       example: "2024-08-10T11:08:38.152Z"
+   *                     updated_at:
    *                       type: string
    *                       format: date-time
-   *                       example: "2023-01-02T00:00:00.000Z"
-   *                 status_code:
-   *                   type: integer
-   *                   example: 200
+   *                       example: "2024-08-10T11:34:00.284Z"
    *       400:
-   *         description: Invalid request data or an error occurred while processing the request.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: false
-   *                 message:
-   *                   type: string
-   *                   example: Invalid request data
-   *                 status_code:
-   *                   type: integer
-   *                   example: 400
+   *         description: Invalid request data
+   *       401:
+   *         description: Unauthorized access
    *       403:
-   *         description: Unauthorized access.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: false
-   *                 message:
-   *                   type: string
-   *                   example: Unauthorized access
-   *                 status_code:
-   *                   type: integer
-   *                   example: 403
-   *       404:
-   *         description: FAQ entry not found.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: false
-   *                 message:
-   *                   type: string
-   *                   example: FAQ entry with ID {faq_id} not found.
-   *                 status_code:
-   *                   type: integer
-   *                   example: 404
+   *         description: User is not authorized to update FAQ
+   *       500:
+   *         description: Internal server error
    */
 
   public async updateFaq(req: Request, res: Response, next: NextFunction) {
@@ -319,7 +275,7 @@ class FAQController {
         return res.status(400).json({
           status_code: 400,
           success: false,
-          message: "Invalid request data",
+          message: "Question, answer and category are required",
         });
       }
       const isAdmin = await isSuperAdmin(req.user.id);
@@ -332,22 +288,31 @@ class FAQController {
       }
       const faq = await faqService.updateFaq(req.body, faqId);
       res.status(200).json({
-        success: true,
-        message: "The FAQ has been successfully updated.",
-        data: faq,
         status_code: 200,
+        message: "FAQ updated successful",
+        data: faq,
       });
     } catch (error) {
       if (error instanceof BadRequest) {
-        next(error);
+        res.status(400).json({
+          status_code: 400,
+          message: error.message,
+          data: {},
+        });
+      } else {
+        res.status(500).json({
+          status_code: 500,
+          message: "Internal server error.",
+          data: {},
+        });
       }
-      next(new ServerError("Internal server error."));
+      next();
     }
   }
 
   /**
    * @swagger
-   * /faqs:
+   * /api/v1/faqs:
    *   get:
    *     summary: Retrieve all FAQs
    *     description: Retrieve a list of all FAQs with their respective questions, answers, and categories.
@@ -397,7 +362,7 @@ class FAQController {
 
   /**
    * @swagger
-   * /faqs/{faqId}:
+   * /api/v1/faqs/{faqId}:
    *   delete:
    *     summary: Delete an FAQ
    *     description: Deletes an existing FAQ entry by its ID. This endpoint requires the user to have super admin permissions.

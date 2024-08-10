@@ -5,8 +5,10 @@ import {
   BadRequest,
   HttpError,
   ResourceNotFound,
+  ServerError,
   Unauthorized,
 } from "../middleware";
+import log from "../utils/logger";
 
 type FAQType = {
   question: string;
@@ -34,19 +36,23 @@ class FAQService {
     const faq = await this.faqRepository.findOne({ where: { id: faqId } });
 
     if (!faq) {
-      throw new BadRequest(`Invalid request data`);
+      throw new BadRequest(`FAQ not found`);
     }
-
-    Object.assign(faq, payload);
 
     try {
       await this.faqRepository.update(faqId, payload);
       const updatedFaq = await this.faqRepository.findOne({
         where: { id: faqId },
       });
-      return updatedFaq;
+
+      if (updatedFaq) {
+        const { createdBy, ...faqData } = updatedFaq;
+        return { ...faqData, id: faqId };
+      }
+
+      throw new Error("Failed to retrieve updated FAQ");
     } catch (error) {
-      throw error;
+      throw new ServerError("Error updating FAQ");
     }
   }
 

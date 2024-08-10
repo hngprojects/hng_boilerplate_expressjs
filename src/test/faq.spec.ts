@@ -36,22 +36,23 @@ describe("FaqService", () => {
       const faqId = "faq-123";
       const payload = {
         question: "Updated FAQ question",
-        answer: "Updated answer",
+        answer: "Updated FAQ answer",
         category: "General",
-      };
-      const existingFaq = {
-        id: faqId,
-        question: "Old FAQ question",
-        answer: "Old answer",
-        category: "General",
-      } as FAQ;
-      const updatedFaq = {
-        ...existingFaq,
-        ...payload,
       };
 
-      faqRepository.findOne.mockResolvedValue(existingFaq);
-      // faqRepository.update.mockResolvedValue({payload});
+      const existingFaq = new FAQ();
+      existingFaq.id = faqId;
+      existingFaq.question = "Old FAQ question";
+      existingFaq.answer = "Old FAQ answer";
+      existingFaq.category = "General";
+      existingFaq.createdBy = "user-123";
+
+      const updatedFaq = new FAQ();
+      Object.assign(updatedFaq, existingFaq, payload);
+
+      faqRepository.findOne.mockResolvedValueOnce(existingFaq);
+      faqRepository.update.mockResolvedValueOnce({} as any);
+      faqRepository.findOne.mockResolvedValue(updatedFaq);
 
       const result = await faqService.updateFaq(payload, faqId);
 
@@ -62,14 +63,18 @@ describe("FaqService", () => {
       expect(faqRepository.findOne).toHaveBeenCalledWith({
         where: { id: faqId },
       });
-      expect(result).toEqual(updatedFaq);
+      expect(result).toEqual({
+        ...updatedFaq,
+        id: faqId,
+        createdBy: undefined,
+      });
     });
 
     it("should throw BadRequest if FAQ does not exist", async () => {
       const faqId = "faq-123";
       const payload = {
         question: "Updated FAQ question",
-        answer: "Updated answer",
+        answer: "Updated FAQ answer",
         category: "General",
       };
 
