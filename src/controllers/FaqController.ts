@@ -378,20 +378,42 @@ class FAQController {
    *                     type: string
    *                     description: The category of the FAQ.
    *                     example: Returns
+   *                   created_at:
+   *                     type: string
+   *                     format: date-time
+   *                     description: The timestamp when the FAQ was created.
+   *                   updated_at:
+   *                     type: string
+   *                     format: date-time
+   *                     description: The timestamp when the FAQ was last updated.
+   *
+   *
    *       500:
    *         description: Internal server error.
    */
   public async getFaq(req: Request, res: Response, next: NextFunction) {
     try {
+      const isAdmin = await isSuperAdmin(req.user.id);
+      if (!isAdmin) {
+        return res.status(403).json({
+          status_code: 403,
+          success: false,
+          message: "Unauthorized access",
+        });
+      }
+
       const faqs = await faqService.getAllFaqs();
       res.status(200).json({
         status_code: 200,
-        success: true,
-        message: "The FAQ has been retrieved successfully.",
+        message: "Faq fetched successfully",
         data: faqs,
       });
     } catch (error) {
-      next(error);
+      res.status(500).json({
+        status_code: 500,
+        message: error,
+        data: {},
+      });
     }
   }
 
