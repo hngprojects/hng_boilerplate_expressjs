@@ -27,8 +27,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           source: "/var/www/aihomework/dev/.env"
-          target: "."
-          strip_components: 4
+          target: ".env"
 
       - name: Build Docker images
         run: |
