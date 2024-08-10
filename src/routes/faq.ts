@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { FAQController } from "../controllers/FaqController";
 import { authMiddleware, checkPermissions } from "../middleware";
+import { requestBodyValidator } from "../middleware/request-validation";
+import { faqSchema } from "../schema/faq.schema";
 import { UserRole } from "../enums/userRoles";
 
 const faqRouter = Router();
@@ -10,6 +12,7 @@ faqRouter.post(
   "/faqs",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
+  requestBodyValidator(faqSchema),
   faqController.createFAQ,
 );
 
