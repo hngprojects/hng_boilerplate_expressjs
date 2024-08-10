@@ -511,10 +511,11 @@ export class OrgController {
 
   /**
    * @swagger
-   * /organizations/{organization_id}:
+   * /api/v1/organizations/{organization_id}:
    *   put:
    *     summary: Update organization details
    *     description: Update the details of an existing organization
+   *     tags: [Organisation]
    *     parameters:
    *       - in: path
    *         name: organization_id

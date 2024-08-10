@@ -16,7 +16,6 @@ billingPlanRouter.post(
 billingPlanRouter.get(
   "/billing-plans/:id",
   authMiddleware,
-  checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
   billingPlanController.getBillingPlans,
 );
 
