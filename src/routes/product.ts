@@ -3,8 +3,6 @@ import { ProductController } from "../controllers/ProductController";
 import { authMiddleware, checkPermissions, validOrgAdmin } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
 import { validateUserToOrg } from "../middleware/organizationValidation";
-import { adminOnly } from "../middleware";
-import { UserRole } from "../enums/userRoles";
 
 const productRouter = Router();
 const productController = new ProductController();

@@ -206,12 +206,12 @@ export class ProductService {
   public async updateProduct(
     orgId: string,
     productId: string,
-    updatedProductData: Partial<ProductSchema>,
+    payload: any,
     userId: any,
   ) {
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new ServerError("User not found");
+      throw new ResourceNotFound("User not found");
     }
     if (user.role !== "admin") {
       throw new Unauthorized("Access denied. Admins only");
@@ -221,74 +221,21 @@ export class ProductService {
       where: { id: orgId },
     });
     if (!organization) {
-      throw new ServerError("Invalid organization credentials");
+      throw new ResourceNotFound("Invalid organization credentials");
     }
-
-    const product = await this.productRepository.findOne({
+    let product;
+    product = await this.productRepository.findOne({
       where: { id: productId },
+      relations: ["org"],
     });
-    if (!product) {
-      throw new ResourceNotFound("Product not found");
-    }
-    const organisation = await this.organizationRepository.findOne({
-      where: { id: orgId },
-    });
-    if (!organisation) {
-      throw new ResourceNotFound("organisation not found");
-    }
 
-    if (updatedProductData.name !== undefined) {
-      if (
-        typeof updatedProductData.name !== "string" ||
-        updatedProductData.name.trim() === ""
-      ) {
-        throw new InvalidInput("Invalid product name");
-      }
-      product.name = updatedProductData.name;
-    }
-
-    if (updatedProductData.quantity !== undefined) {
-      if (
-        typeof updatedProductData.quantity !== "number" ||
-        updatedProductData.quantity < 0
-      ) {
-        throw new InvalidInput("Quantity must be a non-negative number");
-      }
-      product.quantity = updatedProductData.quantity;
-      product.stock_status = await this.calculateProductStatus(
-        updatedProductData.quantity,
+    if (!product || product.org.id !== orgId) {
+      throw new ResourceNotFound(
+        "Product not found or does not belong to the organization",
       );
     }
 
-    if (updatedProductData.price !== undefined) {
-      if (
-        typeof updatedProductData.price !== "number" ||
-        updatedProductData.price <= 0
-      ) {
-        throw new InvalidInput("Price must be a positive number");
-      }
-      product.price = updatedProductData.price;
-    }
-
-    if (updatedProductData.category !== undefined) {
-      if (
-        typeof updatedProductData.category !== "string" ||
-        updatedProductData.category.trim() === ""
-      ) {
-        throw new InvalidInput("Invalid category");
-      }
-      product.category = updatedProductData.category;
-    }
-
-    if (updatedProductData.image !== undefined) {
-      if (
-        typeof updatedProductData.image !== "string" ||
-        updatedProductData.image.trim() === ""
-      ) {
-        throw new InvalidInput("Invalid image URL");
-      }
-      product.image = updatedProductData.image;
-    }
+    Object.assign(product, payload);
 
     const updatedProduct = await this.productRepository.save(product);
     if (!updatedProduct) {
