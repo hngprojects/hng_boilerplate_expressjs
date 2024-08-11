@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend_staging:
     container_name: backend_staging
     build:
       context: .

@@ -1,57 +1,74 @@
-name: Deploy to prod Branch
+name: Deploy to Prod
 
 on:
   workflow_run:
     workflows: [CI]
     types:
       - completed
-    branches: [main]
+    branches: [prod]
 
 jobs:
-  build-and-deploy:
+  on-success:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+      
       - name: Install sshpass
         run: sudo apt-get install sshpass
 
       - name: Fetch .env file from server
         run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/aihomework/staging/.env .env
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/prod-deployment/hng_boilerplate_expressjs/.env .env
         env:
           SSH_HOST: ${{ secrets.HOST }}
           SSH_USERNAME: ${{ secrets.USERNAME }}
           SSH_PASSWORD: ${{ secrets.PASSWORD }}
 
-      - name: Build Docker images using docker-compose
+      - name: Build Docker images
         run: |
           docker compose --env-file .env -f docker-compose.production.yml build
 
+      - name: List Docker images
+        run: docker images
+
       - name: Save Docker images to tarball
         run: |
-          docker save $(docker compose -f docker-compose.production.yml config | grep 'image:' | awk '{print $2}') | gzip > docker-images.tar.gz
+          docker save hng_boilerplate_expressjs-backend_prod:latest | gzip > prod-images.tar.gz
 
-      - name: Upload to server
-        run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no docker-images.tar.gz ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/tmp/
-        env:
-          SSH_HOST: ${{ secrets.HOST }}
-          SSH_USERNAME: ${{ secrets.USERNAME }}
-          SSH_PASSWORD: ${{ secrets.PASSWORD }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: prod-images
+          path: prod-images.tar.gz
 
-      - name: Deploy and start on remote server
-        run: |
-          sshpass -p ${{ secrets.PASSWORD }} ssh -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} "
-            cd /var/www/aihomework/prod
+      - name: Copy Docker images to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          source: "prod-images.tar.gz"
+          target: "~/images-tar"
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/prod-deployment/hng_boilerplate_expressjs
             git stash
-            git pull origin main
-            docker load -i /tmp/docker-images.tar.gz
+            git checkout prod
+            git pull
+            docker load -i ~/images-tar/prod-images.tar.gz
             docker compose -f docker-compose.production.yml down
             docker compose -f docker-compose.production.yml up -d
-          "
-        env:
-          SSH_HOST: ${{ secrets.HOST }}
-          SSH_USERNAME: ${{ secrets.USERNAME }}
-          SSH_PASSWORD: ${{ secrets.PASSWORD }}
+
+  on-failure:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - run: echo "CI Workflow failed. Prod deployment was not triggered."

@@ -8,27 +8,23 @@ on:
     branches: [dev]
 
 jobs:
-  build-and-deploy:
+  on-success:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
+      
+      - name: Install sshpass
+        run: sudo apt-get install sshpass
 
       - name: Fetch .env file from server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "/var/www/aihomework/dev/.env"
-          target: "."
-          strip_components: 4
+        run: |
+          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:/var/www/aihomework/dev/.env .env
+        env:
+          SSH_HOST: ${{ secrets.HOST }}
+          SSH_USERNAME: ${{ secrets.USERNAME }}
+          SSH_PASSWORD: ${{ secrets.PASSWORD }}
 
       - name: Build Docker images
         run: |
@@ -39,7 +35,7 @@ jobs:
 
       - name: Save Docker images to tarball
         run: |
-          docker save $(docker images --format '{{.Repository}}:{{.Tag}}' | grep -v '<none>') | gzip > dev-images.tar.gz
+          docker save hng_boilerplate_expressjs-backend:latest | gzip > dev-images.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
@@ -63,8 +59,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            cd /var/www/aihomework/dev
-            git fetch origin dev
+            cd ~/dev-deployment/hng_boilerplate_expressjs
             git stash
             git checkout dev
             git pull
