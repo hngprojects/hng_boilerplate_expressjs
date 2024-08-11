@@ -61,7 +61,7 @@ jobs:
           script: |
             cd ~/prod-deployment/hng_boilerplate_expressjs
             git stash
-            git checkout prod
+            git checkout main
             git pull
             docker load -i ~/images-tar/prod-images.tar.gz
             docker compose -f docker-compose.production.yml down
