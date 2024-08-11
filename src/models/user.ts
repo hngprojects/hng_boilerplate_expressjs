@@ -14,7 +14,15 @@ import {
   Unique,
   UpdateDateColumn,
 } from "typeorm";
-import { Blog, Comment, Organization, Product, Profile, Sms } from ".";
+import {
+  Blog,
+  Comment,
+  Organization,
+  Product,
+  Profile,
+  Sms,
+  Notification,
+} from ".";
 import { UserRole } from "../enums/userRoles";
 import { getIsInvalidMessage } from "../utils";
 import ExtendedBaseEntity from "./extended-base-entity";
@@ -59,6 +67,9 @@ export class User extends ExtendedBaseEntity {
 
   @Column({ nullable: true })
   otp: number;
+
+  @Column({ default: false })
+  is_superadmin: boolean;
 
   @Column({ nullable: true })
   otp_expires_at: Date;
@@ -118,6 +129,9 @@ export class User extends ExtendedBaseEntity {
     (organizationMember) => organizationMember.organization_id,
   )
   organizationMembers: OrganizationMember[];
+
+  @OneToMany(() => Notification, (notification) => notification.user)
+  notifications: Notification[];
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
