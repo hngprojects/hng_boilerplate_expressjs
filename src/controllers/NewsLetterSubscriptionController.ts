@@ -104,8 +104,6 @@ const subscribeToNewsletter = async (
         : "You are already subscribed to our newsletter",
     });
   } catch (error) {
-    console.log(error);
-
     next(error);
   }
 };
@@ -294,8 +292,8 @@ const getAllNewsletter = async (
       });
 
     return res.status(200).json({
-      status: "",
-      message: "",
+      status_code: 200,
+      message: "Subscribers list fetched successfully",
       data: data,
       meta,
     });
