@@ -2,7 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { FAQService } from "../services";
 import { UserRole } from "../enums/userRoles";
 import isSuperAdmin from "../utils/isSuperAdmin";
-import { ServerError, BadRequest, HttpError } from "../middleware";
+import {
+  ServerError,
+  BadRequest,
+  HttpError,
+  Unauthorized,
+} from "../middleware";
+import { validate as isUUID } from "uuid";
 
 const faqService = new FAQService();
 
@@ -397,14 +403,14 @@ class FAQController {
 
   /**
    * @swagger
-   * /faqs/{faqId}:
+   * /faqs/{id}:
    *   delete:
    *     summary: Delete an FAQ
    *     description: Deletes an existing FAQ entry by its ID. This endpoint requires the user to have super admin permissions.
    *     tags: [FAQ]
    *     parameters:
    *       - in: path
-   *         name: faqId
+   *         name: id
    *         required: true
    *         schema:
    *           type: string
@@ -417,12 +423,9 @@ class FAQController {
    *             schema:
    *               type: object
    *               properties:
-   *                 success:
-   *                   type: boolean
-   *                   example: true
    *                 message:
    *                   type: string
-   *                   example: The FAQ has been successfully deleted.
+   *                   example: FAQ successfully deleted.
    *                 status_code:
    *                   type: integer
    *                   example: 200
@@ -438,7 +441,7 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Invalid request data
+   *                   example: Validation failed! Valid faq ID required
    *                 status_code:
    *                   type: integer
    *                   example: 400
@@ -454,7 +457,7 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Unauthorized access
+   *                   example: Access Denied! Not a super admin
    *                 status_code:
    *                   type: integer
    *                   example: 403
@@ -470,7 +473,7 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: FAQ entry with ID {faqId} not found.
+   *                   example: FAQ not found.
    *                 status_code:
    *                   type: integer
    *                   example: 404
@@ -486,29 +489,29 @@ class FAQController {
    *                   example: false
    *                 message:
    *                   type: string
-   *                   example: Deletion failed
+   *                   example: An error occurred while processing your request
    *                 status_code:
    *                   type: integer
    *                   example: 500
    */
+
   public async deleteFaq(req: Request, res: Response, next: NextFunction) {
     try {
-      const { faqId } = req.params;
-      if (!faqId) {
-        throw new HttpError(422, "Validation failed: Valid ID required");
+      const { user } = req;
+      if (!user.is_superadmin) {
+        throw new Unauthorized("Access Denied! Not a super admin");
       }
-      const deletionSuccess = await faqService.deleteFaq(faqId);
-
-      if (!deletionSuccess) {
-        throw new HttpError(404, "FAQ not found or could not be deleted");
+      const { id } = req.params;
+      if (!id || !isUUID(id)) {
+        throw new BadRequest("Validation failed! Valid faq ID required");
       }
+      await faqService.deleteFaq(id);
       res.status(200).json({
-        success: true,
-        message: "The FAQ has been successfully deleted.",
         status_code: 200,
+        message: "FAQ successfully deleted",
       });
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   }
 }
