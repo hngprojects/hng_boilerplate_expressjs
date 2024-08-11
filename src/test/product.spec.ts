@@ -40,6 +40,54 @@ describe("ProductService", () => {
     organizationRepository = productService["organizationRepository"];
   });
 
+  describe("getAllProducts", () => {
+    it("should search products successfully", async () => {
+      const mockProducts = [{ id: "1", name: "Test Product", price: 50 }];
+      const mockTotalCount = 2;
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest
+          .fn()
+          .mockResolvedValue([mockProducts, mockTotalCount]),
+      };
+
+      productRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+
+      const result = await productService.getAllProducts();
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.products).toEqual(mockProducts);
+    });
+
+    it("should return an empty product array when product is not found", async () => {
+      const mockTotalCount = 0;
+      const mockProducts = [];
+
+      const mockQueryBuilder = {
+        where: jest.fn().mockReturnThis(),
+        andWhere: jest.fn().mockReturnThis(),
+        skip: jest.fn().mockReturnThis(),
+        take: jest.fn().mockReturnThis(),
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+      };
+
+      productRepository.createQueryBuilder = jest
+        .fn()
+        .mockReturnValue(mockQueryBuilder);
+
+      const result = await productService.getAllProducts();
+      expect(result.success).toBe(true);
+      expect(result.statusCode).toBe(200);
+      expect(result.products).toStrictEqual(mockProducts);
+    });
+  });
+
   describe("createProducts", () => {
     it("should create a product successfully", async () => {
       // Mock data

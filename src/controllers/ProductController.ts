@@ -250,6 +250,28 @@ class ProductController {
     }
   };
 
+  public getAllProduct = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { page = 1, limit = 10 } = req.query as any;
+
+      const products = await this.productService.getAllProducts(
+        Number(page),
+        Number(limit),
+      );
+      return res.status(200).json({
+        status_code: 200,
+        message: "Product retrieved successfully",
+        data: products,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   /**
    * @openapi
    * /api/v1/organizations/{org_id}/products/{product_id}:

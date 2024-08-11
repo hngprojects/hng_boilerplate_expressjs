@@ -38,4 +38,6 @@ productRouter.get(
   productController.getSingleProduct,
 );
 
+productRouter.get("/products", productController.getAllProduct);
+
 export { productRouter };
