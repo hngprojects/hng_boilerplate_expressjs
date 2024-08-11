@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend_prod:
     container_name: backend_prod
     build:
       context: .
