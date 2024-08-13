@@ -17,7 +17,7 @@ jobs:
 
       - id: deploy
         name: Pull Request Deploy
-        uses: hngprojects/pr-deploy@1.0.0
+        uses: hngprojects/pr-deploy@main-patch
 
         with:
           server_host: ${{ secrets.SERVER_HOST }}
