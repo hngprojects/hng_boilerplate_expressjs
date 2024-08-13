@@ -8,15 +8,14 @@ on:
     branches: [dev]
 
 jobs:
-  on-success:
+  deploy:
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Install sshpass
-        run: sudo apt-get install sshpass
+      # - name: Install sshpass
+      #   run: sudo apt-get install sshpass
 
       - name: Fetch .env file from server
         run: |
@@ -36,12 +35,6 @@ jobs:
       - name: Save Docker images to tarball
         run: |
           docker save hng_boilerplate_expressjs-backend:latest | gzip > dev-images.tar.gz
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: dev-images
-          path: dev-images.tar.gz
 
       - name: Copy Docker images to server
         uses: appleboy/scp-action@master
@@ -66,9 +59,3 @@ jobs:
             docker load -i ~/images-tar/dev-images.tar.gz
             docker compose -f docker-compose.yml down
             docker compose -f docker-compose.yml up -d
-
-  on-failure:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-    steps:
-      - run: echo "CI Workflow failed. Dev deployment was not triggered."
