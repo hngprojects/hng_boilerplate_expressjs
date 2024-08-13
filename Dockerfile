@@ -1,23 +1,25 @@
-# Fetching the minified node image on apline linux
-FROM node:slim
+# Use a lightweight Node.js base image
+FROM node:18-alpine AS production
 
 # Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Copy package.json and package-lock.json
-COPY package*.json ./
+# Copy only the necessary files for production
+COPY package.json yarn.lock ./
 
-# Install needed packages
-RUN yarn
+# Install production dependencies only
+RUN yarn install --production=true --frozen-lockfile --no-optional && \
+    yarn cache clean && \
+    rm -rf /usr/share/man /usr/share/doc /var/cache/apk/* /tmp/*
 
-# Bundle app source
+# Copy the remaining application files
 COPY . .
 
 # Make port 8000 available outside this container
 EXPOSE 8000
 
-# Define environment variable
-ENV NODE_ENV=development
+# Set the environment to production
+ENV NODE_ENV=production
 
 # Run the app when the container launches
-CMD ["yarn", "start:dev"]
+CMD ["yarn", "start"]
