@@ -1,0 +1,13 @@
+ <!-- prettier-ignore -->
+ {{#> base_template}}
+  {{#*inline "content"}}
+       <h1>{{title}}</h1>
+        <p class="greeting"><strong>Hi {{userName}},</strong></p>
+        <p>We noticed that your account activation link has expired. For your security, activation links are only valid for a specific time period.</p>
+        <p>Don't worry, you can easily request a new activation link by clicking the button below:</p>
+        <div class='button-container'>
+          <a href='{{activationLinkUrl}}'>Send Another Activation Link</a>
+        </div>
+  {{/inline}}
+{{/base_template}}
+      

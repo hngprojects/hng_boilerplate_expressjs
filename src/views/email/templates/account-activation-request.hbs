@@ -1,0 +1,12 @@
+<!-- prettier-ignore -->
+{{#> base_template}}
+  {{#*inline "content"}}
+    <h1>{{title}}</h1>
+    <p class="greeting"><strong>Hi {{userName}},</strong></p>
+    <p>We recently detected a login attempt to your account from an unfamiliar device. To ensure the security of your account, we haven't granted access.</p>
+    <p>To activate your account and secure it, please click the button below:</p>
+    <div class='button-container'>
+      <a href='{{activationLinkUrl}}'>Activate Your Account</a>
+    </div>
+  {{/inline}}
+{{/base_template}}

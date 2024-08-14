@@ -1,0 +1,40 @@
+name: Build, Test, and Deploy for Dev Branch
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: /var/www/aihomework/dev
+
+    steps:
+      - name: Pull from github
+        id: pull
+        run: |
+          git stash
+          git pull origin dev
+
+      - name: install dependencies
+        run: yarn install
+
+      - name: Run Test
+        run: yarn test
+
+      - name: buld the dist
+        run: yarn build
+
+      - name: migrate
+        run: yarn reset-db
+
+      - name: setup service file
+        run: sudo cp server-script/aihomeworkdev.service /etc/systemd/system
+
+      - name: start the app
+        run: |
+          sudo systemctl daemon-reload
+          sudo systemctl restart aihomeworkdev
