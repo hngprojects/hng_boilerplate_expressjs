@@ -10,15 +10,13 @@ jobs:
       name: preview
       url: ${{ steps.deploy.outputs.preview-url }}
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout to branch
+      - name: Checkout the branch
         uses: actions/checkout@v4
 
       - id: deploy
         name: Pull Request Deploy
         uses: hngprojects/pr-deploy@main-patch
-
         with:
           server_host: ${{ secrets.SERVER_HOST }}
           server_username: ${{ secrets.SERVER_USERNAME }}

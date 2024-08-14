@@ -1,15 +1,14 @@
 services:
-  backend:
+  backend_prod:
     container_name: backend_prod
     build:
       context: .
-      args:
-        - NODE_ENV=${NODE_ENV}
     ports:
       - 4444:8000
     env_file:
       - .env
     environment:
+      NODE_ENV: production
       DB_HOST: backend_db_prod
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@backend_db_prod:5432/${DB_NAME}
     networks:
