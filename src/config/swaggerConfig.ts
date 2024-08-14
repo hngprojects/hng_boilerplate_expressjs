@@ -48,12 +48,7 @@ const swaggerDefinition: SwaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: [
-    "./src/routes/*.ts",
-    "./src/controllers/*.ts",
-    "./src/services/*.ts",
-    "./src/schema/*.ts",
-  ], // Adjust these paths
+  apis: ["./src/docs/*.ts"], // Adjust these paths
 };
 
 const specs = swaggerJsdoc(options);
