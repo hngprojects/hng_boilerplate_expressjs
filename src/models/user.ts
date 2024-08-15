@@ -29,6 +29,7 @@ import ExtendedBaseEntity from "./extended-base-entity";
 import { Like } from "./like";
 import { OrganizationMember } from "./organization-member";
 import { UserOrganization } from "./user-organisation";
+import { Subscription } from "./subcription";
 
 @Entity()
 @Unique(["email"])
@@ -144,6 +145,9 @@ export class User extends ExtendedBaseEntity {
 
   @Column("simple-array", { nullable: true })
   backup_codes: string[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.user)
+  subscriptions: Subscription[];
 
   createPasswordResetToken(): string {
     const resetToken = crypto.randomBytes(32).toString("hex");

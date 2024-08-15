@@ -39,6 +39,7 @@ import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
 import { roleRouter } from "./routes/roles";
+import { planRouter } from "./routes/plans";
 dotenv.config();
 
 const port = config.port;
@@ -99,6 +100,7 @@ server.use("/api/v1", paymentPaystackRouter);
 server.use("/api/v1", billingPlanRouter);
 server.use("/api/v1", newsLetterSubscriptionRoute);
 server.use("/api/v1", squeezeRoute);
+server.use("/api/v1", planRouter);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
