@@ -23,20 +23,20 @@ jobs:
         with:
           node-version: '20' 
 
-      # - name: Remove old actions remote URL
-      #   continue-on-error: true
-      #   run: |
-      #       git remote rm action
+      - name: Remove old actions remote URL
+        continue-on-error: true
+        run: |
+            git remote rm action
 
-      # - name: Stash or remove local changes
-      #   run: |
-      #       if git diff --quiet; then
-      #         echo "No local changes to stash."
-      #       else
-      #         echo "Stashing local changes..."
-      #         git stash --include-untracked || echo "Failed to stash changes. Attempting to reset..."
-      #         git reset --hard || exit 1
-      #       fi
+      - name: Stash or remove local changes
+        run: |
+            if git diff --quiet; then
+              echo "No local changes to stash."
+            else
+              echo "Stashing local changes..."
+              git stash --include-untracked || echo "Failed to stash changes. Attempting to reset..."
+              git reset --hard || exit 1
+            fi
 
       - name: Pull from GitHub
         id: pull
