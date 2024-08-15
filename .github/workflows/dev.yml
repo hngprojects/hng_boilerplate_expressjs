@@ -10,7 +10,7 @@ jobs:
     runs-on: bp-runner
     defaults:
       run:
-        working-directory: /var/www/aihomework/boilerplate
+        working-directory: /var/www/aihomework/boilerplate/dev
 
     steps:
       - name: Checkout code
