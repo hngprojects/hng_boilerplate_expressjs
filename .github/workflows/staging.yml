@@ -1,13 +1,13 @@
-name: Deploy to Dev
+name: Deploy to staging
 
 on:
   push:
     branches:
-      - dev
+      - staging
 
 jobs:
   deploy:
-    runs-on: bp-runner
+    runs-on: bpstaging-runner
     defaults:
       run:
         working-directory: /var/www/aihomework/boilerplate
