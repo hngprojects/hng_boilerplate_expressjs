@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/var/www/aihomework/boilerplate/staging
-ExecStart=/bin/bash /var/www/aihomework/staging/server-script/startappstaging.sh
+ExecStart=/bin/bash /var/www/aihomework/boilerplate/staging/server-script/startappstaging.sh
 #Restart=on-failure
 #RestartSec=20s
 StartLimitInterval=0
