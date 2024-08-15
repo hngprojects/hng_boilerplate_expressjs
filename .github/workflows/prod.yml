@@ -43,7 +43,7 @@ jobs:
         run: |
             remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
             git remote add action $remote_repo
-            git pull $remote_repo prod
+            git pull $remote_repo main
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
