@@ -10,7 +10,7 @@ jobs:
     runs-on: bingo
     defaults:
       run:
-        working-directory: /var/www/aihomework/boilerplates/dev
+        working-directory: /var/www/aihomework/boilerplate/dev
 
     steps:
       - name: Checkout code
@@ -40,10 +40,7 @@ jobs:
 
       - name: Pull from GitHub
         id: pull
-        run: |
-            remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-            git remote add action $remote_repo
-            git pull action dev
+        run: git pull 
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
