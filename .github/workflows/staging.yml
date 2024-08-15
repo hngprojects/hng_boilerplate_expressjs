@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: bpstaging-runner
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,25 +22,21 @@ jobs:
           SSH_USERNAME: ${{ secrets.USERNAME }}
           SSH_PASSWORD: ${{ secrets.PASSWORD }}
 
-      - name: Build Docker images
+      - name: Pull from GitHub
+        id: pull
         run: |
-          docker compose --env-file .env -f docker-compose.staging.yml build
+          remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          # git remote add action $remote_repo
+          git clone $remote_repo staging
 
-      - name: List Docker images
-        run: docker images
-
-      - name: Save Docker images to tarball
-        run: |
-          docker save hng_boilerplate_expressjs-backend_staging:latest | gzip > staging-images.tar.gz
-
-      - name: Copy Docker images to server
+      - name: Sync with the server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "staging-images.tar.gz"
-          target: "~/images-tar"
+          source: "staging/*"
+          target: "~/staging-deployment/hng_boilerplate_expressjs/"
 
       - name: Deploy to server
         uses: appleboy/ssh-action@master
@@ -53,6 +49,5 @@ jobs:
             git stash
             git checkout staging
             git pull
-            docker load -i ~/images-tar/staging-images.tar.gz
-            docker compose -f docker-compose.staging.yml down
-            docker compose -f docker-compose.staging.yml up -d
+            npm install
+            pm2 restart all
