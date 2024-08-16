@@ -64,7 +64,7 @@ jobs:
         run: |
           sudo cp server-script/aihomeworkprod.service /etc/systemd/system
           sudo systemctl daemon-reload
-          sudo systemctl restart aihomeworkmain.service
+          sudo systemctl restart aihomeworkprod.service
 
       - name: Verify deployment
         run: |
