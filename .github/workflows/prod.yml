@@ -3,14 +3,14 @@ name: Deploy to production
 on:
   push:
     branches:
-      - main
+      - prod
 
 jobs:
   deploy:
     runs-on: bp-run-prod
     defaults:
       run:
-        working-directory: /var/www/aihomework/boilerplate/main
+        working-directory: /var/www/aihomework/boilerplate/prod
 
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
         run: |
             remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
             git remote add action $remote_repo
-            git pull $remote_repo main
+            git pull $remote_repo prod
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
@@ -62,7 +62,7 @@ jobs:
 
       - name: Setup and restart service
         run: |
-          sudo cp server-script/aihomeworkmain.service /etc/systemd/system
+          sudo cp server-script/aihomeworkprod.service /etc/systemd/system
           sudo systemctl daemon-reload
           sudo systemctl restart aihomeworkmain.service
 
@@ -70,7 +70,7 @@ jobs:
         run: |
           echo "Waiting for service to start..."
           sleep 10
-          if sudo systemctl is-active --quiet aihomeworkmain.service; then
+          if sudo systemctl is-active --quiet aihomeworkprod.service; then
             echo "Deployment successful!"
           else
             echo "Deployment failed!"
