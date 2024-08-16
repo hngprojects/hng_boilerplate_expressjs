@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: bp-run-prod
+    runs-on: bp_run_prod
     defaults:
       run:
         working-directory: /var/www/aihomework/boilerplate/prod
