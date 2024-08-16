@@ -3,7 +3,7 @@ Description=AIHomework-Prod
 After=network.target
 
 [Service]
-WorkingDirectory=/var/www/aihomework/prod
+WorkingDirectory=/var/www/aihomework/boilerplate
 ExecStart=/bin/bash /var/www/aihomework/prod/server-script/startappprod.sh
 #Restart=on-failure
 #RestartSec=20s
