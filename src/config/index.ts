@@ -33,6 +33,7 @@ const config = {
   LEMONSQUEEZY_SIGNING_KEY: process.env.LEMONSQUEEZY_SIGNING_KEY,
   BASE_URL: process.env.BASE_URL,
   PAYSTACK_SECRET_KEY: process.env.PAYSTACK_SECRET_KEY,
+  SWAGGER_JSON_URL: process.env.SWAGGER_JSON_URL,
 };
 
 export default config;

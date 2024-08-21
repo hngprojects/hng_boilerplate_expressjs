@@ -9,6 +9,7 @@ const swaggerDefinition: SwaggerDefinition = {
     version: version,
     // description:
     //   "This is a simple CRUD API application made with Express and documented with Swagger",
+    basePath: "http://localhost:8000/api-docs",
   },
   servers: [
     {
@@ -34,6 +35,9 @@ const swaggerDefinition: SwaggerDefinition = {
       bearerAuth: [],
     },
   ],
+  externalDocs: {
+    url: config.SWAGGER_JSON_URL,
+  },
 };
 
 const options = {

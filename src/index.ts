@@ -11,6 +11,7 @@ import {
   adminRouter,
   authRoute,
   billingPlanRouter,
+  billingRouter,
   blogRouter,
   contactRouter,
   exportRouter,
@@ -18,28 +19,27 @@ import {
   helpRouter,
   jobRouter,
   newsLetterSubscriptionRoute,
+  notificationRouter,
+  notificationsettingsRouter,
   paymentFlutterwaveRouter,
+  paymentPaystackRouter,
   paymentRouter,
   paymentStripeRouter,
   productRouter,
-  billingRouter,
   runTestRouter,
   sendEmailRoute,
+  squeezeRoute,
   testimonialRoute,
   userRouter,
-  paymentPaystackRouter,
-  squeezeRoute,
-  notificationsettingsRouter,
-  notificationRouter,
 } from "./routes";
 import { orgRouter } from "./routes/organisation";
+import { planRouter } from "./routes/plans";
+import { roleRouter } from "./routes/roles";
 import { smsRouter } from "./routes/sms";
 import swaggerSpec from "./swaggerConfig";
 import { Limiter } from "./utils";
 import log from "./utils/logger";
 import ServerAdapter from "./views/bull-board";
-import { roleRouter } from "./routes/roles";
-import { planRouter } from "./routes/plans";
 dotenv.config();
 
 const port = config.port;
@@ -103,6 +103,10 @@ server.use("/api/v1", squeezeRoute);
 server.use("/api/v1", planRouter);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+server.use("/openapi.json", (_req: Request, res: Response) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerSpec);
+});
 
 server.use(routeNotFound);
 server.use(errorHandler);
