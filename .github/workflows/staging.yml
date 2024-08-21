@@ -1,58 +1,78 @@
 name: Deploy to staging
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types:
-      - completed
-    branches: [staging]
+  push:
+    branches:
+      - staging
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: bp_runner
+    defaults:
+      run:
+        working-directory: /var/www/aihomework/boilerplate/staging
+
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Fetch .env file from server
-        run: |
-          sshpass -p ${{ secrets.PASSWORD }} scp -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:~/staging-deployment/hng_boilerplate_expressjs/.env .env
-        env:
-          SSH_HOST: ${{ secrets.HOST }}
-          SSH_USERNAME: ${{ secrets.USERNAME }}
-          SSH_PASSWORD: ${{ secrets.PASSWORD }}
-
-      - name: Build Docker images
-        run: |
-          docker compose --env-file .env -f docker-compose.staging.yml build
-
-      - name: List Docker images
-        run: docker images
-
-      - name: Save Docker images to tarball
-        run: |
-          docker save hng_boilerplate_expressjs-backend_staging:latest | gzip > staging-images.tar.gz
-
-      - name: Copy Docker images to server
-        uses: appleboy/scp-action@master
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          source: "staging-images.tar.gz"
-          target: "~/images-tar"
+          fetch-depth: 0
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@master
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
-          script: |
-            cd ~/staging-deployment/hng_boilerplate_expressjs
-            git stash
-            git checkout staging
-            git pull
-            docker load -i ~/images-tar/staging-images.tar.gz
-            docker compose -f docker-compose.staging.yml down
-            docker compose -f docker-compose.staging.yml up -d
+          node-version: '20' 
+
+      - name: Remove old actions remote URL
+        continue-on-error: true
+        run: |
+            git remote rm action
+
+      - name: Stash or remove local changes
+        run: |
+            if git diff --quiet; then
+              echo "No local changes to stash."
+            else
+              echo "Stashing local changes..."
+              git stash --include-untracked || echo "Failed to stash changes. Attempting to reset..."
+              git reset --hard || exit 1
+            fi
+
+      - name: Pull from GitHub
+        id: pull
+        run: |
+            remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+            git remote add action $remote_repo
+            git pull $remote_repo staging
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run tests
+        run: yarn test
+
+      - name: Build the application
+        run: yarn build && sudo rm -rf build
+
+      # - name: Generate migrations
+      #   run: yarn migration:generate
+
+      # - name: Run migrations
+      #   run: yarn migration:run
+
+      - name: Setup and restart service
+        run: |
+          sudo cp server-script/aihomeworkstaging.service /etc/systemd/system
+          sudo systemctl daemon-reload
+          sudo systemctl restart aihomeworkstaging.service
+
+      - name: Verify deployment
+        run: |
+          echo "Waiting for service to start..."
+          sleep 10
+          if sudo systemctl is-active --quiet aihomeworkstaging.service; then
+            echo "Deployment successful!"
+          else
+            echo "Deployment failed!"
+            exit 1
+          fi
