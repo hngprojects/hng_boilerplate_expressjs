@@ -10,7 +10,7 @@ jobs:
     runs-on: bp_runner
     defaults:
       run:
-        working-directory: /var/www/aihomework/boilerplate/
+        working-directory: /var/www/aihomework/boilerplate/prod
 
     steps:
       - name: Checkout code
@@ -28,23 +28,23 @@ jobs:
         run: |
             git remote rm action
 
-      # - name: Stash or remove local changes
-      #   run: |
-      #       if git diff --quiet; then
-      #         echo "No local changes to stash."
-      #       else
-      #         echo "Stashing local changes..."
-      #         git stash --include-untracked || echo "Failed to stash changes. Attempting to reset..."
-      #         git reset --hard || exit 1
-      #       fi
+      - name: Stash or remove local changes
+        run: |
+            if git diff --quiet; then
+              echo "No local changes to stash."
+            else
+              echo "Stashing local changes..."
+              git stash --include-untracked || echo "Failed to stash changes. Attempting to reset..."
+              git reset --hard || exit 1
+            fi
 
       - name: Pull from GitHub
         id: pull
         run: |
             remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
-            git clone $remote_repo prod
-            # git remote add action $remote_repo
-            # git pull $remote_repo prod
+    
+            git remote add action $remote_repo
+            git pull $remote_repo prod
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
