@@ -44,6 +44,7 @@ jobs:
             remote_repo="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
     
             git remote add action $remote_repo
+            git config pull.rebase false
             git pull action prod
 
       - name: Install dependencies
