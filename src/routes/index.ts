@@ -23,3 +23,4 @@ export * from "./squeeze";
 export * from "./newsLetterSubscription";
 export * from "./notification";
 export * from "./billingplan";
+export * from "./api-status";
