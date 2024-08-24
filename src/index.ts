@@ -9,6 +9,7 @@ import AppDataSource from "./data-source";
 import { errorHandler, routeNotFound } from "./middleware";
 import {
   adminRouter,
+  apiStatusRouter,
   authRoute,
   billingPlanRouter,
   billingRouter,
@@ -59,8 +60,8 @@ server.use(
 );
 
 server.use(Limiter);
-server.use(express.json());
-server.use(express.urlencoded({ extended: true }));
+server.use(express.json({ limit: "10mb" }));
+server.use(express.urlencoded({ limit: "10mb", extended: true }));
 server.use(passport.initialize());
 
 server.get("/", (req: Request, res: Response) => {
@@ -101,6 +102,7 @@ server.use("/api/v1", billingPlanRouter);
 server.use("/api/v1", newsLetterSubscriptionRoute);
 server.use("/api/v1", squeezeRoute);
 server.use("/api/v1", planRouter);
+server.use("/api/v1", apiStatusRouter);
 
 server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 server.use("/openapi.json", (_req: Request, res: Response) => {
