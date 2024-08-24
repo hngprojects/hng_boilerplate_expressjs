@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { createApiStatus } from "../controllers/api-status.controller";
+import {
+  createApiStatus,
+  getApiStatus,
+} from "../controllers/api-status.controller";
 
 const apiStatusRouter = Router();
 
 apiStatusRouter.post("/api-status", createApiStatus);
+apiStatusRouter.get("/api-status", getApiStatus);
 
 export { apiStatusRouter };
