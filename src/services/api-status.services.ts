@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppDataSource from "../data-source";
 import { API_STATUS, ApiStatus } from "../models/api-model";
+import { GroupedApi } from "../types";
 
 const apiStatusRepository = AppDataSource.getRepository(ApiStatus);
 const MAX_ALLOWED_RESPONSE_TIME = 2000;
@@ -47,4 +48,53 @@ const parseJsonResponse = async (resultJson: any): Promise<void> => {
   }
 };
 
-export { parseJsonResponse };
+const fetchApiStatusService = async () => {
+  const api_status_response = await apiStatusRepository.find();
+
+  const groupedAPIs = api_status_response.reduce((acc, current) => {
+    const existingGroup = acc.find(
+      (group) => group.api_group === current.api_group,
+    );
+
+    if (existingGroup) {
+      existingGroup.collection.push({
+        api_name: current.api_name,
+        is_operational: current.status,
+        details: current.details,
+        last_checked: current.updated_at,
+      });
+    } else {
+      acc.push({
+        api_group: current.api_group,
+        is_operational: API_STATUS.OPERATIONAL,
+        collection: [
+          {
+            api_name: current.api_name,
+            is_operational: current.status,
+            details: current.details,
+            last_checked: current.updated_at,
+          },
+        ],
+      });
+    }
+
+    return acc;
+  }, [] as GroupedApi[]);
+
+  const response_dto = groupedAPIs.map((api) => {
+    const hasDegraded = api.collection.some(
+      (apiCollection) =>
+        apiCollection.is_operational !== API_STATUS.OPERATIONAL,
+    );
+
+    if (hasDegraded) {
+      api.is_operational = API_STATUS.DEGRADED;
+    }
+
+    return api;
+  });
+
+  return response_dto;
+};
+
+export { fetchApiStatusService, parseJsonResponse };

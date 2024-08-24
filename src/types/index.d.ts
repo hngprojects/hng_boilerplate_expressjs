@@ -1,5 +1,4 @@
 import { User } from "../models";
-import { Permissions } from "../models/permissions.entity";
 
 export interface IUserService {
   getUserById(id: string): Promise<User | null>;
@@ -123,3 +122,14 @@ export type UpdateUserRecordOption = {
 export interface IBillingPlanService {
   createBillingPlan(planData: Partial<BillingPlan>): Promise<BillingPlan[]>;
 }
+
+export type GroupedApi = {
+  api_group: string;
+  is_operational: API_STATUS;
+  collection: {
+    api_name: string;
+    is_operational: string;
+    details: string;
+    last_checked: Date;
+  }[];
+};
