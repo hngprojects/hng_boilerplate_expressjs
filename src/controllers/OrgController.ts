@@ -8,8 +8,9 @@ import {
 } from "../middleware";
 import { OrgService } from "../services/org.services";
 import log from "../utils/logger";
+import isSuperAdmin from "../utils/isSuperAdmin";
 
-export class OrgController {
+class OrgController {
   private orgService: OrgService;
   constructor() {
     this.orgService = new OrgService();
@@ -1605,4 +1606,145 @@ export class OrgController {
       );
     }
   }
+
+  /**
+   * @swagger
+   * /api/v1/organizations/{org_id}/products:
+   *   get:
+   *     summary: Get all products for an organization
+   *     tags: [Products]
+   *     parameters:
+   *       - in: path
+   *         name: org_id
+   *         required: true
+   *         description: The ID of the organization
+   *         schema:
+   *           type: string
+   *           example: "org-12345"
+   *     responses:
+   *       200:
+   *         description: Product retrieved successfully
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                   example: "Product retrieved successfully"
+   *                 data:
+   *                   type: object
+   *                   properties:
+   *                     products:
+   *                       type: array
+   *                       items:
+   *                         type: object
+   *                         properties:
+   *                           id:
+   *                             type: string
+   *                             example: "prod-12345"
+   *                           name:
+   *                             type: string
+   *                             example: "Product Name"
+   *                           description:
+   *                             type: string
+   *                             example: "Product Description"
+   *                           price:
+   *                             type: number
+   *                             example: 100.50
+   *                           quantity:
+   *                             type: integer
+   *                             example: 10
+   *                           category:
+   *                             type: string
+   *                             example: "Electronics"
+   *                           image:
+   *                             type: string
+   *                             example: "https://example.com/product-image.jpg"
+   *                           stock_status:
+   *                             type: string
+   *                             example: "In Stock"
+   *       401:
+   *         description: User not authenticated
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 401
+   *                 message:
+   *                   type: string
+   *                   example: "User not authenticated"
+   *       403:
+   *         description: User is not authorized to fetch all products
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 403
+   *                 message:
+   *                   type: string
+   *                   example: "User is not authorized to fetch all products"
+   *       500:
+   *         description: Internal Server Error - An unexpected error has occurred
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   *                   example: "An unexpected error has occurred"
+   */
+  public getAllOrgProducts = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { org_id } = req.params;
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({
+          status_code: 401,
+          success: false,
+          message: "User not authenticated",
+        });
+      }
+
+      const isAdmin = await isSuperAdmin(userId);
+      if (!isAdmin) {
+        return res.status(403).json({
+          status_code: 403,
+          success: false,
+          message: "User is not authorized to fetch all products",
+        });
+      }
+
+      const products = await this.orgService.getAllOrgProducts(org_id);
+      return res.status(200).json({
+        status_code: 200,
+        message: "Product retrieved successfully",
+        data: { products },
+      });
+    } catch (error) {
+      res.status(500).json({
+        status_code: 500,
+        message: error.message || "An unexpected error has occurred",
+      });
+    }
+  };
 }
+
+export { OrgController };

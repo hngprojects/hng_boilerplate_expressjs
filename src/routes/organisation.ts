@@ -14,40 +14,40 @@ const orgRouter = Router();
 const orgController = new OrgController();
 
 orgRouter.get(
-  "/organizations/invites",
+  "/organisations/invites",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
   orgController.getAllInvite.bind(orgController),
 );
 orgRouter.get(
-  "/organizations/:org_id",
+  "/organisations/:org_id",
   authMiddleware,
   validateOrgId,
   orgController.getSingleOrg.bind(orgController),
 );
 orgRouter.delete(
-  "/organizations/:org_id/user/:user_id",
+  "/organisations/:org_id/user/:user_id",
   authMiddleware,
   validateOrgId,
   orgController.removeUser.bind(orgController),
 );
 
 orgRouter.post(
-  "/organizations",
+  "/organisations",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController),
 );
 
 orgRouter.get(
-  "/organizations/:org_id/invite",
+  "/organisations/:org_id/invite",
   authMiddleware,
   checkPermissions([UserRole.ADMIN, UserRole.SUPER_ADMIN]),
   orgController.generateGenericInviteLink.bind(orgController),
 );
 
 orgRouter.post(
-  "organizations/:org_id/roles",
+  "organisations/:org_id/roles",
   authMiddleware,
   validateOrgRole,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
@@ -55,19 +55,19 @@ orgRouter.post(
 );
 
 orgRouter.post(
-  "/organizations/:org_id/send-invite",
+  "/organisations/:org_id/send-invite",
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.ADMIN]),
   orgController.generateAndSendInviteLinks.bind(orgController),
 );
 orgRouter.post(
-  "/organizations/accept-invite",
+  "/organisations/accept-invite",
   authMiddleware,
   orgController.addUserToOrganizationWithInvite.bind(orgController),
 );
 
 orgRouter.get(
-  "/users/:id/organizations",
+  "/users/:id/organisations",
   authMiddleware,
   orgController.getOrganizations.bind(orgController),
 );
@@ -79,7 +79,7 @@ orgRouter.get(
 );
 
 orgRouter.put(
-  "/organizations/:organization_id",
+  "/organisations/:organization_id",
   authMiddleware,
   validateUpdateOrg,
   checkPermissions([UserRole.SUPER_ADMIN, UserRole.USER]),
@@ -87,22 +87,28 @@ orgRouter.put(
 );
 
 orgRouter.get(
-  "/organizations/:org_id/roles/:role_id",
+  "/organisations/:org_id/roles/:role_id",
   authMiddleware,
   orgController.getSingleRole.bind(orgController),
 );
 
 orgRouter.get(
-  "/organizations/:org_id/roles",
+  "/organisations/:org_id/roles",
   authMiddleware,
   orgController.getAllOrganizationRoles.bind(orgController),
 );
 
 orgRouter.put(
-  "/organizations/:org_id/roles/:role_id/permissions",
+  "/organisations/:org_id/roles/:role_id/permissions",
   authMiddleware,
   checkPermissions([UserRole.ADMIN]),
   orgController.updateOrganizationRolePermissions.bind(orgController),
+);
+
+orgRouter.get(
+  "/organisations/:org_id/products",
+  authMiddleware,
+  orgController.getAllOrgProducts,
 );
 
 export { orgRouter };
