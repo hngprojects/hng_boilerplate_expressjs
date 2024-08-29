@@ -14,5 +14,6 @@ export * from "./payment/paystack.service";
 export * from "./billing-plans.services";
 export * from "./squeezeService";
 export * from "./blogComment.services";
+export * from "./newsLetterSubscription.service";
 export * from "./notification.services";
 export * from "./api-status.services";
