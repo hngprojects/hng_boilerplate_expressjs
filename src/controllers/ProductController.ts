@@ -452,6 +452,31 @@ class ProductController {
       return new BadRequest("Invalid Product ID");
     }
   };
+
+  public updateProduct = async (req: Request, res: Response) => {
+    try {
+      const orgId = req.params.orgId;
+      const productId = req.params.productId;
+      const updatedProductData = req.body;
+      const userId = req.user.id;
+
+      const updatedProduct = await this.productService.updateProduct(
+        orgId,
+        productId,
+        updatedProductData,
+        userId,
+      );
+
+      res.status(200).json(updatedProduct);
+    } catch (error) {
+      console.log(error);
+      res.status(error.status_code || 500).json({
+        status_code: error.status_code || 500,
+        message: error.message || "An unexpected error occurred",
+        data: {},
+      });
+    }
+  };
 }
 
 export { ProductController };

@@ -11,7 +11,7 @@ import ExtendedBaseEntity from "./extended-base-entity";
 import { ProductSize, StockStatus } from "../enums/product";
 import { User } from "./user";
 @Entity()
-export class Product extends ExtendedBaseEntity {
+export class Product {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

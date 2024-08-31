@@ -6,14 +6,17 @@ import {
   InvalidInput,
   ResourceNotFound,
   ServerError,
+  Unauthorized,
 } from "../middleware";
 import { Organization } from "../models/organization";
 import { Product } from "../models/product";
 import { ProductSchema } from "../schema/product.schema";
+import { User } from "../models";
 
 export class ProductService {
   private productRepository: Repository<Product>;
   private organizationRepository: Repository<Organization>;
+  private userRepository: Repository<User>;
 
   private entities: {
     [key: string]: {
@@ -25,6 +28,7 @@ export class ProductService {
   constructor() {
     this.productRepository = AppDataSource.getRepository(Product);
     this.organizationRepository = AppDataSource.getRepository(Organization);
+    this.userRepository = AppDataSource.getRepository(User);
 
     this.entities = {
       product: {
@@ -197,5 +201,66 @@ export class ProductService {
     } catch (error) {
       throw new ResourceNotFound(error.message);
     }
+  }
+
+  public async updateProduct(
+    orgId: string,
+    productId: string,
+    payload: ProductSchema,
+    userId: any,
+  ) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new ResourceNotFound("User not found");
+    }
+    if (user.role !== "admin") {
+      throw new Unauthorized("Access denied. Admins only");
+    }
+
+    const organization = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!organization) {
+      throw new ResourceNotFound("Invalid organization credentials");
+    }
+    let product;
+    product = await this.productRepository.findOne({
+      where: { id: productId },
+      relations: ["org"],
+    });
+
+    if (!product || product.org.id !== orgId) {
+      throw new ResourceNotFound(
+        "Product not found or does not belong to the organization",
+      );
+    }
+    product.stock_status = await this.calculateProductStatus(payload.quantity);
+
+    Object.assign(product, payload);
+
+    const updatedProduct = await this.productRepository.save(product);
+    if (!updatedProduct) {
+      throw new ServerError(
+        "An unexpected error occurred. Please try again later.",
+      );
+    }
+
+    return {
+      status_code: 200,
+      message: "Product updated successfully",
+      data: {
+        id: updatedProduct.id,
+        name: updatedProduct.name,
+        description: updatedProduct.description,
+        price: updatedProduct.price,
+        category: updatedProduct.category,
+        image: updatedProduct.image,
+        quantity: updatedProduct.quantity,
+        size: updatedProduct.size,
+        stock_status: updatedProduct.stock_status,
+        created_at: updatedProduct.created_at,
+        updated_at: updatedProduct.updated_at,
+      },
+    };
   }
 }

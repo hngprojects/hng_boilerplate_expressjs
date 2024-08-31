@@ -1,9 +1,8 @@
 import { Router } from "express";
 import { ProductController } from "../controllers/ProductController";
-import { authMiddleware, validOrgAdmin } from "../middleware";
+import { authMiddleware, checkPermissions, validOrgAdmin } from "../middleware";
 import { validateProductDetails } from "../middleware/product";
 import { validateUserToOrg } from "../middleware/organizationValidation";
-import { adminOnly } from "../middleware";
 
 const productRouter = Router();
 const productController = new ProductController();
@@ -37,5 +36,9 @@ productRouter.get(
   validOrgAdmin,
   productController.getSingleProduct,
 );
-
+productRouter.patch(
+  "/organisations/:orgId/products/:productId",
+  authMiddleware,
+  productController.updateProduct,
+);
 export { productRouter };
