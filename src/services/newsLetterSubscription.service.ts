@@ -75,6 +75,8 @@ export class NewsLetterSubscriptionService
     limit?: number;
   }) {
     try {
+      page = page ? page : 1;
+      limit = limit ? limit : 10;
       const [newsletters, total] = await this.newsLetterSubscriber.findAndCount(
         {
           skip: (page - 1) * limit,

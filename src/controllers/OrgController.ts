@@ -1060,7 +1060,7 @@ export class OrgController {
   async getAllInvite(req: Request, res: Response, next: NextFunction) {
     try {
       const page = parseInt(req.query.page as string, 10) || 1;
-      const pageSize = parseInt(req.query.pageSize as string, 10) || 10;
+      const pageSize = parseInt(req.query.limit as string, 10) || 10;
 
       const { status_code, message, data, total } =
         await this.orgService.getAllInvite(page, pageSize);
