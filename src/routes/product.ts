@@ -33,8 +33,6 @@ productRouter.delete(
 
 productRouter.get(
   "/organizations/:org_id/products/:product_id",
-  authMiddleware,
-  validOrgAdmin,
   productController.getSingleProduct,
 );
 
