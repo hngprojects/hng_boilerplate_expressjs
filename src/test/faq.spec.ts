@@ -2,7 +2,7 @@ import { FAQService } from "../services";
 import { Repository } from "typeorm";
 import { FAQ } from "../models/faq";
 import AppDataSource from "../data-source";
-import { BadRequest, HttpError } from "../middleware";
+import { BadRequest, HttpError, ResourceNotFound } from "../middleware";
 
 jest.mock("../data-source");
 
@@ -103,12 +103,14 @@ describe("FaqService", () => {
       expect(result).toBe(true);
     });
 
-    it("should throw BadRequest if FAQ does not exist", async () => {
+    it("should throw ResourceNotFound if FAQ does not exist", async () => {
       const faqId = "faq-123";
 
       faqRepository.findOne.mockResolvedValue(null);
 
-      await expect(faqService.deleteFaq(faqId)).rejects.toThrow(BadRequest);
+      await expect(faqService.deleteFaq(faqId)).rejects.toThrow(
+        ResourceNotFound,
+      );
     });
 
     it("should throw HttpError if deletion fails", async () => {
