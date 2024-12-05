@@ -2,11 +2,14 @@ import { z } from "zod";
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  category: z.string().optional(),
-  price: z.number().min(1, "Price is required"),
-  image: z.string().optional(),
+  description: z.string().min(1, "Description is required"),
+  category: z.string().min(1, "Category is required"),
+  price: z.number().min(0.1, "Price is required and must be greater than 0"),
+  image: z.string(),
   quantity: z.number().min(1, "Quantity is required"),
+  cost_price: z
+    .number()
+    .min(0.1, "Cost price is required and must be greater than 0"),
 });
 
 export type ProductSchema = z.infer<typeof productSchema>;

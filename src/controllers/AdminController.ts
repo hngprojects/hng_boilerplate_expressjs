@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
-import {
-  AdminOrganisationService,
-  AdminUserService,
-  AdminLogService,
-} from "../services";
-import { HttpError } from "../middleware";
 import { check, param, validationResult } from "express-validator";
 import { UserRole } from "../enums/userRoles";
+import { HttpError } from "../middleware";
+import {
+  AdminLogService,
+  AdminOrganisationService,
+  AdminUserService,
+} from "../services";
 
 /**
  * @swagger

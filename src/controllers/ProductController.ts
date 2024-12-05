@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ProductService } from "../services/product.services";
 import { BadRequest } from "../middleware";
+import { ProductService } from "../services/product.services";
 
 class ProductController {
   private productService: ProductService;
