@@ -64,7 +64,6 @@ const signUp = async (req: Request, res: Response, next: NextFunction) => {
     const { message, user, access_token } = await authService.signUp(req.body);
     res.status(201).json({ message, user, access_token });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -626,16 +625,16 @@ const verify2FA = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 export {
-  VerifyUserMagicLink,
   changePassword,
   createMagicToken,
+  enable2FA,
   forgotPassword,
   googleAuthCall,
   // handleGoogleAuth,
   login,
   resetPassword,
   signUp,
-  verifyOtp,
-  enable2FA,
   verify2FA,
+  verifyOtp,
+  VerifyUserMagicLink,
 };

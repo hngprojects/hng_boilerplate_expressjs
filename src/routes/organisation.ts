@@ -33,7 +33,7 @@ orgRouter.delete(
 );
 
 orgRouter.post(
-  "/organizations",
+  "/organisations",
   authMiddleware,
   organizationValidation,
   orgController.createOrganisation.bind(orgController),
@@ -87,13 +87,13 @@ orgRouter.put(
 );
 
 orgRouter.get(
-  "/organizations/:org_id/roles/:role_id",
+  "/organisations/:org_id/roles/:role_id",
   authMiddleware,
   orgController.getSingleRole.bind(orgController),
 );
 
 orgRouter.get(
-  "/organizations/:org_id/roles",
+  "/organisations/:org_id/roles",
   authMiddleware,
   orgController.getAllOrganizationRoles.bind(orgController),
 );

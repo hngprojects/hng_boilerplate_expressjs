@@ -1207,7 +1207,7 @@ export class OrgController {
 
   /**
    * @swagger
-   * /api/v1/organizations/{org_id}/roles/{role_id}:
+   * /api/v1/organisations/{org_id}/roles/{role_id}:
    *   get:
    *     summary: Get a specific role in an organization
    *     tags: [Organizations]

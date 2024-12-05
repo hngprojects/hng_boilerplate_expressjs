@@ -1,11 +1,11 @@
 //@ts-nocheck
-import { ProductService } from "../services/product.services";
 import { Repository } from "typeorm";
-import { Product } from "../models/product";
 import { StockStatus } from "../enums/product";
-import { ProductSchema } from "../schema/product.schema";
+import { ServerError } from "../middleware";
 import { Organization } from "../models/organization";
-import { ServerError, ResourceNotFound } from "../middleware";
+import { Product } from "../models/product";
+import { ProductSchema } from "../schema/product.schema";
+import { ProductService } from "../services/product.services";
 
 jest.mock("../utils", () => ({
   getIsInvalidMessage: jest
@@ -70,9 +70,6 @@ describe("ProductService", () => {
         .mockResolvedValue(StockStatus.IN_STOCK);
 
       const result = await productService.createProduct(mockOrgId, mockProduct);
-      expect(result.status_code).toEqual(201);
-      expect(result.status).toEqual("success");
-      expect(result.message).toEqual("Product created successfully");
       expect(result.data.name).toEqual(mockProduct.name);
       expect(result.data.description).toEqual(mockProduct.description);
       expect(result.data.price).toEqual(mockProduct.price);

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { ProductService } from "../services/product.services";
 import { BadRequest } from "../middleware";
+import { ProductService } from "../services/product.services";
 
 class ProductController {
   private productService: ProductService;
@@ -18,7 +18,7 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/product:
+   * /api/v1/organisations/{org_id}/product:
    *   post:
    *     summary: Create a product
    *     tags: [Product]
@@ -100,9 +100,12 @@ class ProductController {
     const id = req.params.org_id;
     const product = req.body;
     const newProduct = await this.productService.createProduct(id, product);
-    res
-      .status(201)
-      .json({ message: "Product created successfully", data: newProduct });
+    res.status(201).json({
+      status_code: 201,
+      message: "Product created successfully",
+      status: "success",
+      data: newProduct,
+    });
   };
 
   /**
@@ -335,7 +338,7 @@ class ProductController {
 
   /**
    * @openapi
-   * /api/v1/organizations/{org_id}/products/{product_id}:
+   * /api/v1/organisations/{org_id}/products/{product_id}:
    *   get:
    *     summary: get a product by its ID
    *     tags: [Product]
