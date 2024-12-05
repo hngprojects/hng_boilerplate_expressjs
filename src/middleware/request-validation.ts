@@ -8,9 +8,15 @@ const requestBodyValidator = (schema: ZodSchema<any>) => {
       next();
     } catch (err) {
       if (err instanceof ZodError) {
+        const errorDetails = err.errors.map((issue) => ({
+          path: issue.path.join("."),
+          message: issue.message,
+        }));
+
         return res.status(400).json({
+          status_code: 400,
           message: "Invalid request body",
-          // errors: err.errors,
+          data: errorDetails,
         });
       }
       next(err);
