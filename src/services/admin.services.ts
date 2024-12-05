@@ -1,7 +1,5 @@
-// / src/services/AdminOrganisationService.ts
 import { NextFunction, Request, Response } from "express";
-// import { getRepository, Repository } from 'typeorm';
-import { User, Organization, Log } from "../models";
+import { User, Organization, Log, Product } from "../models";
 import AppDataSource from "../data-source";
 import { HttpError } from "../middleware";
 import { hashPassword } from "../utils/index";
@@ -201,5 +199,29 @@ export class AdminLogService {
     } catch (error) {
       throw new HttpError(error.status || 500, error.message || error);
     }
+  }
+}
+
+export class AdminDeleteProductService {
+  private productRepository = AppDataSource.getRepository(Product);
+  private organizationRepository = AppDataSource.getRepository(Organization);
+
+  async deleteProduct(orgId: string, productId: string): Promise<void> {
+    const organization = await this.organizationRepository.findOne({
+      where: { id: orgId },
+    });
+    if (!organization) {
+      throw new Error("Organization not found");
+    }
+
+    const product = await this.productRepository.findOne({
+      where: { id: productId, org: { id: orgId } },
+    });
+
+    if (!product) {
+      throw new Error("Product not found");
+    }
+
+    await this.productRepository.delete(productId);
   }
 }

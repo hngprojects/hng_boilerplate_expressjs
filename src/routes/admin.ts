@@ -10,8 +10,8 @@ const adminRouter = Router();
 const adminOrganisationController = new admin.AdminOrganisationController();
 const adminUserController = new admin.AdminUserController();
 const adminLogController = new admin.AdminLogController();
+const adminDeleteProductController = new admin.AdminDeleteProductController();
 
-// Organisation
 adminRouter.patch(
   "/admin/organisation/:id",
   Limiter,
@@ -20,7 +20,6 @@ adminRouter.patch(
   adminOrganisationController.updateOrg.bind(adminOrganisationController),
 );
 
-// Organisation
 adminRouter.delete(
   "/admin/organizations/:org_id/delete",
   authMiddleware,
@@ -30,7 +29,6 @@ adminRouter.delete(
   ),
 );
 
-// User
 adminRouter.get(
   "/admin/users",
   Limiter,
@@ -39,7 +37,6 @@ adminRouter.get(
   adminUserController.listUsers.bind(adminUserController),
 );
 
-// User
 adminRouter.patch(
   "/admin/users/:id",
   authMiddleware,
@@ -61,13 +58,19 @@ adminRouter.get(
   adminUserController.getUserBySuperadmin.bind(adminUserController),
 );
 
-// Logs
 adminRouter.get(
   "/admin/logs",
   Limiter,
   authMiddleware,
   checkPermissions([UserRole.SUPER_ADMIN]),
   adminLogController.getLogs.bind(adminLogController),
+);
+
+adminRouter.delete(
+  "/api/v1/organisations/:orgId/products/:productId",
+  authMiddleware,
+  checkPermissions([UserRole.SUPER_ADMIN]),
+  adminDeleteProductController.deleteProduct.bind(adminDeleteProductController),
 );
 
 export { adminRouter };

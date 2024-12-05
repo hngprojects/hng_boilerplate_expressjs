@@ -3,6 +3,7 @@ import {
   AdminOrganisationService,
   AdminUserService,
   AdminLogService,
+  AdminDeleteProductService,
 } from "../services";
 import { HttpError } from "../middleware";
 import { check, param, validationResult } from "express-validator";
@@ -675,8 +676,125 @@ class AdminLogController {
   }
 }
 
+class AdminDeleteProductController {
+  private adminService: AdminDeleteProductService;
+
+  constructor() {
+    this.adminService = new AdminDeleteProductService();
+  }
+
+  /**
+   * @swagger
+   * /api/v1/organisations/{orgId}/products/{productId}:
+   *   delete:
+   *     summary: Admin-Delete an existing product
+   *     tags: [Admin]
+   *     parameters:
+   *       - in: path
+   *         name: orgId
+   *         required: true
+   *         description: The ID of the organization
+   *         schema:
+   *           type: string
+   *       - in: path
+   *         name: productId
+   *         required: true
+   *         description: The ID of the product to delete
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Product successfully deleted
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 200
+   *                 message:
+   *                   type: string
+   *                 data:
+   *                   type: object
+   *       400:
+   *         description: Valid organization and product IDs must be provided
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 400
+   *                 message:
+   *                   type: string
+   *       404:
+   *         description: Product not found
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 404
+   *                 message:
+   *                   type: string
+   *       500:
+   *         description: Failed to delete product. Please try again later.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 status:
+   *                   type: string
+   *                 status_code:
+   *                   type: integer
+   *                   example: 500
+   *                 message:
+   *                   type: string
+   */
+
+  async deleteProduct(req: Request, res: Response) {
+    const { orgId, productId } = req.params;
+
+    if (!orgId || !productId) {
+      return res.status(400).json({
+        status: "unsuccessful",
+        status_code: 400,
+        message: "Valid organization and product IDs must be provided.",
+      });
+    }
+
+    try {
+      await this.adminService.deleteProduct(orgId, productId);
+      res.status(200).json({
+        status: "success",
+        status_code: 200,
+        message: "Product successfully deleted",
+        data: {},
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "unsuccessful",
+        status_code: 500,
+        message: "Failed to delete product. Please try again later.",
+      });
+    }
+  }
+}
+
 export default {
   AdminOrganisationController,
   AdminUserController,
   AdminLogController,
+  AdminDeleteProductController,
 };
