@@ -1,5 +1,4 @@
 .idea/
-.vscode/
 node_modules/
 build/
 tmp/
@@ -19,3 +18,7 @@ package-lock.json
 src/bk
 swagger.json
 todo.txt
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
+.gitignore
